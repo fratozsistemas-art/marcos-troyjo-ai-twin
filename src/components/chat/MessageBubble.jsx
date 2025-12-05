@@ -38,15 +38,18 @@ export default function MessageBubble({ message }) {
                         ) : (
                             <ReactMarkdown 
                                 className={cn(
-                                    "text-[15px] prose prose-sm max-w-none",
-                                    "prose-headings:text-[#002D62] prose-headings:font-semibold prose-headings:mb-3 prose-headings:mt-4 first:prose-headings:mt-0",
-                                    "prose-p:text-[#333F48] prose-p:leading-relaxed prose-p:my-2",
-                                    "prose-strong:text-[#002D62] prose-strong:font-semibold",
-                                    "prose-em:text-[#00654A] prose-em:italic",
-                                    "prose-ul:my-2 prose-ul:ml-4 prose-li:text-[#333F48] prose-li:my-1",
-                                    "prose-ol:my-2 prose-ol:ml-4",
-                                    "prose-blockquote:border-l-[#B8860B] prose-blockquote:text-[#333F48]/80 prose-blockquote:italic prose-blockquote:pl-4 prose-blockquote:my-3",
-                                    "[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                                    "text-[15px] prose prose-sm max-w-none leading-relaxed",
+                                    "prose-headings:text-[#002D62] prose-headings:font-bold prose-headings:mb-4 prose-headings:mt-6 first:prose-headings:mt-0",
+                                    "prose-h1:text-xl prose-h2:text-lg prose-h3:text-base",
+                                    "prose-p:text-[#333F48] prose-p:leading-[1.75] prose-p:my-3",
+                                    "prose-strong:text-[#002D62] prose-strong:font-bold",
+                                    "prose-em:text-[#00654A] prose-em:not-italic prose-em:font-medium",
+                                    "prose-ul:my-3 prose-ul:ml-6 prose-ul:space-y-2 prose-li:text-[#333F48] prose-li:leading-relaxed",
+                                    "prose-ol:my-3 prose-ol:ml-6 prose-ol:space-y-2",
+                                    "prose-blockquote:border-l-4 prose-blockquote:border-[#B8860B] prose-blockquote:bg-amber-50/50 prose-blockquote:text-[#333F48] prose-blockquote:italic prose-blockquote:pl-6 prose-blockquote:py-3 prose-blockquote:my-4 prose-blockquote:rounded-r-lg",
+                                    "prose-code:text-[#00654A] prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono",
+                                    "[&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+                                    "[&_p:last-child]:bg-gradient-to-r [&_p:last-child]:from-[#002D62]/5 [&_p:last-child]:to-transparent [&_p:last-child]:border-l-2 [&_p:last-child]:border-[#B8860B] [&_p:last-child]:pl-4 [&_p:last-child]:py-2 [&_p:last-child]:rounded-r-md [&_p:last-child]:text-[#002D62] [&_p:last-child]:italic"
                                 )}
                                 components={{
                                     h1: ({ children }) => <h1 className="text-xl font-bold">{children}</h1>,

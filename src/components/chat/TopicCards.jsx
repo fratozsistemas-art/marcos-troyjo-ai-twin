@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Globe, TrendingUp, Building2, Landmark, Leaf, Scale } from 'lucide-react';
+import { Globe, TrendingUp, Building2, Landmark, Leaf, Scale, Lightbulb } from 'lucide-react';
 
 const topics = {
     pt: [
@@ -8,16 +8,16 @@ const topics = {
         { icon: TrendingUp, title: "Brasil Competitivo", prompt: "Como o Brasil pode melhorar sua competitividade no cenário internacional?" },
         { icon: Building2, title: "BRICS", prompt: "Qual o papel dos BRICS na nova ordem econômica mundial?" },
         { icon: Landmark, title: "Comércio", prompt: "Quais acordos comerciais o Brasil deveria priorizar?" },
+        { icon: Lightbulb, title: "Inovação", prompt: "Como a tecnologia e inovação podem ser usadas como ferramentas diplomáticas e de desenvolvimento?" },
         { icon: Leaf, title: "Sustentabilidade", prompt: "Como o Brasil pode liderar a transição para uma economia verde?" },
-        { icon: Scale, title: "Novo ESG", prompt: "O que significa o conceito de 'Novo ESG' - Economia, Segurança e Geopolítica?" },
     ],
     en: [
         { icon: Globe, title: "Global Economy", prompt: "What is your view on the current global economy and main trends for the coming years?" },
         { icon: TrendingUp, title: "Brazil Competitiveness", prompt: "How can Brazil improve its competitiveness on the international stage?" },
         { icon: Building2, title: "BRICS", prompt: "What is the role of BRICS in the new world economic order?" },
         { icon: Landmark, title: "Trade", prompt: "Which trade agreements should Brazil prioritize?" },
+        { icon: Lightbulb, title: "Innovation", prompt: "How can technology and innovation be used as diplomatic and development tools?" },
         { icon: Leaf, title: "Sustainability", prompt: "How can Brazil lead the transition to a green economy?" },
-        { icon: Scale, title: "New ESG", prompt: "What does the concept of 'New ESG' - Economy, Security and Geopolitics mean?" },
     ]
 };
 

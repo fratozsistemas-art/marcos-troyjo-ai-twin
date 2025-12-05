@@ -18,6 +18,7 @@ const translations = {
             { icon: TrendingUp, title: "Comércio Internacional", desc: "Estratégias para inserção competitiva global" },
             { icon: Building2, title: "BRICS & Emergentes", desc: "O futuro das economias em desenvolvimento" },
             { icon: Landmark, title: "Diplomacia Econômica", desc: "Negociações e acordos multilaterais" },
+            { icon: BookOpen, title: "Inovação & Tecnologia", desc: "O papel da tecnologia na competitividade global" },
         ],
         credentials: "Credenciais",
         credentialsList: [
@@ -42,6 +43,7 @@ const translations = {
             { icon: TrendingUp, title: "International Trade", desc: "Strategies for competitive global insertion" },
             { icon: Building2, title: "BRICS & Emerging Markets", desc: "The future of developing economies" },
             { icon: Landmark, title: "Economic Diplomacy", desc: "Multilateral negotiations and agreements" },
+            { icon: BookOpen, title: "Innovation & Technology", desc: "Technology's role in global competitiveness" },
         ],
         credentials: "Credentials",
         credentialsList: [
@@ -163,7 +165,7 @@ export default function Home() {
                     >
                         {t.topics}
                     </motion.h2>
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
                         {t.topicsList.map((topic, index) => (
                             <motion.div
                                 key={index}

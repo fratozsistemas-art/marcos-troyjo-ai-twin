@@ -35,13 +35,17 @@ Deno.serve(async (req) => {
             model: 'grok-beta',
             messages: [{
                 role: 'user',
-                content: `Based on this conversation, generate a concise, descriptive title (max 6 words). Respond with ONLY the title, no quotes or extra text:\n\n${firstMessages}`
+                content: `Based on this conversation excerpt, generate a concise, descriptive title in the same language as the conversation. Maximum 5 words. Respond with ONLY the title, no quotes or formatting:\n\n${firstMessages}`
             }],
-            max_tokens: 20,
-            temperature: 0.7,
+            max_tokens: 30,
+            temperature: 0.5,
         });
 
-        const name = response.choices[0].message.content.trim().replace(/^["']|["']$/g, '');
+        const name = response.choices[0].message.content
+            .trim()
+            .replace(/^["'`]|["'`]$/g, '')
+            .replace(/^#+\s*/, '')
+            .substring(0, 60);
 
         await base44.asServiceRole.agents.updateConversation(conversation_id, {
             metadata: {

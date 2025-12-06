@@ -43,7 +43,7 @@ export default function MessageBubble({ message, onSuggestionSelect, lang = 'pt'
                                     "text-[15px] prose prose-sm max-w-none leading-relaxed",
                                     "prose-headings:text-[#002D62] prose-headings:font-bold prose-headings:mb-4 prose-headings:mt-6 first:prose-headings:mt-0",
                                     "prose-h1:text-xl prose-h2:text-lg prose-h3:text-base",
-                                    "prose-p:text-[#333F48] prose-p:leading-[1.75] prose-p:my-3",
+                                    "prose-p:text-[#333F48] prose-p:leading-[1.75] prose-p:my-4",
                                     "prose-strong:text-[#002D62] prose-strong:font-bold",
                                     "prose-em:text-[#00654A] prose-em:not-italic prose-em:font-medium",
                                     "prose-ul:my-3 prose-ul:ml-6 prose-ul:space-y-2 prose-li:text-[#333F48] prose-li:leading-relaxed",

@@ -164,16 +164,25 @@ export default function Consultation() {
                 content: messageText
             });
 
-            if (messages.length === 0) {
+            if (messages.length === 0 || messages.length === 2) {
                 setTimeout(async () => {
                     try {
-                        await base44.functions.invoke('autoNameConversation', {
+                        const response = await base44.functions.invoke('autoNameConversation', {
                             conversation_id: conversation.id
                         });
+                        if (response.data?.name) {
+                            setConversation(prev => ({
+                                ...prev,
+                                metadata: {
+                                    ...prev?.metadata,
+                                    name: response.data.name
+                                }
+                            }));
+                        }
                     } catch (error) {
                         console.error('Error auto-naming:', error);
                     }
-                }, 3000);
+                }, 4000);
             }
         } catch (error) {
             console.error('Error sending message:', error);
@@ -352,7 +361,10 @@ export default function Consultation() {
                             {/* Topic Cards */}
                             <div>
                                 <h3 className="text-sm font-medium text-[#333F48]/60 mb-4">{t.suggestedTopics}</h3>
-                                <TopicCards lang={lang} onSelect={handleSend} />
+                                <TopicCards lang={lang} onSelect={(prompt) => {
+                                    setInput(prompt);
+                                    textareaRef.current?.focus();
+                                }} />
                             </div>
                         </motion.div>
                     ) : (

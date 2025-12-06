@@ -330,11 +330,14 @@ export default function Consultation() {
                             )}
                         </Button>
                     </div>
-                    <p className="text-xs text-center text-[#333F48]/40 mt-3">
-                        {lang === 'pt' 
-                            ? 'Digital Twin baseado em conhecimento até dezembro de 2025' 
-                            : 'Digital Twin based on knowledge up to December 2025'}
-                    </p>
+                    <div className="flex items-center justify-center gap-2 mt-3">
+                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-amber-50 border border-amber-200">
+                            <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                            <span className="text-xs font-medium text-amber-900">
+                                {lang === 'pt' ? 'Base de conhecimento: Dez 2025' : 'Knowledge cutoff: Dec 2025'}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </footer>
         </div>

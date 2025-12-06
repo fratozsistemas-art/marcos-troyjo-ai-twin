@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { 
     ArrowLeft, Globe, BookOpen, Award, MessageSquare, 
-    Trash2, Eye, Plus, Calendar, Loader2 
+    Trash2, Eye, Plus, Calendar, Loader2, Database, Info
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -58,6 +58,17 @@ const translations = {
             "Personalidade do Comércio Exterior (FUNCEX 2020)",
             "TOYP World (2004)",
             "Presidente do Novo Banco de Desenvolvimento (2020-2023)"
+        ],
+        knowledgeBase: "Base de Conhecimento",
+        knowledgeBaseDesc: "Fontes e tipos de documentos utilizados",
+        cutoffDate: "Data de corte: Dezembro de 2025",
+        sources: [
+            { category: "Discursos Públicos", desc: "Palestras, conferências e apresentações oficiais" },
+            { category: "Livros Publicados", desc: "Obras acadêmicas e análises econômicas" },
+            { category: "Artigos & Ensaios", desc: "Publicações em periódicos especializados" },
+            { category: "Entrevistas", desc: "Mídia, podcasts e painéis de discussão" },
+            { category: "Documentos Institucionais", desc: "Relatórios do NDB e análises de política comercial" },
+            { category: "Artigos de Opinião", desc: "Colunas e comentários sobre economia global" }
         ]
     },
     en: {
@@ -105,6 +116,17 @@ const translations = {
             "Foreign Trade Personality (FUNCEX 2020)",
             "TOYP World (2004)",
             "President of New Development Bank (2020-2023)"
+        ],
+        knowledgeBase: "Knowledge Base",
+        knowledgeBaseDesc: "Sources and document types used",
+        cutoffDate: "Cutoff date: December 2025",
+        sources: [
+            { category: "Public Speeches", desc: "Lectures, conferences and official presentations" },
+            { category: "Published Books", desc: "Academic works and economic analyses" },
+            { category: "Articles & Essays", desc: "Publications in specialized journals" },
+            { category: "Interviews", desc: "Media, podcasts and discussion panels" },
+            { category: "Institutional Documents", desc: "NDB reports and trade policy analyses" },
+            { category: "Opinion Pieces", desc: "Columns and commentary on global economics" }
         ]
     }
 };
@@ -382,6 +404,38 @@ export default function Dashboard() {
                                             </li>
                                         ))}
                                     </ul>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+
+                        {/* Knowledge Base */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.5 }}
+                        >
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2 text-[#002D62] text-base">
+                                        <Database className="w-5 h-5" />
+                                        {t.knowledgeBase}
+                                    </CardTitle>
+                                    <CardDescription>{t.knowledgeBaseDesc}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-3">
+                                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200">
+                                        <Info className="w-4 h-4 text-amber-700 flex-shrink-0" />
+                                        <span className="text-xs font-medium text-amber-900">{t.cutoffDate}</span>
+                                    </div>
+                                    
+                                    <div className="space-y-2">
+                                        {t.sources.map((source, index) => (
+                                            <div key={index} className="p-2.5 rounded-lg border border-gray-100 hover:border-[#002D62]/10 transition-colors">
+                                                <h5 className="font-semibold text-xs text-[#002D62] mb-0.5">{source.category}</h5>
+                                                <p className="text-xs text-[#333F48]/70">{source.desc}</p>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </CardContent>
                             </Card>
                         </motion.div>

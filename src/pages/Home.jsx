@@ -424,6 +424,16 @@ export default function Home() {
                         <p>© 2025 Marcos Prado Troyjo Digital Twin</p>
                         <span className="hidden md:inline text-[#333F48]/40">•</span>
                         <p className="font-medium text-[#002D62]">Desenvolvido por Grupo Fratoz. Powered by CAIO.Vision.</p>
+                        <span className="hidden md:inline text-[#333F48]/40">•</span>
+                        <div className="flex gap-3">
+                            <Link to={createPageUrl('PrivacyPolicy')} className="hover:text-[#002D62] transition-colors">
+                                {lang === 'pt' ? 'Privacidade' : 'Privacy'}
+                            </Link>
+                            <span className="text-[#333F48]/40">•</span>
+                            <Link to={createPageUrl('TermsOfService')} className="hover:text-[#002D62] transition-colors">
+                                {lang === 'pt' ? 'Termos' : 'Terms'}
+                            </Link>
+                        </div>
                     </div>
                     <p>{lang === 'pt' ? 'Conhecimento base até dezembro de 2025' : 'Knowledge base up to December 2025'}</p>
                 </div>

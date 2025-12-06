@@ -9,6 +9,8 @@ import History from './pages/History';
 import DocumentChatPage from './pages/DocumentChatPage';
 import Assets from './pages/Assets';
 import AgentUI from './pages/AgentUI';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import __Layout from './Layout.jsx';
 
 
@@ -24,6 +26,8 @@ export const PAGES = {
     "DocumentChatPage": DocumentChatPage,
     "Assets": Assets,
     "AgentUI": AgentUI,
+    "PrivacyPolicy": PrivacyPolicy,
+    "TermsOfService": TermsOfService,
 }
 
 export const pagesConfig = {

@@ -24,6 +24,7 @@ import ProactiveSuggestions from '@/components/suggestions/ProactiveSuggestions'
 import PublicationsSection from '@/components/dashboard/PublicationsSection';
 import VoiceCalibration from '@/components/voice-calibration/VoiceCalibration';
 import PersonaAnalytics from '@/components/dashboard/PersonaAnalytics';
+import WelcomeFlow from '@/components/onboarding/WelcomeFlow';
 
 const translations = {
     pt: {
@@ -148,6 +149,7 @@ export default function Dashboard() {
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
     const [conversations, setConversations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [showWelcome, setShowWelcome] = useState(false);
     const t = translations[lang];
 
     useEffect(() => {
@@ -156,7 +158,26 @@ export default function Dashboard() {
 
     useEffect(() => {
         loadConversations();
+        checkOnboarding();
     }, []);
+
+    const checkOnboarding = async () => {
+        try {
+            const user = await base44.auth.me();
+            const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+            
+            if (profiles.length > 0) {
+                const completed = profiles[0].dashboard_preferences?.onboarding_completed;
+                if (!completed) {
+                    setShowWelcome(true);
+                }
+            } else {
+                setShowWelcome(true);
+            }
+        } catch (error) {
+            console.error('Error checking onboarding:', error);
+        }
+    };
 
     const loadConversations = async () => {
         setIsLoading(true);
@@ -509,6 +530,12 @@ export default function Dashboard() {
                     <VoiceCalibration lang={lang} />
                 </motion.div>
                 </main>
+
+                {/* Welcome Flow */}
+                <WelcomeFlow 
+                    open={showWelcome} 
+                    onComplete={() => setShowWelcome(false)}
+                />
                 </div>
                 );
                 }

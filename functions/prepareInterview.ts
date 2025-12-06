@@ -9,21 +9,19 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { interviewer, outlet, topic, context, tone, file_urls } = await req.json();
+        const { interviewer_profile, topic, context, file_urls } = await req.json();
 
-        if (!interviewer && !outlet) {
+        if (!topic) {
             return Response.json({ 
-                error: 'Interviewer or outlet required' 
+                error: 'Topic is required' 
             }, { status: 400 });
         }
 
         const prompt = `Você é Marcos Prado Troyjo se preparando para uma entrevista importante.
 
-ENTREVISTADOR: ${interviewer || 'Não especificado'}
-VEÍCULO/CONTEXTO: ${outlet || 'Não especificado'}
-TEMA PRINCIPAL: ${topic || 'Economia global e competitividade'}
+PERFIL DO ENTREVISTADOR: ${interviewer_profile || 'Não especificado'}
+TEMA PRINCIPAL: ${topic}
 CONTEXTO ADICIONAL: ${context || 'Entrevista geral'}
-TOM DESEJADO: ${tone || 'Diplomático e técnico'}
 
 ARQUIVOS DE REFERÊNCIA: ${file_urls ? 'Anexados' : 'Nenhum'}
 
@@ -106,10 +104,7 @@ Seja estratégico e antecipe diferentes ângulos de questionamento.`;
             }
         });
 
-        return Response.json({ 
-            success: true,
-            preparation: response
-        });
+        return Response.json(response);
 
     } catch (error) {
         console.error('Error:', error);

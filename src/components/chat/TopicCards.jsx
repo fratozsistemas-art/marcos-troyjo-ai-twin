@@ -1,23 +1,27 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Globe, TrendingUp, Building2, Landmark, Leaf, Scale, Lightbulb } from 'lucide-react';
+import { Globe, TrendingUp, Users, Lightbulb, Sprout, Building2, Scale, Target } from 'lucide-react';
 
 const topics = {
     pt: [
-        { icon: Globe, title: "Economia Global", prompt: "Qual é sua visão sobre o atual cenário da economia global e as principais tendências para os próximos anos?" },
-        { icon: TrendingUp, title: "Brasil Competitivo", prompt: "Como o Brasil pode melhorar sua competitividade no cenário internacional?" },
-        { icon: Building2, title: "BRICS", prompt: "Qual o papel dos BRICS na nova ordem econômica mundial?" },
-        { icon: Landmark, title: "Comércio", prompt: "Quais acordos comerciais o Brasil deveria priorizar?" },
-        { icon: Lightbulb, title: "Inovação", prompt: "Como a tecnologia e inovação podem ser usadas como ferramentas diplomáticas e de desenvolvimento?" },
-        { icon: Leaf, title: "Sustentabilidade", prompt: "Como o Brasil pode liderar a transição para uma economia verde?" },
+        { icon: Globe, title: "Novo ESG", prompt: "Explique o conceito do 'Novo ESG' (Economia, Segurança, Geopolítica) e como ele difere do ESG tradicional." },
+        { icon: TrendingUp, title: "Trampulência", prompt: "Como a 'trampulência' global impacta as estratégias comerciais do Brasil e dos emergentes?" },
+        { icon: Sprout, title: "Agronegócio", prompt: "Qual o papel estratégico do agronegócio brasileiro na geopolítica alimentar global e na 'revolução calórica asiática'?" },
+        { icon: Lightbulb, title: "Competitividade", prompt: "O que o Brasil precisa fazer para vencer nos 'Jogos Olímpicos da competitividade' global?" },
+        { icon: Building2, title: "Infraestrutura Sustentável", prompt: "Como a infraestrutura sustentável pode ser um diferencial competitivo para o Brasil?" },
+        { icon: Users, title: "BRICS+", prompt: "Qual o futuro dos BRICS+ com a entrada de novos membros e como isso afeta o equilíbrio geopolítico?" },
+        { icon: Scale, title: "Mercosul-UE", prompt: "Quais as implicações estratégicas do Acordo Mercosul-União Europeia para a economia brasileira?" },
+        { icon: Target, title: "ODS e Desenvolvimento", prompt: "Como os Objetivos de Desenvolvimento Sustentável se conectam com a estratégia de competitividade brasileira?" },
     ],
     en: [
-        { icon: Globe, title: "Global Economy", prompt: "What is your view on the current global economy and main trends for the coming years?" },
-        { icon: TrendingUp, title: "Brazil Competitiveness", prompt: "How can Brazil improve its competitiveness on the international stage?" },
-        { icon: Building2, title: "BRICS", prompt: "What is the role of BRICS in the new world economic order?" },
-        { icon: Landmark, title: "Trade", prompt: "Which trade agreements should Brazil prioritize?" },
-        { icon: Lightbulb, title: "Innovation", prompt: "How can technology and innovation be used as diplomatic and development tools?" },
-        { icon: Leaf, title: "Sustainability", prompt: "How can Brazil lead the transition to a green economy?" },
+        { icon: Globe, title: "New ESG", prompt: "Explain the 'New ESG' concept (Economy, Security, Geopolitics) and how it differs from traditional ESG." },
+        { icon: TrendingUp, title: "Trumpulence", prompt: "How does global 'trumpulence' impact Brazil's and emerging markets' trade strategies?" },
+        { icon: Sprout, title: "Agribusiness", prompt: "What is the strategic role of Brazilian agribusiness in global food geopolitics and the 'Asian caloric revolution'?" },
+        { icon: Lightbulb, title: "Competitiveness", prompt: "What does Brazil need to do to win in the global 'Competitiveness Olympics'?" },
+        { icon: Building2, title: "Sustainable Infrastructure", prompt: "How can sustainable infrastructure be a competitive advantage for Brazil?" },
+        { icon: Users, title: "BRICS+", prompt: "What is the future of BRICS+ with new members and how does this affect the geopolitical balance?" },
+        { icon: Scale, title: "Mercosur-EU", prompt: "What are the strategic implications of the Mercosur-European Union Agreement for the Brazilian economy?" },
+        { icon: Target, title: "SDGs & Development", prompt: "How do the Sustainable Development Goals connect with Brazil's competitiveness strategy?" },
     ]
 };
 
@@ -25,7 +29,7 @@ export default function TopicCards({ lang = 'pt', onSelect }) {
     const t = topics[lang] || topics.pt;
 
     return (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {t.map((topic, index) => (
                 <motion.button
                     key={index}

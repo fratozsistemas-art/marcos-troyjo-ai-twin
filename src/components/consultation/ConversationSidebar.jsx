@@ -134,13 +134,23 @@ export default function ConversationSidebar({
     };
 
     const handleDelete = async (conversationId) => {
-        if (!confirm(lang === 'pt' ? 'Deletar conversa?' : 'Delete conversation?')) return;
+        if (!confirm(lang === 'pt' 
+            ? 'Tem certeza que deseja excluir esta conversa? Esta ação não pode ser desfeita.' 
+            : 'Are you sure you want to delete this conversation? This action cannot be undone.')) {
+            return;
+        }
         
         try {
             await base44.agents.deleteConversation(conversationId);
+            
+            if (currentConversationId === conversationId && onNewConversation) {
+                onNewConversation();
+            }
+            
             loadConversations();
         } catch (error) {
             console.error('Error deleting conversation:', error);
+            alert(lang === 'pt' ? 'Erro ao excluir conversa. Tente novamente.' : 'Error deleting conversation. Please try again.');
         }
     };
 
@@ -215,7 +225,7 @@ export default function ConversationSidebar({
                 <div className="flex items-center justify-between mb-3">
                     <h2 className="text-lg font-bold text-[#002D62] flex items-center gap-2">
                         <MessageSquare className="w-5 h-5" />
-                        {t.history}
+                        Hub
                     </h2>
                     <Button
                         data-ai-id="btn_new_conversation_sidebar"
@@ -385,7 +395,10 @@ export default function ConversationSidebar({
                                                                     </DropdownMenuItem>
                                                                     <DropdownMenuSeparator />
                                                                     <DropdownMenuItem 
-                                                                        onClick={() => handleDelete(conv.id)}
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            handleDelete(conv.id);
+                                                                        }}
                                                                         className="text-red-600"
                                                                     >
                                                                         <Trash2 className="w-4 h-4 mr-2" />

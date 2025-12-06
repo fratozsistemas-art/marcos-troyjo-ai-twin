@@ -218,13 +218,14 @@ export default function Dashboard() {
             </header>
 
             <main className="max-w-7xl mx-auto px-4 md:px-6 py-8">
-                <div className="grid lg:grid-cols-2 gap-6">
+                <div className="grid lg:grid-cols-2 gap-6 lg:items-start">
                     {/* Left Column - Agent Control */}
-                    <div className="space-y-6">
+                    <div className="lg:sticky lg:top-24">
                         {/* Agent Control */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
+                            className="h-full"
                         >
                             <AgentControl lang={lang} />
                         </motion.div>

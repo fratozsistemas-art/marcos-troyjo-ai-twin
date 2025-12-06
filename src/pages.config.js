@@ -7,6 +7,7 @@ import ArticleGenerator from './pages/ArticleGenerator';
 import DocumentAssessment from './pages/DocumentAssessment';
 import History from './pages/History';
 import DocumentChatPage from './pages/DocumentChatPage';
+import Assets from './pages/Assets';
 import __Layout from './Layout.jsx';
 
 
@@ -20,6 +21,7 @@ export const PAGES = {
     "DocumentAssessment": DocumentAssessment,
     "History": History,
     "DocumentChatPage": DocumentChatPage,
+    "Assets": Assets,
 }
 
 export const pagesConfig = {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
-import { ArrowRight, Globe, TrendingUp, Building2, Landmark, BookOpen, MessageSquare, LayoutDashboard } from 'lucide-react';
+import { ArrowRight, Globe, TrendingUp, Building2, Landmark, BookOpen, MessageSquare, LayoutDashboard, Zap, Network, DollarSign, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const translations = {
@@ -18,7 +18,10 @@ const translations = {
             { icon: TrendingUp, title: "Comércio Internacional", desc: "Estratégias para inserção competitiva global" },
             { icon: Building2, title: "BRICS & Emergentes", desc: "O futuro das economias em desenvolvimento" },
             { icon: Landmark, title: "Diplomacia Econômica", desc: "Negociações e acordos multilaterais" },
-            { icon: BookOpen, title: "Inovação & Tecnologia", desc: "O papel da tecnologia na competitividade global" },
+            { icon: Zap, title: "Segurança Energética", desc: "Transição energética e geopolítica dos recursos" },
+            { icon: Network, title: "Cadeias de Suprimentos", desc: "Resiliência e reconfiguração das cadeias globais" },
+            { icon: Brain, title: "IA na Geopolítica", desc: "Inteligência artificial como ferramenta de poder" },
+            { icon: DollarSign, title: "Finanças Internacionais", desc: "Arquitetura monetária e fluxos de capital" },
         ],
         credentials: "Credenciais",
         credentialsList: [
@@ -43,7 +46,10 @@ const translations = {
             { icon: TrendingUp, title: "International Trade", desc: "Strategies for competitive global insertion" },
             { icon: Building2, title: "BRICS & Emerging Markets", desc: "The future of developing economies" },
             { icon: Landmark, title: "Economic Diplomacy", desc: "Multilateral negotiations and agreements" },
-            { icon: BookOpen, title: "Innovation & Technology", desc: "Technology's role in global competitiveness" },
+            { icon: Zap, title: "Energy Security", desc: "Energy transition and resource geopolitics" },
+            { icon: Network, title: "Supply Chains", desc: "Resilience and reconfiguration of global chains" },
+            { icon: Brain, title: "AI in Geopolitics", desc: "Artificial intelligence as a tool of power" },
+            { icon: DollarSign, title: "International Finance", desc: "Monetary architecture and capital flows" },
         ],
         credentials: "Credentials",
         credentialsList: [

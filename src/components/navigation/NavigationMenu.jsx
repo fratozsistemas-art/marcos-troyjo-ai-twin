@@ -9,9 +9,7 @@ import {
     FileText, 
     MessageCircle, 
     FileCheck,
-    History,
-    MessagesSquare,
-    BarChart3
+    History
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -27,8 +25,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
             interview: 'Entrevista',
             article: 'Artigo',
             assessment: 'Avaliação',
-            history: 'Histórico',
-            chat: 'Chat'
+            history: 'Histórico'
         },
         en: {
             home: 'Home',
@@ -38,8 +35,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
             interview: 'Interview',
             article: 'Article',
             assessment: 'Assessment',
-            history: 'History',
-            chat: 'Chat'
+            history: 'History'
         }
     };
 
@@ -53,8 +49,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
         { label: t.interview, path: 'InterviewPrep', icon: MessageCircle },
         { label: t.article, path: 'ArticleGenerator', icon: FileText },
         { label: t.assessment, path: 'DocumentAssessment', icon: FileCheck },
-        { label: t.history, path: 'History', icon: History },
-        { label: t.chat, path: 'DocumentChatPage', icon: MessagesSquare }
+        { label: t.history, path: 'History', icon: History }
     ];
 
     const isActive = (path) => {

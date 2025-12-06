@@ -218,344 +218,232 @@ export default function Dashboard() {
                 </div>
             </header>
 
-            <main className="max-w-7xl mx-auto px-4 md:px-6 py-8">
-                <div className="grid lg:grid-cols-2 gap-6 lg:items-start">
-                    {/* Left Column - Agent Control */}
-                    <div className="lg:sticky lg:top-24">
-                        {/* Agent Control */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="h-full"
-                        >
-                            <AgentControl lang={lang} />
-                        </motion.div>
-                        </div>
+            <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 space-y-8">
+                {/* First Row - Main Features */}
+                <div className="grid lg:grid-cols-2 gap-6">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <AgentControl lang={lang} />
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                        <ProfileSettings lang={lang} />
+                    </motion.div>
+                </div>
 
-                        {/* Right Column - Profile Settings */}
-                        <div className="space-y-6">
-                        {/* Profile Settings */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.05 }}
-                        >
-                            <ProfileSettings lang={lang} />
-                        </motion.div>
+                {/* Second Row - Documents & Chat */}
+                <div className="grid lg:grid-cols-2 gap-6">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+                        <DocumentManager lang={lang} />
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                        <DocumentChat lang={lang} />
+                    </motion.div>
+                </div>
 
-                        {/* Document Manager */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.08 }}
-                        >
-                            <DocumentManager lang={lang} />
-                        </motion.div>
-
-                        {/* Document Chat */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
-                        >
-                            <DocumentChat lang={lang} />
-                        </motion.div>
-                        </div>
-                        </div>
-
-                        {/* Bottom Row - Full Width Cards */}
-                        <div className="grid lg:grid-cols-3 gap-6 mt-6">
-                        {/* Topic Tracker */}
-                        <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        >
+                {/* Third Row - Topics & Knowledge */}
+                <div className="grid lg:grid-cols-3 gap-6">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
                         <TopicTracker lang={lang} />
-                        </motion.div>
-
-                        {/* Knowledge Hub */}
-                        <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.15 }}
-                        className="lg:col-span-2"
-                        >
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="lg:col-span-2">
                         <KnowledgeHub lang={lang} />
-                        </motion.div>
-                        </div>
+                    </motion.div>
+                </div>
 
-                        {/* Additional Cards Row */}
-                        <div className="grid lg:grid-cols-2 gap-6 mt-6">
-                        <div className="space-y-6">
-
-                        {/* Expertise */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                        >
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 text-[#002D62]">
-                                        <BookOpen className="w-5 h-5" />
-                                        {t.expertise}
-                                    </CardTitle>
-                                    <CardDescription>{t.expertiseDesc}</CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="grid sm:grid-cols-2 gap-3">
-                                        {t.expertiseAreas.map((area, index) => (
-                                            <div key={index} className="p-3 rounded-lg border border-gray-100 hover:border-[#002D62]/20 transition-colors">
-                                                <h4 className="font-semibold text-sm text-[#002D62] mb-1">{area.title}</h4>
-                                                <p className="text-xs text-[#333F48]/70">{area.desc}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    
-                                    <Separator />
-                                    
-                                    <div>
-                                        <h4 className="font-semibold text-sm text-[#002D62] mb-3">
-                                            {lang === 'pt' ? 'Princípios Fundamentais' : 'Foundational Principles'}
-                                        </h4>
-                                        <ul className="space-y-2">
-                                            {t.principles.map((principle, index) => (
-                                                <li key={index} className="flex items-start gap-2 text-sm text-[#333F48]">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-1.5 flex-shrink-0" />
-                                                    {principle}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-
-                        {/* AI Insights */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.25 }}
-                        >
-                            <InsightsSection lang={lang} />
-                        </motion.div>
-                        </div>
-
-                        <div className="space-y-6">
-                        {/* Persona Settings */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3 }}
-                        >
-                            <PersonaSettings lang={lang} />
-                        </motion.div>
-
-                        {/* Conversations History */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.35 }}
-                        >
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 text-[#002D62]">
-                                        <MessageSquare className="w-5 h-5" />
-                                        {t.conversations}
-                                    </CardTitle>
-                                    <CardDescription>{t.conversationsDesc}</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    {isLoading ? (
-                                        <div className="flex items-center justify-center py-8">
-                                            <Loader2 className="w-6 h-6 animate-spin text-[#002D62]" />
-                                            <span className="ml-2 text-sm text-[#333F48]/60">{t.loading}</span>
+                {/* Fourth Row - Expertise & Insights */}
+                <div className="grid lg:grid-cols-2 gap-6">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-[#002D62]">
+                                    <BookOpen className="w-5 h-5" />
+                                    {t.expertise}
+                                </CardTitle>
+                                <CardDescription>{t.expertiseDesc}</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="grid sm:grid-cols-2 gap-3">
+                                    {t.expertiseAreas.map((area, index) => (
+                                        <div key={index} className="p-3 rounded-lg border border-gray-100 hover:border-[#002D62]/20 transition-colors">
+                                            <h4 className="font-semibold text-sm text-[#002D62] mb-1">{area.title}</h4>
+                                            <p className="text-xs text-[#333F48]/70">{area.desc}</p>
                                         </div>
-                                    ) : conversations.length === 0 ? (
-                                        <div className="text-center py-8">
-                                            <MessageSquare className="w-12 h-12 text-[#333F48]/20 mx-auto mb-3" />
-                                            <p className="text-sm text-[#333F48]/60 mb-1">{t.noConversations}</p>
-                                            <p className="text-xs text-[#333F48]/40">{t.startFirst}</p>
-                                            <Link to={createPageUrl('Consultation')}>
-                                                <Button className="mt-4 bg-[#002D62] hover:bg-[#001d42]">
-                                                    <Plus className="w-4 h-4 mr-2" />
-                                                    {t.newChat}
-                                                </Button>
-                                            </Link>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-2">
-                                            {conversations.map((conv) => (
-                                                <div
-                                                    key={conv.id}
-                                                    className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-[#002D62]/20 hover:bg-gray-50/50 transition-all"
-                                                >
-                                                    <div className="flex-1 min-w-0">
-                                                        <h4 className="font-medium text-sm text-[#333F48] truncate">
-                                                            {conv.metadata?.name || `Conversa ${new Date(conv.created_date).toLocaleDateString()}`}
-                                                        </h4>
-                                                        <p className="text-xs text-[#333F48]/50 flex items-center gap-1 mt-1">
-                                                            <Calendar className="w-3 h-3" />
-                                                            {new Date(conv.created_date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', {
-                                                                day: '2-digit',
-                                                                month: 'short',
-                                                                year: 'numeric',
-                                                                hour: '2-digit',
-                                                                minute: '2-digit'
-                                                            })}
-                                                        </p>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <Link to={createPageUrl('Consultation') + `?conversationId=${conv.id}`}>
-                                                            <Button 
-                                                                data-ai-id={`btn_view_conversation_${conv.id}`}
-                                                                data-ai-role="button"
-                                                                variant="ghost" 
-                                                                size="sm" 
-                                                                className="h-8 w-8 p-0"
-                                                            >
-                                                                <Eye className="w-4 h-4" />
-                                                            </Button>
-                                                        </Link>
-                                                        <Button
-                                                            data-ai-id={`btn_delete_conversation_${conv.id}`}
-                                                            data-ai-role="button"
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                            onClick={() => handleDeleteConversation(conv.id)}
-                                                        >
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-                    </div>
-
-                    </div>
-
-                    {/* Bottom Section - Books, Awards, Knowledge Base */}
-                    <div className="grid lg:grid-cols-3 gap-6 mt-6">
-                        {/* Language Settings */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4 }}
-                        >
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 text-[#002D62] text-base">
-                                        <Globe className="w-5 h-5" />
-                                        {t.language}
-                                    </CardTitle>
-                                    <CardDescription>{t.languageDesc}</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <Button
-                                        data-ai-id="btn_toggle_language"
-                                        data-ai-role="button"
-                                        onClick={toggleLanguage}
-                                        variant="outline"
-                                        className="w-full justify-between"
-                                    >
-                                        <span>{lang === 'pt' ? 'Português (Brasil)' : 'English (US)'}</span>
-                                        <Globe className="w-4 h-4" />
-                                    </Button>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-
-                        {/* Books */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.45 }}
-                        >
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 text-[#002D62] text-base">
-                                        <BookOpen className="w-5 h-5" />
-                                        {t.books}
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
+                                    ))}
+                                </div>
+                                <Separator />
+                                <div>
+                                    <h4 className="font-semibold text-sm text-[#002D62] mb-3">
+                                        {lang === 'pt' ? 'Princípios Fundamentais' : 'Foundational Principles'}
+                                    </h4>
                                     <ul className="space-y-2">
-                                        {t.booksList.map((book, index) => (
-                                            <li key={index} className="flex items-start justify-between text-sm">
-                                                <span className="text-[#333F48]">{book.title}</span>
-                                                <Badge variant="outline" className="ml-2 text-xs">{book.year}</Badge>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-
-                        {/* Awards */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 }}
-                        >
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 text-[#002D62] text-base">
-                                        <Award className="w-5 h-5" />
-                                        {t.awards}
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <ul className="space-y-2">
-                                        {t.awardsList.map((award, index) => (
+                                        {t.principles.map((principle, index) => (
                                             <li key={index} className="flex items-start gap-2 text-sm text-[#333F48]">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-1.5 flex-shrink-0" />
-                                                {award}
+                                                {principle}
                                             </li>
                                         ))}
                                     </ul>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+                        <InsightsSection lang={lang} />
+                    </motion.div>
+                </div>
 
-                        {/* Knowledge Base */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.55 }}
-                        >
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 text-[#002D62] text-base">
-                                        <Database className="w-5 h-5" />
-                                        {t.knowledgeBase}
-                                    </CardTitle>
-                                    <CardDescription>{t.knowledgeBaseDesc}</CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-3">
-                                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200">
-                                        <Info className="w-4 h-4 text-amber-700 flex-shrink-0" />
-                                        <span className="text-xs font-medium text-amber-900">{t.cutoffDate}</span>
+                {/* Fifth Row - Persona & Conversations */}
+                <div className="grid lg:grid-cols-2 gap-6">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
+                        <PersonaSettings lang={lang} />
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-[#002D62]">
+                                    <MessageSquare className="w-5 h-5" />
+                                    {t.conversations}
+                                </CardTitle>
+                                <CardDescription>{t.conversationsDesc}</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {isLoading ? (
+                                    <div className="flex items-center justify-center py-8">
+                                        <Loader2 className="w-6 h-6 animate-spin text-[#002D62]" />
+                                        <span className="ml-2 text-sm text-[#333F48]/60">{t.loading}</span>
                                     </div>
-                                    
-                                    <div className="space-y-2">
-                                        {t.sources.map((source, index) => (
-                                            <div key={index} className="p-2.5 rounded-lg border border-gray-100 hover:border-[#002D62]/10 transition-colors">
-                                                <h5 className="font-semibold text-xs text-[#002D62] mb-0.5">{source.category}</h5>
-                                                <p className="text-xs text-[#333F48]/70">{source.desc}</p>
+                                ) : conversations.length === 0 ? (
+                                    <div className="text-center py-8">
+                                        <MessageSquare className="w-12 h-12 text-[#333F48]/20 mx-auto mb-3" />
+                                        <p className="text-sm text-[#333F48]/60 mb-1">{t.noConversations}</p>
+                                        <p className="text-xs text-[#333F48]/40">{t.startFirst}</p>
+                                        <Link to={createPageUrl('Consultation')}>
+                                            <Button className="mt-4 bg-[#002D62] hover:bg-[#001d42]">
+                                                <Plus className="w-4 h-4 mr-2" />
+                                                {t.newChat}
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2 max-h-80 overflow-y-auto">
+                                        {conversations.map((conv) => (
+                                            <div key={conv.id} className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-[#002D62]/20 hover:bg-gray-50/50 transition-all">
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="font-medium text-sm text-[#333F48] truncate">
+                                                        {conv.metadata?.name || `Conversa ${new Date(conv.created_date).toLocaleDateString()}`}
+                                                    </h4>
+                                                    <p className="text-xs text-[#333F48]/50 flex items-center gap-1 mt-1">
+                                                        <Calendar className="w-3 h-3" />
+                                                        {new Date(conv.created_date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', {
+                                                            day: '2-digit',
+                                                            month: 'short',
+                                                            year: 'numeric',
+                                                            hour: '2-digit',
+                                                            minute: '2-digit'
+                                                        })}
+                                                    </p>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Link to={createPageUrl('Consultation') + `?conversationId=${conv.id}`}>
+                                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                                            <Eye className="w-4 h-4" />
+                                                        </Button>
+                                                    </Link>
+                                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => handleDeleteConversation(conv.id)}>
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </Button>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-                    </div>
-                </main>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                </div>
+
+                {/* Bottom Section - Info Cards */}
+                <div className="grid lg:grid-cols-4 gap-6">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-[#002D62] text-base">
+                                    <Globe className="w-5 h-5" />
+                                    {t.language}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <Button onClick={toggleLanguage} variant="outline" className="w-full justify-between">
+                                    <span>{lang === 'pt' ? 'Português' : 'English'}</span>
+                                    <Globe className="w-4 h-4" />
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-[#002D62] text-base">
+                                    <BookOpen className="w-5 h-5" />
+                                    {t.books}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <ul className="space-y-2">
+                                    {t.booksList.map((book, index) => (
+                                        <li key={index} className="flex items-start justify-between text-xs">
+                                            <span className="text-[#333F48]">{book.title}</span>
+                                            <Badge variant="outline" className="ml-2 text-xs">{book.year}</Badge>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-[#002D62] text-base">
+                                    <Award className="w-5 h-5" />
+                                    {t.awards}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <ul className="space-y-2">
+                                    {t.awardsList.map((award, index) => (
+                                        <li key={index} className="flex items-start gap-2 text-xs text-[#333F48]">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-1.5 flex-shrink-0" />
+                                            {award}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-[#002D62] text-base">
+                                    <Database className="w-5 h-5" />
+                                    {t.knowledgeBase}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-2">
+                                <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-amber-50 border border-amber-200">
+                                    <Info className="w-3 h-3 text-amber-700 flex-shrink-0" />
+                                    <span className="text-xs font-medium text-amber-900">{t.cutoffDate}</span>
+                                </div>
+                                <div className="space-y-1">
+                                    {t.sources.slice(0, 4).map((source, index) => (
+                                        <div key={index} className="p-2 rounded-lg border border-gray-100">
+                                            <h5 className="font-semibold text-xs text-[#002D62]">{source.category}</h5>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                </div>
+            </main>
             </div>
         </AgentProvider>
     );

@@ -25,6 +25,8 @@ import PublicationsSection from '@/components/dashboard/PublicationsSection';
 import VoiceCalibration from '@/components/voice-calibration/VoiceCalibration';
 import PersonaAnalytics from '@/components/dashboard/PersonaAnalytics';
 import WelcomeFlow from '@/components/onboarding/WelcomeFlow';
+import TopicDeepDive from '@/components/topics/TopicDeepDive';
+import CustomPersonaTraits from '@/components/persona/CustomPersonaTraits';
 
 const translations = {
     pt: {
@@ -308,17 +310,22 @@ export default function Dashboard() {
                     <KnowledgeHub lang={lang} />
                 </motion.div>
 
-                {/* Fourth Row - Topic Tracker */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                    <TopicTracker lang={lang} />
-                </motion.div>
+                {/* Fourth Row - Topic Tracker & Deep Dive */}
+                <div className="grid lg:grid-cols-2 gap-6">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                        <TopicTracker lang={lang} />
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+                        <TopicDeepDive lang={lang} />
+                    </motion.div>
+                </div>
 
                 {/* Fifth Row - Persona Analytics & Expertise */}
                 <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="h-full">
                         <PersonaAnalytics lang={lang} />
                     </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.425 }} className="h-full">
                         <Card className="h-full">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-[#002D62]">
@@ -351,20 +358,28 @@ export default function Dashboard() {
                                     </ul>
                                 </div>
                             </CardContent>
-                        </Card>
-                        </motion.div>
-                        </div>
+                            </Card>
+                            </motion.div>
+                            </div>
 
                         {/* Sixth Row - Insights */}
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
                         <InsightsSection lang={lang} />
                         </motion.div>
 
-                {/* Seventh Row - Persona & Conversations */}
+                {/* Seventh Row - Persona Settings & Custom Traits */}
                 <div className="grid lg:grid-cols-2 gap-6">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="h-full">
                         <PersonaSettings lang={lang} />
                     </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.525 }} className="h-full">
+                        <CustomPersonaTraits lang={lang} />
+                    </motion.div>
+                </div>
+
+                {/* Eighth Row - Conversations */}
+                <div className="grid lg:grid-cols-1 gap-6">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="h-full">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="h-full">
                         <Card className="h-full">
                             <CardHeader>

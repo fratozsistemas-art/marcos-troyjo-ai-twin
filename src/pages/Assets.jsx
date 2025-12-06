@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Upload, Image, Video, Music, FileText, File, Trash2, Download, Search, FolderOpen, Plus, X, Loader2 } from 'lucide-react';
+import { Upload, Image, Video, Music, FileText, File, Trash2, Download, Search, FolderOpen, Plus, X, Loader2, Edit2, FileJson, FileSpreadsheet, ChevronLeft, ChevronRight, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 
 const translations = {
     pt: {
@@ -35,7 +36,20 @@ const translations = {
         audio: 'Áudio',
         documents: 'Documentos',
         other: 'Outros',
-        deleteConfirm: 'Tem certeza que deseja excluir este asset?'
+        deleteConfirm: 'Tem certeza que deseja excluir este asset?',
+        edit: 'Editar',
+        editTitle: 'Editar Asset',
+        save: 'Salvar',
+        exportCSV: 'Exportar CSV',
+        exportJSON: 'Exportar JSON',
+        uploadSuccess: 'Asset enviado com sucesso!',
+        deleteSuccess: 'Asset excluído com sucesso!',
+        updateSuccess: 'Asset atualizado com sucesso!',
+        exportSuccess: 'Dados exportados com sucesso!',
+        error: 'Erro ao processar operação',
+        page: 'Página',
+        of: 'de',
+        itemsPerPage: 'Itens por página'
     },
     en: {
         title: 'Asset Management',
@@ -61,7 +75,20 @@ const translations = {
         audio: 'Audio',
         documents: 'Documents',
         other: 'Other',
-        deleteConfirm: 'Are you sure you want to delete this asset?'
+        deleteConfirm: 'Are you sure you want to delete this asset?',
+        edit: 'Edit',
+        editTitle: 'Edit Asset',
+        save: 'Save',
+        exportCSV: 'Export CSV',
+        exportJSON: 'Export JSON',
+        uploadSuccess: 'Asset uploaded successfully!',
+        deleteSuccess: 'Asset deleted successfully!',
+        updateSuccess: 'Asset updated successfully!',
+        exportSuccess: 'Data exported successfully!',
+        error: 'Error processing operation',
+        page: 'Page',
+        of: 'of',
+        itemsPerPage: 'Items per page'
     }
 };
 
@@ -81,6 +108,10 @@ export default function Assets() {
         tags: '',
         folder: ''
     });
+    const [editingAsset, setEditingAsset] = useState(null);
+    const [editOpen, setEditOpen] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(12);
 
     const t = translations[lang];
 
@@ -166,8 +197,10 @@ export default function Assets() {
             setUploadOpen(false);
             setSelectedFile(null);
             setUploadData({ name: '', description: '', tags: '', folder: '' });
+            toast.success(t.uploadSuccess);
         } catch (error) {
             console.error('Error uploading asset:', error);
+            toast.error(t.error);
         } finally {
             setIsUploading(false);
         }
@@ -179,9 +212,85 @@ export default function Assets() {
         try {
             await base44.entities.Asset.delete(assetId);
             setAssets(assets.filter(a => a.id !== assetId));
+            toast.success(t.deleteSuccess);
         } catch (error) {
             console.error('Error deleting asset:', error);
+            toast.error(t.error);
         }
+    };
+
+    const handleEdit = (asset) => {
+        setEditingAsset(asset);
+        setEditOpen(true);
+    };
+
+    const handleUpdate = async () => {
+        if (!editingAsset) return;
+
+        try {
+            const tags = typeof editingAsset.tags === 'string' 
+                ? editingAsset.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
+                : editingAsset.tags;
+
+            await base44.entities.Asset.update(editingAsset.id, {
+                name: editingAsset.name,
+                description: editingAsset.description,
+                tags,
+                folder: editingAsset.folder
+            });
+
+            await loadAssets();
+            setEditOpen(false);
+            setEditingAsset(null);
+            toast.success(t.updateSuccess);
+        } catch (error) {
+            console.error('Error updating asset:', error);
+            toast.error(t.error);
+        }
+    };
+
+    const exportToCSV = () => {
+        const headers = ['Name', 'Type', 'Size', 'Description', 'Tags', 'Folder', 'URL', 'Created Date'];
+        const rows = filteredAssets.map(asset => [
+            asset.name,
+            asset.file_type,
+            formatFileSize(asset.file_size),
+            asset.description || '',
+            (asset.tags || []).join('; '),
+            asset.folder || '',
+            asset.file_url,
+            new Date(asset.created_date).toLocaleDateString()
+        ]);
+
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `assets_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        toast.success(t.exportSuccess);
+    };
+
+    const exportToJSON = () => {
+        const dataStr = JSON.stringify(filteredAssets, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `assets_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        toast.success(t.exportSuccess);
     };
 
     const getFileIcon = (fileType) => {
@@ -209,6 +318,16 @@ export default function Assets() {
         { key: 'other', label: t.other }
     ];
 
+    // Pagination
+    const totalPages = Math.ceil(filteredAssets.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedAssets = filteredAssets.slice(startIndex, endIndex);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [search, filterType]);
+
     return (
         <div className="min-h-screen bg-[#FAFAFA]">
             <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
@@ -217,10 +336,20 @@ export default function Assets() {
                         <h1 className="font-bold text-[#002D62] text-xl">{t.title}</h1>
                         <p className="text-sm text-[#333F48]/60">{t.subtitle}</p>
                     </div>
-                    <Button onClick={() => setUploadOpen(true)} className="bg-[#002D62] hover:bg-[#001d42] gap-2">
-                        <Plus className="w-4 h-4" />
-                        {t.uploadNew}
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button onClick={exportToCSV} variant="outline" size="sm" className="gap-2">
+                            <FileSpreadsheet className="w-4 h-4" />
+                            <span className="hidden md:inline">{t.exportCSV}</span>
+                        </Button>
+                        <Button onClick={exportToJSON} variant="outline" size="sm" className="gap-2">
+                            <FileJson className="w-4 h-4" />
+                            <span className="hidden md:inline">{t.exportJSON}</span>
+                        </Button>
+                        <Button onClick={() => setUploadOpen(true)} className="bg-[#002D62] hover:bg-[#001d42] gap-2">
+                            <Plus className="w-4 h-4" />
+                            {t.uploadNew}
+                        </Button>
+                    </div>
                 </div>
             </header>
 
@@ -269,8 +398,9 @@ export default function Assets() {
                         </CardContent>
                     </Card>
                 ) : (
+                    <>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {filteredAssets.map((asset, index) => {
+                        {paginatedAssets.map((asset, index) => {
                             const FileIcon = getFileIcon(asset.file_type);
                             return (
                                 <motion.div
@@ -312,6 +442,14 @@ export default function Assets() {
                                                     variant="outline"
                                                     size="sm"
                                                     className="flex-1"
+                                                    onClick={() => handleEdit(asset)}
+                                                >
+                                                    <Edit2 className="w-3 h-3" />
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="flex-1"
                                                     onClick={() => window.open(asset.file_url, '_blank')}
                                                 >
                                                     <Download className="w-3 h-3" />
@@ -331,6 +469,53 @@ export default function Assets() {
                             );
                         })}
                     </div>
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className="flex items-center justify-between mt-6">
+                            <div className="text-sm text-gray-600">
+                                {t.page} {currentPage} {t.of} {totalPages}
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                    disabled={currentPage === 1}
+                                >
+                                    <ChevronLeft className="w-4 h-4" />
+                                </Button>
+                                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                                    .filter(page => {
+                                        return page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1;
+                                    })
+                                    .map((page, idx, arr) => (
+                                        <React.Fragment key={page}>
+                                            {idx > 0 && arr[idx - 1] !== page - 1 && (
+                                                <span className="px-2 text-gray-400">...</span>
+                                            )}
+                                            <Button
+                                                variant={currentPage === page ? 'default' : 'outline'}
+                                                size="sm"
+                                                onClick={() => setCurrentPage(page)}
+                                                className={currentPage === page ? 'bg-[#002D62]' : ''}
+                                            >
+                                                {page}
+                                            </Button>
+                                        </React.Fragment>
+                                    ))}
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={currentPage === totalPages}
+                                >
+                                    <ChevronRight className="w-4 h-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                    </>
                 )}
             </main>
 
@@ -406,6 +591,66 @@ export default function Assets() {
                                     {t.upload}
                                 </>
                             )}
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Edit Dialog */}
+            <Dialog open={editOpen} onOpenChange={setEditOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>{t.editTitle}</DialogTitle>
+                    </DialogHeader>
+                    {editingAsset && (
+                        <div className="space-y-4 py-4">
+                            <div>
+                                <Label htmlFor="edit-name">{t.fileName}</Label>
+                                <Input
+                                    id="edit-name"
+                                    value={editingAsset.name}
+                                    onChange={(e) => setEditingAsset({ ...editingAsset, name: e.target.value })}
+                                    className="mt-1"
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor="edit-description">{t.description}</Label>
+                                <Textarea
+                                    id="edit-description"
+                                    value={editingAsset.description || ''}
+                                    onChange={(e) => setEditingAsset({ ...editingAsset, description: e.target.value })}
+                                    className="mt-1"
+                                    rows={3}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor="edit-folder">{t.folder}</Label>
+                                <Input
+                                    id="edit-folder"
+                                    value={editingAsset.folder || ''}
+                                    onChange={(e) => setEditingAsset({ ...editingAsset, folder: e.target.value })}
+                                    className="mt-1"
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor="edit-tags">{t.tags}</Label>
+                                <Input
+                                    id="edit-tags"
+                                    value={Array.isArray(editingAsset.tags) ? editingAsset.tags.join(', ') : editingAsset.tags || ''}
+                                    onChange={(e) => setEditingAsset({ ...editingAsset, tags: e.target.value })}
+                                    className="mt-1"
+                                    placeholder="exemplo, imagem, mídia"
+                                />
+                            </div>
+                        </div>
+                    )}
+                    <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setEditOpen(false)}>
+                            {t.cancel}
+                        </Button>
+                        <Button onClick={handleUpdate} className="bg-[#002D62]">
+                            <Save className="w-4 h-4 mr-2" />
+                            {t.save}
                         </Button>
                     </div>
                 </DialogContent>

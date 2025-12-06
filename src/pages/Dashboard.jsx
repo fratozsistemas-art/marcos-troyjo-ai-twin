@@ -3,10 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 import { 
     ArrowLeft, Globe, BookOpen, Award, MessageSquare, 
-    Trash2, Eye, Plus, Calendar, Loader2, Database, Info
+    Trash2, Eye, Plus, Calendar, Loader2, Database, Info, FileSpreadsheet, FileJson
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -176,9 +177,50 @@ export default function Dashboard() {
         try {
             await base44.agents.deleteConversation(conversationId);
             setConversations(conversations.filter(c => c.id !== conversationId));
+            toast.success(lang === 'pt' ? 'Conversa excluída com sucesso!' : 'Conversation deleted successfully!');
         } catch (error) {
             console.error('Error deleting conversation:', error);
+            toast.error(lang === 'pt' ? 'Erro ao excluir conversa' : 'Error deleting conversation');
         }
+    };
+
+    const exportConversationsCSV = () => {
+        const headers = ['Name', 'Created Date', 'Messages Count'];
+        const rows = conversations.map(conv => [
+            conv.metadata?.name || `Conversa ${new Date(conv.created_date).toLocaleDateString()}`,
+            new Date(conv.created_date).toLocaleDateString(),
+            conv.messages?.length || 0
+        ]);
+
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `conversations_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        toast.success(lang === 'pt' ? 'Conversas exportadas com sucesso!' : 'Conversations exported successfully!');
+    };
+
+    const exportConversationsJSON = () => {
+        const dataStr = JSON.stringify(conversations, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `conversations_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        toast.success(lang === 'pt' ? 'Conversas exportadas com sucesso!' : 'Conversations exported successfully!');
     };
 
     const toggleLanguage = () => {
@@ -298,11 +340,25 @@ export default function Dashboard() {
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="h-full">
                         <Card className="h-full">
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-[#002D62]">
-                                    <MessageSquare className="w-5 h-5" />
-                                    {t.conversations}
-                                </CardTitle>
-                                <CardDescription>{t.conversationsDesc}</CardDescription>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <CardTitle className="flex items-center gap-2 text-[#002D62]">
+                                            <MessageSquare className="w-5 h-5" />
+                                            {t.conversations}
+                                        </CardTitle>
+                                        <CardDescription>{t.conversationsDesc}</CardDescription>
+                                    </div>
+                                    {conversations.length > 0 && (
+                                        <div className="flex gap-1">
+                                            <Button onClick={exportConversationsCSV} variant="ghost" size="sm">
+                                                <FileSpreadsheet className="w-4 h-4" />
+                                            </Button>
+                                            <Button onClick={exportConversationsJSON} variant="ghost" size="sm">
+                                                <FileJson className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
                             </CardHeader>
                             <CardContent>
                                 {isLoading ? (

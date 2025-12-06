@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Menu, X, Globe } from 'lucide-react';
 import NavigationMenu from '@/components/navigation/NavigationMenu';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Toaster } from 'sonner';
 
 export default function Layout({ children, currentPageName }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -100,6 +101,7 @@ export default function Layout({ children, currentPageName }) {
                     {children}
                 </main>
             </div>
+            <Toaster position="top-right" richColors />
         </div>
     );
 }

@@ -74,14 +74,13 @@ export default function AgentMonitor({ lang = 'pt' }) {
 
     useEffect(() => {
         analyzePatterns();
-        const interval = setInterval(analyzePatterns, 60000); // Every minute
+        const interval = setInterval(analyzePatterns, 60000);
         return () => clearInterval(interval);
     }, []);
 
     const analyzePatterns = async () => {
         setIsAnalyzing(true);
         try {
-            // Analyze patterns
             const patternsResponse = await base44.functions.invoke('analyzePatterns', {
                 context: 'real-time monitoring',
                 learning_history_limit: 100
@@ -91,7 +90,6 @@ export default function AgentMonitor({ lang = 'pt' }) {
                 setInsights(patternsResponse.data);
             }
 
-            // Detect anomalies
             const anomaliesResponse = await base44.functions.invoke('detectAnomalies', {
                 time_window_minutes: 30
             });
@@ -141,7 +139,6 @@ export default function AgentMonitor({ lang = 'pt' }) {
                 </div>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
-                {/* Quick Stats */}
                 {insights && (
                     <div className="grid grid-cols-3 gap-3">
                         <div className="p-3 bg-green-50 rounded-lg border border-green-200">
@@ -174,7 +171,6 @@ export default function AgentMonitor({ lang = 'pt' }) {
                     </div>
                 )}
 
-                {/* Anomalies */}
                 {anomalies.length > 0 && (
                     <div className="space-y-2">
                         <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
@@ -214,7 +210,6 @@ export default function AgentMonitor({ lang = 'pt' }) {
                     </div>
                 )}
 
-                {/* AI Insights */}
                 {insights?.insights && (
                     <div className="space-y-3">
                         {insights.insights.efficient_sequences && (

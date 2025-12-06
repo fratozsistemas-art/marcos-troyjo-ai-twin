@@ -27,6 +27,7 @@ import PersonaAnalytics from '@/components/dashboard/PersonaAnalytics';
 import WelcomeFlow from '@/components/onboarding/WelcomeFlow';
 import TopicDeepDive from '@/components/topics/TopicDeepDive';
 import CustomPersonaTraits from '@/components/persona/CustomPersonaTraits';
+import GeopoliticalRiskMonitor from '@/components/dashboard/GeopoliticalRiskMonitor';
 
 const translations = {
     pt: {
@@ -303,6 +304,11 @@ export default function Dashboard() {
                 {/* Proactive Suggestions Row */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
                     <ProactiveSuggestions lang={lang} />
+                </motion.div>
+
+                {/* Geopolitical Risk Monitor */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                    <GeopoliticalRiskMonitor lang={lang} />
                 </motion.div>
 
                 {/* Third Row - Knowledge Hub Full Width */}

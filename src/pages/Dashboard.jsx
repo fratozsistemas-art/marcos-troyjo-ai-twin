@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import PersonaSettings from '@/components/dashboard/PersonaSettings';
+import InsightsSection from '@/components/dashboard/InsightsSection';
 
 const translations = {
     pt: {
@@ -250,11 +251,20 @@ export default function Dashboard() {
                             </Card>
                         </motion.div>
 
-                        {/* Persona Settings */}
+                        {/* AI Insights */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
+                        >
+                            <InsightsSection lang={lang} />
+                        </motion.div>
+
+                        {/* Persona Settings */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.15 }}
                         >
                             <PersonaSettings lang={lang} />
                         </motion.div>

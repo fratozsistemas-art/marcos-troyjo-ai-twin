@@ -225,6 +225,15 @@ export default function Dashboard() {
                             <AgentControl lang={lang} />
                         </motion.div>
 
+                        {/* Knowledge Hub */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.05 }}
+                        >
+                            <KnowledgeHub lang={lang} />
+                        </motion.div>
+
                         {/* Expertise */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}

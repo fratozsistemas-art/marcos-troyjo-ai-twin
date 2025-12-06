@@ -71,8 +71,8 @@ export default function Home() {
         {
             type: "narrative",
             text: lang === 'pt' 
-                ? "Inteligência Geopolítica, Disponível 24/7"
-                : "Geopolitical Intelligence, Available 24/7"
+                ? "Inteligência Geopolítica de Elite, disponível 24/7"
+                : "Elite Geopolitical Intelligence, available 24/7"
         },
         {
             image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/c9a7ebaff_Gemini_Generated_Image_nkh0p9nkh0p9nkh0.png",

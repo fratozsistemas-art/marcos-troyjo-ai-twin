@@ -12,6 +12,46 @@ export function useAgent() {
     return context;
 }
 
+function getElementContent(elementId) {
+    const el = document.querySelector(`[data-ai-id="${elementId}"]`);
+    if (!el) return null;
+
+    const content = {
+        id: elementId,
+        exists: true,
+        visible: el.offsetParent !== null,
+        text: el.textContent?.trim() || '',
+        html: el.innerHTML?.substring(0, 500) || '',
+    };
+
+    if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+        content.value = el.value;
+        content.placeholder = el.placeholder;
+        content.type = el.type;
+        content.disabled = el.disabled;
+        content.readOnly = el.readOnly;
+    }
+
+    if (el instanceof HTMLSelectElement) {
+        content.value = el.value;
+        content.selectedIndex = el.selectedIndex;
+        content.options = Array.from(el.options).map(o => ({
+            text: o.text,
+            value: o.value,
+            selected: o.selected
+        }));
+    }
+
+    const styles = window.getComputedStyle(el);
+    content.styles = {
+        display: styles.display,
+        visibility: styles.visibility,
+        opacity: styles.opacity,
+    };
+
+    return content;
+}
+
 function captureUIState() {
     const screen = document.querySelector('[data-ai-screen]')?.getAttribute('data-ai-screen');
     const elements = Array.from(document.querySelectorAll('[data-ai-id]')).map(el => {
@@ -56,46 +96,6 @@ function captureUIState() {
     });
 
     return { screen, elements, timestamp: Date.now() };
-}
-
-function getElementContent(elementId) {
-    const el = document.querySelector(`[data-ai-id="${elementId}"]`);
-    if (!el) return null;
-
-    const content = {
-        id: elementId,
-        exists: true,
-        visible: el.offsetParent !== null,
-        text: el.textContent?.trim() || '',
-        html: el.innerHTML?.substring(0, 500) || '',
-    };
-
-    if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
-        content.value = el.value;
-        content.placeholder = el.placeholder;
-        content.type = el.type;
-        content.disabled = el.disabled;
-        content.readOnly = el.readOnly;
-    }
-
-    if (el instanceof HTMLSelectElement) {
-        content.value = el.value;
-        content.selectedIndex = el.selectedIndex;
-        content.options = Array.from(el.options).map(o => ({
-            text: o.text,
-            value: o.value,
-            selected: o.selected
-        }));
-    }
-
-    const styles = window.getComputedStyle(el);
-    content.styles = {
-        display: styles.display,
-        visibility: styles.visibility,
-        opacity: styles.opacity,
-    };
-
-    return content;
 }
 
 function getUiSnapshot() {

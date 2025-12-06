@@ -142,7 +142,7 @@ export default function Home() {
                                 <div className="absolute inset-0 bg-gradient-to-br from-[#002D62]/20 to-[#00654A]/20 rounded-3xl transform rotate-6" />
                                 <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-2xl">
                                     <img 
-                                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Marcos_Troyjo_2020.jpg/800px-Marcos_Troyjo_2020.jpg"
+                                        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/588dfbd3d_Gemini_Generated_Image_w0hfzlw0hfzlw0hf.png"
                                         alt="Marcos Prado Troyjo"
                                         className="w-full h-full object-cover"
                                     />

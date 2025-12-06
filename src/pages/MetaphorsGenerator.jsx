@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Loader2, Sparkles, Upload, X } from 'lucide-react';
 import MetaphorVisualizer from '@/components/metaphors/MetaphorVisualizer';
+import DocumentSelector from '@/components/documents/DocumentSelector';
 
 export default function MetaphorsGenerator() {
     const [lang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
@@ -23,6 +24,7 @@ export default function MetaphorsGenerator() {
     });
     const [files, setFiles] = useState([]);
     const [uploading, setUploading] = useState(false);
+    const [selectedDocuments, setSelectedDocuments] = useState([]);
 
     const translations = {
         pt: {
@@ -86,19 +88,24 @@ export default function MetaphorsGenerator() {
     };
 
     const handleGenerate = async () => {
-        if (!formData.context && files.length === 0) {
+        if (!formData.context && files.length === 0 && selectedDocuments.length === 0) {
             alert(lang === 'pt' ? 'Adicione contexto ou documentos' : 'Add context or documents');
             return;
         }
 
         setLoading(true);
         try {
+            const allFileUrls = [
+                ...files.map(f => f.url),
+                ...selectedDocuments.map(d => d.file_url)
+            ].filter(Boolean);
+
             const response = await base44.functions.invoke('generateTroyjoMetaphors', {
                 context: formData.context,
                 topic: formData.topic,
                 audience: formData.audience,
                 format: formData.format,
-                file_urls: files.length > 0 ? files.map(f => f.url) : undefined
+                file_urls: allFileUrls.length > 0 ? allFileUrls : undefined
             });
 
             setResult(response.data.content);
@@ -180,6 +187,12 @@ export default function MetaphorsGenerator() {
                                 </div>
                             </div>
 
+                            <DocumentSelector
+                                selectedDocuments={selectedDocuments}
+                                onSelectionChange={setSelectedDocuments}
+                                lang={lang}
+                            />
+
                             <div className="space-y-2">
                                 <Label>{t.uploadFiles}</Label>
                                 <CardDescription>{t.uploadDesc}</CardDescription>
@@ -225,7 +238,7 @@ export default function MetaphorsGenerator() {
 
                             <Button
                                 onClick={handleGenerate}
-                                disabled={loading || (!formData.context && files.length === 0)}
+                                disabled={loading || (!formData.context && files.length === 0 && selectedDocuments.length === 0)}
                                 className="w-full bg-[#002D62] hover:bg-[#001d42]"
                                 size="lg"
                             >

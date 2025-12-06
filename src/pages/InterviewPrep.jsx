@@ -194,8 +194,25 @@ export default function InterviewPrep() {
                                 {result.interviewer_profile && (
                                     <div>
                                         <h3 className="font-semibold text-[#002D62] mb-3">Perfil do Entrevistador</h3>
-                                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
-                                            <p className="text-sm text-[#333F48] leading-relaxed">{result.interviewer_profile}</p>
+                                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-100 space-y-3">
+                                            {result.interviewer_profile.analysis && (
+                                                <div>
+                                                    <p className="text-xs font-semibold text-[#002D62] mb-1">Análise</p>
+                                                    <p className="text-sm text-[#333F48] leading-relaxed">{result.interviewer_profile.analysis}</p>
+                                                </div>
+                                            )}
+                                            {result.interviewer_profile.typical_bias && (
+                                                <div>
+                                                    <p className="text-xs font-semibold text-[#002D62] mb-1">Viés Típico</p>
+                                                    <p className="text-sm text-[#333F48] leading-relaxed">{result.interviewer_profile.typical_bias}</p>
+                                                </div>
+                                            )}
+                                            {result.interviewer_profile.approach_style && (
+                                                <div>
+                                                    <p className="text-xs font-semibold text-[#002D62] mb-1">Estilo de Abordagem</p>
+                                                    <p className="text-sm text-[#333F48] leading-relaxed">{result.interviewer_profile.approach_style}</p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )}

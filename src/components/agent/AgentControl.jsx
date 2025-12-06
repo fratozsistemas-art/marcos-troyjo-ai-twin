@@ -8,11 +8,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Play, Square, Zap, CheckCircle2, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TaskManager from './TaskManager';
+import ProjectManager from './ProjectManager';
+import GanttChart from './GanttChart';
+import AgentMonitor from './AgentMonitor';
 
 export default function AgentControl({ lang = 'pt' }) {
     const { isRunning, currentGoal, steps, error, runAgent, stopAgent, pendingConfirmation, confirmAction } = useAgent();
     const [goalInput, setGoalInput] = useState('');
     const [activeTab, setActiveTab] = useState('direct');
+    const [selectedProject, setSelectedProject] = useState(null);
 
     const translations = {
         pt: {
@@ -67,12 +71,21 @@ export default function AgentControl({ lang = 'pt' }) {
                 </CardHeader>
                 <CardContent className="space-y-4 pt-6">
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                    <TabsList className="grid w-full grid-cols-2">
+                    <TabsList className="grid w-full grid-cols-5">
                         <TabsTrigger value="direct">
-                            {lang === 'pt' ? 'Execução Direta' : 'Direct Execution'}
+                            {lang === 'pt' ? 'Execução' : 'Execution'}
+                        </TabsTrigger>
+                        <TabsTrigger value="projects">
+                            {lang === 'pt' ? 'Projetos' : 'Projects'}
                         </TabsTrigger>
                         <TabsTrigger value="tasks">
-                            {lang === 'pt' ? 'Gerenciar Tarefas' : 'Task Manager'}
+                            {lang === 'pt' ? 'Tarefas' : 'Tasks'}
+                        </TabsTrigger>
+                        <TabsTrigger value="timeline">
+                            {lang === 'pt' ? 'Timeline' : 'Timeline'}
+                        </TabsTrigger>
+                        <TabsTrigger value="monitor">
+                            {lang === 'pt' ? 'Monitor' : 'Monitor'}
                         </TabsTrigger>
                     </TabsList>
                     
@@ -222,8 +235,67 @@ export default function AgentControl({ lang = 'pt' }) {
                 )}
                     </TabsContent>
 
+                    <TabsContent value="projects">
+                        <ProjectManager 
+                            lang={lang} 
+                            onSelectProject={(project) => {
+                                setSelectedProject(project);
+                                setActiveTab('tasks');
+                            }}
+                        />
+                    </TabsContent>
+
                     <TabsContent value="tasks">
-                        <TaskManager lang={lang} onExecuteTask={handleTaskExecution} />
+                        {selectedProject && (
+                            <div className="mb-4 p-3 bg-indigo-50 rounded-lg border border-indigo-200">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <span className="text-xs text-indigo-600 font-medium">
+                                            {lang === 'pt' ? 'Projeto Selecionado:' : 'Selected Project:'}
+                                        </span>
+                                        <h4 className="font-semibold text-indigo-900">{selectedProject.name}</h4>
+                                    </div>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setSelectedProject(null)}
+                                    >
+                                        {lang === 'pt' ? 'Limpar' : 'Clear'}
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                        <TaskManager 
+                            lang={lang} 
+                            onExecuteTask={handleTaskExecution}
+                            selectedProject={selectedProject}
+                        />
+                    </TabsContent>
+
+                    <TabsContent value="timeline">
+                        {selectedProject ? (
+                            <GanttChart projectId={selectedProject.id} lang={lang} />
+                        ) : (
+                            <Card>
+                                <CardContent className="py-8 text-center text-gray-500">
+                                    <p className="text-sm">
+                                        {lang === 'pt' 
+                                            ? 'Selecione um projeto para ver o cronograma' 
+                                            : 'Select a project to view timeline'}
+                                    </p>
+                                    <Button
+                                        className="mt-4"
+                                        onClick={() => setActiveTab('projects')}
+                                    >
+                                        {lang === 'pt' ? 'Ver Projetos' : 'View Projects'}
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </TabsContent>
+
+                    <TabsContent value="monitor">
+                        <AgentMonitor lang={lang} />
                     </TabsContent>
                 </Tabs>
                 </CardContent>

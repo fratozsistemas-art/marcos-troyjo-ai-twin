@@ -304,8 +304,30 @@ export function AgentProvider({ children, navigate }) {
                     const actionResults = [];
                     
                     for (const action of response.data.actions) {
+                        const startTime = Date.now();
                         const result = await executeAction(action, navigate, handleConfirmation);
+                        const executionTime = Date.now() - startTime;
+                        
                         actionResults.push({ action, result });
+                        
+                        // Log learning data
+                        try {
+                            await base44.asServiceRole.entities.AgentLearning.create({
+                                interaction_type: action.name,
+                                element_id: action.args.element_id || action.args.screen,
+                                screen: uiState.screen,
+                                goal_context: goal,
+                                success: result.success,
+                                execution_time_ms: executionTime,
+                                error_message: result.reason,
+                                ui_state_snapshot: { 
+                                    elements_count: uiState.elements?.length,
+                                    screen: uiState.screen 
+                                }
+                            });
+                        } catch (err) {
+                            console.error('Error logging learning data:', err);
+                        }
                         
                         if (!result.success) {
                             console.warn('Failed to execute action:', action, result.reason);

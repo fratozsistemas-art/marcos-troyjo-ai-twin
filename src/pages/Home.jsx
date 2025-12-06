@@ -27,7 +27,7 @@ const translations = {
             "Fellow na Blavatnik School of Government, Oxford",
             "Research Scholar, Columbia University"
         ],
-        quote: "Temos todas as cartas na mão, mas só jogaremos bem se fizermos a lição de casa antes do colapso.",
+        quote: "Competitividade não se declara, se constrói — com educação, infraestrutura e abertura",
         forBoards: "Para Conselhos & Executivos",
         forMedia: "Para Mídia & Analistas"
     },
@@ -52,7 +52,7 @@ const translations = {
             "Fellow at Blavatnik School of Government, Oxford",
             "Research Scholar, Columbia University"
         ],
-        quote: "We have all the cards in hand, but we will only play well if we do our homework before the collapse.",
+        quote: "Competitiveness is not declared, it is built — with education, infrastructure and openness",
         forBoards: "For Boards & Executives",
         forMedia: "For Media & Analysts"
     }

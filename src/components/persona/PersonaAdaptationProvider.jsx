@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { base44 } from '@/api/base44Client';
 import { analyzeUserProfile } from './UserProfileAnalyzer';
 
 const PersonaAdaptationContext = createContext(null);
@@ -31,6 +32,52 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
     });
 
     const [messageHistory, setMessageHistory] = useState([]);
+    const [personaMemory, setPersonaMemory] = useState(null);
+    const [customTraits, setCustomTraits] = useState([]);
+
+    useEffect(() => {
+        loadPersonaMemory();
+        loadCustomTraits();
+    }, []);
+
+    const loadPersonaMemory = async () => {
+        try {
+            const user = await base44.auth.me();
+            const prefs = await base44.entities.PersonaPreferences.filter({ 
+                created_by: user.email 
+            });
+            
+            if (prefs.length > 0 && prefs[0].persona_memory) {
+                const memory = prefs[0].persona_memory;
+                setPersonaMemory(memory);
+                
+                // Apply remembered preferences
+                if (memory.preferred_mode) {
+                    setUserProfile(prev => ({ ...prev, mode: memory.preferred_mode }));
+                }
+                if (memory.preferred_technicality !== undefined) {
+                    setUserProfile(prev => ({ ...prev, technicality: memory.preferred_technicality }));
+                }
+            }
+        } catch (error) {
+            console.error('Error loading persona memory:', error);
+        }
+    };
+
+    const loadCustomTraits = async () => {
+        try {
+            const user = await base44.auth.me();
+            const prefs = await base44.entities.PersonaPreferences.filter({ 
+                created_by: user.email 
+            });
+            
+            if (prefs.length > 0 && prefs[0].custom_traits) {
+                setCustomTraits(prefs[0].custom_traits);
+            }
+        } catch (error) {
+            console.error('Error loading custom traits:', error);
+        }
+    };
 
     const setManualPersona = (personaId) => {
         setUserProfile(prev => ({
@@ -107,6 +154,67 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
         return instructions[mode] || instructions.tecnico;
     };
 
+    const savePersonaMemory = async (mode, technicality) => {
+        try {
+            const user = await base44.auth.me();
+            const prefs = await base44.entities.PersonaPreferences.filter({ 
+                created_by: user.email 
+            });
+            
+            const memoryUpdate = {
+                preferred_mode: mode,
+                preferred_technicality: technicality,
+                last_updated: new Date().toISOString(),
+                adaptation_history: [
+                    ...(personaMemory?.adaptation_history || []).slice(-9),
+                    {
+                        mode,
+                        technicality,
+                        timestamp: new Date().toISOString()
+                    }
+                ]
+            };
+            
+            if (prefs.length > 0) {
+                await base44.entities.PersonaPreferences.update(prefs[0].id, {
+                    persona_memory: memoryUpdate
+                });
+            } else {
+                await base44.entities.PersonaPreferences.create({
+                    persona_memory: memoryUpdate
+                });
+            }
+            
+            setPersonaMemory(memoryUpdate);
+        } catch (error) {
+            console.error('Error saving persona memory:', error);
+        }
+    };
+
+    const suggestPersonaShift = async (messageContext) => {
+        try {
+            const recentMessages = messageHistory.slice(-3).map(m => m.content).join('\n\n');
+            
+            const suggestion = await base44.integrations.Core.InvokeLLM({
+                prompt: `Baseado no contexto da conversa recente, sugira se a persona deve se adaptar. Contexto atual: ${userProfile.mode} mode, ${userProfile.technicality}/10 technicality.\n\nMensagens recentes:\n${recentMessages}\n\nNova mensagem: ${messageContext}\n\nDeve a persona mudar? Se sim, sugira modo e nível técnico ideal.`,
+                response_json_schema: {
+                    type: "object",
+                    properties: {
+                        should_shift: { type: "boolean" },
+                        suggested_mode: { type: "string" },
+                        suggested_technicality: { type: "number" },
+                        reason: { type: "string" }
+                    }
+                }
+            });
+            
+            return suggestion;
+        } catch (error) {
+            console.error('Error suggesting persona shift:', error);
+            return null;
+        }
+    };
+
     const getContextualPrompt = () => {
         const persona = getPersonaInstructions();
         const { level, confidence, interactions, manualMode } = userProfile;
@@ -114,6 +222,11 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
         const modeSource = manualMode 
             ? `MANUAL (selecionado pelo usuário)` 
             : `AUTO (detectado: ${level})`;
+
+        // Build custom traits instruction
+        const customTraitsText = customTraits.length > 0 
+            ? `\nTRAÇOS PERSONALIZADOS DO USUÁRIO:\n${customTraits.map(t => `- ${t.name} (intensidade: ${t.intensity}/10)`).join('\n')}\n`
+            : '';
 
         return `
 ADAPTAÇÃO DINÂMICA DE PERSONA (${modeSource} | Confiança: ${Math.round(confidence)}% | Interações: ${interactions}):
@@ -126,7 +239,7 @@ Instruções contextuais:
 - Tom: ${persona.tone}
 - Estrutura: ${persona.structure}
 - Exemplos: ${persona.examples}
-
+${customTraitsText}
 ${manualMode ? `MODO MANUAL ATIVO: Usuário selecionou explicitamente modo ${manualMode.toUpperCase()}. Mantenha consistência rigorosa com este modo.` : ''}
 ${!manualMode && confidence < 50 ? 'ATENÇÃO: Baixa confiança - mantenha flexibilidade e observe próximas interações.' : ''}
 ${interactions < 3 ? 'INÍCIO DE CONVERSA: Equilibre acessibilidade com sofisticação até confirmar perfil.' : ''}
@@ -139,7 +252,11 @@ ${interactions < 3 ? 'INÍCIO DE CONVERSA: Equilibre acessibilidade com sofistic
         getPersonaInstructions,
         getContextualPrompt,
         setManualPersona,
-        messageHistory
+        messageHistory,
+        savePersonaMemory,
+        suggestPersonaShift,
+        personaMemory,
+        customTraits
     };
 
     return (

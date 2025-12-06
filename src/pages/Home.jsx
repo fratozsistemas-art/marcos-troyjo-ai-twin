@@ -60,11 +60,36 @@ const translations = {
 
 export default function Home() {
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
+    const [currentSlide, setCurrentSlide] = useState(0);
     const t = translations[lang];
+
+    const slides = [
+        {
+            image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/952fe2a2e_MARCOS-TROYJO.jpg",
+            type: "photo"
+        },
+        {
+            type: "narrative",
+            text: lang === 'pt' 
+                ? "Da diplomacia global ao mundo digital"
+                : "From global diplomacy to the digital world"
+        },
+        {
+            image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/67de399b9_Gemini_Generated_Image_r9gja7r9gja7r9gj.png",
+            type: "digital"
+        }
+    ];
 
     useEffect(() => {
         localStorage.setItem('troyjo_lang', lang);
     }, [lang]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % slides.length);
+        }, 4000);
+        return () => clearInterval(interval);
+    }, [slides.length]);
 
     return (
         <div className="min-h-screen bg-[#FAFAFA]">
@@ -141,17 +166,75 @@ export default function Home() {
                             <div className="aspect-square max-w-md mx-auto relative">
                                 <div className="absolute inset-0 bg-gradient-to-br from-[#002D62]/20 to-[#00654A]/20 rounded-3xl transform rotate-6" />
                                 <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-2xl">
-                                    <img 
-                                        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/588dfbd3d_Gemini_Generated_Image_w0hfzlw0hfzlw0hf.png"
-                                        alt="Marcos Prado Troyjo"
-                                        className="w-full h-full object-cover"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#002D62]/90 via-[#002D62]/20 to-transparent" />
-                                    <div className="absolute bottom-8 left-8 right-8">
-                                        <BookOpen className="w-8 h-8 text-[#B8860B] mb-3" />
-                                        <p className="text-white text-lg italic leading-relaxed font-light">
-                                            "{t.quote}"
-                                        </p>
+                                    {slides.map((slide, index) => (
+                                        <motion.div
+                                            key={index}
+                                            initial={{ opacity: 0 }}
+                                            animate={{ 
+                                                opacity: currentSlide === index ? 1 : 0,
+                                                scale: currentSlide === index ? 1 : 1.1
+                                            }}
+                                            transition={{ duration: 0.8 }}
+                                            className="absolute inset-0"
+                                        >
+                                            {slide.type === "narrative" ? (
+                                                <div className="w-full h-full bg-gradient-to-br from-[#002D62] via-[#00654A] to-[#002D62] flex items-center justify-center p-12">
+                                                    <motion.p 
+                                                        initial={{ y: 20, opacity: 0 }}
+                                                        animate={{ 
+                                                            y: currentSlide === index ? 0 : 20,
+                                                            opacity: currentSlide === index ? 1 : 0
+                                                        }}
+                                                        transition={{ delay: 0.3, duration: 0.6 }}
+                                                        className="text-3xl md:text-4xl font-light text-white text-center leading-relaxed"
+                                                    >
+                                                        {slide.text}
+                                                    </motion.p>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <img 
+                                                        src={slide.image}
+                                                        alt="Marcos Prado Troyjo"
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                    {slide.type === "digital" && (
+                                                        <>
+                                                            <div className="absolute inset-0 bg-gradient-to-t from-[#002D62]/90 via-[#002D62]/20 to-transparent" />
+                                                            <motion.div 
+                                                                initial={{ y: 20, opacity: 0 }}
+                                                                animate={{ 
+                                                                    y: currentSlide === index ? 0 : 20,
+                                                                    opacity: currentSlide === index ? 1 : 0
+                                                                }}
+                                                                transition={{ delay: 0.4, duration: 0.6 }}
+                                                                className="absolute bottom-8 left-8 right-8"
+                                                            >
+                                                                <BookOpen className="w-8 h-8 text-[#B8860B] mb-3" />
+                                                                <p className="text-white text-lg italic leading-relaxed font-light">
+                                                                    "{t.quote}"
+                                                                </p>
+                                                            </motion.div>
+                                                        </>
+                                                    )}
+                                                </>
+                                            )}
+                                        </motion.div>
+                                    ))}
+                                    
+                                    {/* Slide indicators */}
+                                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+                                        {slides.map((_, index) => (
+                                            <button
+                                                key={index}
+                                                onClick={() => setCurrentSlide(index)}
+                                                className={`w-2 h-2 rounded-full transition-all ${
+                                                    currentSlide === index 
+                                                        ? 'bg-white w-8' 
+                                                        : 'bg-white/50'
+                                                }`}
+                                            />
+                                        ))}
                                     </div>
                                 </div>
                             </div>
@@ -337,7 +420,7 @@ export default function Home() {
             {/* Footer */}
             <footer className="py-8 px-6 border-t border-gray-100">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-[#333F48]/70">
-                    <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-center md:text-left w-full md:w-auto">
+                    <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
                         <p>© 2025 Marcos Prado Troyjo Digital Twin</p>
                         <span className="hidden md:inline text-[#333F48]/40">•</span>
                         <p className="font-medium text-[#002D62]">Desenvolvido por Grupo Fratoz. Powered by CAIO.Vision.</p>

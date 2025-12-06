@@ -41,15 +41,23 @@ function getUiSnapshot() {
     return { screen, elements };
 }
 
-function executeAction(action, navigate) {
-    const { name, args } = action;
+async function executeAction(action, navigate, onConfirmation) {
+    const { name, args, requires_confirmation } = action;
+
+    if (requires_confirmation) {
+        const confirmed = await onConfirmation(action);
+        if (!confirmed) {
+            return { success: false, reason: 'User denied confirmation' };
+        }
+    }
 
     if (name === 'click_element') {
         const el = document.querySelector(`[data-ai-id="${args.element_id}"]`);
         if (el) {
             el.click();
-            return true;
+            return { success: true, reason: args.reason };
         }
+        return { success: false, reason: 'Element not found' };
     }
 
     if (name === 'set_value') {
@@ -58,17 +66,18 @@ function executeAction(action, navigate) {
             el.value = args.value;
             el.dispatchEvent(new Event('input', { bubbles: true }));
             el.dispatchEvent(new Event('change', { bubbles: true }));
-            return true;
+            return { success: true, reason: args.reason };
         }
+        return { success: false, reason: 'Input element not found' };
     }
 
     if (name === 'navigate_to') {
         const url = createPageUrl(args.screen);
         navigate(url);
-        return true;
+        return { success: true, reason: args.reason };
     }
 
-    return false;
+    return { success: false, reason: 'Unknown action' };
 }
 
 export function AgentProvider({ children, navigate }) {
@@ -76,8 +85,25 @@ export function AgentProvider({ children, navigate }) {
     const [currentGoal, setCurrentGoal] = useState(null);
     const [steps, setSteps] = useState([]);
     const [error, setError] = useState(null);
+    const [pendingConfirmation, setPendingConfirmation] = useState(null);
 
-    const runAgent = useCallback(async (goal, maxSteps = 10) => {
+    const handleConfirmation = useCallback((action) => {
+        return new Promise((resolve) => {
+            setPendingConfirmation({
+                action,
+                resolve,
+            });
+        });
+    }, []);
+
+    const confirmAction = useCallback((confirmed) => {
+        if (pendingConfirmation) {
+            pendingConfirmation.resolve(confirmed);
+            setPendingConfirmation(null);
+        }
+    }, [pendingConfirmation]);
+
+    const runAgent = useCallback(async (goal, maxSteps = 15) => {
         setIsRunning(true);
         setCurrentGoal(goal);
         setSteps([]);
@@ -96,6 +122,7 @@ export function AgentProvider({ children, navigate }) {
                     goal,
                     ui_state: uiState,
                     conversation_history: conversationHistory,
+                    step_count: stepCount,
                 });
 
                 const stepData = {
@@ -112,18 +139,41 @@ export function AgentProvider({ children, navigate }) {
                 }
 
                 if (response.data.type === 'actions') {
+                    const actionResults = [];
+                    
                     for (const action of response.data.actions) {
-                        const success = executeAction(action, navigate);
-                        if (!success) {
-                            console.warn('Failed to execute action:', action);
+                        const result = await executeAction(action, navigate, handleConfirmation);
+                        actionResults.push({ action, result });
+                        
+                        if (!result.success) {
+                            console.warn('Failed to execute action:', action, result.reason);
                         }
-                        await new Promise(resolve => setTimeout(resolve, 500));
+                        
+                        await new Promise(resolve => setTimeout(resolve, 800));
                     }
 
                     conversationHistory.push({
                         role: 'assistant',
                         content: response.data.reasoning || 'Executed actions',
                     });
+
+                    setSteps(prev => {
+                        const updated = [...prev];
+                        updated[updated.length - 1] = {
+                            ...updated[updated.length - 1],
+                            actionResults,
+                        };
+                        return updated;
+                    });
+                }
+
+                if (response.data.type === 'blocked') {
+                    setError(`Actions blocked: ${response.data.explanation}`);
+                    break;
+                }
+
+                if (response.data.type === 'max_steps_reached') {
+                    break;
                 }
 
                 if (response.data.type === 'error') {
@@ -156,6 +206,8 @@ export function AgentProvider({ children, navigate }) {
             error,
             runAgent,
             stopAgent,
+            pendingConfirmation,
+            confirmAction,
         }}>
             {children}
         </AgentContext.Provider>

@@ -6,18 +6,30 @@ const xai = new OpenAI({
     baseURL: "https://api.x.ai/v1",
 });
 
+const ACTION_WHITELIST = {
+    'Dashboard': ['click_element', 'navigate_to', 'set_value'],
+    'Consultation': ['click_element', 'navigate_to', 'set_value'],
+    'Home': ['click_element', 'navigate_to'],
+};
+
+const CRITICAL_ACTIONS = [
+    'btn_delete_conversation',
+    'btn_send_message',
+];
+
 const tools = [
     {
         type: 'function',
         function: {
             name: 'click_element',
-            description: 'Click on a UI element identified by element_id',
+            description: 'Click on a UI element identified by element_id. Returns if action requires confirmation.',
             parameters: {
                 type: 'object',
                 properties: {
                     element_id: { type: 'string', description: 'The data-ai-id of the element to click' },
+                    reason: { type: 'string', description: 'Explain why you are clicking this element' },
                 },
-                required: ['element_id'],
+                required: ['element_id', 'reason'],
             },
         },
     },
@@ -31,8 +43,9 @@ const tools = [
                 properties: {
                     element_id: { type: 'string', description: 'The data-ai-id of the input element' },
                     value: { type: 'string', description: 'The value to set' },
+                    reason: { type: 'string', description: 'Explain what you are trying to accomplish' },
                 },
-                required: ['element_id', 'value'],
+                required: ['element_id', 'value', 'reason'],
             },
         },
     },
@@ -45,8 +58,9 @@ const tools = [
                 type: 'object',
                 properties: {
                     screen: { type: 'string', description: 'The screen name to navigate to (e.g., Dashboard, Consultation, Home)' },
+                    reason: { type: 'string', description: 'Explain why navigating to this screen' },
                 },
-                required: ['screen'],
+                required: ['screen', 'reason'],
             },
         },
     },
@@ -61,12 +75,32 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { goal, ui_state, conversation_history } = await req.json();
+        const { goal, ui_state, conversation_history, step_count = 0 } = await req.json();
 
         if (!goal || !ui_state) {
             return Response.json({ 
                 error: 'Missing required fields: goal and ui_state' 
             }, { status: 400 });
+        }
+
+        const MAX_STEPS = 15;
+        if (step_count >= MAX_STEPS) {
+            return Response.json({
+                type: 'max_steps_reached',
+                explanation: `Maximum steps (${MAX_STEPS}) reached. Goal may require manual intervention.`,
+                completed: true,
+            });
+        }
+
+        const currentScreen = ui_state.screen || 'unknown';
+        const allowedActions = ACTION_WHITELIST[currentScreen] || [];
+        
+        if (allowedActions.length === 0) {
+            return Response.json({
+                type: 'no_action',
+                explanation: `No actions allowed on screen: ${currentScreen}`,
+                completed: true,
+            });
         }
 
         const systemPrompt = `You are an AI agent that operates the Marcos Troyjo Digital Twin application UI.
@@ -120,18 +154,38 @@ ${JSON.stringify(ui_state.elements, null, 2)}`;
         const actions = message.tool_calls.map((toolCall) => {
             const { name, arguments: argsStr } = toolCall.function;
             const args = JSON.parse(argsStr || '{}');
+            
+            const requiresConfirmation = CRITICAL_ACTIONS.some(criticalId => 
+                args.element_id?.includes(criticalId)
+            );
+            
+            const isAllowed = allowedActions.includes(name);
+            
             return { 
                 name, 
                 args,
-                tool_call_id: toolCall.id 
+                tool_call_id: toolCall.id,
+                requires_confirmation: requiresConfirmation,
+                is_allowed: isAllowed,
             };
         });
+
+        const blockedActions = actions.filter(a => !a.is_allowed);
+        if (blockedActions.length > 0) {
+            return Response.json({
+                type: 'blocked',
+                explanation: `Actions blocked on ${currentScreen}: ${blockedActions.map(a => a.name).join(', ')}`,
+                blocked_actions: blockedActions,
+                completed: false,
+            });
+        }
 
         return Response.json({
             type: 'actions',
             actions,
             reasoning: message.content,
             completed: false,
+            step_count: step_count + 1,
         });
 
     } catch (error) {

@@ -7,9 +7,9 @@ const xai = new OpenAI({
 });
 
 const ACTION_WHITELIST = {
-    'Dashboard': ['click_element', 'navigate_to', 'set_value'],
-    'Consultation': ['click_element', 'navigate_to', 'set_value'],
-    'Home': ['click_element', 'navigate_to'],
+    'Dashboard': ['click_element', 'navigate_to', 'set_value', 'get_element_content', 'read_ui_state'],
+    'Consultation': ['click_element', 'navigate_to', 'set_value', 'get_element_content', 'read_ui_state'],
+    'Home': ['click_element', 'navigate_to', 'get_element_content', 'read_ui_state'],
 };
 
 const CRITICAL_ACTIONS = [
@@ -21,13 +21,52 @@ const tools = [
     {
         type: 'function',
         function: {
+            name: 'get_element_content',
+            description: 'Read and analyze the content of a UI element (text, value, state). Essential for understanding current UI state before taking actions.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    element_id: { type: 'string', description: 'The data-ai-id of the element to read' },
+                    reason: { type: 'string', description: 'Explain what information you need from this element' },
+                },
+                required: ['element_id', 'reason'],
+            },
+        },
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'read_ui_state',
+            description: 'Get a comprehensive analysis of all visible UI elements and their current states. Use this to understand the full context.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    focus_area: { 
+                        type: 'string', 
+                        description: 'Optional: specific area to focus on (e.g., "conversation list", "input field", "buttons")',
+                        enum: ['all', 'interactive', 'content', 'navigation']
+                    },
+                    reason: { type: 'string', description: 'Explain what you are trying to understand' },
+                },
+                required: ['reason'],
+            },
+        },
+    },
+    {
+        type: 'function',
+        function: {
             name: 'click_element',
-            description: 'Click on a UI element identified by element_id. Returns if action requires confirmation.',
+            description: 'Click on a UI element. Returns the new state after click. Use get_element_content first if you need to verify element state.',
             parameters: {
                 type: 'object',
                 properties: {
                     element_id: { type: 'string', description: 'The data-ai-id of the element to click' },
                     reason: { type: 'string', description: 'Explain why you are clicking this element' },
+                    expect_state_change: { 
+                        type: 'boolean', 
+                        description: 'Whether you expect the UI state to change after this action',
+                        default: true
+                    },
                 },
                 required: ['element_id', 'reason'],
             },
@@ -37,13 +76,18 @@ const tools = [
         type: 'function',
         function: {
             name: 'set_value',
-            description: 'Set the value of a text input or textarea field',
+            description: 'Set the value of an input field. Returns the new value and validation state. Use get_element_content first to check current value.',
             parameters: {
                 type: 'object',
                 properties: {
                     element_id: { type: 'string', description: 'The data-ai-id of the input element' },
                     value: { type: 'string', description: 'The value to set' },
                     reason: { type: 'string', description: 'Explain what you are trying to accomplish' },
+                    verify_after: {
+                        type: 'boolean',
+                        description: 'Whether to verify the value was set correctly',
+                        default: true
+                    },
                 },
                 required: ['element_id', 'value', 'reason'],
             },
@@ -53,7 +97,7 @@ const tools = [
         type: 'function',
         function: {
             name: 'navigate_to',
-            description: 'Navigate to a different screen in the application',
+            description: 'Navigate to a different screen in the application. Returns the new screen state.',
             parameters: {
                 type: 'object',
                 properties: {
@@ -103,22 +147,37 @@ Deno.serve(async (req) => {
             });
         }
 
-        const systemPrompt = `You are an AI agent that operates the Marcos Troyjo Digital Twin application UI.
+        const systemPrompt = `You are an AI agent following the AG-UI (Agent-User Interaction) protocol to operate the Marcos Troyjo Digital Twin application UI.
 
-Your objective: ${goal}
+OBJECTIVE: ${goal}
 
-Current UI state:
+CURRENT UI STATE:
 - Screen: ${ui_state.screen || 'unknown'}
 - Available elements: ${ui_state.elements?.length || 0}
+- Previous context: ${conversation_history?.length || 0} steps taken
 
-Rules:
-1. You can ONLY interact with elements that have a data-ai-id in the UI state
-2. Use the tools available: click_element, set_value, navigate_to
-3. Be deterministic: execute 1-3 actions per step
-4. If you cannot complete the goal with available elements, explain why
-5. Focus on efficiency - don't take unnecessary actions
+AG-UI PROTOCOL RULES:
+1. OBSERVE before acting: Use get_element_content or read_ui_state to understand current state
+2. REASON about the UI: Analyze element states, content, and context before deciding actions
+3. ACT with intention: Each action should have a clear purpose toward the goal
+4. VERIFY results: Expect state changes and analyze outcomes
+5. ITERATE intelligently: Use previous step results to inform next actions
 
-UI Elements:
+AVAILABLE TOOLS (in order of recommendation):
+- get_element_content: Read specific element's content/state (use FIRST for analysis)
+- read_ui_state: Get comprehensive UI overview (use when you need context)
+- click_element: Interact with buttons/links (use after verification)
+- set_value: Input text into fields (verify current value first)
+- navigate_to: Change screens (use when goal requires different view)
+
+BEST PRACTICES:
+- Start with observation tools (get_element_content/read_ui_state)
+- Execute 1-3 actions per step (mix of read and write actions)
+- Always provide clear reasoning for each action
+- If blocked or uncertain, use read tools to gather more info
+- Focus on goal completion efficiency
+
+UI ELEMENTS AVAILABLE:
 ${JSON.stringify(ui_state.elements, null, 2)}`;
 
         const messages = [

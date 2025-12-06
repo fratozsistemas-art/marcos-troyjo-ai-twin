@@ -156,10 +156,34 @@ export default function AgentControl({ lang = 'pt' }) {
                                                             <CheckCircle2 className={`w-4 h-4 mt-0.5 flex-shrink-0 ${result?.success ? 'text-green-600' : 'text-red-600'}`} />
                                                             <div className="flex-1 min-w-0">
                                                                 <code className="text-xs font-mono text-[#002D62] break-all">
-                                                                    {action.name}({action.args.element_id || action.args.screen})
+                                                                    {action.name}({action.args.element_id || action.args.screen || action.args.focus_area})
                                                                 </code>
                                                                 {action.args.reason && (
-                                                                    <p className="text-xs text-gray-600 mt-1">{action.args.reason}</p>
+                                                                    <p className="text-xs text-gray-600 mt-1">
+                                                                        <strong>Reason:</strong> {action.args.reason}
+                                                                    </p>
+                                                                )}
+                                                                {result?.success && result?.state && (
+                                                                    <div className="text-xs text-green-700 mt-1 p-2 bg-green-50 rounded border border-green-200">
+                                                                        {result.type === 'read' ? (
+                                                                            <>
+                                                                                <strong>Read:</strong>
+                                                                                {result.state.text && <p className="truncate">Text: {result.state.text}</p>}
+                                                                                {result.state.value !== undefined && <p>Value: {result.state.value}</p>}
+                                                                                {result.state.element_count !== undefined && <p>Found: {result.state.element_count} elements</p>}
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <strong>Result:</strong>
+                                                                                {result.state.state_changed !== undefined && (
+                                                                                    <p>State changed: {result.state.state_changed ? 'Yes' : 'No'}</p>
+                                                                                )}
+                                                                                {result.state.verified !== undefined && (
+                                                                                    <p>Verified: {result.state.verified ? '✓' : '✗'}</p>
+                                                                                )}
+                                                                            </>
+                                                                        )}
+                                                                    </div>
                                                                 )}
                                                                 {result && !result.success && (
                                                                     <p className="text-xs text-red-600 mt-1">Failed: {result.reason}</p>

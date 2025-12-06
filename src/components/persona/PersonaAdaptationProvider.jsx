@@ -26,10 +26,19 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
         mode: 'tecnico',
         confidence: 0,
         technicality: 50,
-        interactions: 0
+        interactions: 0,
+        manualMode: null // null = auto, or specific persona
     });
 
     const [messageHistory, setMessageHistory] = useState([]);
+
+    const setManualPersona = (personaId) => {
+        setUserProfile(prev => ({
+            ...prev,
+            manualMode: personaId,
+            mode: personaId || prev.mode // If null, keep auto-detected mode
+        }));
+    };
 
     const analyzeInteraction = (message) => {
         if (!message || message.role !== 'user') return;
@@ -39,14 +48,19 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
 
         const analysis = analyzeUserProfile(newHistory);
         
+        // If manual mode is set, keep it; otherwise use auto-detection
+        const detectedMode = MODE_MAP[analysis.level] || 'tecnico';
+        
         const newProfile = {
             level: analysis.level,
-            mode: MODE_MAP[analysis.level] || 'tecnico',
+            mode: userProfile.manualMode || detectedMode, // Manual overrides auto
             confidence: analysis.confidence,
             technicality: analysis.technicality,
             interactions: userProfile.interactions + 1,
             keywords: analysis.keywords,
-            complexity: analysis.complexity
+            complexity: analysis.complexity,
+            manualMode: userProfile.manualMode,
+            autoDetectedMode: detectedMode // Store what auto-detection thinks
         };
 
         setUserProfile(newProfile);
@@ -95,10 +109,14 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
 
     const getContextualPrompt = () => {
         const persona = getPersonaInstructions();
-        const { level, confidence, interactions } = userProfile;
+        const { level, confidence, interactions, manualMode } = userProfile;
+
+        const modeSource = manualMode 
+            ? `MANUAL (selecionado pelo usuário)` 
+            : `AUTO (detectado: ${level})`;
 
         return `
-ADAPTAÇÃO DINÂMICA DE PERSONA (Confiança: ${Math.round(confidence)}% | Interações: ${interactions}):
+ADAPTAÇÃO DINÂMICA DE PERSONA (${modeSource} | Confiança: ${Math.round(confidence)}% | Interações: ${interactions}):
 
 Perfil detectado: ${level.toUpperCase()}
 Modo ativo: ${userProfile.mode.toUpperCase()}
@@ -109,7 +127,8 @@ Instruções contextuais:
 - Estrutura: ${persona.structure}
 - Exemplos: ${persona.examples}
 
-${confidence < 50 ? 'ATENÇÃO: Baixa confiança - mantenha flexibilidade e observe próximas interações.' : ''}
+${manualMode ? `MODO MANUAL ATIVO: Usuário selecionou explicitamente modo ${manualMode.toUpperCase()}. Mantenha consistência rigorosa com este modo.` : ''}
+${!manualMode && confidence < 50 ? 'ATENÇÃO: Baixa confiança - mantenha flexibilidade e observe próximas interações.' : ''}
 ${interactions < 3 ? 'INÍCIO DE CONVERSA: Equilibre acessibilidade com sofisticação até confirmar perfil.' : ''}
         `.trim();
     };
@@ -119,6 +138,7 @@ ${interactions < 3 ? 'INÍCIO DE CONVERSA: Equilibre acessibilidade com sofistic
         analyzeInteraction,
         getPersonaInstructions,
         getContextualPrompt,
+        setManualPersona,
         messageHistory
     };
 

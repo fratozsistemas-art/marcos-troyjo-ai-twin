@@ -52,12 +52,17 @@ export default function PersonaIndicator({ lang = 'pt' }) {
     }
 
     return (
-        <Card className="border-[#002D62]/20 bg-white/80 backdrop-blur-sm">
+        <Card className="border-[#002D62]/20 bg-white/80 backdrop-blur-sm hover:border-[#002D62]/40 transition-all cursor-pointer">
             <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
                         <ModeIcon className="w-4 h-4 text-[#002D62]" />
                         <span className="text-sm font-semibold text-[#002D62]">{t.title}</span>
+                        {userProfile.manualMode && (
+                            <Badge variant="outline" className="text-xs">
+                                {lang === 'pt' ? 'Manual' : 'Manual'}
+                            </Badge>
+                        )}
                     </div>
                     <Badge className={levelColors[userProfile.level]}>
                         {userProfile.level}

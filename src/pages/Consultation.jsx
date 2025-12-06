@@ -11,6 +11,7 @@ import TopicCards from '@/components/chat/TopicCards';
 import ConversationSidebar from '@/components/consultation/ConversationSidebar';
 import { PersonaAdaptationProvider, usePersonaAdaptation } from '@/components/persona/PersonaAdaptationProvider';
 import PersonaIndicator from '@/components/persona/PersonaIndicator';
+import PersonaSelector from '@/components/persona/PersonaSelector';
 
 const translations = {
     pt: {
@@ -49,6 +50,7 @@ function ConsultationInner() {
     const [isLoading, setIsLoading] = useState(false);
     const [isInitializing, setIsInitializing] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [personaSelectorOpen, setPersonaSelectorOpen] = useState(false);
     const messagesEndRef = useRef(null);
     const textareaRef = useRef(null);
     const t = translations[lang];
@@ -352,10 +354,12 @@ function ConsultationInner() {
             {/* Chat Area */}
             <main className="flex-1 overflow-auto bg-gradient-to-b from-gray-50 to-white">
                 <div className="max-w-4xl mx-auto px-4 py-6">
-                    {/* Persona Indicator */}
+                    {/* Persona Indicator with Selector */}
                     {messages.length > 0 && (
                         <div className="mb-4">
-                            <PersonaIndicator lang={lang} />
+                            <div onClick={() => setPersonaSelectorOpen(true)} className="cursor-pointer">
+                                <PersonaIndicator lang={lang} />
+                            </div>
                         </div>
                     )}
                     {messages.length === 0 ? (
@@ -454,12 +458,19 @@ function ConsultationInner() {
                     </div>
                 </div>
                 </footer>
-                </div>
-            </div>
-        );
-}
 
-export default function Consultation() {
+                {/* Persona Selector Modal */}
+                <PersonaSelector 
+                    lang={lang}
+                    open={personaSelectorOpen}
+                    onOpenChange={setPersonaSelectorOpen}
+                />
+                </div>
+                </div>
+                );
+                }
+
+                export default function Consultation() {
     const [conversation, setConversation] = useState(null);
 
     useEffect(() => {

@@ -3,8 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { AgentProvider } from '@/components/agent/AgentProvider';
-import AgentControl from '@/components/agent/AgentControl';
+
 import { 
     ArrowLeft, Globe, BookOpen, Award, MessageSquare, 
     Trash2, Eye, Plus, Calendar, Loader2, Database, Info
@@ -143,7 +142,6 @@ const translations = {
 };
 
 export default function Dashboard() {
-    const navigate = useNavigate();
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
     const [conversations, setConversations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -190,17 +188,7 @@ export default function Dashboard() {
     };
 
     return (
-        <AgentProvider navigate={navigate}>
-            <div className="min-h-screen bg-[#FAFAFA] flex" data-ai-screen="Dashboard">
-                {/* Agent Sidebar */}
-                <aside className="hidden xl:block w-80 border-r border-gray-200 bg-white overflow-y-auto">
-                    <div className="sticky top-0 p-4">
-                        <AgentControl lang={lang} />
-                    </div>
-                </aside>
-
-                {/* Main Content */}
-                <div className="flex-1 min-w-0">
+        <div className="min-h-screen bg-[#FAFAFA]" data-ai-screen="Dashboard">
                 {/* Header */}
                 <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
@@ -454,7 +442,5 @@ export default function Dashboard() {
                 </motion.div>
                 </main>
                 </div>
-                </div>
-                </AgentProvider>
                 );
                 }

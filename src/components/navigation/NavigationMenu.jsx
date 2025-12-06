@@ -9,7 +9,9 @@ import {
     FileText, 
     MessageCircle, 
     FileCheck,
-    History
+    History,
+    Bot,
+    FolderOpen
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -21,6 +23,8 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
             home: 'Início',
             dashboard: 'Painel',
             consultation: 'Consulta',
+            agentUI: 'Agente UI',
+            assets: 'Assets',
             metaphors: 'Metáforas',
             interview: 'Entrevista',
             article: 'Artigo',
@@ -31,6 +35,8 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
             home: 'Home',
             dashboard: 'Dashboard',
             consultation: 'Consultation',
+            agentUI: 'UI Agent',
+            assets: 'Assets',
             metaphors: 'Metaphors',
             interview: 'Interview',
             article: 'Article',
@@ -45,6 +51,8 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
         { label: t.home, path: 'Home', icon: Home },
         { label: t.dashboard, path: 'Dashboard', icon: LayoutDashboard },
         { label: t.consultation, path: 'Consultation', icon: MessageSquare },
+        { label: t.agentUI, path: 'AgentUI', icon: Bot },
+        { label: t.assets, path: 'Assets', icon: FolderOpen },
         { label: t.metaphors, path: 'MetaphorsGenerator', icon: Sparkles },
         { label: t.interview, path: 'InterviewPrep', icon: MessageCircle },
         { label: t.article, path: 'ArticleGenerator', icon: FileText },

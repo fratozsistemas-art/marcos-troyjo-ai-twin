@@ -20,6 +20,7 @@ import ProfileSettings from '@/components/profile/ProfileSettings';
 import TopicTracker from '@/components/profile/TopicTracker';
 import DocumentManager from '@/components/documents/DocumentManager';
 import DocumentChat from '@/components/chat/DocumentChat';
+import ProactiveSuggestions from '@/components/suggestions/ProactiveSuggestions';
 
 const translations = {
     pt: {
@@ -238,6 +239,11 @@ export default function Dashboard() {
                         <DocumentChat lang={lang} />
                     </motion.div>
                 </div>
+
+                {/* Proactive Suggestions Row */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+                    <ProactiveSuggestions lang={lang} />
+                </motion.div>
 
                 {/* Third Row - Topics & Knowledge */}
                 <div className="grid lg:grid-cols-3 gap-6">

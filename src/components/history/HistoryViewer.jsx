@@ -15,7 +15,9 @@ import {
     Eye,
     Search,
     Loader2,
-    RotateCcw
+    RotateCcw,
+    FileDown,
+    BarChart3
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -32,6 +34,9 @@ export default function HistoryViewer({ lang = 'pt', onReuse }) {
     const [search, setSearch] = useState('');
     const [selectedItem, setSelectedItem] = useState(null);
     const [filterType, setFilterType] = useState('all');
+    const [summaries, setSummaries] = useState({});
+    const [summarizing, setSummarizing] = useState({});
+    const [visualizing, setVisualizing] = useState({});
 
     const translations = {
         pt: {
@@ -44,6 +49,8 @@ export default function HistoryViewer({ lang = 'pt', onReuse }) {
             delete: 'Excluir',
             view: 'Visualizar',
             reuse: 'Reutilizar',
+            summarize: 'Resumir',
+            visualize: 'Visualizar',
             noHistory: 'Nenhum histórico encontrado',
             inputs: 'Entradas',
             outputs: 'Saídas',
@@ -65,6 +72,8 @@ export default function HistoryViewer({ lang = 'pt', onReuse }) {
             delete: 'Delete',
             view: 'View',
             reuse: 'Reuse',
+            summarize: 'Summarize',
+            visualize: 'Visualize',
             noHistory: 'No history found',
             inputs: 'Inputs',
             outputs: 'Outputs',
@@ -115,6 +124,45 @@ export default function HistoryViewer({ lang = 'pt', onReuse }) {
             loadHistory();
         } catch (error) {
             console.error('Error deleting item:', error);
+        }
+    };
+
+    const generateSummary = async (item) => {
+        setSummarizing(prev => ({ ...prev, [item.id]: true }));
+        try {
+            const response = await base44.functions.invoke('summarizeContent', {
+                content: {
+                    inputs: item.inputs,
+                    outputs: item.outputs
+                },
+                type: 'interaction',
+                max_length: 'medium'
+            });
+            setSummaries(prev => ({ ...prev, [item.id]: response.data.summary }));
+        } catch (error) {
+            console.error('Error generating summary:', error);
+        } finally {
+            setSummarizing(prev => ({ ...prev, [item.id]: false }));
+        }
+    };
+
+    const generateVisualization = async (item) => {
+        setVisualizing(prev => ({ ...prev, [item.id]: true }));
+        try {
+            const response = await base44.functions.invoke('generateDataVisualization', {
+                data_context: JSON.stringify({ inputs: item.inputs, outputs: item.outputs }),
+                visualization_type: 'bar',
+                title: item.title
+            });
+            // Store visualization data
+            setSummaries(prev => ({ 
+                ...prev, 
+                [`viz_${item.id}`]: response.data 
+            }));
+        } catch (error) {
+            console.error('Error generating visualization:', error);
+        } finally {
+            setVisualizing(prev => ({ ...prev, [item.id]: false }));
         }
     };
 
@@ -232,6 +280,30 @@ export default function HistoryViewer({ lang = 'pt', onReuse }) {
                                                     >
                                                         <Eye className="w-4 h-4" />
                                                     </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => generateSummary(item)}
+                                                        disabled={summarizing[item.id]}
+                                                    >
+                                                        {summarizing[item.id] ? (
+                                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                                        ) : (
+                                                            <FileDown className="w-4 h-4" />
+                                                        )}
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => generateVisualization(item)}
+                                                        disabled={visualizing[item.id]}
+                                                    >
+                                                        {visualizing[item.id] ? (
+                                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                                        ) : (
+                                                            <BarChart3 className="w-4 h-4" />
+                                                        )}
+                                                    </Button>
                                                     {onReuse && (
                                                         <Button
                                                             variant="ghost"
@@ -252,6 +324,24 @@ export default function HistoryViewer({ lang = 'pt', onReuse }) {
                                                 </div>
                                             </div>
                                         </CardHeader>
+                                        {summaries[item.id] && (
+                                            <CardContent>
+                                                <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
+                                                    <p className="text-sm text-[#333F48]">{summaries[item.id]}</p>
+                                                </div>
+                                            </CardContent>
+                                        )}
+                                        {summaries[`viz_${item.id}`] && (
+                                            <CardContent>
+                                                <div className="p-3 rounded-lg bg-green-50 border border-green-200">
+                                                    <h5 className="font-semibold text-sm mb-2">{summaries[`viz_${item.id}`].title}</h5>
+                                                    <p className="text-xs text-gray-600 mb-2">{summaries[`viz_${item.id}`].insights}</p>
+                                                    <div className="text-xs">
+                                                        <strong>Data points:</strong> {summaries[`viz_${item.id}`].chart_data?.length || 0}
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        )}
                                     </Card>
                                 </motion.div>
                             );

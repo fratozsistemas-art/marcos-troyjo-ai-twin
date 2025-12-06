@@ -65,7 +65,7 @@ export default function Home() {
 
     const slides = [
         {
-            image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/63714d95c_Edit_the_image_to_enhance_gold_and_cyan_tones_thro-1765055808709.png",
+            image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/8c955389f_Replace_the_transparent_checkered_background_with_-1765063055494.png",
             type: "photo",
             quote: lang === 'pt' 
                 ? "Temos todas as cartas na mão, mas só jogaremos bem se fizermos a lição de casa antes do colapso."

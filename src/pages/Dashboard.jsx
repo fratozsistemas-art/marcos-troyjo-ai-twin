@@ -191,7 +191,16 @@ export default function Dashboard() {
 
     return (
         <AgentProvider navigate={navigate}>
-            <div className="min-h-screen bg-[#FAFAFA]" data-ai-screen="Dashboard">
+            <div className="min-h-screen bg-[#FAFAFA] flex" data-ai-screen="Dashboard">
+                {/* Agent Sidebar */}
+                <aside className="hidden xl:block w-80 border-r border-gray-200 bg-white overflow-y-auto">
+                    <div className="sticky top-0 p-4">
+                        <AgentControl lang={lang} />
+                    </div>
+                </aside>
+
+                {/* Main Content */}
+                <div className="flex-1 min-w-0">
                 {/* Header */}
                 <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
@@ -221,15 +230,10 @@ export default function Dashboard() {
             </header>
 
             <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 space-y-8">
-                {/* First Row - Main Features */}
-                <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="h-full">
-                        <AgentControl lang={lang} />
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="h-full">
-                        <ProfileSettings lang={lang} />
-                    </motion.div>
-                </div>
+                {/* First Row - Profile Settings Full Width */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                    <ProfileSettings lang={lang} />
+                </motion.div>
 
                 {/* Second Row - Documents & Chat */}
                 <div className="grid lg:grid-cols-2 gap-6">
@@ -448,8 +452,9 @@ export default function Dashboard() {
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }}>
                     <PublicationsSection lang={lang} />
                 </motion.div>
-            </main>
-            </div>
-        </AgentProvider>
-    );
-}
+                </main>
+                </div>
+                </div>
+                </AgentProvider>
+                );
+                }

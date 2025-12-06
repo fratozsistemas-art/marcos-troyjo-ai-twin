@@ -3,9 +3,10 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, FileText, Loader2, TrendingUp, Lightbulb } from 'lucide-react';
+import { Sparkles, FileText, Loader2, TrendingUp, Lightbulb, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { generateProactiveSuggestion } from '@/components/intelligence/TopicTracker';
 
 export default function ProactiveSuggestions({ lang = 'pt' }) {
     const [suggestions, setSuggestions] = useState(null);
@@ -86,7 +87,42 @@ export default function ProactiveSuggestions({ lang = 'pt' }) {
     if (!suggestions) return null;
 
     return (
-        <Card>
+        <>
+            {/* Proactive Suggestion Banner */}
+            {proactiveSuggestion && !dismissed && (
+                <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+                    <CardContent className="pt-4">
+                        <div className="flex items-start justify-between">
+                            <div className="flex items-start gap-3 flex-1">
+                                <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                                    <Lightbulb className="w-5 h-5 text-white" />
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="font-semibold text-[#002D62] mb-1">
+                                        {lang === 'pt' ? '💡 Sugestão Inteligente' : '💡 Smart Suggestion'}
+                                    </h4>
+                                    <p className="text-sm text-gray-700 mb-3">{proactiveSuggestion}</p>
+                                    <Link to={createPageUrl('Consultation')}>
+                                        <Button size="sm" className="bg-[#002D62]">
+                                            {lang === 'pt' ? 'Explorar agora' : 'Explore now'}
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setDismissed(true)}
+                                className="ml-2"
+                            >
+                                <X className="w-4 h-4" />
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            <Card>
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div>
@@ -170,5 +206,6 @@ export default function ProactiveSuggestions({ lang = 'pt' }) {
                 )}
             </CardContent>
         </Card>
+        </>
     );
 }

@@ -21,6 +21,7 @@ import TopicTracker from '@/components/profile/TopicTracker';
 import DocumentManager from '@/components/documents/DocumentManager';
 import DocumentChat from '@/components/chat/DocumentChat';
 import ProactiveSuggestions from '@/components/suggestions/ProactiveSuggestions';
+import PublicationsSection from '@/components/dashboard/PublicationsSection';
 
 const translations = {
     pt: {
@@ -367,88 +368,86 @@ export default function Dashboard() {
                     </motion.div>
                 </div>
 
-                {/* Bottom Section - Info Cards */}
-                <div className="grid lg:grid-cols-4 gap-6">
+                {/* Bottom Section - Reorganized Grid */}
+                <div className="grid lg:grid-cols-2 gap-6">
+                    {/* Books & Awards Combined */}
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
-                        <Card>
+                        <Card className="h-full">
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-[#002D62] text-base">
-                                    <Globe className="w-5 h-5" />
-                                    {t.language}
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Button onClick={toggleLanguage} variant="outline" className="w-full justify-between">
-                                    <span>{lang === 'pt' ? 'Português' : 'English'}</span>
-                                    <Globe className="w-4 h-4" />
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-[#002D62] text-base">
+                                <CardTitle className="flex items-center gap-2 text-[#002D62]">
                                     <BookOpen className="w-5 h-5" />
                                     {t.books}
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent>
-                                <ul className="space-y-2">
+                            <CardContent className="space-y-6">
+                                <ul className="space-y-3">
                                     {t.booksList.map((book, index) => (
-                                        <li key={index} className="flex items-start justify-between text-xs">
-                                            <span className="text-[#333F48]">{book.title}</span>
-                                            <Badge variant="outline" className="ml-2 text-xs">{book.year}</Badge>
+                                        <li key={index} className="flex items-center justify-between p-2 rounded-lg border border-gray-100">
+                                            <span className="text-sm text-[#333F48]">{book.title}</span>
+                                            <Badge variant="outline" className="ml-2">{book.year}</Badge>
                                         </li>
                                     ))}
                                 </ul>
+                                <div className="pt-4 border-t">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <Award className="w-5 h-5 text-[#002D62]" />
+                                        <h4 className="font-semibold text-[#002D62]">{t.awards}</h4>
+                                    </div>
+                                    <ul className="space-y-2">
+                                        {t.awardsList.map((award, index) => (
+                                            <li key={index} className="flex items-start gap-2 text-sm text-[#333F48]">
+                                                <span className="w-2 h-2 rounded-full bg-[#B8860B] mt-1.5 flex-shrink-0" />
+                                                {award}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </CardContent>
                         </Card>
                     </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }}>
-                        <Card>
+
+                    {/* Knowledge Base & Language */}
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+                        <Card className="h-full">
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-[#002D62] text-base">
-                                    <Award className="w-5 h-5" />
-                                    {t.awards}
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <ul className="space-y-2">
-                                    {t.awardsList.map((award, index) => (
-                                        <li key={index} className="flex items-start gap-2 text-xs text-[#333F48]">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-1.5 flex-shrink-0" />
-                                            {award}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-[#002D62] text-base">
+                                <CardTitle className="flex items-center gap-2 text-[#002D62]">
                                     <Database className="w-5 h-5" />
                                     {t.knowledgeBase}
                                 </CardTitle>
+                                <CardDescription>{t.knowledgeBaseDesc}</CardDescription>
                             </CardHeader>
-                            <CardContent className="space-y-2">
-                                <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-amber-50 border border-amber-200">
-                                    <Info className="w-3 h-3 text-amber-700 flex-shrink-0" />
+                            <CardContent className="space-y-4">
+                                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200">
+                                    <Info className="w-4 h-4 text-amber-700 flex-shrink-0" />
                                     <span className="text-xs font-medium text-amber-900">{t.cutoffDate}</span>
                                 </div>
-                                <div className="space-y-1">
-                                    {t.sources.slice(0, 4).map((source, index) => (
-                                        <div key={index} className="p-2 rounded-lg border border-gray-100">
-                                            <h5 className="font-semibold text-xs text-[#002D62]">{source.category}</h5>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {t.sources.map((source, index) => (
+                                        <div key={index} className="p-2.5 rounded-lg border border-gray-100 hover:border-[#002D62]/20 transition-colors">
+                                            <h5 className="font-semibold text-xs text-[#002D62] mb-1">{source.category}</h5>
+                                            <p className="text-xs text-[#333F48]/70 line-clamp-2">{source.desc}</p>
                                         </div>
                                     ))}
+                                </div>
+                                <div className="pt-4 border-t">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Globe className="w-4 h-4 text-[#002D62]" />
+                                        <h4 className="font-semibold text-sm text-[#002D62]">{t.language}</h4>
+                                    </div>
+                                    <Button onClick={toggleLanguage} variant="outline" className="w-full justify-between">
+                                        <span>{lang === 'pt' ? 'Português (Brasil)' : 'English (US)'}</span>
+                                        <Globe className="w-4 h-4" />
+                                    </Button>
                                 </div>
                             </CardContent>
                         </Card>
                     </motion.div>
                 </div>
+
+                {/* Publications Section */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }}>
+                    <PublicationsSection lang={lang} />
+                </motion.div>
             </main>
             </div>
         </AgentProvider>

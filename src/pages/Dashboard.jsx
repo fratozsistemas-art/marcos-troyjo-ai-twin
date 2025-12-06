@@ -378,9 +378,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Eighth Row - Conversations */}
-                <div className="grid lg:grid-cols-1 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="h-full">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="h-full">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
                         <Card className="h-full">
                             <CardHeader>
                                 <div className="flex items-center justify-between">

@@ -18,6 +18,7 @@ import InsightsSection from '@/components/dashboard/InsightsSection';
 import KnowledgeHub from '@/components/knowledge/KnowledgeHub';
 import ProfileSettings from '@/components/profile/ProfileSettings';
 import TopicTracker from '@/components/profile/TopicTracker';
+import DocumentManager from '@/components/documents/DocumentManager';
 
 const translations = {
     pt: {
@@ -238,6 +239,15 @@ export default function Dashboard() {
                             transition={{ delay: 0.05 }}
                         >
                             <ProfileSettings lang={lang} />
+                        </motion.div>
+
+                        {/* Document Manager */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.08 }}
+                        >
+                            <DocumentManager lang={lang} />
                         </motion.div>
                         </div>
                         </div>

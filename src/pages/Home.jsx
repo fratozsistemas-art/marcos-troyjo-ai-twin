@@ -336,8 +336,12 @@ export default function Home() {
 
             {/* Footer */}
             <footer className="py-8 px-6 border-t border-gray-100">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-[#333F48]/60">
-                    <p>© 2025 Marcos Prado Troyjo Digital Twin</p>
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-[#333F48]/70">
+                    <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+                        <p>© 2025 Marcos Prado Troyjo Digital Twin</p>
+                        <span className="hidden md:inline text-[#333F48]/40">•</span>
+                        <p className="font-medium text-[#002D62]">Desenvolvido por Grupo Fratoz. Powered by CAIO.Vision.</p>
+                    </div>
                     <p>{lang === 'pt' ? 'Conhecimento base até dezembro de 2025' : 'Knowledge base up to December 2025'}</p>
                 </div>
             </footer>

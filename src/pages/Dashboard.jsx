@@ -217,17 +217,20 @@ export default function Dashboard() {
             </header>
 
             <main className="max-w-7xl mx-auto px-4 md:px-6 py-8">
-                <div className="grid lg:grid-cols-3 gap-6">
-                    {/* Right Column - Settings & Topics */}
+                <div className="grid lg:grid-cols-2 gap-6">
+                    {/* Left Column - Agent Control */}
                     <div className="space-y-6">
-                        {/* Topic Tracker */}
+                        {/* Agent Control */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                         >
-                            <TopicTracker lang={lang} />
+                            <AgentControl lang={lang} />
                         </motion.div>
+                        </div>
 
+                        {/* Right Column - Profile Settings */}
+                        <div className="space-y-6">
                         {/* Profile Settings */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -236,31 +239,40 @@ export default function Dashboard() {
                         >
                             <ProfileSettings lang={lang} />
                         </motion.div>
-                    </div>
+                        </div>
+                        </div>
 
-                    {/* Left Column - Expertise & Principles */}
-                    <div className="lg:col-span-2 space-y-6">
-                        {/* Agent Control */}
+                        {/* Bottom Row - Full Width Cards */}
+                        <div className="grid lg:grid-cols-3 gap-6 mt-6">
+                        {/* Topic Tracker */}
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
                         >
-                            <AgentControl lang={lang} />
+                        <TopicTracker lang={lang} />
                         </motion.div>
 
                         {/* Knowledge Hub */}
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.08 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.15 }}
+                        className="lg:col-span-2"
                         >
-                            <KnowledgeHub lang={lang} />
+                        <KnowledgeHub lang={lang} />
                         </motion.div>
+                        </div>
+
+                        {/* Additional Cards Row */}
+                        <div className="grid lg:grid-cols-2 gap-6 mt-6">
+                        <div className="space-y-6">
 
                         {/* Expertise */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
                         >
                             <Card>
                                 <CardHeader>
@@ -303,16 +315,18 @@ export default function Dashboard() {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
+                            transition={{ delay: 0.25 }}
                         >
                             <InsightsSection lang={lang} />
                         </motion.div>
+                        </div>
 
+                        <div className="space-y-6">
                         {/* Persona Settings */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.15 }}
+                            transition={{ delay: 0.3 }}
                         >
                             <PersonaSettings lang={lang} />
                         </motion.div>
@@ -321,7 +335,7 @@ export default function Dashboard() {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
+                            transition={{ delay: 0.35 }}
                         >
                             <Card>
                                 <CardHeader>
@@ -403,13 +417,15 @@ export default function Dashboard() {
                         </motion.div>
                     </div>
 
-                    {/* Right Column - Books, Awards, Settings */}
-                    <div className="space-y-6">
+                    </div>
+
+                    {/* Bottom Section - Books, Awards, Knowledge Base */}
+                    <div className="grid lg:grid-cols-3 gap-6 mt-6">
                         {/* Language Settings */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3 }}
+                            transition={{ delay: 0.4 }}
                         >
                             <Card>
                                 <CardHeader>
@@ -438,7 +454,7 @@ export default function Dashboard() {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4 }}
+                            transition={{ delay: 0.45 }}
                         >
                             <Card>
                                 <CardHeader>
@@ -490,7 +506,7 @@ export default function Dashboard() {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.6 }}
+                            transition={{ delay: 0.55 }}
                         >
                             <Card>
                                 <CardHeader>

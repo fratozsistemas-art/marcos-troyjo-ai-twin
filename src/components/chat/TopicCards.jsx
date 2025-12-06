@@ -5,7 +5,7 @@ import { Globe, TrendingUp, Users, Lightbulb, Sprout, Building2, Scale, Target }
 const topics = {
     pt: [
         { icon: Globe, title: "Novo ESG", prompt: "Explique o conceito do 'Novo ESG' (Economia, Segurança, Geopolítica) e como ele difere do ESG tradicional." },
-        { icon: TrendingUp, title: "Trampulência", prompt: "Como a 'trampulência' global impacta as estratégias comerciais do Brasil e dos emergentes?" },
+        { icon: TrendingUp, title: "Trumpulência", prompt: "Como a 'trumpulência' global impacta as estratégias comerciais do Brasil e dos emergentes?" },
         { icon: Sprout, title: "Agronegócio", prompt: "Qual o papel estratégico do agronegócio brasileiro na geopolítica alimentar global e na 'revolução calórica asiática'?" },
         { icon: Lightbulb, title: "Competitividade", prompt: "O que o Brasil precisa fazer para vencer nos 'Jogos Olímpicos da competitividade' global?" },
         { icon: Building2, title: "Infraestrutura Sustentável", prompt: "Como a infraestrutura sustentável pode ser um diferencial competitivo para o Brasil?" },

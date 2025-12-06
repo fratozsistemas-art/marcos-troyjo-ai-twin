@@ -1,8 +1,9 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
 import OpenAI from 'npm:openai';
 
-const openai = new OpenAI({
-    apiKey: Deno.env.get("OPENAI_API_KEY"),
+const xai = new OpenAI({
+    apiKey: Deno.env.get("XAI_API_KEY"),
+    baseURL: "https://api.x.ai/v1",
 });
 
 const tools = [
@@ -99,8 +100,8 @@ ${JSON.stringify(ui_state.elements, null, 2)}`;
             content: `Execute actions to achieve the goal: "${goal}"\n\nCurrent UI state:\n${JSON.stringify(ui_state, null, 2)}`
         });
 
-        const response = await openai.chat.completions.create({
-            model: 'gpt-4o-mini',
+        const response = await xai.chat.completions.create({
+            model: 'grok-beta',
             messages,
             tools,
             tool_choice: 'auto',

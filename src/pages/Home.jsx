@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 
 const translations = {
     pt: {
-        title: "Marcos Prado Troyjo",
-        subtitle: "Digital Twin",
-        tagline: "Economista · Diplomata · Ex-Presidente do Banco do BRICS",
-        description: "Acesse insights estratégicos sobre economia global, comércio internacional e competitividade diretamente da mente que liderou o Novo Banco de Desenvolvimento.",
+        title: "Seu Analista Geopolítico Pessoal",
+        subtitle: "Disponível 24 horas por dia, 7 dias por semana",
+        tagline: "Marcos Troyjo · Economista · Ex-Presidente do Banco do BRICS",
+        description: "Desvende as complexidades do cenário internacional com a inteligência de Marcos Troyjo, disponível a qualquer momento para análises aprofundadas sobre economia global, riscos geopolíticos, comércio e competitividade.",
         cta: "Iniciar Consulta",
         topics: "Áreas de Expertise",
         topicsList: [
@@ -32,10 +32,10 @@ const translations = {
         forMedia: "Para Mídia & Analistas"
     },
     en: {
-        title: "Marcos Prado Troyjo",
-        subtitle: "Digital Twin",
-        tagline: "Economist · Diplomat · Former BRICS Bank President",
-        description: "Access strategic insights on global economics, international trade, and competitiveness directly from the mind that led the New Development Bank.",
+        title: "Your Personal Geopolitical Analyst",
+        subtitle: "Available 24/7",
+        tagline: "Marcos Troyjo · Economist · Former BRICS Bank President",
+        description: "Unravel the complexities of the international landscape with Marcos Troyjo's intelligence, available anytime for in-depth analysis on global economics, geopolitical risks, trade, and competitiveness.",
         cta: "Start Consultation",
         topics: "Areas of Expertise",
         topicsList: [

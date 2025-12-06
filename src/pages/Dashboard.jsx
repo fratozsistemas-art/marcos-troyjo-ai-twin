@@ -246,17 +246,17 @@ export default function Dashboard() {
                     <ProactiveSuggestions lang={lang} />
                 </motion.div>
 
-                {/* Third Row - Topics & Knowledge */}
-                <div className="grid lg:grid-cols-3 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="h-full">
-                        <TopicTracker lang={lang} />
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="lg:col-span-2 h-full">
-                        <KnowledgeHub lang={lang} />
-                    </motion.div>
-                </div>
+                {/* Third Row - Knowledge Hub Full Width */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+                    <KnowledgeHub lang={lang} />
+                </motion.div>
 
-                {/* Fourth Row - Expertise & Insights */}
+                {/* Fourth Row - Topic Tracker */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                    <TopicTracker lang={lang} />
+                </motion.div>
+
+                {/* Fifth Row - Expertise & Insights */}
                 <div className="grid lg:grid-cols-2 gap-6">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="h-full">
                         <Card className="h-full">
@@ -298,7 +298,7 @@ export default function Dashboard() {
                     </motion.div>
                 </div>
 
-                {/* Fifth Row - Persona & Conversations */}
+                {/* Sixth Row - Persona & Conversations */}
                 <div className="grid lg:grid-cols-2 gap-6">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="h-full">
                         <PersonaSettings lang={lang} />

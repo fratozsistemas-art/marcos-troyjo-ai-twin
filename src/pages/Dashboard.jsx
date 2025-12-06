@@ -487,8 +487,8 @@ export default function Dashboard() {
                         </motion.div>
                     </div>
                 </div>
-            </main>
-        </div>
-    </AgentProvider>
+                </main>
+            </div>
+        </AgentProvider>
     );
 }

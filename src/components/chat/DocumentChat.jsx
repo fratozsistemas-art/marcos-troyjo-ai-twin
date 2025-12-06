@@ -83,7 +83,7 @@ Mantenha seu estilo analítico, use dados concretos quando disponíveis nos docu
                 lang={lang}
             />
 
-            <Card>
+            <Card className="flex-1 flex flex-col">
                 <CardHeader>
                     <CardTitle className="text-[#002D62] flex items-center gap-2">
                         <FileText className="w-5 h-5" />

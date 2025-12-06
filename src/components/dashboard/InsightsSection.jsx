@@ -102,7 +102,7 @@ export default function InsightsSection({ lang = 'pt' }) {
     }
 
     return (
-        <Card>
+        <Card className="h-full flex flex-col">
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div>
@@ -132,7 +132,7 @@ export default function InsightsSection({ lang = 'pt' }) {
                     </Button>
                 </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 overflow-y-auto">
                 {insights.length === 0 ? (
                     <div className="text-center py-6">
                         <Sparkles className="w-12 h-12 text-[#333F48]/20 mx-auto mb-3" />

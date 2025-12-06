@@ -197,7 +197,7 @@ export default function DocumentManager({ lang = 'pt', onDocumentSelect }) {
     }
 
     return (
-        <Card>
+        <Card className="h-full flex flex-col">
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div>

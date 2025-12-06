@@ -208,7 +208,7 @@ export default function ProfileSettings({ lang = 'pt' }) {
                     <CardTitle className="text-[#002D62]">{t.title}</CardTitle>
                     <CardDescription>{t.description}</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-6 flex-1 overflow-y-auto">
                     {/* Interests Section */}
                     <div>
                         <h3 className="font-semibold text-[#002D62] mb-4">{t.interests}</h3>

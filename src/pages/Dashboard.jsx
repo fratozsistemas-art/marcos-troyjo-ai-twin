@@ -180,7 +180,7 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA]">
+        <div className="min-h-screen bg-[#FAFAFA]" data-ai-screen="Dashboard">
             {/* Header */}
             <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
@@ -197,7 +197,11 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <Link to={createPageUrl('Consultation')}>
-                        <Button className="bg-[#002D62] hover:bg-[#001d42] text-white gap-2">
+                        <Button 
+                            data-ai-id="btn_new_chat"
+                            data-ai-role="button"
+                            className="bg-[#002D62] hover:bg-[#001d42] text-white gap-2"
+                        >
                             <MessageSquare className="w-4 h-4" />
                             <span className="hidden sm:inline">{t.newChat}</span>
                         </Button>
@@ -325,11 +329,19 @@ export default function Dashboard() {
                                                     </div>
                                                     <div className="flex items-center gap-2">
                                                         <Link to={createPageUrl('Consultation') + `?conversationId=${conv.id}`}>
-                                                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                                            <Button 
+                                                                data-ai-id={`btn_view_conversation_${conv.id}`}
+                                                                data-ai-role="button"
+                                                                variant="ghost" 
+                                                                size="sm" 
+                                                                className="h-8 w-8 p-0"
+                                                            >
                                                                 <Eye className="w-4 h-4" />
                                                             </Button>
                                                         </Link>
                                                         <Button
+                                                            data-ai-id={`btn_delete_conversation_${conv.id}`}
+                                                            data-ai-role="button"
                                                             variant="ghost"
                                                             size="sm"
                                                             className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
@@ -365,6 +377,8 @@ export default function Dashboard() {
                                 </CardHeader>
                                 <CardContent>
                                     <Button
+                                        data-ai-id="btn_toggle_language"
+                                        data-ai-role="button"
                                         onClick={toggleLanguage}
                                         variant="outline"
                                         className="w-full justify-between"

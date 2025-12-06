@@ -198,7 +198,7 @@ export default function Consultation() {
     }
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA] flex flex-col">
+        <div className="min-h-screen bg-[#FAFAFA] flex flex-col" data-ai-screen="Consultation">
             {/* Header */}
             <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
                 <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -222,6 +222,8 @@ export default function Consultation() {
                     <div className="flex items-center gap-2">
                         <Link to={createPageUrl('Dashboard')}>
                             <Button
+                                data-ai-id="btn_dashboard"
+                                data-ai-role="button"
                                 variant="ghost"
                                 size="sm"
                                 className="text-[#333F48] gap-2"
@@ -231,6 +233,8 @@ export default function Consultation() {
                             </Button>
                         </Link>
                         <Button
+                            data-ai-id="btn_new_conversation"
+                            data-ai-role="button"
                             variant="ghost"
                             size="sm"
                             onClick={handleNewChat}
@@ -240,6 +244,8 @@ export default function Consultation() {
                             <span className="hidden sm:inline">{t.newChat}</span>
                         </Button>
                         <button
+                            data-ai-id="btn_toggle_language"
+                            data-ai-role="button"
                             onClick={() => setLang(lang === 'pt' ? 'en' : 'pt')}
                             className="flex items-center gap-1 px-2 py-1 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors text-xs font-medium text-[#333F48]"
                         >
@@ -311,6 +317,8 @@ export default function Consultation() {
                     <div className="flex gap-3 items-end">
                         <div className="flex-1 relative">
                             <Textarea
+                                data-ai-id="input_message"
+                                data-ai-role="textbox"
                                 ref={textareaRef}
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
@@ -321,6 +329,8 @@ export default function Consultation() {
                             />
                         </div>
                         <Button
+                            data-ai-id="btn_send_message"
+                            data-ai-role="button"
                             onClick={() => handleSend()}
                             disabled={!input.trim() || isLoading}
                             className="h-[52px] w-[52px] rounded-xl bg-[#002D62] hover:bg-[#001d42] disabled:opacity-50 disabled:cursor-not-allowed"

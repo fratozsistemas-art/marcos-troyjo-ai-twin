@@ -8,9 +8,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Loader2, FileText, Copy, Download } from 'lucide-react';
+import { ArrowLeft, Loader2, FileText, Copy, Download, Share2, History } from 'lucide-react';
 import DocumentSelector from '@/components/documents/DocumentSelector';
 import ReactMarkdown from 'react-markdown';
+import ShareDialog from '@/components/collaboration/ShareDialog';
+import VersionHistory from '@/components/collaboration/VersionHistory';
+import CommentThread from '@/components/collaboration/CommentThread';
+import { toast } from 'sonner';
 
 export default function ArticleGenerator() {
     const [lang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
@@ -24,6 +28,9 @@ export default function ArticleGenerator() {
         tone: 'analytical'
     });
     const [selectedDocuments, setSelectedDocuments] = useState([]);
+    const [shareOpen, setShareOpen] = useState(false);
+    const [versionOpen, setVersionOpen] = useState(false);
+    const [currentArticleId, setCurrentArticleId] = useState(null);
 
     const translations = {
         pt: {
@@ -43,6 +50,8 @@ export default function ArticleGenerator() {
             newArticle: 'Novo Artigo',
             copy: 'Copiar',
             download: 'Download',
+            share: 'Compartilhar',
+            versions: 'Versões',
             tones: {
                 analytical: 'Analítico',
                 diplomatic: 'Diplomático',
@@ -67,6 +76,8 @@ export default function ArticleGenerator() {
             newArticle: 'New Article',
             copy: 'Copy',
             download: 'Download',
+            share: 'Share',
+            versions: 'Versions',
             tones: {
                 analytical: 'Analytical',
                 diplomatic: 'Diplomatic',
@@ -99,8 +110,8 @@ export default function ArticleGenerator() {
 
             setResult(response.data);
 
-            // Save to history
-            await base44.entities.AIHistory.create({
+            // Save to history and create version
+            const historyEntry = await base44.entities.AIHistory.create({
                 function_type: 'article',
                 title: response.data.title || formData.topic,
                 inputs: formData,
@@ -110,6 +121,17 @@ export default function ArticleGenerator() {
                     title: d.title,
                     file_url: d.file_url
                 }))
+            });
+
+            setCurrentArticleId(historyEntry.id);
+
+            // Create initial version
+            await base44.entities.Version.create({
+                item_type: 'article',
+                item_id: historyEntry.id,
+                version_number: 1,
+                content: response.data,
+                change_summary: 'Initial version'
             });
         } catch (error) {
             console.error('Error generating article:', error);
@@ -134,6 +156,22 @@ export default function ArticleGenerator() {
         a.click();
         window.URL.revokeObjectURL(url);
         a.remove();
+    };
+
+    const handleRestoreVersion = async (versionContent) => {
+        setResult(versionContent);
+        
+        // Create new version
+        const versions = await base44.entities.Version.filter({ item_id: currentArticleId });
+        const maxVersion = Math.max(...versions.map(v => v.version_number), 0);
+        
+        await base44.entities.Version.create({
+            item_type: 'article',
+            item_id: currentArticleId,
+            version_number: maxVersion + 1,
+            content: versionContent,
+            change_summary: 'Restored from previous version'
+        });
     };
 
     return (
@@ -269,33 +307,74 @@ export default function ArticleGenerator() {
                                 {t.newArticle}
                             </Button>
                             <div className="flex gap-2">
+                                <Button onClick={() => setShareOpen(true)} variant="outline" className="gap-2">
+                                    <Share2 className="w-4 h-4" />
+                                    <span className="hidden md:inline">{t.share}</span>
+                                </Button>
+                                <Button onClick={() => setVersionOpen(true)} variant="outline" className="gap-2">
+                                    <History className="w-4 h-4" />
+                                    <span className="hidden md:inline">{t.versions}</span>
+                                </Button>
                                 <Button onClick={copyToClipboard} variant="outline" className="gap-2">
                                     <Copy className="w-4 h-4" />
-                                    {t.copy}
+                                    <span className="hidden md:inline">{t.copy}</span>
                                 </Button>
                                 <Button onClick={downloadArticle} variant="outline" className="gap-2">
                                     <Download className="w-4 h-4" />
-                                    {t.download}
+                                    <span className="hidden md:inline">{t.download}</span>
                                 </Button>
                             </div>
                         </div>
 
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="text-[#002D62]">{result.title}</CardTitle>
-                                {result.subtitle && (
-                                    <CardDescription className="text-base">{result.subtitle}</CardDescription>
-                                )}
-                            </CardHeader>
-                            <CardContent>
-                                <div className="prose prose-slate max-w-none">
-                                    <ReactMarkdown>{result.article}</ReactMarkdown>
-                                </div>
-                            </CardContent>
-                        </Card>
+                        <div className="grid lg:grid-cols-3 gap-6">
+                            <div className="lg:col-span-2">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="text-[#002D62]">{result.title}</CardTitle>
+                                        {result.subtitle && (
+                                            <CardDescription className="text-base">{result.subtitle}</CardDescription>
+                                        )}
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="prose prose-slate max-w-none">
+                                            <ReactMarkdown>{result.article}</ReactMarkdown>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                            <div>
+                                <CommentThread
+                                    itemType="article"
+                                    itemId={currentArticleId}
+                                    lang={lang}
+                                />
+                            </div>
+                        </div>
                     </div>
                 )}
             </main>
+
+            {result && currentArticleId && (
+                <>
+                    <ShareDialog
+                        open={shareOpen}
+                        onOpenChange={setShareOpen}
+                        itemType="article"
+                        itemId={currentArticleId}
+                        itemTitle={result.title}
+                        itemData={result}
+                        lang={lang}
+                    />
+                    <VersionHistory
+                        open={versionOpen}
+                        onOpenChange={setVersionOpen}
+                        itemType="article"
+                        itemId={currentArticleId}
+                        onRestore={handleRestoreVersion}
+                        lang={lang}
+                    />
+                </>
+            )}
         </div>
     );
 }

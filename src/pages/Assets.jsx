@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Upload, Image, Video, Music, FileText, File, Trash2, Download, Search, FolderOpen, Plus, X, Loader2, Edit2, FileJson, FileSpreadsheet, ChevronLeft, ChevronRight, Save } from 'lucide-react';
+import { Upload, Image, Video, Music, FileText, File, Trash2, Download, Search, FolderOpen, Plus, X, Loader2, Edit2, FileJson, FileSpreadsheet, ChevronLeft, ChevronRight, Save, Share2, History as HistoryIcon, MessageSquare } from 'lucide-react';
+import ShareDialog from '@/components/collaboration/ShareDialog';
+import VersionHistory from '@/components/collaboration/VersionHistory';
+import CommentThread from '@/components/collaboration/CommentThread';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -112,6 +115,10 @@ export default function Assets() {
     const [editOpen, setEditOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(12);
+    const [shareOpen, setShareOpen] = useState(false);
+    const [versionOpen, setVersionOpen] = useState(false);
+    const [commentsOpen, setCommentsOpen] = useState(false);
+    const [selectedAsset, setSelectedAsset] = useState(null);
 
     const t = translations[lang];
 
@@ -232,11 +239,26 @@ export default function Assets() {
                 ? editingAsset.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
                 : editingAsset.tags;
 
-            await base44.entities.Asset.update(editingAsset.id, {
+            const updatedData = {
                 name: editingAsset.name,
                 description: editingAsset.description,
                 tags,
                 folder: editingAsset.folder
+            };
+
+            await base44.entities.Asset.update(editingAsset.id, updatedData);
+
+            // Create version entry
+            const versions = await base44.entities.Version.filter({ item_id: editingAsset.id });
+            const maxVersion = Math.max(...versions.map(v => v.version_number), 0);
+
+            await base44.entities.Version.create({
+                item_type: 'asset',
+                item_id: editingAsset.id,
+                version_number: maxVersion + 1,
+                content: { ...editingAsset, ...updatedData },
+                change_summary: 'Asset metadata updated',
+                changed_fields: Object.keys(updatedData)
             });
 
             await loadAssets();
@@ -245,6 +267,21 @@ export default function Assets() {
             toast.success(t.updateSuccess);
         } catch (error) {
             console.error('Error updating asset:', error);
+            toast.error(t.error);
+        }
+    };
+
+    const handleRestoreAssetVersion = async (versionContent) => {
+        try {
+            await base44.entities.Asset.update(selectedAsset.id, {
+                name: versionContent.name,
+                description: versionContent.description,
+                tags: versionContent.tags,
+                folder: versionContent.folder
+            });
+            await loadAssets();
+        } catch (error) {
+            console.error('Error restoring version:', error);
             toast.error(t.error);
         }
     };
@@ -437,6 +474,28 @@ export default function Assets() {
                                                     ))}
                                                 </div>
                                             )}
+                                            <div className="grid grid-cols-2 gap-2 mb-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        setSelectedAsset(asset);
+                                                        setShareOpen(true);
+                                                    }}
+                                                >
+                                                    <Share2 className="w-3 h-3" />
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        setSelectedAsset(asset);
+                                                        setVersionOpen(true);
+                                                    }}
+                                                >
+                                                    <HistoryIcon className="w-3 h-3" />
+                                                </Button>
+                                            </div>
                                             <div className="flex gap-2">
                                                 <Button
                                                     variant="outline"
@@ -445,6 +504,17 @@ export default function Assets() {
                                                     onClick={() => handleEdit(asset)}
                                                 >
                                                     <Edit2 className="w-3 h-3" />
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="flex-1"
+                                                    onClick={() => {
+                                                        setSelectedAsset(asset);
+                                                        setCommentsOpen(true);
+                                                    }}
+                                                >
+                                                    <MessageSquare className="w-3 h-3" />
                                                 </Button>
                                                 <Button
                                                     variant="outline"
@@ -655,6 +725,38 @@ export default function Assets() {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            {/* Collaboration Dialogs */}
+            {selectedAsset && (
+                <>
+                    <ShareDialog
+                        open={shareOpen}
+                        onOpenChange={setShareOpen}
+                        itemType="asset"
+                        itemId={selectedAsset.id}
+                        itemTitle={selectedAsset.name}
+                        itemData={selectedAsset}
+                        lang={lang}
+                    />
+                    <VersionHistory
+                        open={versionOpen}
+                        onOpenChange={setVersionOpen}
+                        itemType="asset"
+                        itemId={selectedAsset.id}
+                        onRestore={handleRestoreAssetVersion}
+                        lang={lang}
+                    />
+                    <Dialog open={commentsOpen} onOpenChange={setCommentsOpen}>
+                        <DialogContent className="max-w-2xl">
+                            <CommentThread
+                                itemType="asset"
+                                itemId={selectedAsset.id}
+                                lang={lang}
+                            />
+                        </DialogContent>
+                    </Dialog>
+                </>
+            )}
         </div>
     );
 }

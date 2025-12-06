@@ -534,7 +534,6 @@ export default function Dashboard() {
                             </Card>
                         </motion.div>
                     </div>
-                </div>
                 </main>
             </div>
         </AgentProvider>

@@ -8,9 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Play, Square, Zap, CheckCircle2, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TaskManager from './TaskManager';
-import ProjectManager from './ProjectManager.jsx';
-import GanttChart from './GanttChart.jsx';
-import AgentMonitor from './AgentMonitor.jsx';
+import ProjectManager from './ProjectManager';
+import GanttChart from './GanttChart';
+import AgentMonitor from './AgentMonitor';
 
 export default function AgentControl({ lang = 'pt' }) {
     const { isRunning, currentGoal, steps, error, runAgent, stopAgent, pendingConfirmation, confirmAction } = useAgent();

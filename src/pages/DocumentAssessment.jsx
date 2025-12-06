@@ -60,6 +60,19 @@ export default function DocumentAssessment() {
             });
 
             setResult(response.data);
+
+            // Save to history
+            await base44.entities.AIHistory.create({
+                function_type: 'assessment',
+                title: `Avaliação de ${selectedDocuments.length} documento(s)`,
+                inputs: { assessment_criteria: assessmentCriteria },
+                outputs: response.data,
+                documents_used: selectedDocuments.map(d => ({
+                    id: d.id,
+                    title: d.title,
+                    file_url: d.file_url
+                }))
+            });
         } catch (error) {
             console.error('Error assessing documents:', error);
             alert(error.message);

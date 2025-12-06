@@ -5,6 +5,9 @@ import MetaphorsGenerator from './pages/MetaphorsGenerator';
 import InterviewPrep from './pages/InterviewPrep';
 import ArticleGenerator from './pages/ArticleGenerator';
 import DocumentAssessment from './pages/DocumentAssessment';
+import History from './pages/History';
+import DocumentChatPage from './pages/DocumentChatPage';
+import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
@@ -15,9 +18,12 @@ export const PAGES = {
     "InterviewPrep": InterviewPrep,
     "ArticleGenerator": ArticleGenerator,
     "DocumentAssessment": DocumentAssessment,
+    "History": History,
+    "DocumentChatPage": DocumentChatPage,
 }
 
 export const pagesConfig = {
     mainPage: "Home",
     Pages: PAGES,
+    Layout: __Layout,
 };

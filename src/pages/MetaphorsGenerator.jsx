@@ -109,6 +109,19 @@ export default function MetaphorsGenerator() {
             });
 
             setResult(response.data.content);
+
+            // Save to history
+            await base44.entities.AIHistory.create({
+                function_type: 'metaphors',
+                title: formData.topic || 'Geração de Metáforas',
+                inputs: formData,
+                outputs: response.data.content,
+                documents_used: selectedDocuments.map(d => ({
+                    id: d.id,
+                    title: d.title,
+                    file_url: d.file_url
+                }))
+            });
         } catch (error) {
             console.error('Error generating metaphors:', error);
             alert(error.message);

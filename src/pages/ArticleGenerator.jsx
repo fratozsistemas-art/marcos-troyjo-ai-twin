@@ -98,6 +98,19 @@ export default function ArticleGenerator() {
             });
 
             setResult(response.data);
+
+            // Save to history
+            await base44.entities.AIHistory.create({
+                function_type: 'article',
+                title: response.data.title || formData.topic,
+                inputs: formData,
+                outputs: response.data,
+                documents_used: selectedDocuments.map(d => ({
+                    id: d.id,
+                    title: d.title,
+                    file_url: d.file_url
+                }))
+            });
         } catch (error) {
             console.error('Error generating article:', error);
             alert(error.message);

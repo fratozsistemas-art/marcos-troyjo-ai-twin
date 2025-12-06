@@ -72,6 +72,19 @@ export default function InterviewPrep() {
             });
 
             setResult(response.data);
+
+            // Save to history
+            await base44.entities.AIHistory.create({
+                function_type: 'interview',
+                title: formData.topic || 'Preparação de Entrevista',
+                inputs: formData,
+                outputs: response.data,
+                documents_used: selectedDocuments.map(d => ({
+                    id: d.id,
+                    title: d.title,
+                    file_url: d.file_url
+                }))
+            });
         } catch (error) {
             console.error('Error preparing interview:', error);
             alert(error.message);

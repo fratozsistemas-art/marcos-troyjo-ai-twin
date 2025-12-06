@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
 import PersonaSettings from '@/components/dashboard/PersonaSettings';
 import InsightsSection from '@/components/dashboard/InsightsSection';
 import KnowledgeHub from '@/components/knowledge/KnowledgeHub';
@@ -49,6 +50,8 @@ const translations = {
         startFirst: "Inicie sua primeira consulta com o Digital Twin",
         loading: "Carregando...",
         deleteConfirm: "Tem certeza que deseja excluir esta conversa?",
+        search: "Buscar conversas...",
+        noResults: "Nenhuma conversa encontrada",
         expertiseAreas: [
             { title: "Economia Global", desc: "Análise das dinâmicas geoeconômicas contemporâneas" },
             { title: "Comércio Internacional", desc: "Estratégias para inserção competitiva global" },
@@ -107,6 +110,8 @@ const translations = {
         startFirst: "Start your first consultation with the Digital Twin",
         loading: "Loading...",
         deleteConfirm: "Are you sure you want to delete this conversation?",
+        search: "Search conversations...",
+        noResults: "No conversations found",
         expertiseAreas: [
             { title: "Global Economics", desc: "Analysis of contemporary geoeconomic dynamics" },
             { title: "International Trade", desc: "Strategies for competitive global insertion" },
@@ -153,6 +158,7 @@ export default function Dashboard() {
     const [conversations, setConversations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showWelcome, setShowWelcome] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const t = translations[lang];
 
     useEffect(() => {
@@ -404,11 +410,21 @@ export default function Dashboard() {
                                                 <FileJson className="w-4 h-4" />
                                             </Button>
                                         </div>
-                                    )}
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                {isLoading ? (
+                                        )}
+                                        </div>
+                                        </CardHeader>
+                                        <CardContent>
+                                        {conversations.length > 0 && (
+                                        <div className="mb-4">
+                                        <Input
+                                            placeholder={t.search}
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="w-full"
+                                        />
+                                        </div>
+                                        )}
+                                        {isLoading ? (
                                     <div className="flex items-center justify-center py-8">
                                         <Loader2 className="w-6 h-6 animate-spin text-[#002D62]" />
                                         <span className="ml-2 text-sm text-[#333F48]/60">{t.loading}</span>
@@ -427,7 +443,21 @@ export default function Dashboard() {
                                     </div>
                                 ) : (
                                     <div className="space-y-2 max-h-80 overflow-y-auto">
-                                        {conversations.map((conv) => (
+                                        {(() => {
+                                            const filtered = conversations.filter(conv => {
+                                                const name = conv.metadata?.name || `Conversa ${new Date(conv.created_date).toLocaleDateString()}`;
+                                                return name.toLowerCase().includes(searchQuery.toLowerCase());
+                                            });
+
+                                            if (filtered.length === 0 && searchQuery) {
+                                                return (
+                                                    <div className="text-center py-8 text-gray-500 text-sm">
+                                                        {t.noResults}
+                                                    </div>
+                                                );
+                                            }
+
+                                            return filtered.map((conv) => (
                                             <div key={conv.id} className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-[#002D62]/20 hover:bg-gray-50/50 transition-all">
                                                 <div className="flex-1 min-w-0">
                                                     <h4 className="font-medium text-sm text-[#333F48] truncate">
@@ -454,9 +484,10 @@ export default function Dashboard() {
                                                         <Trash2 className="w-4 h-4" />
                                                     </Button>
                                                 </div>
-                                            </div>
-                                        ))}
-                                    </div>
+                                                </div>
+                                                ));
+                                                })()}
+                                                </div>
                                 )}
                             </CardContent>
                         </Card>

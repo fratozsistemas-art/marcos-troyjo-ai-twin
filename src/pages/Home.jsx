@@ -347,7 +347,7 @@ export default function Home() {
                     >
                         {t.topics}
                     </motion.h2>
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {t.topicsList.map((topic, index) => (
                             <motion.div
                                 key={index}

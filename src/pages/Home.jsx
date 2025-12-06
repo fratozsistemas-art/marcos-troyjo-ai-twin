@@ -65,17 +65,17 @@ export default function Home() {
 
     const slides = [
         {
-            image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/952fe2a2e_MARCOS-TROYJO.jpg",
+            image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/63714d95c_Edit_the_image_to_enhance_gold_and_cyan_tones_thro-1765055808709.png",
             type: "photo"
         },
         {
             type: "narrative",
             text: lang === 'pt' 
-                ? "Da diplomacia global ao mundo digital"
-                : "From global diplomacy to the digital world"
+                ? "Inteligência Geopolítica, Disponível 24/7"
+                : "Geopolitical Intelligence, Available 24/7"
         },
         {
-            image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/67de399b9_Gemini_Generated_Image_r9gja7r9gja7r9gj.png",
+            image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/c9a7ebaff_Gemini_Generated_Image_nkh0p9nkh0p9nkh0.png",
             type: "digital"
         }
     ];

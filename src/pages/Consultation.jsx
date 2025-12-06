@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, ArrowLeft, Globe, Loader2, MessageSquare, Plus, LayoutDashboard } from 'lucide-react';
+import { Send, ArrowLeft, Globe, Loader2, MessageSquare, Plus, LayoutDashboard, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import MessageBubble from '@/components/chat/MessageBubble';
 import TopicCards from '@/components/chat/TopicCards';
+import ConversationSidebar from '@/components/consultation/ConversationSidebar';
 
 const translations = {
     pt: {
@@ -45,6 +46,7 @@ export default function Consultation() {
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isInitializing, setIsInitializing] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const messagesEndRef = useRef(null);
     const textareaRef = useRef(null);
     const t = translations[lang];
@@ -161,6 +163,18 @@ export default function Consultation() {
                 role: 'user',
                 content: messageText
             });
+
+            if (messages.length === 0) {
+                setTimeout(async () => {
+                    try {
+                        await base44.functions.invoke('autoNameConversation', {
+                            conversation_id: conversation.id
+                        });
+                    } catch (error) {
+                        console.error('Error auto-naming:', error);
+                    }
+                }, 3000);
+            }
         } catch (error) {
             console.error('Error sending message:', error);
         } finally {
@@ -178,6 +192,11 @@ export default function Consultation() {
     const handleNewChat = () => {
         window.history.pushState({}, '', createPageUrl('Consultation'));
         initConversation();
+        setSidebarOpen(false);
+    };
+
+    const handleSelectConversation = (conversationId) => {
+        window.location.href = createPageUrl('Consultation') + `?conversationId=${conversationId}`;
     };
 
     const handleSuggestionSelect = (suggestion) => {
@@ -198,11 +217,62 @@ export default function Consultation() {
     }
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA] flex flex-col" data-ai-screen="Consultation">
-            {/* Header */}
-            <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
-                <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+        <div className="min-h-screen bg-[#FAFAFA] flex" data-ai-screen="Consultation">
+            {/* Sidebar */}
+            <AnimatePresence>
+                {sidebarOpen && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setSidebarOpen(false)}
+                            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+                        />
+                        <motion.aside
+                            initial={{ x: -320 }}
+                            animate={{ x: 0 }}
+                            exit={{ x: -320 }}
+                            className="fixed left-0 top-0 bottom-0 w-80 z-50 lg:relative lg:z-0"
+                        >
+                            <ConversationSidebar
+                                lang={lang}
+                                currentConversationId={conversation?.id}
+                                onSelectConversation={handleSelectConversation}
+                                onNewConversation={handleNewChat}
+                            />
+                        </motion.aside>
+                    </>
+                )}
+            </AnimatePresence>
+
+            {/* Desktop Sidebar */}
+            <aside className="hidden lg:block w-80 flex-shrink-0">
+                <ConversationSidebar
+                    lang={lang}
+                    currentConversationId={conversation?.id}
+                    onSelectConversation={handleSelectConversation}
+                    onNewConversation={handleNewChat}
+                />
+            </aside>
+
+            {/* Main Content */}
+            <div className="flex-1 flex flex-col min-w-0">
+                {/* Header */}
+                <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200">
+                <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2">
+                        <Button
+                            data-ai-id="btn_toggle_sidebar"
+                            data-ai-role="button"
+                            onClick={() => setSidebarOpen(!sidebarOpen)}
+                            variant="ghost"
+                            size="sm"
+                            className="lg:hidden text-[#333F48]"
+                        >
+                            <Menu className="w-5 h-5" />
+                        </Button>
+                        
                         <Link to={createPageUrl('Home')}>
                             <Button variant="ghost" size="sm" className="text-[#333F48] gap-2">
                                 <ArrowLeft className="w-4 h-4" />
@@ -257,7 +327,7 @@ export default function Consultation() {
             </header>
 
             {/* Chat Area */}
-            <main className="flex-1 overflow-auto">
+            <main className="flex-1 overflow-auto bg-gradient-to-b from-gray-50 to-white">
                 <div className="max-w-4xl mx-auto px-4 py-6">
                     {messages.length === 0 ? (
                         <motion.div
@@ -312,7 +382,7 @@ export default function Consultation() {
             </main>
 
             {/* Input Area */}
-            <footer className="sticky bottom-0 bg-white border-t border-gray-100 p-4">
+            <footer className="sticky bottom-0 bg-white border-t border-gray-200 p-4 shadow-lg">
                 <div className="max-w-4xl mx-auto">
                     <div className="flex gap-3 items-end">
                         <div className="flex-1 relative">
@@ -351,7 +421,8 @@ export default function Consultation() {
                         </div>
                     </div>
                 </div>
-            </footer>
-        </div>
-    );
-}
+                </footer>
+                </div>
+                </div>
+                );
+                }

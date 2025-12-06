@@ -37,7 +37,12 @@ GERE:
 2. **Storytelling com Dados**: Narrativa que integre dados concretos de forma envolvente
 3. **3 Analogias Executivas**: Comparações que executivos possam usar em suas apresentações
 4. **Frase de Impacto**: Uma frase memorável estilo Troyjo (máximo 20 palavras)
-5. **Visualização Sugerida**: Descrição de como transformar isso em slide/infográfico
+5. **Sugestões de Visualização**: Para CADA elemento acima, sugira como transformar em slide/infográfico com:
+   - Tipo de visualização (ex: diagrama de fluxo, infográfico comparativo, slide de impacto)
+   - Layout recomendado (ex: central com radiação, timeline, pirâmide)
+   - Elementos visuais específicos (ícones, cores, gráficos)
+   - Texto-chave para o slide
+   - Notas de design (fontes grandes para impacto, uso de espaço em branco, etc.)
 
 Seja específico, use dados reais quando possível, e mantenha o tom diplomático mas assertivo característico de Troyjo.`;
 
@@ -53,7 +58,17 @@ Seja específico, use dados reais quando possível, e mantenha o tom diplomátic
                         properties: {
                             title: { type: "string" },
                             description: { type: "string" },
-                            application: { type: "string" }
+                            application: { type: "string" },
+                            visualization: {
+                                type: "object",
+                                properties: {
+                                    type: { type: "string" },
+                                    layout: { type: "string" },
+                                    visual_elements: { type: "array", items: { type: "string" } },
+                                    key_text: { type: "string" },
+                                    design_notes: { type: "string" }
+                                }
+                            }
                         }
                     },
                     data_storytelling: {
@@ -63,6 +78,16 @@ Seja específico, use dados reais quando possível, e mantenha o tom diplomátic
                             key_data_points: {
                                 type: "array",
                                 items: { type: "string" }
+                            },
+                            visualization: {
+                                type: "object",
+                                properties: {
+                                    type: { type: "string" },
+                                    layout: { type: "string" },
+                                    visual_elements: { type: "array", items: { type: "string" } },
+                                    key_text: { type: "string" },
+                                    design_notes: { type: "string" }
+                                }
                             }
                         }
                     },
@@ -73,19 +98,33 @@ Seja específico, use dados reais quando possível, e mantenha o tom diplomátic
                             properties: {
                                 analogy: { type: "string" },
                                 context: { type: "string" },
-                                usage_tip: { type: "string" }
+                                usage_tip: { type: "string" },
+                                visualization: {
+                                    type: "object",
+                                    properties: {
+                                        type: { type: "string" },
+                                        layout: { type: "string" },
+                                        visual_elements: { type: "array", items: { type: "string" } },
+                                        key_text: { type: "string" },
+                                        design_notes: { type: "string" }
+                                    }
+                                }
                             }
                         }
                     },
-                    impact_phrase: { type: "string" },
-                    visualization_suggestion: {
+                    impact_phrase: { 
                         type: "object",
                         properties: {
-                            type: { type: "string" },
-                            description: { type: "string" },
-                            key_elements: {
-                                type: "array",
-                                items: { type: "string" }
+                            text: { type: "string" },
+                            visualization: {
+                                type: "object",
+                                properties: {
+                                    type: { type: "string" },
+                                    layout: { type: "string" },
+                                    visual_elements: { type: "array", items: { type: "string" } },
+                                    key_text: { type: "string" },
+                                    design_notes: { type: "string" }
+                                }
                             }
                         }
                     }

@@ -16,6 +16,8 @@ import { Separator } from '@/components/ui/separator';
 import PersonaSettings from '@/components/dashboard/PersonaSettings';
 import InsightsSection from '@/components/dashboard/InsightsSection';
 import KnowledgeHub from '@/components/knowledge/KnowledgeHub';
+import ProfileSettings from '@/components/profile/ProfileSettings';
+import TopicTracker from '@/components/profile/TopicTracker';
 
 const translations = {
     pt: {
@@ -232,7 +234,23 @@ export default function Dashboard() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.05 }}
                         >
+                            <TopicTracker lang={lang} />
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.08 }}
+                        >
                             <KnowledgeHub lang={lang} />
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                        >
+                            <ProfileSettings lang={lang} />
                         </motion.div>
 
                         {/* Expertise */}

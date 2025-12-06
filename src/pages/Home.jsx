@@ -324,7 +324,7 @@ export default function Home() {
                                 </Button>
                             </Link>
                             <Link to={createPageUrl('Consultation') + '?context=media'}>
-                                <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 gap-2">
+                                <Button variant="outline" className="border-white/60 bg-white/10 text-white hover:bg-white/20 hover:border-white gap-2">
                                     <MessageSquare className="w-4 h-4" />
                                     {t.forMedia}
                                 </Button>

@@ -22,6 +22,7 @@ import DocumentManager from '@/components/documents/DocumentManager';
 import DocumentChat from '@/components/chat/DocumentChat';
 import ProactiveSuggestions from '@/components/suggestions/ProactiveSuggestions';
 import PublicationsSection from '@/components/dashboard/PublicationsSection';
+import VoiceCalibration from '@/components/voice-calibration/VoiceCalibration';
 
 const translations = {
     pt: {
@@ -495,6 +496,11 @@ export default function Dashboard() {
                 {/* Publications Section */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }}>
                     <PublicationsSection lang={lang} />
+                </motion.div>
+
+                {/* Voice Calibration Section */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
+                    <VoiceCalibration lang={lang} />
                 </motion.div>
                 </main>
                 </div>

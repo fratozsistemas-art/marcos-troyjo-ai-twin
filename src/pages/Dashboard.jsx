@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
+import { AgentProvider } from '@/components/agent/AgentProvider';
+import AgentControl from '@/components/agent/AgentControl';
 import { 
     ArrowLeft, Globe, BookOpen, Award, MessageSquare, 
     Trash2, Eye, Plus, Calendar, Loader2, Database, Info
@@ -134,6 +136,7 @@ const translations = {
 };
 
 export default function Dashboard() {
+    const navigate = useNavigate();
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
     const [conversations, setConversations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -180,9 +183,10 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA]" data-ai-screen="Dashboard">
-            {/* Header */}
-            <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
+        <AgentProvider navigate={navigate}>
+            <div className="min-h-screen bg-[#FAFAFA]" data-ai-screen="Dashboard">
+                {/* Header */}
+                <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Link to={createPageUrl('Home')}>
@@ -213,6 +217,14 @@ export default function Dashboard() {
                 <div className="grid lg:grid-cols-3 gap-6">
                     {/* Left Column - Expertise & Principles */}
                     <div className="lg:col-span-2 space-y-6">
+                        {/* Agent Control */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                        >
+                            <AgentControl lang={lang} />
+                        </motion.div>
+
                         {/* Expertise */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}

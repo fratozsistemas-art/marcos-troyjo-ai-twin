@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft, Loader2, MessageSquare } from 'lucide-react';
-import DocumentSelector from '@/components/documents/DocumentSelector';
+import EnhancedDocumentManager from '@/components/interview/EnhancedDocumentManager';
 
 export default function InterviewPrep() {
     const [lang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
@@ -173,7 +173,7 @@ export default function InterviewPrep() {
                             </CardContent>
                         </Card>
 
-                        <DocumentSelector
+                        <EnhancedDocumentManager
                             selectedDocuments={selectedDocuments}
                             onSelectionChange={setSelectedDocuments}
                             lang={lang}

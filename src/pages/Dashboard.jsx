@@ -7,7 +7,8 @@ import { toast } from 'sonner';
 
 import { 
     ArrowLeft, Globe, BookOpen, Award, MessageSquare, 
-    Trash2, Eye, Plus, Calendar, Loader2, Database, Info, FileSpreadsheet, FileJson
+    Trash2, Eye, Plus, Calendar, Loader2, Database, Info, FileSpreadsheet, FileJson,
+    Sparkles, ToggleLeft, ToggleRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -52,6 +53,10 @@ const translations = {
         deleteConfirm: "Tem certeza que deseja excluir esta conversa?",
         search: "Buscar conversas...",
         noResults: "Nenhuma conversa encontrada",
+        summaries: "Resumos AI",
+        generateSummary: "Gerar Resumo",
+        generating: "Gerando...",
+        summary: "Resumo",
         expertiseAreas: [
             { title: "Economia Global", desc: "Análise das dinâmicas geoeconômicas contemporâneas" },
             { title: "Comércio Internacional", desc: "Estratégias para inserção competitiva global" },
@@ -112,6 +117,10 @@ const translations = {
         deleteConfirm: "Are you sure you want to delete this conversation?",
         search: "Search conversations...",
         noResults: "No conversations found",
+        summaries: "AI Summaries",
+        generateSummary: "Generate Summary",
+        generating: "Generating...",
+        summary: "Summary",
         expertiseAreas: [
             { title: "Global Economics", desc: "Analysis of contemporary geoeconomic dynamics" },
             { title: "International Trade", desc: "Strategies for competitive global insertion" },
@@ -159,6 +168,9 @@ export default function Dashboard() {
     const [isLoading, setIsLoading] = useState(true);
     const [showWelcome, setShowWelcome] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [summariesEnabled, setSummariesEnabled] = useState(false);
+    const [generatingSummary, setGeneratingSummary] = useState(null);
+    const [conversationSummaries, setConversationSummaries] = useState({});
     const t = translations[lang];
 
     useEffect(() => {
@@ -213,6 +225,25 @@ export default function Dashboard() {
         } catch (error) {
             console.error('Error deleting conversation:', error);
             toast.error(lang === 'pt' ? 'Erro ao excluir conversa' : 'Error deleting conversation');
+        }
+    };
+
+    const handleGenerateSummary = async (conversationId) => {
+        setGeneratingSummary(conversationId);
+        try {
+            const response = await base44.functions.invoke('generateConversationSummary', {
+                conversation_id: conversationId
+            });
+            setConversationSummaries(prev => ({
+                ...prev,
+                [conversationId]: response.data.summary
+            }));
+            toast.success(lang === 'pt' ? 'Resumo gerado!' : 'Summary generated!');
+        } catch (error) {
+            console.error('Error generating summary:', error);
+            toast.error(lang === 'pt' ? 'Erro ao gerar resumo' : 'Error generating summary');
+        } finally {
+            setGeneratingSummary(null);
         }
     };
 
@@ -401,18 +432,30 @@ export default function Dashboard() {
                                         </CardTitle>
                                         <CardDescription>{t.conversationsDesc}</CardDescription>
                                     </div>
-                                    {conversations.length > 0 && (
-                                        <div className="flex gap-1">
-                                            <Button onClick={exportConversationsCSV} variant="ghost" size="sm">
-                                                <FileSpreadsheet className="w-4 h-4" />
-                                            </Button>
-                                            <Button onClick={exportConversationsJSON} variant="ghost" size="sm">
-                                                <FileJson className="w-4 h-4" />
-                                            </Button>
-                                        </div>
+                                    <div className="flex items-center gap-2">
+                                        {conversations.length > 0 && (
+                                            <div className="flex gap-1">
+                                                <Button onClick={exportConversationsCSV} variant="ghost" size="sm">
+                                                    <FileSpreadsheet className="w-4 h-4" />
+                                                </Button>
+                                                <Button onClick={exportConversationsJSON} variant="ghost" size="sm">
+                                                    <FileJson className="w-4 h-4" />
+                                                </Button>
+                                            </div>
                                         )}
-                                        </div>
-                                        </CardHeader>
+                                        <Button
+                                            variant={summariesEnabled ? "default" : "outline"}
+                                            size="sm"
+                                            onClick={() => setSummariesEnabled(!summariesEnabled)}
+                                            className="gap-2"
+                                        >
+                                            {summariesEnabled ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
+                                            <Sparkles className="w-4 h-4" />
+                                            <span className="hidden md:inline">{t.summaries}</span>
+                                        </Button>
+                                    </div>
+                                </div>
+                            </CardHeader>
                                         <CardContent>
                                         {conversations.length > 0 && (
                                         <div className="mb-4">
@@ -458,34 +501,65 @@ export default function Dashboard() {
                                             }
 
                                             return filtered.map((conv) => (
-                                            <div key={conv.id} className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-[#002D62]/20 hover:bg-gray-50/50 transition-all">
-                                                <div className="flex-1 min-w-0">
-                                                    <h4 className="font-medium text-sm text-[#333F48] truncate">
-                                                        {conv.metadata?.name || `Conversa ${new Date(conv.created_date).toLocaleDateString()}`}
-                                                    </h4>
-                                                    <p className="text-xs text-[#333F48]/50 flex items-center gap-1 mt-1">
-                                                        <Calendar className="w-3 h-3" />
-                                                        {new Date(conv.created_date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', {
-                                                            day: '2-digit',
-                                                            month: 'short',
-                                                            year: 'numeric',
-                                                            hour: '2-digit',
-                                                            minute: '2-digit'
-                                                        })}
-                                                    </p>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <Link to={createPageUrl('Consultation') + `?conversationId=${conv.id}`}>
-                                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                                            <Eye className="w-4 h-4" />
+                                            <div key={conv.id} className="p-3 rounded-lg border border-gray-100 hover:border-[#002D62]/20 hover:bg-gray-50/50 transition-all space-y-2">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex-1 min-w-0">
+                                                        <h4 className="font-medium text-sm text-[#333F48] truncate">
+                                                            {conv.metadata?.name || `Conversa ${new Date(conv.created_date).toLocaleDateString()}`}
+                                                        </h4>
+                                                        <p className="text-xs text-[#333F48]/50 flex items-center gap-1 mt-1">
+                                                            <Calendar className="w-3 h-3" />
+                                                            {new Date(conv.created_date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', {
+                                                                day: '2-digit',
+                                                                month: 'short',
+                                                                year: 'numeric',
+                                                                hour: '2-digit',
+                                                                minute: '2-digit'
+                                                            })}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        {summariesEnabled && (
+                                                            <Button 
+                                                                variant="ghost" 
+                                                                size="sm" 
+                                                                className="h-8 px-2"
+                                                                onClick={() => handleGenerateSummary(conv.id)}
+                                                                disabled={generatingSummary === conv.id || conversationSummaries[conv.id]}
+                                                            >
+                                                                {generatingSummary === conv.id ? (
+                                                                    <>
+                                                                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                                                                        <span className="text-xs">{t.generating}</span>
+                                                                    </>
+                                                                ) : conversationSummaries[conv.id] ? (
+                                                                    <span className="text-xs text-green-600">✓</span>
+                                                                ) : (
+                                                                    <>
+                                                                        <Sparkles className="w-3 h-3 mr-1" />
+                                                                        <span className="text-xs">{t.generateSummary}</span>
+                                                                    </>
+                                                                )}
+                                                            </Button>
+                                                        )}
+                                                        <Link to={createPageUrl('Consultation') + `?conversationId=${conv.id}`}>
+                                                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                                                <Eye className="w-4 h-4" />
+                                                            </Button>
+                                                        </Link>
+                                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => handleDeleteConversation(conv.id)}>
+                                                            <Trash2 className="w-4 h-4" />
                                                         </Button>
-                                                    </Link>
-                                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => handleDeleteConversation(conv.id)}>
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </Button>
+                                                    </div>
                                                 </div>
-                                                </div>
-                                                ));
+                                                {conversationSummaries[conv.id] && (
+                                                    <div className="bg-blue-50 rounded-lg p-2 border border-blue-100">
+                                                        <p className="text-xs font-semibold text-blue-900 mb-1">{t.summary}:</p>
+                                                        <p className="text-xs text-blue-800 leading-relaxed">{conversationSummaries[conv.id]}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            ));
                                                 })()}
                                                 </div>
                                 )}

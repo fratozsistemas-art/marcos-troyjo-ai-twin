@@ -140,16 +140,16 @@ export default function Home() {
                         >
                             <div className="aspect-square max-w-md mx-auto relative">
                                 <div className="absolute inset-0 bg-gradient-to-br from-[#002D62]/20 to-[#00654A]/20 rounded-3xl transform rotate-6" />
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#002D62] to-[#00654A] rounded-3xl overflow-hidden">
+                                <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-2xl">
                                     <img 
-                                        src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=600&fit=crop&crop=face"
-                                        alt="Professional portrait"
-                                        className="w-full h-full object-cover mix-blend-luminosity opacity-50"
+                                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Marcos_Troyjo_2020.jpg/800px-Marcos_Troyjo_2020.jpg"
+                                        alt="Marcos Prado Troyjo"
+                                        className="w-full h-full object-cover"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#002D62] via-transparent to-transparent" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#002D62]/90 via-[#002D62]/20 to-transparent" />
                                     <div className="absolute bottom-8 left-8 right-8">
                                         <BookOpen className="w-8 h-8 text-[#B8860B] mb-3" />
-                                        <p className="text-white/90 text-lg italic leading-relaxed">
+                                        <p className="text-white text-lg italic leading-relaxed font-light">
                                             "{t.quote}"
                                         </p>
                                     </div>

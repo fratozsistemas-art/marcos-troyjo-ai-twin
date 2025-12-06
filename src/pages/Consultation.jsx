@@ -9,6 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import MessageBubble from '@/components/chat/MessageBubble';
 import TopicCards from '@/components/chat/TopicCards';
 import ConversationSidebar from '@/components/consultation/ConversationSidebar';
+import { PersonaAdaptationProvider, usePersonaAdaptation } from '@/components/persona/PersonaAdaptationProvider';
+import PersonaIndicator from '@/components/persona/PersonaIndicator';
 
 const translations = {
     pt: {
@@ -39,7 +41,7 @@ const translations = {
     }
 };
 
-export default function Consultation() {
+function ConsultationInner() {
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
     const [conversation, setConversation] = useState(null);
     const [messages, setMessages] = useState([]);
@@ -50,6 +52,7 @@ export default function Consultation() {
     const messagesEndRef = useRef(null);
     const textareaRef = useRef(null);
     const t = translations[lang];
+    const { analyzeInteraction, getContextualPrompt } = usePersonaAdaptation();
 
     useEffect(() => {
         localStorage.setItem('troyjo_lang', lang);
@@ -159,9 +162,20 @@ export default function Consultation() {
         setIsLoading(true);
 
         try {
+            // Analyze user message for persona adaptation
+            const userMessage = { role: 'user', content: messageText };
+            analyzeInteraction(userMessage);
+
+            // Get contextual prompt for persona adaptation
+            const personaContext = getContextualPrompt();
+
+            // Add message with persona context
             await base44.agents.addMessage(conversation, {
                 role: 'user',
-                content: messageText
+                content: messageText,
+                metadata: {
+                    persona_context: personaContext
+                }
             });
 
             if (messages.length === 0 || messages.length === 2) {
@@ -338,6 +352,12 @@ export default function Consultation() {
             {/* Chat Area */}
             <main className="flex-1 overflow-auto bg-gradient-to-b from-gray-50 to-white">
                 <div className="max-w-4xl mx-auto px-4 py-6">
+                    {/* Persona Indicator */}
+                    {messages.length > 0 && (
+                        <div className="mb-4">
+                            <PersonaIndicator lang={lang} />
+                        </div>
+                    )}
                     {messages.length === 0 ? (
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -435,6 +455,24 @@ export default function Consultation() {
                 </div>
                 </footer>
                 </div>
-                </div>
-                );
-                }
+            </div>
+        );
+}
+
+export default function Consultation() {
+    const [conversation, setConversation] = useState(null);
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const conversationId = urlParams.get('conversationId');
+        if (conversationId) {
+            setConversation({ id: conversationId });
+        }
+    }, []);
+
+    return (
+        <PersonaAdaptationProvider conversationId={conversation?.id}>
+            <ConsultationInner />
+        </PersonaAdaptationProvider>
+    );
+}

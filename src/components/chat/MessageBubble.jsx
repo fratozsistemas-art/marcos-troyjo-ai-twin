@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { cn } from "@/lib/utils";
-import { User } from 'lucide-react';
+import { User, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 import DeepDiveSuggestions from './DeepDiveSuggestions';
 import FeedbackWidget from './FeedbackWidget';
 

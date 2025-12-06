@@ -218,6 +218,26 @@ export default function Dashboard() {
 
             <main className="max-w-7xl mx-auto px-4 md:px-6 py-8">
                 <div className="grid lg:grid-cols-3 gap-6">
+                    {/* Right Column - Settings & Topics */}
+                    <div className="space-y-6">
+                        {/* Topic Tracker */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                        >
+                            <TopicTracker lang={lang} />
+                        </motion.div>
+
+                        {/* Profile Settings */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.05 }}
+                        >
+                            <ProfileSettings lang={lang} />
+                        </motion.div>
+                    </div>
+
                     {/* Left Column - Expertise & Principles */}
                     <div className="lg:col-span-2 space-y-6">
                         {/* Agent Control */}
@@ -232,25 +252,9 @@ export default function Dashboard() {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.05 }}
-                        >
-                            <TopicTracker lang={lang} />
-                        </motion.div>
-
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.08 }}
                         >
                             <KnowledgeHub lang={lang} />
-                        </motion.div>
-
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
-                        >
-                            <ProfileSettings lang={lang} />
                         </motion.div>
 
                         {/* Expertise */}

@@ -454,8 +454,7 @@ export default function Dashboard() {
                                 )}
                             </CardContent>
                         </Card>
-                    </motion.div>
-                </div>
+                </motion.div>
 
                 {/* Bottom Section - Reorganized Grid */}
                 <div className="grid lg:grid-cols-2 gap-6">

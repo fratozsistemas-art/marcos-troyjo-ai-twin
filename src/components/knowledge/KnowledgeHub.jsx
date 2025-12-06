@@ -4,6 +4,7 @@ import { BookOpen, TrendingUp, BarChart3 } from 'lucide-react';
 import VocabularyManager from './VocabularyManager';
 import ConceptEvolutionTracker from './ConceptEvolutionTracker';
 import HUAValidator from './HUAValidator';
+import DocumentLibrary from './DocumentLibrary';
 
 export default function KnowledgeHub({ lang = 'pt' }) {
     const translations = {

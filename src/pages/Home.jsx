@@ -72,7 +72,7 @@ export default function Home() {
                 : "We have all the cards in hand, but we will only play well if we do our homework before the collapse."
         },
         {
-            image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/c9a7ebaff_Gemini_Generated_Image_nkh0p9nkh0p9nkh0.png",
+            image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/b0d511c23_Edit_the_image_with_a_subtle_integration_of_gold_a-1765055553586.png",
             type: "digital",
             quote: lang === 'pt'
                 ? "Competitividade não se declara, se constrói — com educação, infraestrutura e abertura"

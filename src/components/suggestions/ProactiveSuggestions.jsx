@@ -10,6 +10,8 @@ import { createPageUrl } from '@/utils';
 export default function ProactiveSuggestions({ lang = 'pt' }) {
     const [suggestions, setSuggestions] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [proactiveSuggestion, setProactiveSuggestion] = useState(null);
+    const [dismissed, setDismissed] = useState(false);
 
     const translations = {
         pt: {
@@ -38,7 +40,18 @@ export default function ProactiveSuggestions({ lang = 'pt' }) {
 
     useEffect(() => {
         loadSuggestions();
+        loadProactiveSuggestion();
     }, []);
+
+    const loadProactiveSuggestion = async () => {
+        try {
+            const user = await base44.auth.me();
+            const suggestion = await generateProactiveSuggestion(user.email, lang);
+            setProactiveSuggestion(suggestion);
+        } catch (error) {
+            console.error('Error loading proactive suggestion:', error);
+        }
+    };
 
     const loadSuggestions = async () => {
         setLoading(true);

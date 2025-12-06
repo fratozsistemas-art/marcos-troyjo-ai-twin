@@ -23,6 +23,7 @@ import DocumentChat from '@/components/chat/DocumentChat';
 import ProactiveSuggestions from '@/components/suggestions/ProactiveSuggestions';
 import PublicationsSection from '@/components/dashboard/PublicationsSection';
 import VoiceCalibration from '@/components/voice-calibration/VoiceCalibration';
+import PersonaAnalytics from '@/components/dashboard/PersonaAnalytics';
 
 const translations = {
     pt: {
@@ -291,9 +292,12 @@ export default function Dashboard() {
                     <TopicTracker lang={lang} />
                 </motion.div>
 
-                {/* Fifth Row - Expertise & Insights */}
+                {/* Fifth Row - Persona Analytics & Expertise */}
                 <div className="grid lg:grid-cols-2 gap-6">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="h-full">
+                        <PersonaAnalytics lang={lang} />
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="h-full">
                         <Card className="h-full">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-[#002D62]">
@@ -327,18 +331,20 @@ export default function Dashboard() {
                                 </div>
                             </CardContent>
                         </Card>
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="h-full">
-                        <InsightsSection lang={lang} />
-                    </motion.div>
-                </div>
+                        </motion.div>
+                        </div>
 
-                {/* Sixth Row - Persona & Conversations */}
+                        {/* Sixth Row - Insights */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
+                        <InsightsSection lang={lang} />
+                        </motion.div>
+
+                {/* Seventh Row - Persona & Conversations */}
                 <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="h-full">
                         <PersonaSettings lang={lang} />
                     </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="h-full">
                         <Card className="h-full">
                             <CardHeader>
                                 <div className="flex items-center justify-between">
@@ -420,7 +426,7 @@ export default function Dashboard() {
                 {/* Bottom Section - Reorganized Grid */}
                 <div className="grid lg:grid-cols-2 gap-6">
                     {/* Books & Awards Combined */}
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="h-full">
                         <Card className="h-full">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-[#002D62]">
@@ -456,7 +462,7 @@ export default function Dashboard() {
                     </motion.div>
 
                     {/* Knowledge Base & Language */}
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="h-full">
                         <Card className="h-full">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-[#002D62]">
@@ -494,12 +500,12 @@ export default function Dashboard() {
                 </div>
 
                 {/* Publications Section */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }}>
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
                     <PublicationsSection lang={lang} />
                 </motion.div>
 
                 {/* Voice Calibration Section */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.75 }}>
                     <VoiceCalibration lang={lang} />
                 </motion.div>
                 </main>

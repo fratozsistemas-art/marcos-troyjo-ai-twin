@@ -12,6 +12,7 @@ import ConversationSidebar from '@/components/consultation/ConversationSidebar';
 import { PersonaAdaptationProvider, usePersonaAdaptation } from '@/components/persona/PersonaAdaptationProvider';
 import PersonaIndicator from '@/components/persona/PersonaIndicator';
 import PersonaSelector from '@/components/persona/PersonaSelector';
+import { logTopics } from '@/components/intelligence/TopicTracker';
 
 const translations = {
     pt: {
@@ -170,6 +171,9 @@ function ConsultationInner() {
 
             // Get contextual prompt for persona adaptation
             const personaContext = getContextualPrompt();
+
+            // Log topics for intelligence tracking
+            await logTopics(conversation.id, messageText);
 
             // Add message with persona context
             await base44.agents.addMessage(conversation, {

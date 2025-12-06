@@ -182,42 +182,36 @@ export default function Home() {
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[
                             {
-                                icon: '🎭',
                                 title: lang === 'pt' ? 'Adaptação de Persona' : 'Persona Adaptation',
                                 desc: lang === 'pt' 
                                     ? 'O Digital Twin ajusta automaticamente seu estilo de comunicação (Professor, Técnico, Diplomático) baseado no seu perfil e interações'
                                     : 'The Digital Twin automatically adjusts its communication style (Professor, Technical, Diplomatic) based on your profile and interactions'
                             },
                             {
-                                icon: '📈',
                                 title: lang === 'pt' ? 'Rastreamento de Tópicos' : 'Topic Tracking',
                                 desc: lang === 'pt'
                                     ? 'Sistema inteligente que monitora tópicos frequentes e oferece sugestões proativas de conteúdo relevante'
                                     : 'Intelligent system that monitors frequent topics and offers proactive suggestions for relevant content'
                             },
                             {
-                                icon: '⚙️',
                                 title: lang === 'pt' ? 'Perfil Personalizável' : 'Customizable Profile',
                                 desc: lang === 'pt'
                                     ? 'Defina suas áreas de interesse (indústrias, regiões, teorias) para experiência sob medida'
                                     : 'Define your areas of interest (industries, regions, theories) for tailored experience'
                             },
                             {
-                                icon: '👍',
                                 title: lang === 'pt' ? 'Feedback Integrado' : 'Integrated Feedback',
                                 desc: lang === 'pt'
                                     ? 'Avalie respostas diretamente nas mensagens para refinar continuamente a qualidade das interações'
                                     : 'Rate responses directly in messages to continuously refine interaction quality'
                             },
                             {
-                                icon: '🎯',
                                 title: lang === 'pt' ? 'Dashboard Dinâmico' : 'Dynamic Dashboard',
                                 desc: lang === 'pt'
                                     ? 'Visualização customizável com insights, vocabulário técnico e análise de conversas'
                                     : 'Customizable visualization with insights, technical vocabulary and conversation analysis'
                             },
                             {
-                                icon: '🧠',
                                 title: lang === 'pt' ? 'Protocolo HUA' : 'HUA Protocol',
                                 desc: lang === 'pt'
                                     ? 'Validação rigorosa de Hierarquia, Utilidade e Aderência para garantir máxima fidelidade ao pensamento Troyjo'
@@ -232,9 +226,6 @@ export default function Home() {
                                 transition={{ delay: index * 0.1 }}
                                 className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-[#002D62]/30 hover:shadow-xl transition-all duration-300 group"
                             >
-                                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">
-                                    {capability.icon}
-                                </div>
                                 <h3 className="text-xl font-bold text-[#002D62] mb-3">
                                     {capability.title}
                                 </h3>
@@ -280,31 +271,52 @@ export default function Home() {
             </section>
 
             {/* Credentials */}
-            <section className="py-20 px-6">
-                <div className="max-w-4xl mx-auto">
+            <section className="py-20 px-6 bg-gradient-to-b from-white to-gray-50">
+                <div className="max-w-6xl mx-auto">
+                    <motion.h2 
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        className="text-3xl font-bold text-[#002D62] mb-12 text-center"
+                    >
+                        {t.credentials}
+                    </motion.h2>
+
+                    <div className="grid md:grid-cols-2 gap-6 mb-8">
+                        {t.credentialsList.map((credential, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.1 }}
+                                className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-[#002D62]/20 hover:shadow-lg transition-all duration-300"
+                            >
+                                <div className="flex items-start gap-4">
+                                    <div className="w-3 h-3 rounded-full bg-[#B8860B] mt-1 flex-shrink-0" />
+                                    <div>
+                                        <p className="text-[#002D62] font-semibold leading-relaxed">{credential}</p>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         className="bg-gradient-to-br from-[#002D62] to-[#00654A] rounded-3xl p-8 md:p-12"
                     >
-                        <h2 className="text-2xl font-bold text-white mb-8">{t.credentials}</h2>
-                        <div className="space-y-4">
-                            {t.credentialsList.map((credential, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: index * 0.1 }}
-                                    className="flex items-center gap-4"
-                                >
-                                    <div className="w-2 h-2 rounded-full bg-[#B8860B]" />
-                                    <span className="text-white/90">{credential}</span>
-                                </motion.div>
-                            ))}
-                        </div>
-                        <div className="mt-10 flex flex-wrap gap-4">
+                        <h3 className="text-xl font-bold text-white mb-6">
+                            {lang === 'pt' ? 'Acesso Especializado' : 'Specialized Access'}
+                        </h3>
+                        <p className="text-white/90 mb-8 leading-relaxed">
+                            {lang === 'pt' 
+                                ? 'Consultas customizadas para diferentes contextos e audiências, com análises e recomendações sob medida.'
+                                : 'Customized consultations for different contexts and audiences, with tailored analysis and recommendations.'}
+                        </p>
+                        <div className="flex flex-wrap gap-4">
                             <Link to={createPageUrl('Consultation') + '?context=board'}>
                                 <Button variant="secondary" className="bg-white text-[#002D62] hover:bg-gray-100 gap-2">
                                     <Building2 className="w-4 h-4" />

@@ -249,11 +249,20 @@ export default function Dashboard() {
                             </Card>
                         </motion.div>
 
-                        {/* Conversations History */}
+                        {/* Persona Settings */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
+                        >
+                            <PersonaSettings lang={lang} />
+                        </motion.div>
+
+                        {/* Conversations History */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
                         >
                             <Card>
                                 <CardHeader>
@@ -333,7 +342,7 @@ export default function Dashboard() {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
+                            transition={{ delay: 0.3 }}
                         >
                             <Card>
                                 <CardHeader>
@@ -360,7 +369,7 @@ export default function Dashboard() {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3 }}
+                            transition={{ delay: 0.4 }}
                         >
                             <Card>
                                 <CardHeader>
@@ -386,7 +395,7 @@ export default function Dashboard() {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4 }}
+                            transition={{ delay: 0.5 }}
                         >
                             <Card>
                                 <CardHeader>
@@ -412,7 +421,7 @@ export default function Dashboard() {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 }}
+                            transition={{ delay: 0.6 }}
                         >
                             <Card>
                                 <CardHeader>

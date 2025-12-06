@@ -3,8 +3,9 @@ import ReactMarkdown from 'react-markdown';
 import { cn } from "@/lib/utils";
 import { User } from 'lucide-react';
 import DeepDiveSuggestions from './DeepDiveSuggestions';
+import FeedbackWidget from './FeedbackWidget';
 
-export default function MessageBubble({ message, onSuggestionSelect, lang = 'pt' }) {
+export default function MessageBubble({ message, onSuggestionSelect, lang = 'pt', conversationId, messageIndex }) {
     const isUser = message.role === 'user';
     const isLoading = message.role === 'assistant' && !message.content && message.tool_calls?.some(tc => tc.status === 'running' || tc.status === 'in_progress');
     
@@ -70,11 +71,20 @@ export default function MessageBubble({ message, onSuggestionSelect, lang = 'pt'
                         ) : null}
 
                         {!isUser && message.suggestions && message.suggestions.length > 0 && (
-                        <DeepDiveSuggestions 
-                        suggestions={message.suggestions}
-                        onSelect={onSuggestionSelect}
-                        lang={lang}
-                        />
+                            <DeepDiveSuggestions 
+                                suggestions={message.suggestions}
+                                onSelect={onSuggestionSelect}
+                                lang={lang}
+                            />
+                        )}
+
+                        {!isUser && !isLoading && message.content && conversationId && (
+                            <FeedbackWidget
+                                message={message}
+                                conversationId={conversationId}
+                                messageIndex={messageIndex}
+                                lang={lang}
+                            />
                         )}
                         </div>
 

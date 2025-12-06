@@ -293,6 +293,8 @@ export default function Consultation() {
                                             message={message} 
                                             onSuggestionSelect={handleSuggestionSelect}
                                             lang={lang}
+                                            conversationId={conversation?.id}
+                                            messageIndex={index}
                                         />
                                     </motion.div>
                                 ))}

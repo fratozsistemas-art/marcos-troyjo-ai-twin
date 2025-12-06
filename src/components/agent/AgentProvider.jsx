@@ -12,33 +12,94 @@ export function useAgent() {
     return context;
 }
 
-function getUiSnapshot() {
-    const screenEl = document.querySelector('[data-ai-screen]');
-    const screen = screenEl?.getAttribute('data-ai-screen') || null;
+function captureUIState() {
+    const screen = document.querySelector('[data-ai-screen]')?.getAttribute('data-ai-screen');
+    const elements = Array.from(document.querySelectorAll('[data-ai-id]')).map(el => {
+        const rect = el.getBoundingClientRect();
+        const isVisible = rect.width > 0 && rect.height > 0 && 
+                         window.getComputedStyle(el).visibility !== 'hidden' &&
+                         window.getComputedStyle(el).display !== 'none';
 
-    const elements = [];
-    document.querySelectorAll('[data-ai-id]').forEach((el) => {
-        const element = el;
-        const id = element.getAttribute('data-ai-id');
-        const role = element.getAttribute('data-ai-role') || 'unknown';
-        const rect = element.getBoundingClientRect();
+        const baseInfo = {
+            id: el.getAttribute('data-ai-id'),
+            role: el.getAttribute('data-ai-role'),
+            tag: el.tagName.toLowerCase(),
+            text: el.textContent?.trim().substring(0, 150) || '',
+            visible: isVisible,
+            disabled: el.hasAttribute('disabled') || el.getAttribute('aria-disabled') === 'true',
+        };
 
-        let value = null;
-        if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
-            value = element.value;
+        if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+            baseInfo.value = el.value;
+            baseInfo.placeholder = el.placeholder;
+            baseInfo.type = el.type;
         }
 
-        elements.push({
-            id,
-            role,
-            text: element.textContent?.trim() || null,
-            value,
-            visible: rect.width > 0 && rect.height > 0,
-            disabled: element.disabled ?? false,
-        });
+        if (el instanceof HTMLSelectElement) {
+            baseInfo.value = el.value;
+            baseInfo.options = Array.from(el.options).map(o => o.text);
+        }
+
+        if (el.getAttribute('aria-label')) {
+            baseInfo.label = el.getAttribute('aria-label');
+        }
+
+        if (el.getAttribute('aria-checked')) {
+            baseInfo.checked = el.getAttribute('aria-checked') === 'true';
+        }
+
+        if (el.getAttribute('aria-expanded')) {
+            baseInfo.expanded = el.getAttribute('aria-expanded') === 'true';
+        }
+
+        return baseInfo;
     });
 
-    return { screen, elements };
+    return { screen, elements, timestamp: Date.now() };
+}
+
+function getElementContent(elementId) {
+    const el = document.querySelector(`[data-ai-id="${elementId}"]`);
+    if (!el) return null;
+
+    const content = {
+        id: elementId,
+        exists: true,
+        visible: el.offsetParent !== null,
+        text: el.textContent?.trim() || '',
+        html: el.innerHTML?.substring(0, 500) || '',
+    };
+
+    if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+        content.value = el.value;
+        content.placeholder = el.placeholder;
+        content.type = el.type;
+        content.disabled = el.disabled;
+        content.readOnly = el.readOnly;
+    }
+
+    if (el instanceof HTMLSelectElement) {
+        content.value = el.value;
+        content.selectedIndex = el.selectedIndex;
+        content.options = Array.from(el.options).map(o => ({
+            text: o.text,
+            value: o.value,
+            selected: o.selected
+        }));
+    }
+
+    const styles = window.getComputedStyle(el);
+    content.styles = {
+        display: styles.display,
+        visibility: styles.visibility,
+        opacity: styles.opacity,
+    };
+
+    return content;
+}
+
+function getUiSnapshot() {
+    return captureUIState();
 }
 
 async function executeAction(action, navigate, onConfirmation) {

@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import PersonaSettings from '@/components/dashboard/PersonaSettings';
 import InsightsSection from '@/components/dashboard/InsightsSection';
+import KnowledgeHub from '@/components/knowledge/KnowledgeHub';
 
 const translations = {
     pt: {

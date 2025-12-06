@@ -144,7 +144,7 @@ export default function ArticleGenerator() {
                         <Link to={createPageUrl('Dashboard')}>
                             <Button variant="ghost" size="sm" className="text-[#333F48] gap-2">
                                 <ArrowLeft className="w-4 h-4" />
-                                {t.back}
+                                <span>{t.back}</span>
                             </Button>
                         </Link>
                         <div>

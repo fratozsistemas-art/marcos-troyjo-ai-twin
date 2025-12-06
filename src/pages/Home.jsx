@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
-import { ArrowRight, Globe, TrendingUp, Building2, Landmark, BookOpen, MessageSquare } from 'lucide-react';
+import { ArrowRight, Globe, TrendingUp, Building2, Landmark, BookOpen, MessageSquare, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const translations = {
@@ -77,7 +77,13 @@ export default function Home() {
                         </div>
                         <span className="font-semibold text-[#333F48] hidden sm:block">Troyjo Digital Twin</span>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 md:gap-4">
+                        <Link to={createPageUrl('Dashboard')}>
+                            <Button variant="ghost" size="sm" className="text-[#333F48] gap-2">
+                                <LayoutDashboard className="w-4 h-4" />
+                                <span className="hidden md:inline">{lang === 'pt' ? 'Painel' : 'Dashboard'}</span>
+                            </Button>
+                        </Link>
                         <button
                             onClick={() => setLang(lang === 'pt' ? 'en' : 'pt')}
                             className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors text-sm font-medium text-[#333F48]"

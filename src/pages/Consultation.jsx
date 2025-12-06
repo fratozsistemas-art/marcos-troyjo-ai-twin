@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, ArrowLeft, Globe, Loader2, MessageSquare, Plus, Trash2 } from 'lucide-react';
+import { Send, ArrowLeft, Globe, Loader2, MessageSquare, Plus, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import MessageBubble from '@/components/chat/MessageBubble';
@@ -54,7 +54,14 @@ export default function Consultation() {
     }, [lang]);
 
     useEffect(() => {
-        initConversation();
+        const urlParams = new URLSearchParams(window.location.search);
+        const conversationId = urlParams.get('conversationId');
+        
+        if (conversationId) {
+            loadExistingConversation(conversationId);
+        } else {
+            initConversation();
+        }
     }, []);
 
     useEffect(() => {
@@ -65,11 +72,25 @@ export default function Consultation() {
         if (!conversation?.id) return;
         
         const unsubscribe = base44.agents.subscribeToConversation(conversation.id, (data) => {
-            setMessages(data.messages || []);
+            setMessages(processMessages(data.messages || []));
         });
 
         return () => unsubscribe();
     }, [conversation?.id]);
+
+    const loadExistingConversation = async (conversationId) => {
+        setIsInitializing(true);
+        try {
+            const existingConv = await base44.agents.getConversation(conversationId);
+            setConversation(existingConv);
+            setMessages(processMessages(existingConv.messages || []));
+        } catch (error) {
+            console.error('Error loading conversation:', error);
+            initConversation();
+        } finally {
+            setIsInitializing(false);
+        }
+    };
 
     const initConversation = async () => {
         setIsInitializing(true);
@@ -88,6 +109,44 @@ export default function Consultation() {
         } finally {
             setIsInitializing(false);
         }
+    };
+
+    const processMessages = (msgs) => {
+        return msgs.map(msg => {
+            if (msg.role === 'assistant' && msg.content) {
+                const suggestions = extractSuggestions(msg.content);
+                return { ...msg, suggestions };
+            }
+            return msg;
+        });
+    };
+
+    const extractSuggestions = (content) => {
+        const patterns = [
+            /\*\*Sugestões de aprofundamento:\*\*\s*\n((?:[-•]\s*.+\n?)+)/i,
+            /\*\*Follow-up suggestions:\*\*\s*\n((?:[-•]\s*.+\n?)+)/i,
+            /Gostaria de explorar:?\s*\n((?:[-•]\s*.+\n?)+)/i,
+            /Would you like to explore:?\s*\n((?:[-•]\s*.+\n?)+)/i
+        ];
+
+        for (const pattern of patterns) {
+            const match = content.match(pattern);
+            if (match) {
+                const suggestions = match[1]
+                    .split('\n')
+                    .map(s => s.replace(/^[-•]\s*/, '').trim())
+                    .filter(s => s.length > 0)
+                    .slice(0, 3);
+                return suggestions;
+            }
+        }
+
+        const lastParagraph = content.split('\n').filter(p => p.trim()).slice(-1)[0];
+        if (lastParagraph && (lastParagraph.includes('?') || lastParagraph.toLowerCase().includes('explorar'))) {
+            return [];
+        }
+
+        return [];
     };
 
     const handleSend = async (customMessage) => {
@@ -117,7 +176,12 @@ export default function Consultation() {
     };
 
     const handleNewChat = () => {
+        window.history.pushState({}, '', createPageUrl('Consultation'));
         initConversation();
+    };
+
+    const handleSuggestionSelect = (suggestion) => {
+        handleSend(suggestion);
     };
 
     if (isInitializing) {
@@ -156,6 +220,16 @@ export default function Consultation() {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
+                        <Link to={createPageUrl('Dashboard')}>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-[#333F48] gap-2"
+                            >
+                                <LayoutDashboard className="w-4 h-4" />
+                                <span className="hidden sm:inline">{lang === 'pt' ? 'Painel' : 'Dashboard'}</span>
+                            </Button>
+                        </Link>
                         <Button
                             variant="ghost"
                             size="sm"
@@ -215,7 +289,11 @@ export default function Consultation() {
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0 }}
                                     >
-                                        <MessageBubble message={message} />
+                                        <MessageBubble 
+                                            message={message} 
+                                            onSuggestionSelect={handleSuggestionSelect}
+                                            lang={lang}
+                                        />
                                     </motion.div>
                                 ))}
                             </AnimatePresence>

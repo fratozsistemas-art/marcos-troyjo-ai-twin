@@ -2,8 +2,9 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { cn } from "@/lib/utils";
 import { User } from 'lucide-react';
+import DeepDiveSuggestions from './DeepDiveSuggestions';
 
-export default function MessageBubble({ message }) {
+export default function MessageBubble({ message, onSuggestionSelect, lang = 'pt' }) {
     const isUser = message.role === 'user';
     const isLoading = message.role === 'assistant' && !message.content && message.tool_calls?.some(tc => tc.status === 'running' || tc.status === 'in_progress');
     
@@ -65,15 +66,23 @@ export default function MessageBubble({ message }) {
                                 {message.content}
                             </ReactMarkdown>
                         )}
-                    </div>
-                ) : null}
-            </div>
-            
-            {isUser && (
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                    <User className="w-5 h-5 text-[#333F48]" />
-                </div>
-            )}
-        </div>
-    );
-}
+                        </div>
+                        ) : null}
+
+                        {!isUser && message.suggestions && message.suggestions.length > 0 && (
+                        <DeepDiveSuggestions 
+                        suggestions={message.suggestions}
+                        onSelect={onSuggestionSelect}
+                        lang={lang}
+                        />
+                        )}
+                        </div>
+
+                        {isUser && (
+                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                        <User className="w-5 h-5 text-[#333F48]" />
+                        </div>
+                        )}
+                        </div>
+                        );
+                        }

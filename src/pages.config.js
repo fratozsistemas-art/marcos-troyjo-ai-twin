@@ -8,6 +8,7 @@ import DocumentAssessment from './pages/DocumentAssessment';
 import History from './pages/History';
 import DocumentChatPage from './pages/DocumentChatPage';
 import Assets from './pages/Assets';
+import AgentUI from './pages/AgentUI';
 import __Layout from './Layout.jsx';
 
 
@@ -22,6 +23,7 @@ export const PAGES = {
     "History": History,
     "DocumentChatPage": DocumentChatPage,
     "Assets": Assets,
+    "AgentUI": AgentUI,
 }
 
 export const pagesConfig = {

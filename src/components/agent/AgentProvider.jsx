@@ -244,7 +244,7 @@ export function AgentProvider({ children, navigate }) {
         }
     }, [pendingConfirmation]);
 
-    const runAgent = useCallback(async (goal, maxSteps = 15) => {
+    const runAgent = useCallback(async (goal, maxSteps = 15, taskId = null) => {
         setIsRunning(true);
         setCurrentGoal(goal);
         setSteps([]);
@@ -253,10 +253,31 @@ export function AgentProvider({ children, navigate }) {
         let stepCount = 0;
         let conversationHistory = [];
 
+        if (taskId) {
+            try {
+                await base44.entities.AgentTask.update(taskId, {
+                    status: 'in_progress',
+                    started_at: new Date().toISOString()
+                });
+            } catch (err) {
+                console.error('Error updating task status:', err);
+            }
+        }
+
         while (stepCount < maxSteps) {
             stepCount++;
 
             const uiState = getUiSnapshot();
+            
+            if (taskId) {
+                try {
+                    await base44.entities.AgentTask.update(taskId, {
+                        completed_steps: stepCount
+                    });
+                } catch (err) {
+                    console.error('Error updating task progress:', err);
+                }
+            }
             
             try {
                 const response = await base44.functions.invoke('agentStep', {
@@ -327,12 +348,35 @@ export function AgentProvider({ children, navigate }) {
             } catch (err) {
                 console.error('Agent step error:', err);
                 setError(err.message);
+                
+                if (taskId) {
+                    try {
+                        await base44.entities.AgentTask.update(taskId, {
+                            status: 'failed',
+                            error_message: err.message,
+                            completed_at: new Date().toISOString()
+                        });
+                    } catch (updateErr) {
+                        console.error('Error updating task failure:', updateErr);
+                    }
+                }
                 break;
             }
         }
 
+        if (taskId && !error) {
+            try {
+                await base44.entities.AgentTask.update(taskId, {
+                    status: 'completed',
+                    completed_at: new Date().toISOString()
+                });
+            } catch (err) {
+                console.error('Error marking task complete:', err);
+            }
+        }
+
         setIsRunning(false);
-    }, [navigate]);
+    }, [navigate, base44]);
 
     const stopAgent = useCallback(() => {
         setIsRunning(false);

@@ -4,12 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Play, Square, Zap, CheckCircle2, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import TaskManager from './TaskManager';
 
 export default function AgentControl({ lang = 'pt' }) {
     const { isRunning, currentGoal, steps, error, runAgent, stopAgent, pendingConfirmation, confirmAction } = useAgent();
     const [goalInput, setGoalInput] = useState('');
+    const [activeTab, setActiveTab] = useState('direct');
 
     const translations = {
         pt: {
@@ -46,6 +49,12 @@ export default function AgentControl({ lang = 'pt' }) {
         }
     };
 
+    const handleTaskExecution = (goal, taskId) => {
+        setGoalInput(goal);
+        setActiveTab('direct');
+        runAgent(goal, 15, taskId);
+    };
+
     return (
         <>
             <Card className="border-2 border-[#7B3F00] bg-gradient-to-br from-white to-amber-50/30 shadow-md">
@@ -57,6 +66,17 @@ export default function AgentControl({ lang = 'pt' }) {
                     <CardDescription className="text-gray-100">{t.desc}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-6">
+                <Tabs value={activeTab} onValueChange={setActiveTab}>
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="direct">
+                            {lang === 'pt' ? 'Execução Direta' : 'Direct Execution'}
+                        </TabsTrigger>
+                        <TabsTrigger value="tasks">
+                            {lang === 'pt' ? 'Gerenciar Tarefas' : 'Task Manager'}
+                        </TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="direct" className="space-y-4 mt-4">
                 <div className="flex gap-2">
                     <Input
                         data-ai-id="input_agent_goal"
@@ -200,6 +220,12 @@ export default function AgentControl({ lang = 'pt' }) {
                         </div>
                     </div>
                 )}
+                    </TabsContent>
+
+                    <TabsContent value="tasks">
+                        <TaskManager lang={lang} onExecuteTask={handleTaskExecution} />
+                    </TabsContent>
+                </Tabs>
                 </CardContent>
             </Card>
 

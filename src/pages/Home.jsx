@@ -66,17 +66,23 @@ export default function Home() {
     const slides = [
         {
             image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/63714d95c_Edit_the_image_to_enhance_gold_and_cyan_tones_thro-1765055808709.png",
-            type: "photo"
+            type: "photo",
+            quote: lang === 'pt' 
+                ? "Temos todas as cartas na mão, mas só jogaremos bem se fizermos a lição de casa antes do colapso."
+                : "We have all the cards in hand, but we will only play well if we do our homework before the collapse."
+        },
+        {
+            image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/c9a7ebaff_Gemini_Generated_Image_nkh0p9nkh0p9nkh0.png",
+            type: "digital",
+            quote: lang === 'pt'
+                ? "Competitividade não se declara, se constrói — com educação, infraestrutura e abertura"
+                : "Competitiveness is not declared, it is built — with education, infrastructure and openness"
         },
         {
             type: "narrative",
             text: lang === 'pt' 
                 ? "Inteligência Geopolítica de Elite, disponível 24/7"
                 : "Elite Geopolitical Intelligence, available 24/7"
-        },
-        {
-            image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/c9a7ebaff_Gemini_Generated_Image_nkh0p9nkh0p9nkh0.png",
-            type: "digital"
         }
     ];
 
@@ -178,7 +184,16 @@ export default function Home() {
                                             className="absolute inset-0"
                                         >
                                             {slide.type === "narrative" ? (
-                                                <div className="w-full h-full bg-gradient-to-br from-[#002D62] via-[#00654A] to-[#002D62] flex items-center justify-center p-12">
+                                                <div className="w-full h-full bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center p-12 relative overflow-hidden">
+                                                    <div className="absolute inset-0 opacity-5">
+                                                        <svg className="w-full h-full" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M400,100 Q500,200 400,300 T400,500 T400,700" fill="none" stroke="#002D62" strokeWidth="2"/>
+                                                            <path d="M200,100 Q300,200 200,300 T200,500 T200,700" fill="none" stroke="#00654A" strokeWidth="2"/>
+                                                            <path d="M600,100 Q700,200 600,300 T600,500 T600,700" fill="none" stroke="#B8860B" strokeWidth="2"/>
+                                                            <circle cx="400" cy="400" r="120" fill="none" stroke="#002D62" strokeWidth="3" opacity="0.3"/>
+                                                            <circle cx="400" cy="400" r="90" fill="none" stroke="#00654A" strokeWidth="2" opacity="0.3"/>
+                                                        </svg>
+                                                    </div>
                                                     <motion.p 
                                                         initial={{ y: 20, opacity: 0 }}
                                                         animate={{ 
@@ -186,7 +201,7 @@ export default function Home() {
                                                             opacity: currentSlide === index ? 1 : 0
                                                         }}
                                                         transition={{ delay: 0.3, duration: 0.6 }}
-                                                        className="text-3xl md:text-4xl font-light text-white text-center leading-relaxed"
+                                                        className="text-3xl md:text-4xl font-light text-[#002D62] text-center leading-relaxed relative z-10"
                                                     >
                                                         {slide.text}
                                                     </motion.p>
@@ -198,7 +213,7 @@ export default function Home() {
                                                         alt="Marcos Prado Troyjo"
                                                         className="w-full h-full object-cover"
                                                     />
-                                                    {slide.type === "digital" && (
+                                                    {slide.quote && (
                                                         <>
                                                             <div className="absolute inset-0 bg-gradient-to-t from-[#002D62]/90 via-[#002D62]/20 to-transparent" />
                                                             <motion.div 
@@ -212,7 +227,7 @@ export default function Home() {
                                                             >
                                                                 <BookOpen className="w-8 h-8 text-[#B8860B] mb-3" />
                                                                 <p className="text-white text-lg italic leading-relaxed font-light">
-                                                                    "{t.quote}"
+                                                                    "{slide.quote}"
                                                                 </p>
                                                             </motion.div>
                                                         </>

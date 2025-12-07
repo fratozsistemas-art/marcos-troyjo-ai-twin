@@ -159,7 +159,7 @@ function ConsultationInner() {
 
     const handleSend = async (customMessage) => {
         const messageText = customMessage || input.trim();
-        if (!messageText || !conversation || isLoading) return;
+        if (!messageText || !conversation?.id || isLoading) return;
 
         setInput('');
         setIsLoading(true);
@@ -429,7 +429,7 @@ function ConsultationInner() {
                             data-ai-id="btn_send_message"
                             data-ai-role="button"
                             onClick={() => handleSend()}
-                            disabled={!input.trim() || isLoading}
+                            disabled={!input.trim() || isLoading || !conversation?.id}
                             className="h-[52px] w-[52px] rounded-xl bg-[#002D62] hover:bg-[#001d42] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading ? (

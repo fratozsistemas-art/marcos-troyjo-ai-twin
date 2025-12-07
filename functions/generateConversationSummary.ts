@@ -1,4 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
+import { checkRateLimit } from './utils/rateLimiter.js';
+import { logAccess } from './utils/accessControl.js';
+import { watermarkContent } from './utils/watermark.js';
 
 Deno.serve(async (req) => {
     try {
@@ -7,6 +10,15 @@ Deno.serve(async (req) => {
         
         if (!user) {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Rate limiting
+        const rateCheck = checkRateLimit(user.email, 'generateSummary');
+        if (!rateCheck.allowed) {
+            return Response.json({ 
+                error: 'Rate limit exceeded',
+                retryAfter: rateCheck.retryAfter 
+            }, { status: 429 });
         }
 
         const { conversation_id } = await req.json();
@@ -50,8 +62,16 @@ Gere apenas o resumo, sem introduções ou conclusões adicionais.`;
             add_context_from_internet: false
         });
 
+        // Log access
+        await logAccess(req, 'export', 'conversation', conversation_id, {
+            action: 'generate_summary'
+        });
+
+        // Watermark the summary
+        const watermarked = await watermarkContent(req, response, 'conversation_summary');
+
         return Response.json({ 
-            summary: response
+            summary: watermarked.content
         });
 
     } catch (error) {

@@ -1,4 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
+import { checkRateLimit } from './utils/rateLimiter.js';
+import { logAccess } from './utils/accessControl.js';
+import { watermarkContent } from './utils/watermark.js';
 
 Deno.serve(async (req) => {
     try {
@@ -7,6 +10,15 @@ Deno.serve(async (req) => {
         
         if (!user) {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Rate limiting
+        const rateCheck = checkRateLimit(user.email, 'prepareInterview');
+        if (!rateCheck.allowed) {
+            return Response.json({ 
+                error: 'Rate limit exceeded. Please try again later.',
+                retryAfter: rateCheck.retryAfter 
+            }, { status: 429 });
         }
 
         const { interviewer_profile, topic, context, file_urls } = await req.json();
@@ -103,6 +115,19 @@ Seja estratégico e antecipe diferentes ângulos de questionamento.`;
                 }
             }
         });
+
+        // Log access
+        await logAccess(req, 'create', 'interview_prep', topic, {
+            has_documents: !!file_urls
+        });
+
+        // Watermark sensitive sections
+        if (response.probable_questions) {
+            for (const q of response.probable_questions) {
+                const watermarked = await watermarkContent(req, q.suggested_answer, 'interview_answer');
+                q.suggested_answer = watermarked.content;
+            }
+        }
 
         return Response.json(response);
 

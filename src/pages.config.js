@@ -11,6 +11,7 @@ import Assets from './pages/Assets';
 import AgentUI from './pages/AgentUI';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import SecurityAdmin from './pages/SecurityAdmin';
 import __Layout from './Layout.jsx';
 
 
@@ -28,6 +29,7 @@ export const PAGES = {
     "AgentUI": AgentUI,
     "PrivacyPolicy": PrivacyPolicy,
     "TermsOfService": TermsOfService,
+    "SecurityAdmin": SecurityAdmin,
 }
 
 export const pagesConfig = {

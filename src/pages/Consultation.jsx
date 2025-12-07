@@ -12,6 +12,7 @@ import ConversationSidebar from '@/components/consultation/ConversationSidebar';
 import { PersonaAdaptationProvider, usePersonaAdaptation } from '@/components/persona/PersonaAdaptationProvider';
 import PersonaIndicator from '@/components/persona/PersonaIndicator';
 import PersonaSelector from '@/components/persona/PersonaSelector';
+import ConversationExport from '@/components/consultation/ConversationExport';
 import { logTopics } from '@/components/intelligence/TopicTracker';
 
 const translations = {
@@ -329,6 +330,13 @@ function ConsultationInner() {
                             <Plus className="w-4 h-4" />
                             <span className="hidden sm:inline">{t.newChat}</span>
                         </Button>
+                        {messages.length > 0 && conversation && (
+                            <ConversationExport
+                                conversation={conversation}
+                                messages={messages}
+                                lang={lang}
+                            />
+                        )}
                         <button
                             data-ai-id="btn_toggle_language"
                             data-ai-role="button"

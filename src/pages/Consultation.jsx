@@ -383,7 +383,7 @@ function ConsultationInner() {
                             </div>
                         </motion.div>
                     ) : (
-                        <div className="space-y-6 pb-4">
+                        <div className="space-y-5 pb-6">
                             <AnimatePresence>
                                 {messages.map((message, index) => (
                                     <motion.div
@@ -409,7 +409,7 @@ function ConsultationInner() {
             </main>
 
             {/* Input Area */}
-            <footer className="sticky bottom-0 bg-white border-t border-gray-200 p-4 shadow-lg">
+            <footer className="sticky bottom-0 bg-white border-t border-gray-200 py-4 px-4 shadow-lg">
                 <div className="max-w-4xl mx-auto">
                     <div className="flex gap-3 items-end">
                         <div className="flex-1 relative">

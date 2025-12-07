@@ -165,23 +165,10 @@ function ConsultationInner() {
         setIsLoading(true);
 
         try {
-            // Analyze user message for persona adaptation
-            const userMessage = { role: 'user', content: messageText };
-            analyzeInteraction(userMessage);
-
-            // Get contextual prompt for persona adaptation
-            const personaContext = getContextualPrompt();
-
-            // Log topics for intelligence tracking
-            await logTopics(conversation.id, messageText);
-
-            // Add message with persona context
+            // Add message
             await base44.agents.addMessage(conversation, {
                 role: 'user',
-                content: messageText,
-                metadata: {
-                    persona_context: personaContext
-                }
+                content: messageText
             });
 
             if (messages.length === 0 || messages.length === 2) {

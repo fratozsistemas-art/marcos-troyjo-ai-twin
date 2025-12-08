@@ -12,7 +12,8 @@ import {
     History,
     Bot,
     FolderOpen,
-    UserCog
+    UserCog,
+    Database
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -24,6 +25,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
             home: 'Início',
             dashboard: 'Painel',
             consultation: 'Consulta',
+            knowledgeHub: 'Hub de Conhecimento',
             personas: 'Personas',
             agentUI: 'Agente UI',
             assets: 'Assets',
@@ -37,6 +39,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
             home: 'Home',
             dashboard: 'Dashboard',
             consultation: 'Consultation',
+            knowledgeHub: 'Knowledge Hub',
             personas: 'Personas',
             agentUI: 'UI Agent',
             assets: 'Assets',
@@ -54,6 +57,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
         { label: t.home, path: 'Home', icon: Home },
         { label: t.dashboard, path: 'Dashboard', icon: LayoutDashboard },
         { label: t.consultation, path: 'Consultation', icon: MessageSquare },
+        { label: t.knowledgeHub, path: 'KnowledgeHub', icon: Database },
         { label: t.personas, path: 'PersonaManagement', icon: UserCog },
         { label: t.agentUI, path: 'AgentUI', icon: Bot },
         { label: t.assets, path: 'Assets', icon: FolderOpen },

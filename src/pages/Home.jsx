@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { ArrowRight, Globe, TrendingUp, Building2, Landmark, BookOpen, MessageSquare, LayoutDashboard, Zap, Network, DollarSign, Brain } from 'lucide-react';
+import { ArrowRight, Globe, TrendingUp, Building2, Landmark, BookOpen, MessageSquare, LayoutDashboard, Zap, Network, DollarSign, Brain, Badge as BadgeIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const translations = {

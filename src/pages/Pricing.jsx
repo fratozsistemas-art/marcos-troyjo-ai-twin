@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Check, Zap, Crown, Building2, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEmailVerification } from '@/components/subscription/VerificationGate';
+import UpgradeRequestForm from '@/components/subscription/UpgradeRequestForm';
 
 const PLANS = {
     pt: [
@@ -151,6 +152,8 @@ export default function Pricing() {
     const [loading, setLoading] = useState(false);
     const [currentPlan, setCurrentPlan] = useState(null);
     const { isVerified } = useEmailVerification();
+    const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState(null);
 
     const t = {
         pt: {

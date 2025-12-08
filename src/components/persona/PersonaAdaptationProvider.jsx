@@ -28,16 +28,20 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
         confidence: 0,
         technicality: 50,
         interactions: 0,
-        manualMode: null // null = auto, or specific persona
+        manualMode: null, // null = auto, or specific persona/profile ID
+        activeProfileId: null // ID of active PersonaProfile from database
     });
 
     const [messageHistory, setMessageHistory] = useState([]);
     const [personaMemory, setPersonaMemory] = useState(null);
     const [customTraits, setCustomTraits] = useState([]);
+    const [customProfiles, setCustomProfiles] = useState([]);
+    const [activeProfile, setActiveProfile] = useState(null);
 
     useEffect(() => {
         loadPersonaMemory();
         loadCustomTraits();
+        loadCustomProfiles();
     }, []);
 
     const loadPersonaMemory = async () => {
@@ -79,12 +83,60 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
         }
     };
 
+    const loadCustomProfiles = async () => {
+        try {
+            const profiles = await base44.entities.PersonaProfile.filter({ 
+                is_active: true 
+            });
+            setCustomProfiles(profiles);
+            
+            // Load default profile if exists
+            const defaultProfile = profiles.find(p => p.is_default);
+            if (defaultProfile) {
+                setActiveProfile(defaultProfile);
+                setUserProfile(prev => ({
+                    ...prev,
+                    activeProfileId: defaultProfile.id,
+                    mode: defaultProfile.base_mode,
+                    technicality: defaultProfile.stylistic_preferences?.technicality || 50
+                }));
+            }
+        } catch (error) {
+            console.error('Error loading custom profiles:', error);
+        }
+    };
+
     const setManualPersona = (personaId) => {
         setUserProfile(prev => ({
             ...prev,
             manualMode: personaId,
-            mode: personaId || prev.mode // If null, keep auto-detected mode
+            mode: personaId || prev.mode,
+            activeProfileId: null // Clear profile when setting manual mode
         }));
+        setActiveProfile(null);
+    };
+
+    const setCustomProfile = async (profileId) => {
+        try {
+            const profile = customProfiles.find(p => p.id === profileId);
+            if (profile) {
+                setActiveProfile(profile);
+                setUserProfile(prev => ({
+                    ...prev,
+                    activeProfileId: profileId,
+                    mode: profile.base_mode,
+                    technicality: profile.stylistic_preferences?.technicality || 50,
+                    manualMode: null // Clear manual mode when using profile
+                }));
+                
+                // Increment usage count
+                await base44.entities.PersonaProfile.update(profileId, {
+                    usage_count: (profile.usage_count || 0) + 1
+                });
+            }
+        } catch (error) {
+            console.error('Error setting custom profile:', error);
+        }
     };
 
     const analyzeInteraction = (message) => {
@@ -217,11 +269,41 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
 
     const getContextualPrompt = () => {
         const persona = getPersonaInstructions();
-        const { level, confidence, interactions, manualMode } = userProfile;
+        const { level, confidence, interactions, manualMode, activeProfileId } = userProfile;
 
-        const modeSource = manualMode 
-            ? `MANUAL (selecionado pelo usuário)` 
-            : `AUTO (detectado: ${level})`;
+        let modeSource;
+        let profileInstructions = '';
+        
+        if (activeProfile) {
+            modeSource = `PERFIL PERSONALIZADO: ${activeProfile.name}`;
+            profileInstructions = `
+INSTRUÇÕES DO PERFIL PERSONALIZADO:
+${activeProfile.instructions || 'Sem instruções específicas'}
+
+VALORES CENTRAIS:
+${activeProfile.core_values?.map(v => `- ${v}`).join('\n') || 'Sem valores específicos'}
+
+PREFERÊNCIAS ESTILÍSTICAS:
+- Tom: ${activeProfile.stylistic_preferences?.tone || persona.tone}
+- Formalidade: ${activeProfile.stylistic_preferences?.formality || 5}/10
+- Tecnicidade: ${activeProfile.stylistic_preferences?.technicality || persona.technicality}%
+- Verbosidade: ${activeProfile.stylistic_preferences?.verbosity || 'balanced'}
+- Usar analogias: ${activeProfile.stylistic_preferences?.use_analogies ? 'Sim' : 'Não'}
+- Usar dados: ${activeProfile.stylistic_preferences?.use_data ? 'Sim' : 'Não'}
+
+ESTRUTURA DE RESPOSTA:
+- Formato: ${activeProfile.response_structure?.format || 'mixed'}
+- Incluir exemplos: ${activeProfile.response_structure?.include_examples ? 'Sim' : 'Não'}
+- Incluir citações: ${activeProfile.response_structure?.include_citations ? 'Sim' : 'Não'}
+- Tamanho: ${activeProfile.response_structure?.max_length || 'medium'}
+
+${activeProfile.context_triggers?.length > 0 ? `GATILHOS DE CONTEXTO:\n${activeProfile.context_triggers.map(t => `- "${t.keyword}" → ${t.action}`).join('\n')}` : ''}
+            `;
+        } else {
+            modeSource = manualMode 
+                ? `MANUAL (selecionado pelo usuário)` 
+                : `AUTO (detectado: ${level})`;
+        }
 
         // Build custom traits instruction
         const customTraitsText = customTraits.length > 0 
@@ -231,6 +313,7 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
         return `
 ADAPTAÇÃO DINÂMICA DE PERSONA (${modeSource} | Confiança: ${Math.round(confidence)}% | Interações: ${interactions}):
 
+${activeProfile ? profileInstructions : `
 Perfil detectado: ${level.toUpperCase()}
 Modo ativo: ${userProfile.mode.toUpperCase()}
 Nível de tecnicidade: ${persona.technicality}%
@@ -239,9 +322,11 @@ Instruções contextuais:
 - Tom: ${persona.tone}
 - Estrutura: ${persona.structure}
 - Exemplos: ${persona.examples}
+`}
 ${customTraitsText}
-${manualMode ? `MODO MANUAL ATIVO: Usuário selecionou explicitamente modo ${manualMode.toUpperCase()}. Mantenha consistência rigorosa com este modo.` : ''}
-${!manualMode && confidence < 50 ? 'ATENÇÃO: Baixa confiança - mantenha flexibilidade e observe próximas interações.' : ''}
+${manualMode && !activeProfile ? `MODO MANUAL ATIVO: Usuário selecionou explicitamente modo ${manualMode.toUpperCase()}. Mantenha consistência rigorosa com este modo.` : ''}
+${activeProfile ? `PERFIL PERSONALIZADO ATIVO: Siga rigorosamente as instruções e preferências definidas no perfil "${activeProfile.name}".` : ''}
+${!manualMode && !activeProfile && confidence < 50 ? 'ATENÇÃO: Baixa confiança - mantenha flexibilidade e observe próximas interações.' : ''}
 ${interactions < 3 ? 'INÍCIO DE CONVERSA: Equilibre acessibilidade com sofisticação até confirmar perfil.' : ''}
         `.trim();
     };
@@ -252,11 +337,15 @@ ${interactions < 3 ? 'INÍCIO DE CONVERSA: Equilibre acessibilidade com sofistic
         getPersonaInstructions,
         getContextualPrompt,
         setManualPersona,
+        setCustomProfile,
         messageHistory,
         savePersonaMemory,
         suggestPersonaShift,
         personaMemory,
-        customTraits
+        customTraits,
+        customProfiles,
+        activeProfile,
+        loadCustomProfiles
     };
 
     return (

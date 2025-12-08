@@ -5,7 +5,7 @@ import { Brain, TrendingUp, Target, BookOpen } from 'lucide-react';
 import { usePersonaAdaptation } from './PersonaAdaptationProvider';
 
 export default function PersonaIndicator({ lang = 'pt' }) {
-    const { userProfile } = usePersonaAdaptation();
+    const { userProfile, activeProfile } = usePersonaAdaptation();
 
     const translations = {
         pt: {
@@ -58,9 +58,14 @@ export default function PersonaIndicator({ lang = 'pt' }) {
                     <div className="flex items-center gap-2">
                         <ModeIcon className="w-4 h-4 text-[#002D62]" />
                         <span className="text-sm font-semibold text-[#002D62]">{t.title}</span>
-                        {userProfile.manualMode && (
+                        {userProfile.manualMode && !activeProfile && (
                             <Badge variant="outline" className="text-xs">
                                 {lang === 'pt' ? 'Manual' : 'Manual'}
+                            </Badge>
+                        )}
+                        {activeProfile && (
+                            <Badge className="bg-purple-600 text-white text-xs">
+                                {activeProfile.name}
                             </Badge>
                         )}
                     </div>

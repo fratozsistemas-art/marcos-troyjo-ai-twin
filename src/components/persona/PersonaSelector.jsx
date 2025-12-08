@@ -7,7 +7,7 @@ import { BookOpen, Brain, Target, GraduationCap, Users, Sparkles } from 'lucide-
 import { usePersonaAdaptation } from './PersonaAdaptationProvider';
 
 export default function PersonaSelector({ lang = 'pt', open, onOpenChange }) {
-    const { userProfile, setManualPersona } = usePersonaAdaptation();
+    const { userProfile, setManualPersona, setCustomProfile, customProfiles, activeProfile } = usePersonaAdaptation();
 
     const translations = {
         pt: {
@@ -140,6 +140,80 @@ export default function PersonaSelector({ lang = 'pt', open, onOpenChange }) {
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* Custom Profiles */}
+                    {customProfiles.length > 0 && (
+                        <>
+                            <div className="flex items-center gap-2 mt-2 mb-2">
+                                <div className="flex-1 h-px bg-gray-200" />
+                                <span className="text-xs text-gray-500 font-medium">
+                                    {lang === 'pt' ? 'Perfis Personalizados' : 'Custom Profiles'}
+                                </span>
+                                <div className="flex-1 h-px bg-gray-200" />
+                            </div>
+                            {customProfiles.map((profile) => (
+                                <Card 
+                                    key={profile.id}
+                                    className={`cursor-pointer transition-all border-2 ${
+                                        activeProfile?.id === profile.id 
+                                            ? 'border-[#002D62] ring-2 ring-[#002D62]/20 bg-blue-50' 
+                                            : 'border-gray-200 hover:border-[#002D62]/50'
+                                    }`}
+                                    onClick={() => {
+                                        setCustomProfile(profile.id);
+                                        onOpenChange(false);
+                                    }}
+                                >
+                                    <CardContent className="pt-4">
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex items-start gap-3 flex-1">
+                                                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                                                    <Sparkles className="w-5 h-5 text-white" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <h4 className="font-semibold text-[#002D62]">
+                                                            {profile.name}
+                                                        </h4>
+                                                        {profile.is_default && (
+                                                            <Badge variant="outline" className="text-xs">
+                                                                {lang === 'pt' ? 'Padrão' : 'Default'}
+                                                            </Badge>
+                                                        )}
+                                                        {activeProfile?.id === profile.id && (
+                                                            <Badge className="bg-[#00654A] text-white text-xs">
+                                                                {t.current}
+                                                            </Badge>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-sm text-gray-700 mb-1">
+                                                        {profile.description}
+                                                    </p>
+                                                    <div className="flex items-center gap-2 mt-2">
+                                                        <Badge variant="outline" className="text-xs">
+                                                            {profile.base_mode}
+                                                        </Badge>
+                                                        {profile.tags?.slice(0, 2).map((tag, idx) => (
+                                                            <Badge key={idx} variant="secondary" className="text-xs">
+                                                                {tag}
+                                                            </Badge>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                            <div className="flex items-center gap-2 mt-2 mb-2">
+                                <div className="flex-1 h-px bg-gray-200" />
+                                <span className="text-xs text-gray-500 font-medium">
+                                    {lang === 'pt' ? 'Modos Base' : 'Base Modes'}
+                                </span>
+                                <div className="flex-1 h-px bg-gray-200" />
+                            </div>
+                        </>
+                    )}
 
                     {/* Manual Personas */}
                     {personas.map((persona) => {

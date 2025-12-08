@@ -12,6 +12,7 @@ import AgentUI from './pages/AgentUI';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import SecurityAdmin from './pages/SecurityAdmin';
+import PersonaManagement from './pages/PersonaManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -30,6 +31,7 @@ export const PAGES = {
     "PrivacyPolicy": PrivacyPolicy,
     "TermsOfService": TermsOfService,
     "SecurityAdmin": SecurityAdmin,
+    "PersonaManagement": PersonaManagement,
 }
 
 export const pagesConfig = {

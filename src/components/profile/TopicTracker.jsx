@@ -52,11 +52,11 @@ export default function TopicTracker({ lang = 'pt' }) {
     };
 
     const generateSuggestions = (userProfile) => {
-        const { interests, topic_history } = userProfile;
+        const { interests, topic_history } = userProfile || {};
         const allSuggestions = [];
 
         // Generate suggestions based on interests
-        if (interests.industries?.length > 0) {
+        if (interests?.industries?.length > 0) {
             interests.industries.forEach(industry => {
                 allSuggestions.push({
                     text: lang === 'pt' 
@@ -68,7 +68,7 @@ export default function TopicTracker({ lang = 'pt' }) {
             });
         }
 
-        if (interests.regions?.length > 0) {
+        if (interests?.regions?.length > 0) {
             interests.regions.forEach(region => {
                 allSuggestions.push({
                     text: lang === 'pt'
@@ -80,7 +80,7 @@ export default function TopicTracker({ lang = 'pt' }) {
             });
         }
 
-        if (interests.economic_theories?.length > 0) {
+        if (interests?.economic_theories?.length > 0) {
             interests.economic_theories.forEach(theory => {
                 allSuggestions.push({
                     text: lang === 'pt'

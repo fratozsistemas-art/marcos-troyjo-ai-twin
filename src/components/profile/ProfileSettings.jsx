@@ -222,7 +222,7 @@ export default function ProfileSettings({ lang = 'pt' }) {
                                         key={industry}
                                         onClick={() => toggleInterest('industries', industry)}
                                         className={`cursor-pointer transition-colors ${
-                                            profile.interests.industries?.includes(industry)
+                                            profile?.interests?.industries?.includes(industry)
                                                 ? 'bg-[#00654A] text-white hover:bg-[#004d38]'
                                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
@@ -242,7 +242,7 @@ export default function ProfileSettings({ lang = 'pt' }) {
                                         key={region}
                                         onClick={() => toggleInterest('regions', region)}
                                         className={`cursor-pointer transition-colors ${
-                                            profile.interests.regions?.includes(region)
+                                            profile?.interests?.regions?.includes(region)
                                                 ? 'bg-[#002D62] text-white hover:bg-[#001d42]'
                                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
@@ -262,7 +262,7 @@ export default function ProfileSettings({ lang = 'pt' }) {
                                         key={theory}
                                         onClick={() => toggleInterest('economic_theories', theory)}
                                         className={`cursor-pointer transition-colors ${
-                                            profile.interests.economic_theories?.includes(theory)
+                                            profile?.interests?.economic_theories?.includes(theory)
                                                 ? 'bg-[#B8860B] text-white hover:bg-[#8B6508]'
                                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
@@ -289,7 +289,7 @@ export default function ProfileSettings({ lang = 'pt' }) {
                                 </Button>
                             </div>
                             <div className="flex flex-wrap gap-2">
-                                {(profile.interests.topics || []).map(topic => (
+                                {(profile?.interests?.topics || []).map(topic => (
                                     <Badge
                                         key={topic}
                                         className="bg-indigo-100 text-indigo-800 pr-1"
@@ -315,7 +315,7 @@ export default function ProfileSettings({ lang = 'pt' }) {
                             <div>
                                 <Label className="text-sm text-gray-600 mb-2 block">{t.layout}</Label>
                                 <Select
-                                    value={profile.dashboard_preferences.layout}
+                                    value={profile?.dashboard_preferences?.layout}
                                     onValueChange={(value) => updateDashboardPreference('layout', value)}
                                 >
                                     <SelectTrigger>
@@ -332,7 +332,7 @@ export default function ProfileSettings({ lang = 'pt' }) {
                             <div>
                                 <Label className="text-sm text-gray-600 mb-2 block">{t.theme}</Label>
                                 <Select
-                                    value={profile.dashboard_preferences.theme}
+                                    value={profile?.dashboard_preferences?.theme}
                                     onValueChange={(value) => updateDashboardPreference('theme', value)}
                                 >
                                     <SelectTrigger>
@@ -356,14 +356,14 @@ export default function ProfileSettings({ lang = 'pt' }) {
                             <div className="flex items-center justify-between">
                                 <Label className="text-sm">{t.contentSuggestions}</Label>
                                 <Switch
-                                    checked={profile.notification_preferences.new_content_suggestions}
+                                    checked={profile?.notification_preferences?.new_content_suggestions}
                                     onCheckedChange={(checked) => updateNotificationPreference('new_content_suggestions', checked)}
                                 />
                             </div>
                             <div className="flex items-center justify-between">
                                 <Label className="text-sm">{t.topicAlerts}</Label>
                                 <Switch
-                                    checked={profile.notification_preferences.topic_alerts}
+                                    checked={profile?.notification_preferences?.topic_alerts}
                                     onCheckedChange={(checked) => updateNotificationPreference('topic_alerts', checked)}
                                 />
                             </div>

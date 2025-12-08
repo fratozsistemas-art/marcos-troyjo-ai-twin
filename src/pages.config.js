@@ -14,6 +14,8 @@ import TermsOfService from './pages/TermsOfService';
 import SecurityAdmin from './pages/SecurityAdmin';
 import PersonaManagement from './pages/PersonaManagement';
 import KnowledgeHub from './pages/KnowledgeHub';
+import LandingPage from './pages/LandingPage';
+import ArticleView from './pages/ArticleView';
 import __Layout from './Layout.jsx';
 
 
@@ -34,6 +36,8 @@ export const PAGES = {
     "SecurityAdmin": SecurityAdmin,
     "PersonaManagement": PersonaManagement,
     "KnowledgeHub": KnowledgeHub,
+    "LandingPage": LandingPage,
+    "ArticleView": ArticleView,
 }
 
 export const pagesConfig = {

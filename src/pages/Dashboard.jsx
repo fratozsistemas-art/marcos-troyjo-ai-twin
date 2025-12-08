@@ -400,57 +400,55 @@ export default function Dashboard() {
                     <KnowledgeHub lang={lang} />
                 </motion.div>
 
-                {/* Fourth Row - Topic Tracker & Deep Dive */}
-                <div className="grid lg:grid-cols-2 gap-6">
+                {/* Fourth Row - Topic Tracker, Deep Dive & Persona Analytics */}
+                <div className="grid lg:grid-cols-3 gap-6">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                         <TopicTracker lang={lang} />
                     </motion.div>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
                         <TopicDeepDive lang={lang} />
                     </motion.div>
-                </div>
-
-                {/* Fifth Row - Persona Analytics & Expertise */}
-                <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
                         <PersonaAnalytics lang={lang} />
                     </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.425 }} className="h-full">
-                        <Card className="h-full">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-[#002D62]">
-                                    <BookOpen className="w-5 h-5" />
-                                    {t.expertise}
-                                </CardTitle>
-                                <CardDescription>{t.expertiseDesc}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="grid sm:grid-cols-2 gap-3">
-                                    {t.expertiseAreas.map((area, index) => (
-                                        <div key={index} className="p-3 rounded-lg border border-gray-100 hover:border-[#002D62]/20 transition-colors">
-                                            <h4 className="font-semibold text-sm text-[#002D62] mb-1">{area.title}</h4>
-                                            <p className="text-xs text-[#333F48]/70">{area.desc}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                                <Separator />
-                                <div>
-                                    <h4 className="font-semibold text-sm text-[#002D62] mb-3">
-                                        {lang === 'pt' ? 'Princípios Fundamentais' : 'Foundational Principles'}
-                                    </h4>
-                                    <ul className="space-y-2">
-                                        {t.principles.map((principle, index) => (
-                                            <li key={index} className="flex items-start gap-2 text-sm text-[#333F48]">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-1.5 flex-shrink-0" />
-                                                {principle}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </CardContent>
-                            </Card>
-                            </motion.div>
+                </div>
+
+                {/* Fifth Row - Expertise Full Width */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.425 }}>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-[#8B1538]">
+                                <BookOpen className="w-5 h-5" />
+                                {t.expertise}
+                            </CardTitle>
+                            <CardDescription>{t.expertiseDesc}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                                {t.expertiseAreas.map((area, index) => (
+                                    <div key={index} className="p-3 rounded-lg border border-gray-100 hover:border-[#8B1538]/20 transition-colors">
+                                        <h4 className="font-semibold text-sm text-[#8B1538] mb-1">{area.title}</h4>
+                                        <p className="text-xs text-[#333F48]/70">{area.desc}</p>
+                                    </div>
+                                ))}
                             </div>
+                            <Separator />
+                            <div>
+                                <h4 className="font-semibold text-sm text-[#8B1538] mb-3">
+                                    {lang === 'pt' ? 'Princípios Fundamentais' : 'Foundational Principles'}
+                                </h4>
+                                <ul className="grid sm:grid-cols-2 gap-2">
+                                    {t.principles.map((principle, index) => (
+                                        <li key={index} className="flex items-start gap-2 text-sm text-[#333F48]">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] mt-1.5 flex-shrink-0" />
+                                            {principle}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </motion.div>
 
                         {/* Sixth Row - Insights */}
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>

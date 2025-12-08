@@ -11,7 +11,8 @@ import {
     FileCheck,
     History,
     Bot,
-    FolderOpen
+    FolderOpen,
+    UserCog
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -23,6 +24,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
             home: 'Início',
             dashboard: 'Painel',
             consultation: 'Consulta',
+            personas: 'Personas',
             agentUI: 'Agente UI',
             assets: 'Assets',
             metaphors: 'Metáforas',
@@ -35,6 +37,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
             home: 'Home',
             dashboard: 'Dashboard',
             consultation: 'Consultation',
+            personas: 'Personas',
             agentUI: 'UI Agent',
             assets: 'Assets',
             metaphors: 'Metaphors',
@@ -51,6 +54,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
         { label: t.home, path: 'Home', icon: Home },
         { label: t.dashboard, path: 'Dashboard', icon: LayoutDashboard },
         { label: t.consultation, path: 'Consultation', icon: MessageSquare },
+        { label: t.personas, path: 'PersonaManagement', icon: UserCog },
         { label: t.agentUI, path: 'AgentUI', icon: Bot },
         { label: t.assets, path: 'Assets', icon: FolderOpen },
         { label: t.metaphors, path: 'MetaphorsGenerator', icon: Sparkles },

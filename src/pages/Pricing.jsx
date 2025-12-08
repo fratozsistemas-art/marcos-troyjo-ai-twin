@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Zap, Crown, Building2, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { useEmailVerification } from '@/components/subscription/VerificationGate';
 
 const PLANS = {
     pt: [
@@ -149,6 +150,7 @@ export default function Pricing() {
     const [lang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
     const [loading, setLoading] = useState(false);
     const [currentPlan, setCurrentPlan] = useState(null);
+    const { isVerified } = useEmailVerification();
 
     const t = {
         pt: {
@@ -195,6 +197,11 @@ export default function Pricing() {
     };
 
     const handleStartTrial = async () => {
+        if (!isVerified) {
+            toast.error(lang === 'pt' ? 'Verifique seu email primeiro' : 'Verify your email first');
+            return;
+        }
+
         setLoading(true);
         try {
             const user = await base44.auth.me();
@@ -212,7 +219,12 @@ export default function Pricing() {
                     status: 'trial',
                     trial_start_date: trialStart.toISOString(),
                     trial_end_date: trialEnd.toISOString(),
-                    limits: plans.find(p => p.id === 'pro').limits
+                    limits: plans.find(p => p.id === 'pro').limits,
+                    features_used: {
+                        consultations: 0,
+                        articles_generated: 0,
+                        documents_analyzed: 0
+                    }
                 });
             } else {
                 await base44.entities.Subscription.create({
@@ -221,11 +233,16 @@ export default function Pricing() {
                     status: 'trial',
                     trial_start_date: trialStart.toISOString(),
                     trial_end_date: trialEnd.toISOString(),
-                    limits: plans.find(p => p.id === 'pro').limits
+                    limits: plans.find(p => p.id === 'pro').limits,
+                    features_used: {
+                        consultations: 0,
+                        articles_generated: 0,
+                        documents_analyzed: 0
+                    }
                 });
             }
 
-            toast.success(lang === 'pt' ? 'Trial iniciado!' : 'Trial started!');
+            toast.success(lang === 'pt' ? 'Trial iniciado com sucesso!' : 'Trial started successfully!');
             window.location.href = createPageUrl('Dashboard');
         } catch (error) {
             console.error('Error starting trial:', error);

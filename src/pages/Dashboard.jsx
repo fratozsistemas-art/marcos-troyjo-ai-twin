@@ -30,6 +30,7 @@ import WelcomeFlow from '@/components/onboarding/WelcomeFlow';
 import TopicDeepDive from '@/components/topics/TopicDeepDive';
 import CustomPersonaTraits from '@/components/persona/CustomPersonaTraits';
 import GeopoliticalRiskMonitor from '@/components/dashboard/GeopoliticalRiskMonitor';
+import UsageMeter from '@/components/subscription/UsageMeter';
 
 const translations = {
     pt: {
@@ -355,6 +356,11 @@ export default function Dashboard() {
             </header>
 
             <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 space-y-8">
+                {/* Usage Meter */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                    <UsageMeter lang={lang} />
+                </motion.div>
+
                 {/* First Row - Profile Settings Full Width */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                     <ProfileSettings lang={lang} />

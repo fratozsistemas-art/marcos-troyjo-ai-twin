@@ -63,8 +63,10 @@ export function useSubscription() {
 
     const canUseFeature = (feature) => {
         if (!subscription) return false;
+        if (subscription.status === 'expired') return false;
         if (subscription.plan === 'enterprise') return true;
         if (subscription.status === 'trial') return true;
+        if (subscription.status === 'active' && subscription.plan === 'pro') return true;
         
         const limits = subscription.limits || {};
         const used = subscription.features_used || {};

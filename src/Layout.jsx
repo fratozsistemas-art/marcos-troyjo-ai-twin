@@ -5,6 +5,7 @@ import NavigationMenu from '@/components/navigation/NavigationMenu';
 import TrialBanner from '@/components/subscription/TrialBanner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Toaster } from 'sonner';
+import { toast } from 'sonner';
 
 export default function Layout({ children, currentPageName }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);

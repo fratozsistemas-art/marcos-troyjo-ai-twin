@@ -14,6 +14,8 @@ import PersonaIndicator from '@/components/persona/PersonaIndicator';
 import PersonaSelector from '@/components/persona/PersonaSelector';
 import ConversationExport from '@/components/consultation/ConversationExport';
 import { logTopics } from '@/components/intelligence/TopicTracker';
+import SubscriptionGate, { useSubscription } from '@/components/subscription/SubscriptionGate';
+import VerificationGate from '@/components/subscription/VerificationGate';
 
 const translations = {
     pt: {
@@ -57,6 +59,7 @@ function ConsultationInner() {
     const textareaRef = useRef(null);
     const t = translations[lang];
     const { analyzeInteraction, getContextualPrompt } = usePersonaAdaptation();
+    const { canUseFeature, incrementUsage } = useSubscription();
 
     useEffect(() => {
         localStorage.setItem('troyjo_lang', lang);
@@ -162,10 +165,17 @@ function ConsultationInner() {
         const messageText = customMessage || input.trim();
         if (!messageText || !conversation?.id || isLoading) return;
 
+        if (!canUseFeature('consultations_per_month')) {
+            toast.error(lang === 'pt' ? 'Limite de consultas atingido' : 'Consultation limit reached');
+            return;
+        }
+
         setInput('');
         setIsLoading(true);
 
         try {
+            await incrementUsage('consultations');
+
             // Add message
             await base44.agents.addMessage(conversation, {
                 role: 'user',
@@ -481,8 +491,10 @@ function ConsultationInner() {
     }, []);
 
     return (
-        <PersonaAdaptationProvider conversationId={conversation?.id}>
-            <ConsultationInner />
-        </PersonaAdaptationProvider>
+        <VerificationGate>
+            <PersonaAdaptationProvider conversationId={conversation?.id}>
+                <ConsultationInner />
+            </PersonaAdaptationProvider>
+        </VerificationGate>
     );
 }

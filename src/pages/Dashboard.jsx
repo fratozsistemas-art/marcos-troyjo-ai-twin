@@ -330,16 +330,27 @@ export default function Dashboard() {
                             <p className="text-xs text-[#333F48]/60">{t.subtitle}</p>
                         </div>
                     </div>
-                    <Link to={createPageUrl('Consultation')}>
-                        <Button 
-                            data-ai-id="btn_new_chat"
-                            data-ai-role="button"
-                            className="bg-[#002D62] hover:bg-[#001d42] text-white gap-2"
-                        >
-                            <MessageSquare className="w-4 h-4" />
-                            <span className="hidden sm:inline">{t.newChat}</span>
-                        </Button>
-                    </Link>
+                    <div className="flex items-center gap-2">
+                        {(pendingReviews.twin > 0 || pendingReviews.human > 0) && (
+                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200">
+                                <span className="text-xs font-semibold text-amber-900">
+                                    {pendingReviews.twin > 0 && `${pendingReviews.twin} AI`}
+                                    {pendingReviews.twin > 0 && pendingReviews.human > 0 && ' | '}
+                                    {pendingReviews.human > 0 && `${pendingReviews.human} Troyjo`}
+                                </span>
+                            </div>
+                        )}
+                        <Link to={createPageUrl('Consultation')}>
+                            <Button 
+                                data-ai-id="btn_new_chat"
+                                data-ai-role="button"
+                                className="bg-[#002D62] hover:bg-[#001d42] text-white gap-2"
+                            >
+                                <MessageSquare className="w-4 h-4" />
+                                <span className="hidden sm:inline">{t.newChat}</span>
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
             </header>
 

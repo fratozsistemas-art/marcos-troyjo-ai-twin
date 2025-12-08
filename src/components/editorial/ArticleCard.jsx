@@ -46,7 +46,7 @@ export default function ArticleCard({ article, lang = 'pt', index = 0 }) {
             <Link to={createPageUrl('ArticleView') + `?id=${article.id}`}>
                 <Card className="h-full hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer group">
                     <CardHeader>
-                        <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="flex items-start justify-between gap-2 mb-2 flex-wrap">
                             <Badge className={`${typeColors[article.type]} border`}>
                                 {t[article.type]}
                             </Badge>
@@ -54,6 +54,9 @@ export default function ArticleCard({ article, lang = 'pt', index = 0 }) {
                                 <Badge className="bg-[#B8860B] text-white">
                                     {lang === 'pt' ? 'Destaque' : 'Featured'}
                                 </Badge>
+                            )}
+                            {article.quality_tier && (
+                                <QualityBadge tier={article.quality_tier} lang={lang} size="sm" />
                             )}
                         </div>
                         <CardTitle className="text-xl group-hover:text-[#002D62] transition-colors">

@@ -66,6 +66,7 @@ export default function LandingPage() {
     const [backlogItems, setBacklogItems] = useState([]);
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [tierFilter, setTierFilter] = useState('all');
 
     useEffect(() => {
         localStorage.setItem('troyjo_lang', lang);
@@ -76,11 +77,19 @@ export default function LandingPage() {
         setIsLoading(true);
         try {
             const [articles, calendar] = await Promise.all([
-                base44.entities.Article.filter({ featured: true, status: 'publicado' }),
+                base44.entities.Article.filter({ status: 'publicado' }),
                 base44.entities.EditorialCalendarItem.filter({})
             ]);
             
-            setFeaturedArticles(articles.slice(0, 6));
+            // Sort by tier first, then date
+            const sortedArticles = articles.sort((a, b) => {
+                const tierOrder = { troyjo_certified: 3, curator_approved: 2, ai_generated: 1 };
+                const tierDiff = (tierOrder[b.quality_tier] || 0) - (tierOrder[a.quality_tier] || 0);
+                if (tierDiff !== 0) return tierDiff;
+                return new Date(b.publication_date) - new Date(a.publication_date);
+            });
+            
+            setFeaturedArticles(sortedArticles.slice(0, 6));
             
             // Sort calendar by date
             const sorted = calendar.sort((a, b) => 
@@ -198,24 +207,52 @@ export default function LandingPage() {
             {/* Featured Articles */}
             <section className="py-16 px-4 md:px-6 bg-white">
                 <div className="max-w-7xl mx-auto">
-                    <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center justify-between mb-6">
                         <h2 className="text-3xl font-bold text-[#002D62]">{t.featured}</h2>
-                        <Link to={createPageUrl('Articles')}>
-                            <Button variant="ghost" className="gap-2">
-                                {t.allArticles}
-                                <ArrowRight className="w-4 h-4" />
+                        <div className="flex gap-2">
+                            <Button
+                                variant={tierFilter === 'all' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => setTierFilter('all')}
+                            >
+                                {lang === 'pt' ? 'Todos' : 'All'}
                             </Button>
-                        </Link>
+                            <Button
+                                variant={tierFilter === 'troyjo_certified' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => setTierFilter('troyjo_certified')}
+                                className={tierFilter === 'troyjo_certified' ? 'bg-[#B8860B] hover:bg-[#9a7209]' : ''}
+                            >
+                                © Troyjo
+                            </Button>
+                            <Button
+                                variant={tierFilter === 'curator_approved' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => setTierFilter('curator_approved')}
+                            >
+                                {lang === 'pt' ? 'Verificado' : 'Verified'}
+                            </Button>
+                        </div>
                     </div>
                     {isLoading ? (
                         <div className="text-center py-12 text-[#333F48]/60">{t.loading}</div>
-                    ) : (
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {featuredArticles.map((article, index) => (
-                                <ArticleCard key={article.id} article={article} lang={lang} index={index} />
-                            ))}
-                        </div>
-                    )}
+                    ) : (() => {
+                        const filtered = tierFilter === 'all' 
+                            ? featuredArticles 
+                            : featuredArticles.filter(a => a.quality_tier === tierFilter);
+                        
+                        return filtered.length > 0 ? (
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {filtered.map((article, index) => (
+                                    <ArticleCard key={article.id} article={article} lang={lang} index={index} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-12 text-[#333F48]/60">
+                                {lang === 'pt' ? 'Nenhum artigo nesta categoria' : 'No articles in this category'}
+                            </div>
+                        );
+                    })()}
                 </div>
             </section>
 

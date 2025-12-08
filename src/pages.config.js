@@ -13,6 +13,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import SecurityAdmin from './pages/SecurityAdmin';
 import PersonaManagement from './pages/PersonaManagement';
+import KnowledgeHub from './pages/KnowledgeHub';
 import __Layout from './Layout.jsx';
 
 
@@ -32,6 +33,7 @@ export const PAGES = {
     "TermsOfService": TermsOfService,
     "SecurityAdmin": SecurityAdmin,
     "PersonaManagement": PersonaManagement,
+    "KnowledgeHub": KnowledgeHub,
 }
 
 export const pagesConfig = {

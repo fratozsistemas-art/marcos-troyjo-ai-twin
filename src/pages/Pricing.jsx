@@ -255,12 +255,9 @@ export default function Pricing() {
         }
     };
 
-    const handleUpgrade = (planId) => {
-        if (planId === 'enterprise') {
-            window.location.href = 'mailto:contact@troyjo.digital?subject=Enterprise Plan';
-        } else {
-            toast.info(lang === 'pt' ? 'Pagamento em breve' : 'Payment coming soon');
-        }
+    const handleUpgradeRequest = (plan) => {
+        setSelectedPlan(plan);
+        setUpgradeDialogOpen(true);
     };
 
     return (
@@ -331,16 +328,15 @@ export default function Pricing() {
                                         </Button>
                                     ) : plan.id === 'enterprise' ? (
                                         <Button 
-                                            className="w-full"
-                                            variant="outline"
-                                            onClick={() => handleUpgrade(plan.id)}
+                                            className="w-full bg-[#B8860B] hover:bg-[#9a7209]"
+                                            onClick={() => handleUpgradeRequest('enterprise')}
                                         >
                                             {text.contact}
                                         </Button>
                                     ) : (
                                         <Button 
-                                            className="w-full"
-                                            onClick={() => handleUpgrade(plan.id)}
+                                            className="w-full bg-[#002D62] hover:bg-[#001d42]"
+                                            onClick={() => handleUpgradeRequest('pro')}
                                         >
                                             {text.upgrade}
                                         </Button>
@@ -351,6 +347,13 @@ export default function Pricing() {
                     })}
                 </div>
             </main>
+
+            <UpgradeRequestForm 
+                open={upgradeDialogOpen}
+                onOpenChange={setUpgradeDialogOpen}
+                plan={selectedPlan}
+                lang={lang}
+            />
         </div>
     );
 }

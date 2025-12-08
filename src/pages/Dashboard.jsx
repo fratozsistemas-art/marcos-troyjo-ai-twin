@@ -31,6 +31,7 @@ import TopicDeepDive from '@/components/topics/TopicDeepDive';
 import CustomPersonaTraits from '@/components/persona/CustomPersonaTraits';
 import GeopoliticalRiskMonitor from '@/components/dashboard/GeopoliticalRiskMonitor';
 import UsageMeter from '@/components/subscription/UsageMeter';
+import IntelligenceResources from '@/components/dashboard/IntelligenceResources';
 
 const translations = {
     pt: {
@@ -387,6 +388,11 @@ export default function Dashboard() {
                 {/* Geopolitical Risk Monitor */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                     <GeopoliticalRiskMonitor lang={lang} />
+                </motion.div>
+
+                {/* Intelligence Resources */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }}>
+                    <IntelligenceResources lang={lang} />
                 </motion.div>
 
                 {/* Third Row - Knowledge Hub Full Width */}

@@ -363,10 +363,17 @@ export default function HistoryViewer({ lang = 'pt', onReuse }) {
                         <div className="space-y-6">
                             <div>
                                 <h3 className="font-semibold text-[#002D62] mb-3">{t.inputs}</h3>
-                                <div className="bg-gray-50 rounded-lg p-4">
-                                    <pre className="text-sm text-[#333F48] whitespace-pre-wrap">
-                                        {JSON.stringify(selectedItem.inputs, null, 2)}
-                                    </pre>
+                                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                                    {Object.entries(selectedItem.inputs).map(([key, value]) => (
+                                        <div key={key} className="border-b border-gray-200 last:border-0 pb-3 last:pb-0">
+                                            <p className="text-xs font-semibold text-[#002D62] uppercase mb-1">
+                                                {key.replace(/_/g, ' ')}
+                                            </p>
+                                            <p className="text-sm text-[#333F48]">
+                                                {typeof value === 'object' ? JSON.stringify(value, null, 2) : value}
+                                            </p>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
 
@@ -386,10 +393,25 @@ export default function HistoryViewer({ lang = 'pt', onReuse }) {
 
                             <div>
                                 <h3 className="font-semibold text-[#002D62] mb-3">{t.outputs}</h3>
-                                <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                                    <pre className="text-sm text-[#333F48] whitespace-pre-wrap">
-                                        {JSON.stringify(selectedItem.outputs, null, 2)}
-                                    </pre>
+                                <div className="bg-green-50 rounded-lg p-4 border border-green-200 space-y-3">
+                                    {typeof selectedItem.outputs === 'object' && selectedItem.outputs !== null ? (
+                                        Object.entries(selectedItem.outputs).map(([key, value]) => (
+                                            <div key={key} className="border-b border-green-200 last:border-0 pb-3 last:pb-0">
+                                                <p className="text-xs font-semibold text-green-800 uppercase mb-1">
+                                                    {key.replace(/_/g, ' ')}
+                                                </p>
+                                                <div className="text-sm text-[#333F48]">
+                                                    {typeof value === 'object' ? (
+                                                        <pre className="whitespace-pre-wrap">{JSON.stringify(value, null, 2)}</pre>
+                                                    ) : (
+                                                        <p>{value}</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-sm text-[#333F48]">{String(selectedItem.outputs)}</p>
+                                    )}
                                 </div>
                             </div>
                         </div>

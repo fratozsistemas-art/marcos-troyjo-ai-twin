@@ -123,15 +123,39 @@ export default function WelcomeFlow({ open, onComplete }) {
                         layout: 'comfortable',
                         theme: 'light',
                         language: lang
+                    },
+                    notification_preferences: {},
+                    custom_topics: []
+                });
+            }
+
+            // Initialize subscription if doesn't exist
+            const subs = await base44.entities.Subscription.filter({ user_email: user.email });
+            if (subs.length === 0) {
+                await base44.entities.Subscription.create({
+                    user_email: user.email,
+                    plan: 'free',
+                    status: 'active',
+                    limits: {
+                        consultations_per_month: 5,
+                        articles_per_month: 2,
+                        documents_per_month: 5
+                    },
+                    features_used: {
+                        consultations: 0,
+                        articles_generated: 0,
+                        documents_analyzed: 0
                     }
                 });
             }
             
             toast.success(lang === 'pt' ? 'Perfil configurado com sucesso!' : 'Profile configured successfully!');
+            setStep(1);
+            setSelectedInterests([]);
             onComplete();
         } catch (error) {
             console.error('Error saving preferences:', error);
-            onComplete();
+            toast.error(lang === 'pt' ? 'Erro ao salvar preferências' : 'Error saving preferences');
         }
     };
 

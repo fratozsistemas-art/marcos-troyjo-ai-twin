@@ -364,17 +364,22 @@ export default function Home() {
                         </div>
                         </section>
 
-            {/* Topics */}
+            {/* Current Capabilities */}
             <section className="py-20 px-6 bg-white">
                 <div className="max-w-7xl mx-auto">
-                    <motion.h2 
+                    <motion.div 
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
-                        className="text-3xl font-bold text-[#002D62] mb-12 text-center"
+                        className="text-center mb-12"
                     >
-                        {t.topics}
-                    </motion.h2>
+                        <h2 className="text-3xl font-bold text-[#002D62] mb-4">{t.topics}</h2>
+                        <p className="text-lg text-[#333F48]/70">
+                            {lang === 'pt' 
+                                ? 'Análise profunda em áreas críticas da economia global'
+                                : 'Deep analysis in critical areas of the global economy'}
+                        </p>
+                    </motion.div>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {t.topicsList.map((topic, index) => (
                             <motion.div
@@ -390,6 +395,95 @@ export default function Home() {
                                 </div>
                                 <h3 className="font-semibold text-[#333F48] mb-2">{topic.title}</h3>
                                 <p className="text-sm text-[#333F48]/60">{topic.desc}</p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Future Vision */}
+            <section className="py-20 px-6 bg-gradient-to-br from-gray-50 to-white">
+                <div className="max-w-7xl mx-auto">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-12"
+                    >
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00654A]/10 text-[#00654A] text-sm font-medium mb-4">
+                            <Zap className="w-4 h-4" />
+                            {lang === 'pt' ? 'Evolução Contínua' : 'Continuous Evolution'}
+                        </div>
+                        <h2 className="text-3xl font-bold text-[#002D62] mb-4">
+                            {lang === 'pt' ? 'Próximos Capítulos' : 'Next Chapters'}
+                        </h2>
+                        <p className="text-lg text-[#333F48]/70 max-w-2xl mx-auto">
+                            {lang === 'pt'
+                                ? 'O Digital Twin evolui continuamente, integrando novas dimensões do pensamento Troyjo'
+                                : 'The Digital Twin evolves continuously, integrating new dimensions of Troyjo\'s thinking'}
+                        </p>
+                    </motion.div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[
+                            {
+                                title: lang === 'pt' ? 'Análise Preditiva' : 'Predictive Analysis',
+                                desc: lang === 'pt'
+                                    ? 'Cenários geopolíticos e econômicos com base em padrões históricos e tendências'
+                                    : 'Geopolitical and economic scenarios based on historical patterns and trends',
+                                status: lang === 'pt' ? 'Em desenvolvimento' : 'In development'
+                            },
+                            {
+                                title: lang === 'pt' ? 'Voz Sintética Troyjo' : 'Troyjo Synthetic Voice',
+                                desc: lang === 'pt'
+                                    ? 'Consultas por áudio com a voz autêntica de Marcos Troyjo'
+                                    : 'Audio consultations with Marcos Troyjo\'s authentic voice',
+                                status: lang === 'pt' ? 'Planejado' : 'Planned'
+                            },
+                            {
+                                title: lang === 'pt' ? 'Alertas Geoestratégicos' : 'Geostrategic Alerts',
+                                desc: lang === 'pt'
+                                    ? 'Notificações personalizadas sobre eventos críticos em suas áreas de interesse'
+                                    : 'Personalized notifications about critical events in your areas of interest',
+                                status: lang === 'pt' ? 'Em breve' : 'Coming soon'
+                            },
+                            {
+                                title: lang === 'pt' ? 'Colaboração em Tempo Real' : 'Real-Time Collaboration',
+                                desc: lang === 'pt'
+                                    ? 'Co-criação de documentos estratégicos com o Digital Twin'
+                                    : 'Co-creation of strategic documents with the Digital Twin',
+                                status: lang === 'pt' ? 'Planejado' : 'Planned'
+                            },
+                            {
+                                title: lang === 'pt' ? 'Memória Expandida' : 'Expanded Memory',
+                                desc: lang === 'pt'
+                                    ? 'Integração de novos livros, artigos e posições públicas em tempo real'
+                                    : 'Integration of new books, articles and public positions in real-time',
+                                status: lang === 'pt' ? 'Contínuo' : 'Ongoing'
+                            },
+                            {
+                                title: lang === 'pt' ? 'API Empresarial' : 'Enterprise API',
+                                desc: lang === 'pt'
+                                    ? 'Integração do Digital Twin em sistemas corporativos de análise'
+                                    : 'Digital Twin integration into corporate analysis systems',
+                                status: lang === 'pt' ? 'Planejado' : 'Planned'
+                            }
+                        ].map((feature, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.1 }}
+                                className="p-6 rounded-2xl border border-gray-200 bg-white hover:border-[#00654A]/30 hover:shadow-lg transition-all"
+                            >
+                                <div className="flex items-start justify-between mb-3">
+                                    <h3 className="font-semibold text-[#002D62] text-lg">{feature.title}</h3>
+                                    <Badge variant="outline" className="text-xs whitespace-nowrap">
+                                        {feature.status}
+                                    </Badge>
+                                </div>
+                                <p className="text-sm text-[#333F48]/70 leading-relaxed">{feature.desc}</p>
                             </motion.div>
                         ))}
                     </div>

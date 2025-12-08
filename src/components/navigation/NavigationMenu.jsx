@@ -14,7 +14,8 @@ import {
     FolderOpen,
     UserCog,
     Database,
-    Shield
+    Shield,
+    CreditCard
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -29,6 +30,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
             knowledgeHub: 'Hub de Conhecimento',
             personas: 'Personas',
             roleManagement: 'Controle de Acesso',
+            pricing: 'Planos',
             agentUI: 'Agente UI',
             assets: 'Assets',
             metaphors: 'Metáforas',
@@ -44,6 +46,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
             knowledgeHub: 'Knowledge Hub',
             personas: 'Personas',
             roleManagement: 'Access Control',
+            pricing: 'Pricing',
             agentUI: 'UI Agent',
             assets: 'Assets',
             metaphors: 'Metaphors',
@@ -63,6 +66,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
         { label: t.knowledgeHub, path: 'KnowledgeHub', icon: Database },
         { label: t.personas, path: 'PersonaManagement', icon: UserCog },
         { label: t.roleManagement, path: 'RoleManagement', icon: Shield },
+        { label: t.pricing, path: 'Pricing', icon: CreditCard },
         { label: t.agentUI, path: 'AgentUI', icon: Bot },
         { label: t.assets, path: 'Assets', icon: FolderOpen },
         { label: t.metaphors, path: 'MetaphorsGenerator', icon: Sparkles },

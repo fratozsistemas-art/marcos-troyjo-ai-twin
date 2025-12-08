@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Globe } from 'lucide-react';
 import NavigationMenu from '@/components/navigation/NavigationMenu';
+import TrialBanner from '@/components/subscription/TrialBanner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Toaster } from 'sonner';
 
@@ -17,7 +18,9 @@ export default function Layout({ children, currentPageName }) {
     };
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA] flex">
+        <div className="min-h-screen bg-[#FAFAFA] flex flex-col">
+            <TrialBanner />
+            <div className="flex flex-1">
             {/* Mobile Overlay */}
             <AnimatePresence>
                 {sidebarOpen && (
@@ -101,7 +104,8 @@ export default function Layout({ children, currentPageName }) {
                     {children}
                 </main>
             </div>
+            </div>
             <Toaster position="top-right" richColors />
-        </div>
+            </div>
     );
 }

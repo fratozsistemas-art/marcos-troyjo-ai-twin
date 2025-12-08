@@ -20,6 +20,7 @@ import RoleManagement from './pages/RoleManagement';
 import Pricing from './pages/Pricing';
 import Welcome from './pages/Welcome';
 import Website from './pages/Website';
+import StrategicIntelligenceBlog from './pages/StrategicIntelligenceBlog';
 import __Layout from './Layout.jsx';
 
 
@@ -46,6 +47,7 @@ export const PAGES = {
     "Pricing": Pricing,
     "Welcome": Welcome,
     "Website": Website,
+    "StrategicIntelligenceBlog": StrategicIntelligenceBlog,
 }
 
 export const pagesConfig = {

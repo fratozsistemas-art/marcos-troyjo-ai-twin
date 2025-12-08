@@ -190,12 +190,15 @@ export default function Dashboard() {
             const user = await base44.auth.me();
             const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
             
-            if (profiles.length > 0) {
-                const completed = profiles[0].dashboard_preferences?.onboarding_completed;
-                if (!completed) {
-                    setShowWelcome(true);
-                }
-            } else {
+            if (profiles.length === 0) {
+                setShowWelcome(true);
+                return;
+            }
+
+            const profile = profiles[0];
+            const completed = profile.dashboard_preferences?.onboarding_completed;
+            
+            if (!completed) {
                 setShowWelcome(true);
             }
         } catch (error) {

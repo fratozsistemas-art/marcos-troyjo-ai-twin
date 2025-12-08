@@ -18,6 +18,7 @@ import LandingPage from './pages/LandingPage';
 import ArticleView from './pages/ArticleView';
 import RoleManagement from './pages/RoleManagement';
 import Pricing from './pages/Pricing';
+import Welcome from './pages/Welcome';
 import __Layout from './Layout.jsx';
 
 
@@ -42,6 +43,7 @@ export const PAGES = {
     "ArticleView": ArticleView,
     "RoleManagement": RoleManagement,
     "Pricing": Pricing,
+    "Welcome": Welcome,
 }
 
 export const pagesConfig = {

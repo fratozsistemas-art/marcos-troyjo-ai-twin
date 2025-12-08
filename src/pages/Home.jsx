@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { ArrowRight, Globe, TrendingUp, Building2, Landmark, BookOpen, MessageSquare, LayoutDashboard, Zap, Network, DollarSign, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -65,8 +66,29 @@ const translations = {
 };
 
 export default function Home() {
+    const navigate = useNavigate();
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
     const [currentSlide, setCurrentSlide] = useState(0);
+
+    useEffect(() => {
+        redirectIfFirstTime();
+    }, []);
+
+    const redirectIfFirstTime = async () => {
+        try {
+            const isAuth = await base44.auth.isAuthenticated();
+            if (!isAuth) return;
+
+            const user = await base44.auth.me();
+            const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+            
+            if (profiles.length === 0 || !profiles[0].dashboard_preferences?.onboarding_completed) {
+                navigate(createPageUrl('Welcome'));
+            }
+        } catch (error) {
+            console.error('Error checking first time:', error);
+        }
+    };
     const t = translations[lang];
 
     const slides = [

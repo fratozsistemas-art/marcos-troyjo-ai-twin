@@ -100,16 +100,29 @@ export default function WelcomeFlow({ open, onComplete }) {
             const user = await base44.auth.me();
             const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
             
+            const interestData = {
+                industries: selectedInterests.filter(i => interestOptions.industries.includes(i)),
+                regions: selectedInterests.filter(i => interestOptions.regions.includes(i)),
+                topics: selectedInterests.filter(i => interestOptions.topics.includes(i))
+            };
+
             if (profiles.length > 0) {
                 await base44.entities.UserProfile.update(profiles[0].id, {
-                    interests: {
-                        industries: selectedInterests.filter(i => interestOptions.industries.includes(i)),
-                        regions: selectedInterests.filter(i => interestOptions.regions.includes(i)),
-                        topics: selectedInterests.filter(i => interestOptions.topics.includes(i))
-                    },
+                    interests: interestData,
                     dashboard_preferences: {
                         ...profiles[0].dashboard_preferences,
                         onboarding_completed: true
+                    }
+                });
+            } else {
+                await base44.entities.UserProfile.create({
+                    user_email: user.email,
+                    interests: interestData,
+                    dashboard_preferences: {
+                        onboarding_completed: true,
+                        layout: 'comfortable',
+                        theme: 'light',
+                        language: lang
                     }
                 });
             }
@@ -118,7 +131,7 @@ export default function WelcomeFlow({ open, onComplete }) {
             onComplete();
         } catch (error) {
             console.error('Error saving preferences:', error);
-            onComplete(); // Still close even if save fails
+            onComplete();
         }
     };
 

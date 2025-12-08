@@ -393,24 +393,32 @@ export default function HistoryViewer({ lang = 'pt', onReuse }) {
 
                             <div>
                                 <h3 className="font-semibold text-[#002D62] mb-3">{t.outputs}</h3>
-                                <div className="bg-green-50 rounded-lg p-4 border border-green-200 space-y-3">
+                                <div className="bg-white rounded-lg p-6 border border-green-200 space-y-4">
                                     {typeof selectedItem.outputs === 'object' && selectedItem.outputs !== null ? (
                                         Object.entries(selectedItem.outputs).map(([key, value]) => (
-                                            <div key={key} className="border-b border-green-200 last:border-0 pb-3 last:pb-0">
-                                                <p className="text-xs font-semibold text-green-800 uppercase mb-1">
+                                            <div key={key} className="border-b border-gray-200 last:border-0 pb-4 last:pb-0">
+                                                <p className="text-xs font-semibold text-[#002D62] uppercase mb-2">
                                                     {key.replace(/_/g, ' ')}
                                                 </p>
-                                                <div className="text-sm text-[#333F48]">
-                                                    {typeof value === 'object' ? (
-                                                        <pre className="whitespace-pre-wrap">{JSON.stringify(value, null, 2)}</pre>
+                                                <div className="prose prose-sm max-w-none">
+                                                    {typeof value === 'string' && (value.includes('<') || value.includes('**')) ? (
+                                                        <div dangerouslySetInnerHTML={{ __html: value }} />
+                                                    ) : typeof value === 'object' ? (
+                                                        <pre className="bg-gray-50 p-3 rounded text-xs overflow-x-auto">{JSON.stringify(value, null, 2)}</pre>
                                                     ) : (
-                                                        <p>{value}</p>
+                                                        <p className="text-[#333F48] whitespace-pre-wrap">{value}</p>
                                                     )}
                                                 </div>
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-sm text-[#333F48]">{String(selectedItem.outputs)}</p>
+                                        <div className="prose prose-sm max-w-none">
+                                            {typeof selectedItem.outputs === 'string' && (selectedItem.outputs.includes('<') || selectedItem.outputs.includes('**')) ? (
+                                                <div dangerouslySetInnerHTML={{ __html: selectedItem.outputs }} />
+                                            ) : (
+                                                <p className="text-[#333F48]">{String(selectedItem.outputs)}</p>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
                             </div>

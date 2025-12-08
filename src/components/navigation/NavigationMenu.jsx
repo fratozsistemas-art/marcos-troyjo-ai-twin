@@ -13,7 +13,8 @@ import {
     Bot,
     FolderOpen,
     UserCog,
-    Database
+    Database,
+    Shield
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -27,6 +28,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
             consultation: 'Consulta',
             knowledgeHub: 'Hub de Conhecimento',
             personas: 'Personas',
+            roleManagement: 'Controle de Acesso',
             agentUI: 'Agente UI',
             assets: 'Assets',
             metaphors: 'Metáforas',
@@ -41,6 +43,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
             consultation: 'Consultation',
             knowledgeHub: 'Knowledge Hub',
             personas: 'Personas',
+            roleManagement: 'Access Control',
             agentUI: 'UI Agent',
             assets: 'Assets',
             metaphors: 'Metaphors',
@@ -59,6 +62,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
         { label: t.consultation, path: 'Consultation', icon: MessageSquare },
         { label: t.knowledgeHub, path: 'KnowledgeHub', icon: Database },
         { label: t.personas, path: 'PersonaManagement', icon: UserCog },
+        { label: t.roleManagement, path: 'RoleManagement', icon: Shield },
         { label: t.agentUI, path: 'AgentUI', icon: Bot },
         { label: t.assets, path: 'Assets', icon: FolderOpen },
         { label: t.metaphors, path: 'MetaphorsGenerator', icon: Sparkles },

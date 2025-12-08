@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Calendar, Clock, Eye, User, Share2, Download } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Eye, User, Share2, Download, Stamp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
+import ArticleRevisionPanel from '@/components/editorial/ArticleRevisionPanel';
 
 export default function ArticleView() {
     const [article, setArticle] = useState(null);
@@ -98,6 +99,11 @@ export default function ArticleView() {
             </header>
 
             <article className="max-w-4xl mx-auto px-4 md:px-6 py-12">
+                {/* Revision Panel */}
+                <div className="mb-6">
+                    <ArticleRevisionPanel article={article} onRevisionComplete={() => loadArticle(article.id)} />
+                </div>
+
                 <div className="mb-8">
                     <Badge className="mb-4">
                         {article.type}
@@ -130,14 +136,29 @@ export default function ArticleView() {
                         )}
                     </div>
 
-                    {article.authors && article.authors.length > 0 && (
-                        <div className="flex items-center gap-2 pb-6 border-b">
-                            <User className="w-4 h-4 text-[#333F48]/60" />
-                            <span className="text-sm text-[#333F48]">
-                                {article.authors.join(', ')}
-                            </span>
-                        </div>
-                    )}
+                    <div className="pb-6 border-b space-y-3">
+                        {article.authors && article.authors.length > 0 && (
+                            <div className="flex items-center gap-2">
+                                <User className="w-4 h-4 text-[#333F48]/60" />
+                                <span className="text-sm text-[#333F48]">
+                                    {article.authors.join(', ')}
+                                </span>
+                            </div>
+                        )}
+                        {article.revised_by && article.approval_status === 'aprovado' && (
+                            <div className="flex items-center gap-2 px-3 py-2 bg-[#B8860B]/10 rounded-lg border border-[#B8860B]/30">
+                                <Stamp className="w-4 h-4 text-[#B8860B]" />
+                                <span className="text-sm font-semibold text-[#B8860B]">
+                                    © Revisado por Marcos Troyjo
+                                </span>
+                                {article.revision_date && (
+                                    <span className="text-xs text-[#B8860B]/70 ml-auto">
+                                        {new Date(article.revision_date).toLocaleDateString()}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 <div className="prose prose-lg max-w-none">

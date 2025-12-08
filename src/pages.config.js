@@ -16,6 +16,7 @@ import PersonaManagement from './pages/PersonaManagement';
 import KnowledgeHub from './pages/KnowledgeHub';
 import LandingPage from './pages/LandingPage';
 import ArticleView from './pages/ArticleView';
+import RoleManagement from './pages/RoleManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -38,6 +39,7 @@ export const PAGES = {
     "KnowledgeHub": KnowledgeHub,
     "LandingPage": LandingPage,
     "ArticleView": ArticleView,
+    "RoleManagement": RoleManagement,
 }
 
 export const pagesConfig = {

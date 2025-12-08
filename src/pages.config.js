@@ -19,6 +19,7 @@ import ArticleView from './pages/ArticleView';
 import RoleManagement from './pages/RoleManagement';
 import Pricing from './pages/Pricing';
 import Welcome from './pages/Welcome';
+import Website from './pages/Website';
 import __Layout from './Layout.jsx';
 
 
@@ -44,6 +45,7 @@ export const PAGES = {
     "RoleManagement": RoleManagement,
     "Pricing": Pricing,
     "Welcome": Welcome,
+    "Website": Website,
 }
 
 export const pagesConfig = {

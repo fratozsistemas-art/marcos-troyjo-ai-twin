@@ -60,7 +60,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
     const t = translations[lang];
 
     const menuItems = [
-        { label: t.home, path: 'LandingPage', icon: Home },
+        { label: t.home, path: 'Website', icon: Home },
         { label: t.dashboard, path: 'Dashboard', icon: LayoutDashboard },
         { label: t.consultation, path: 'Consultation', icon: MessageSquare },
         { label: t.knowledgeHub, path: 'KnowledgeHub', icon: Database },

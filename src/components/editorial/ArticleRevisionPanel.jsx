@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { CheckCircle, XCircle, Edit3, Stamp } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePermissions } from '@/components/rbac/PermissionGate';
+import QualityBadge from './QualityBadge';
 
 export default function ArticleRevisionPanel({ article, onRevisionComplete }) {
     const [revisionNotes, setRevisionNotes] = useState('');
@@ -62,12 +63,22 @@ export default function ArticleRevisionPanel({ article, onRevisionComplete }) {
         setLoading(true);
         try {
             const user = await base44.auth.me();
+            const newVersion = {
+                version: (article.version_history?.length || 0) + 1,
+                edited_by: user.email,
+                edited_at: new Date().toISOString(),
+                changes: revisionNotes || 'Troyjo certification',
+                tier_change: 'curator_approved → troyjo_certified'
+            };
+
             await base44.entities.Article.update(article.id, {
+                quality_tier: 'troyjo_certified',
                 approval_status: 'aprovado',
                 revised_by: user.email,
                 revision_notes: revisionNotes,
                 revision_date: new Date().toISOString(),
-                status: 'publicado'
+                status: 'publicado',
+                version_history: [...(article.version_history || []), newVersion]
             });
             toast.success(text.approved);
             if (onRevisionComplete) onRevisionComplete();
@@ -103,6 +114,10 @@ export default function ArticleRevisionPanel({ article, onRevisionComplete }) {
         return null;
     }
 
+    if (article.quality_tier !== 'curator_approved' && article.approval_status !== 'human_verified') {
+        return null;
+    }
+
     return (
         <Card className="border-[#B8860B] border-2">
             <CardHeader>
@@ -120,16 +135,26 @@ export default function ArticleRevisionPanel({ article, onRevisionComplete }) {
             <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <p className="text-xs text-gray-600 mb-1">{text.status}</p>
-                        <Badge className={statusColors[article.approval_status]}>
-                            {text[article.approval_status] || article.approval_status}
-                        </Badge>
+                        <p className="text-xs text-gray-600 mb-1">{lang === 'pt' ? 'Nível Atual' : 'Current Tier'}</p>
+                        <QualityBadge tier={article.quality_tier} lang={lang} />
                     </div>
                     <div>
                         <p className="text-xs text-gray-600 mb-1">{text.author}</p>
                         <p className="text-sm font-medium">{article.author_email || article.authors?.[0]}</p>
                     </div>
                 </div>
+
+                {article.verified_by && (
+                    <div className="p-3 rounded-lg bg-green-50 border border-green-200">
+                        <p className="text-xs text-green-700 mb-1">{lang === 'pt' ? 'Verificado por' : 'Verified by'}</p>
+                        <p className="text-sm font-semibold text-green-900">{article.verified_by}</p>
+                        {article.verification_date && (
+                            <p className="text-xs text-green-600 mt-1">
+                                {new Date(article.verification_date).toLocaleDateString()}
+                            </p>
+                        )}
+                    </div>
+                )}
 
                 {article.revised_by && (
                     <div className="p-3 rounded-lg bg-green-50 border border-green-200">

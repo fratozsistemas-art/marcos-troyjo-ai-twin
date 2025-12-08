@@ -171,6 +171,7 @@ export default function Dashboard() {
     const [summariesEnabled, setSummariesEnabled] = useState(false);
     const [generatingSummary, setGeneratingSummary] = useState(null);
     const [conversationSummaries, setConversationSummaries] = useState({});
+    const [pendingReviews, setPendingReviews] = useState({ twin: 0, human: 0 });
     const t = translations[lang];
 
     useEffect(() => {
@@ -180,6 +181,7 @@ export default function Dashboard() {
     useEffect(() => {
         loadConversations();
         checkOnboarding();
+        loadPendingReviews();
     }, []);
 
     const checkOnboarding = async () => {
@@ -212,6 +214,25 @@ export default function Dashboard() {
             setConversations([]);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const loadPendingReviews = async () => {
+        try {
+            const twinGenerated = await base44.entities.Article.filter({
+                quality_tier: 'ai_generated',
+                approval_status: 'pendente'
+            });
+            const humanVerified = await base44.entities.Article.filter({
+                quality_tier: 'curator_approved',
+                approval_status: 'human_verified'
+            });
+            setPendingReviews({
+                twin: twinGenerated.length,
+                human: humanVerified.length
+            });
+        } catch (error) {
+            console.error('Error loading pending reviews:', error);
         }
     };
 

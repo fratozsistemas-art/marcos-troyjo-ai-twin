@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
 import ArticleRevisionPanel from '@/components/editorial/ArticleRevisionPanel';
+import AdminReviewPanel from '@/components/editorial/AdminReviewPanel';
+import QualityBadge from '@/components/editorial/QualityBadge';
 
 export default function ArticleView() {
     const [article, setArticle] = useState(null);
@@ -99,10 +101,22 @@ export default function ArticleView() {
             </header>
 
             <article className="max-w-4xl mx-auto px-4 md:px-6 py-12">
-                {/* Revision Panel */}
+                {/* Admin Review Panel (Twin→Human) */}
+                <div className="mb-6">
+                    <AdminReviewPanel article={article} onReviewComplete={() => loadArticle(article.id)} />
+                </div>
+
+                {/* Troyjo Revision Panel (Human→Troyjo) */}
                 <div className="mb-6">
                     <ArticleRevisionPanel article={article} onRevisionComplete={() => loadArticle(article.id)} />
                 </div>
+
+                {/* Quality Badge at top */}
+                {article.quality_tier && (
+                    <div className="mb-4">
+                        <QualityBadge tier={article.quality_tier} lang={lang} />
+                    </div>
+                )}
 
                 <div className="mb-8">
                     <Badge className="mb-4">
@@ -145,11 +159,23 @@ export default function ArticleView() {
                                 </span>
                             </div>
                         )}
-                        {article.revised_by && article.approval_status === 'aprovado' && (
-                            <div className="flex items-center gap-2 px-3 py-2 bg-[#B8860B]/10 rounded-lg border border-[#B8860B]/30">
-                                <Stamp className="w-4 h-4 text-[#B8860B]" />
-                                <span className="text-sm font-semibold text-[#B8860B]">
-                                    © Revisado por Marcos Troyjo
+                        {article.verified_by && article.quality_tier === 'curator_approved' && (
+                            <div className="flex items-center gap-2 px-3 py-2 bg-green-50 rounded-lg border border-green-200">
+                                <span className="text-sm text-green-800">
+                                    {lang === 'pt' ? '✓ Verificado por curador CAIO/TSI' : '✓ Verified by CAIO/TSI curator'}
+                                </span>
+                                {article.verification_date && (
+                                    <span className="text-xs text-green-600 ml-auto">
+                                        {new Date(article.verification_date).toLocaleDateString()}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+                        {article.revised_by && article.quality_tier === 'troyjo_certified' && (
+                            <div className="flex items-center gap-2 px-4 py-3 bg-[#B8860B]/10 rounded-lg border-2 border-[#B8860B]">
+                                <Stamp className="w-5 h-5 text-[#B8860B]" />
+                                <span className="text-base font-bold text-[#B8860B]">
+                                    © {lang === 'pt' ? 'Certificado por Marcos Troyjo' : 'Certified by Marcos Troyjo'}
                                 </span>
                                 {article.revision_date && (
                                     <span className="text-xs text-[#B8860B]/70 ml-auto">

@@ -95,11 +95,69 @@ export default function WelcomeFlow({ open, onComplete }) {
         );
     };
 
+    const handleSkip = async () => {
+        try {
+            const user = await base44.auth.me();
+            const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+
+            if (profiles.length > 0) {
+                await base44.entities.UserProfile.update(profiles[0].id, {
+                    dashboard_preferences: {
+                        ...profiles[0].dashboard_preferences,
+                        onboarding_completed: true,
+                        onboarding_skipped: true
+                    }
+                });
+            } else {
+                await base44.entities.UserProfile.create({
+                    user_email: user.email,
+                    interests: {},
+                    dashboard_preferences: {
+                        onboarding_completed: true,
+                        onboarding_skipped: true,
+                        layout: 'comfortable',
+                        theme: 'light',
+                        language: lang
+                    },
+                    notification_preferences: {},
+                    custom_topics: []
+                });
+            }
+
+            // Initialize subscription if doesn't exist
+            const subs = await base44.entities.Subscription.filter({ user_email: user.email });
+            if (subs.length === 0) {
+                await base44.entities.Subscription.create({
+                    user_email: user.email,
+                    plan: 'free',
+                    status: 'active',
+                    limits: {
+                        consultations_per_month: 5,
+                        articles_per_month: 2,
+                        documents_per_month: 5
+                    },
+                    features_used: {
+                        consultations: 0,
+                        articles_generated: 0,
+                        documents_analyzed: 0
+                    }
+                });
+            }
+
+            setStep(1);
+            setSelectedInterests([]);
+            onComplete();
+        } catch (error) {
+            console.error('Error skipping onboarding:', error);
+            toast.error(lang === 'pt' ? 'Erro ao pular onboarding' : 'Error skipping onboarding');
+        }
+    };
+
     const handleFinish = async () => {
         try {
             const user = await base44.auth.me();
             const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
-            
+
             const interestData = {
                 industries: selectedInterests.filter(i => interestOptions.industries.includes(i)),
                 regions: selectedInterests.filter(i => interestOptions.regions.includes(i)),
@@ -148,7 +206,7 @@ export default function WelcomeFlow({ open, onComplete }) {
                     }
                 });
             }
-            
+
             toast.success(lang === 'pt' ? 'Perfil configurado com sucesso!' : 'Profile configured successfully!');
             setStep(1);
             setSelectedInterests([]);
@@ -213,10 +271,10 @@ export default function WelcomeFlow({ open, onComplete }) {
                         ))}
 
                         <div className="flex justify-between pt-4">
-                            <Button variant="ghost" onClick={onComplete}>
+                            <Button variant="ghost" onClick={handleSkip}>
                                 {t.skip}
                             </Button>
-                            <Button onClick={() => setStep(2)} className="bg-[#002D62]">
+                            <Button onClick={() => setStep(2)} className="bg-[#8B1538] hover:bg-[#6B0F2A]">
                                 {t.continue}
                                 <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>
@@ -254,7 +312,7 @@ export default function WelcomeFlow({ open, onComplete }) {
                             <Button variant="ghost" onClick={() => setStep(1)}>
                                 {lang === 'pt' ? 'Voltar' : 'Back'}
                             </Button>
-                            <Button onClick={handleFinish} className="bg-[#002D62]">
+                            <Button onClick={handleFinish} className="bg-[#8B1538] hover:bg-[#6B0F2A]">
                                 {t.finish}
                                 <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>

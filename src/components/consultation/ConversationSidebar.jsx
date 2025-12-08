@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     MessageSquare, FolderOpen, Plus, Search, MoreVertical, 
     Share2, Copy, Trash2, Edit2, X, Check, ChevronRight,
-    ChevronDown, Folder
+    ChevronDown, Folder, Sparkles, AlertCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import RenameValidationDialog from './RenameValidationDialog';
 
 export default function ConversationSidebar({ 
     lang = 'pt', 
@@ -31,6 +32,8 @@ export default function ConversationSidebar({
     const [editingId, setEditingId] = useState(null);
     const [editingName, setEditingName] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [renameDialogOpen, setRenameDialogOpen] = useState(false);
+    const [selectedRenameConv, setSelectedRenameConv] = useState(null);
 
     const t = {
         pt: {
@@ -48,6 +51,8 @@ export default function ConversationSidebar({
             noConversations: "Nenhuma conversa",
             addToProject: "Adicionar ao Projeto",
             newProject: "Novo Projeto",
+            pendingRename: "Sugestão de renomeação",
+            reviewRename: "Revisar renomeação",
         },
         en: {
             history: "History",
@@ -64,12 +69,47 @@ export default function ConversationSidebar({
             noConversations: "No conversations",
             addToProject: "Add to Project",
             newProject: "New Project",
+            pendingRename: "Rename suggestion",
+            reviewRename: "Review rename",
         }
     }[lang];
 
     useEffect(() => {
         loadConversations();
+        
+        // Check for pending renames periodically
+        const interval = setInterval(() => {
+            checkPendingRenames();
+        }, 60000); // Check every minute
+        
+        return () => clearInterval(interval);
     }, []);
+
+    const checkPendingRenames = async () => {
+        try {
+            const convs = await base44.agents.listConversations({
+                agent_name: "troyjo_twin"
+            });
+            
+            for (const conv of convs) {
+                const lastAnalysis = conv.metadata?.last_theme_analysis;
+                if (!lastAnalysis || !conv.metadata?.pending_rename) {
+                    const hoursSinceCreation = (new Date() - new Date(conv.created_date)) / (1000 * 60 * 60);
+                    
+                    if (hoursSinceCreation >= 72 && conv.messages?.length > 5) {
+                        // Trigger analysis for this conversation
+                        await base44.functions.invoke('analyzeConversationTheme', {
+                            conversation_id: conv.id
+                        });
+                    }
+                }
+            }
+            
+            loadConversations();
+        } catch (error) {
+            console.error('Error checking pending renames:', error);
+        }
+    };
 
     const loadConversations = async () => {
         setIsLoading(true);
@@ -206,6 +246,16 @@ export default function ConversationSidebar({
             newSelected.add(id);
         }
         setSelectedItems(newSelected);
+    };
+
+    const handleReviewRename = (conv) => {
+        setSelectedRenameConv(conv);
+        setRenameDialogOpen(true);
+    };
+
+    const handleRenameComplete = () => {
+        loadConversations();
+        setSelectedRenameConv(null);
     };
 
     const filteredProjects = Object.keys(projects).reduce((acc, projectName) => {
@@ -356,15 +406,33 @@ export default function ConversationSidebar({
                                                     ) : (
                                                         <>
                                                             <button
-                                                                onClick={() => onSelectConversation(conv.id)}
-                                                                className="flex-1 text-left min-w-0"
+                                                               onClick={() => onSelectConversation(conv.id)}
+                                                               className="flex-1 text-left min-w-0"
                                                             >
-                                                                <p className="text-sm font-medium text-gray-900 truncate">
-                                                                    {conv.metadata?.name || `Conversa ${new Date(conv.created_date).toLocaleDateString()}`}
-                                                                </p>
-                                                                <p className="text-xs text-gray-500">
-                                                                    {new Date(conv.created_date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US')}
-                                                                </p>
+                                                               <div className="flex items-center gap-2">
+                                                                   <p className="text-sm font-medium text-gray-900 truncate flex-1">
+                                                                       {conv.metadata?.name || `Conversa ${new Date(conv.created_date).toLocaleDateString()}`}
+                                                                   </p>
+                                                                   {conv.metadata?.pending_rename && (
+                                                                       <button
+                                                                           onClick={(e) => {
+                                                                               e.stopPropagation();
+                                                                               handleReviewRename(conv);
+                                                                           }}
+                                                                           className="flex-shrink-0"
+                                                                       >
+                                                                           <Badge 
+                                                                               className="bg-[#B8860B] text-white text-xs gap-1 hover:bg-[#9a7109] transition-colors cursor-pointer"
+                                                                           >
+                                                                               <Sparkles className="w-3 h-3" />
+                                                                               {t.pendingRename}
+                                                                           </Badge>
+                                                                       </button>
+                                                                   )}
+                                                               </div>
+                                                               <p className="text-xs text-gray-500">
+                                                                   {new Date(conv.created_date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US')}
+                                                               </p>
                                                             </button>
 
                                                             <DropdownMenu>
@@ -378,6 +446,18 @@ export default function ConversationSidebar({
                                                                     </Button>
                                                                 </DropdownMenuTrigger>
                                                                 <DropdownMenuContent align="end">
+                                                                    {conv.metadata?.pending_rename && (
+                                                                        <>
+                                                                            <DropdownMenuItem 
+                                                                                onClick={() => handleReviewRename(conv)}
+                                                                                className="text-[#B8860B] font-medium"
+                                                                            >
+                                                                                <Sparkles className="w-4 h-4 mr-2" />
+                                                                                {t.reviewRename}
+                                                                            </DropdownMenuItem>
+                                                                            <DropdownMenuSeparator />
+                                                                        </>
+                                                                    )}
                                                                     <DropdownMenuItem onClick={() => handleShare(conv)}>
                                                                         <Share2 className="w-4 h-4 mr-2" />
                                                                         {t.share}
@@ -418,6 +498,19 @@ export default function ConversationSidebar({
                     </div>
                 )}
             </div>
+
+            {/* Rename Validation Dialog */}
+            {selectedRenameConv && (
+                <RenameValidationDialog
+                    open={renameDialogOpen}
+                    onOpenChange={setRenameDialogOpen}
+                    conversationId={selectedRenameConv.id}
+                    currentName={selectedRenameConv.metadata?.name}
+                    renameData={selectedRenameConv.metadata?.pending_rename}
+                    onComplete={handleRenameComplete}
+                    lang={lang}
+                />
+            )}
         </div>
     );
 }

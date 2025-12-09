@@ -36,7 +36,7 @@ export default function Website() {
 
     const t = {
         pt: {
-            title: 'O Pensador que Cunhou "Trumpulência"',
+            title: 'Líder Global de Pensamento 24/7',
             subtitle: 'De "desglobalização" (2015) a "Novo ESG" (2025): uma década de inovação conceitual',
             tagline: 'Marcos Troyjo · Economista · Ex-Presidente do Banco do BRICS',
             about: 'Expertise Geopolítica de Classe Mundial',
@@ -58,7 +58,7 @@ export default function Website() {
             filterArticles: 'Artigos',
             filterInterviews: 'Entrevistas',
             cta: 'Iniciar Consulta',
-            contextUpdate: 'Atualização Geopolítica (09/Dez/2025)',
+            contextUpdate: 'Atualização Geopolítica (nov/2025)',
             contextText: 'Após meses de volatilidade máxima (Mar-Set 2025), o ambiente comercial global apresenta distensão tática — cessar-fogo EUA-China (até nov/2026), Brasil negocia acordo provisório. A trumpulência está GERENCIADA, não eliminada.',
             capabilities: 'Capacidades do Digital Twin',
             audiences: 'Quem Você É?',
@@ -68,7 +68,7 @@ export default function Website() {
             conceptEvolution: 'Evolução Conceitual'
         },
         en: {
-            title: 'The Thinker who Coined "Trumpulence"',
+            title: 'Global Thought Leader 24/7',
             subtitle: 'From "deglobalization" (2015) to "New ESG" (2025): a decade of conceptual innovation',
             tagline: 'Marcos Troyjo · Economist · Former BRICS Bank President',
             about: 'World-Class Geopolitical Expertise',
@@ -90,7 +90,7 @@ export default function Website() {
             filterArticles: 'Articles',
             filterInterviews: 'Interviews',
             cta: 'Start Consultation',
-            contextUpdate: 'Geopolitical Update (09/Dec/2025)',
+            contextUpdate: 'Geopolitical Update (Nov/2025)',
             contextText: 'After months at maximum volatility (Mar-Sep 2025), global trade environment shows tactical détente — US-China ceasefire (until Nov/2026), Brazil negotiates provisional agreement. Trumpulence is MANAGED, not eliminated.',
             capabilities: 'Digital Twin Capabilities',
             audiences: 'Who Are You?',
@@ -203,14 +203,14 @@ export default function Website() {
                                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 text-sm font-medium mb-6">
                                     <Sparkles className="w-4 h-4 text-amber-600" />
                                     <span className="text-amber-900">
-                                        {lang === 'pt' ? 'Contexto Atualizado: 09/Dez/2025' : 'Updated Context: 09/Dec/2025'}
+                                        {lang === 'pt' ? 'Contexto Atualizado: nov/2025' : 'Updated Context: Nov/2025'}
                                     </span>
                                 </div>
                                 <h1 className="text-5xl md:text-6xl font-bold text-[#002D62] leading-tight mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                                     {lang === 'pt' ? (
-                                        <>O Pensador que Cunhou <span className="text-[#D4AF37]">"Trumpulência"</span></>
+                                        <>Líder Global de Pensamento <span className="text-[#D4AF37]">24/7</span></>
                                     ) : (
-                                        <>The Thinker who Coined <span className="text-[#D4AF37]">"Trumpulence"</span></>
+                                        <>Global Thought Leader <span className="text-[#D4AF37]">24/7</span></>
                                     )}
                                 </h1>
                                 <p className="text-xl text-[#2D2D2D] mb-3">{text.subtitle}</p>
@@ -372,12 +372,6 @@ export default function Website() {
                         </h2>
                         <p className="text-lg text-[#2D2D2D] leading-relaxed max-w-4xl">{text.aboutText}</p>
                     </div>
-                </section>
-
-                {/* About */}
-                <section>
-                    <h2 className="text-3xl font-bold text-[#002D62] mb-6">{text.about}</h2>
-                    <p className="text-lg text-[#333F48] leading-relaxed">{text.aboutText}</p>
                 </section>
 
                 {/* Books */}

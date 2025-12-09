@@ -4,9 +4,16 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Search, Filter, X, Calendar, Eye, Tag } from 'lucide-react';
+import { Search, Filter, X, Calendar, Eye, Tag, SlidersHorizontal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { 
+    Select, 
+    SelectContent, 
+    SelectItem, 
+    SelectTrigger, 
+    SelectValue 
+} from '@/components/ui/select';
 
 const translations = {
     pt: {
@@ -17,7 +24,17 @@ const translations = {
         tags: 'Tags',
         sortBy: 'Ordenar por',
         results: 'resultados',
-        noResults: 'Nenhum resultado encontrado'
+        noResults: 'Nenhum resultado encontrado',
+        dateRange: 'Período',
+        author: 'Autor',
+        category: 'Categoria',
+        sortRelevance: 'Relevância',
+        sortDate: 'Data',
+        sortViews: 'Visualizações',
+        from: 'De',
+        to: 'Até',
+        allAuthors: 'Todos os autores',
+        allCategories: 'Todas'
     },
     en: {
         search: 'Search articles, publications, and events...',
@@ -27,7 +44,17 @@ const translations = {
         tags: 'Tags',
         sortBy: 'Sort by',
         results: 'results',
-        noResults: 'No results found'
+        noResults: 'No results found',
+        dateRange: 'Date Range',
+        author: 'Author',
+        category: 'Category',
+        sortRelevance: 'Relevance',
+        sortDate: 'Date',
+        sortViews: 'Views',
+        from: 'From',
+        to: 'To',
+        allAuthors: 'All authors',
+        allCategories: 'All'
     }
 };
 
@@ -37,7 +64,12 @@ export default function AdvancedSearch({ lang = 'pt' }) {
     const [allContent, setAllContent] = useState([]);
     const [selectedTypes, setSelectedTypes] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
+    const [selectedAuthor, setSelectedAuthor] = useState('all');
+    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [dateFrom, setDateFrom] = useState('');
+    const [dateTo, setDateTo] = useState('');
     const [sortBy, setSortBy] = useState('relevance');
+    const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const t = translations[lang];
 
     useEffect(() => {
@@ -46,7 +78,7 @@ export default function AdvancedSearch({ lang = 'pt' }) {
 
     useEffect(() => {
         performSearch();
-    }, [query, selectedTypes, selectedTags, sortBy, allContent]);
+    }, [query, selectedTypes, selectedTags, selectedAuthor, selectedCategory, dateFrom, dateTo, sortBy, allContent]);
 
     const loadAllContent = async () => {
         try {
@@ -71,10 +103,10 @@ export default function AdvancedSearch({ lang = 'pt' }) {
     const performSearch = () => {
         let filtered = allContent;
 
-        // Filter by search query
+        // Filter by search query with relevance scoring
         if (query) {
             const lowerQuery = query.toLowerCase();
-            filtered = filtered.filter(item => {
+            filtered = filtered.map(item => {
                 const searchableText = [
                     item.title,
                     item.name,
@@ -85,13 +117,54 @@ export default function AdvancedSearch({ lang = 'pt' }) {
                     ...(item.topics || [])
                 ].filter(Boolean).join(' ').toLowerCase();
                 
-                return searchableText.includes(lowerQuery);
-            });
+                if (!searchableText.includes(lowerQuery)) {
+                    return null;
+                }
+
+                // Calculate relevance score
+                let relevanceScore = 0;
+                const titleText = (item.title || item.name || '').toLowerCase();
+                const summaryText = (item.summary || item.description || '').toLowerCase();
+                
+                if (titleText.includes(lowerQuery)) relevanceScore += 5;
+                if (summaryText.includes(lowerQuery)) relevanceScore += 3;
+                if ((item.tags || []).some(tag => tag.toLowerCase().includes(lowerQuery))) relevanceScore += 2;
+                
+                return { ...item, relevanceScore };
+            }).filter(Boolean);
         }
 
         // Filter by type
         if (selectedTypes.length > 0) {
             filtered = filtered.filter(item => selectedTypes.includes(item.contentType));
+        }
+
+        // Filter by author
+        if (selectedAuthor !== 'all') {
+            filtered = filtered.filter(item => 
+                item.authors?.includes(selectedAuthor) || item.created_by === selectedAuthor
+            );
+        }
+
+        // Filter by category
+        if (selectedCategory !== 'all') {
+            filtered = filtered.filter(item => 
+                item.type === selectedCategory || item.category === selectedCategory
+            );
+        }
+
+        // Filter by date range
+        if (dateFrom) {
+            filtered = filtered.filter(item => {
+                const itemDate = new Date(item.publication_date || item.start_date || item.created_date);
+                return itemDate >= new Date(dateFrom);
+            });
+        }
+        if (dateTo) {
+            filtered = filtered.filter(item => {
+                const itemDate = new Date(item.publication_date || item.start_date || item.created_date);
+                return itemDate <= new Date(dateTo);
+            });
         }
 
         // Filter by tags
@@ -103,7 +176,9 @@ export default function AdvancedSearch({ lang = 'pt' }) {
         }
 
         // Sort results
-        if (sortBy === 'date') {
+        if (sortBy === 'relevance') {
+            filtered.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0));
+        } else if (sortBy === 'date') {
             filtered.sort((a, b) => {
                 const dateA = new Date(a.publication_date || a.start_date || a.created_date);
                 const dateB = new Date(b.publication_date || b.start_date || b.created_date);
@@ -131,10 +206,16 @@ export default function AdvancedSearch({ lang = 'pt' }) {
     const clearFilters = () => {
         setSelectedTypes([]);
         setSelectedTags([]);
+        setSelectedAuthor('all');
+        setSelectedCategory('all');
+        setDateFrom('');
+        setDateTo('');
         setQuery('');
     };
 
     const allTags = [...new Set(allContent.flatMap(item => item.tags || item.topics || []))];
+    const allAuthors = [...new Set(allContent.flatMap(item => item.authors || [item.created_by]).filter(Boolean))];
+    const allCategories = [...new Set(allContent.map(item => item.type || item.category).filter(Boolean))];
 
     return (
         <div className="space-y-4">
@@ -148,7 +229,14 @@ export default function AdvancedSearch({ lang = 'pt' }) {
                         className="pl-10"
                     />
                 </div>
-                {(selectedTypes.length > 0 || selectedTags.length > 0 || query) && (
+                <Button
+                    variant="outline"
+                    onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                >
+                    <SlidersHorizontal className="w-4 h-4 mr-2" />
+                    {t.filters}
+                </Button>
+                {(selectedTypes.length > 0 || selectedTags.length > 0 || query || selectedAuthor !== 'all' || selectedCategory !== 'all' || dateFrom || dateTo) && (
                     <Button variant="outline" onClick={clearFilters}>
                         <X className="w-4 h-4 mr-2" />
                         {t.clearFilters}
@@ -180,6 +268,65 @@ export default function AdvancedSearch({ lang = 'pt' }) {
                     Events
                 </Badge>
             </div>
+
+            {/* Advanced Filters */}
+            {showAdvancedFilters && (
+                <Card className="border-[#002D62]/20">
+                    <CardContent className="p-4 space-y-4">
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div>
+                                <label className="text-xs font-medium text-gray-600 mb-2 block">{t.author}</label>
+                                <Select value={selectedAuthor} onValueChange={setSelectedAuthor}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">{t.allAuthors}</SelectItem>
+                                        {allAuthors.map(author => (
+                                            <SelectItem key={author} value={author}>{author}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div>
+                                <label className="text-xs font-medium text-gray-600 mb-2 block">{t.category}</label>
+                                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">{t.allCategories}</SelectItem>
+                                        {allCategories.map(cat => (
+                                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div>
+                                <label className="text-xs font-medium text-gray-600 mb-2 block">{t.from}</label>
+                                <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+                            </div>
+                            <div>
+                                <label className="text-xs font-medium text-gray-600 mb-2 block">{t.to}</label>
+                                <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="text-xs font-medium text-gray-600 mb-2 block">{t.sortBy}</label>
+                            <Select value={sortBy} onValueChange={setSortBy}>
+                                <SelectTrigger className="w-48">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="relevance">{t.sortRelevance}</SelectItem>
+                                    <SelectItem value="date">{t.sortDate}</SelectItem>
+                                    <SelectItem value="views">{t.sortViews}</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             <div className="text-sm text-gray-600">
                 {results.length} {t.results}

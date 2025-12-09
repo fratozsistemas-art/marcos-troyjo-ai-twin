@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Calendar, Users, MapPin, CheckCircle2, Clock, XCircle, Loader2, Filter } from 'lucide-react';
+import { Calendar, Users, MapPin, CheckCircle2, Clock, XCircle, Loader2, Filter, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import TimelineCard from '@/components/timeline/TimelineCard';
+import { toast } from 'sonner';
 
 const translations = {
     pt: {
@@ -45,6 +47,7 @@ export default function PolicyObservatory({ lang = 'pt' }) {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState('all');
+    const [exporting, setExporting] = useState(false);
     const t = translations[lang];
 
     useEffect(() => {
@@ -68,6 +71,33 @@ export default function PolicyObservatory({ lang = 'pt' }) {
     const filteredEvents = selectedCategory === 'all' 
         ? events 
         : events.filter(e => e?.category === selectedCategory);
+
+    const handleExport = async (format = 'detailed') => {
+        setExporting(true);
+        try {
+            const response = await base44.functions.invoke('exportTimelineJSON', {
+                category: selectedCategory === 'all' ? null : selectedCategory,
+                format
+            });
+            
+            const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `timeline-${format}-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+            
+            toast.success(lang === 'pt' ? 'Timeline exportada!' : 'Timeline exported!');
+        } catch (error) {
+            console.error('Export error:', error);
+            toast.error(lang === 'pt' ? 'Erro ao exportar' : 'Export failed');
+        } finally {
+            setExporting(false);
+        }
+    };
 
     const getStatusIcon = (status) => {
         switch(status) {
@@ -104,6 +134,34 @@ export default function PolicyObservatory({ lang = 'pt' }) {
 
     return (
         <div className="space-y-6">
+            {/* Header with Export */}
+            <div className="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-[#002D62]">{t.title}</h2>
+                    <p className="text-sm text-gray-600">{t.subtitle}</p>
+                </div>
+                <div className="flex gap-2">
+                    <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleExport('caio_pipeline')}
+                        disabled={exporting}
+                    >
+                        <Download className="w-4 h-4 mr-2" />
+                        CAIO Export
+                    </Button>
+                    <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleExport('detailed')}
+                        disabled={exporting}
+                    >
+                        <Download className="w-4 h-4 mr-2" />
+                        JSON
+                    </Button>
+                </div>
+            </div>
+
             {/* Filters */}
             <div className="flex flex-wrap gap-2">
                 <Button
@@ -147,51 +205,7 @@ export default function PolicyObservatory({ lang = 'pt' }) {
                                     {getStatusIcon(event?.status)}
                                 </div>
                                 
-                                <Card className="hover:shadow-lg transition-shadow">
-                                    <CardHeader>
-                                        <div className="flex items-start justify-between gap-4">
-                                            <div className="flex-1">
-                                                <Badge className={`mb-2 ${getCategoryColor(event?.category)}`}>
-                                                   {event?.category || 'Uncategorized'}
-                                                </Badge>
-                                                <CardTitle className="text-lg text-[#002D62]">{event?.name || 'Untitled Event'}</CardTitle>
-                                                <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                                                    <span className="flex items-center gap-1">
-                                                        <Calendar className="w-4 h-4" />
-                                                        {event?.start_date ? new Date(event.start_date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', { 
-                                                            year: 'numeric', 
-                                                            month: 'short', 
-                                                            day: 'numeric' 
-                                                        }) : 'N/A'}
-                                                    </span>
-                                                    <span className="flex items-center gap-1">
-                                                        <MapPin className="w-4 h-4" />
-                                                        {event?.jurisdiction || 'N/A'}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent className="space-y-3">
-                                        <p className="text-sm text-gray-700">{event?.summary || 'No summary available'}</p>
-                                        
-                                        {event?.actors && Array.isArray(event.actors) && event.actors.length > 0 && (
-                                            <div>
-                                                <p className="text-xs font-medium text-gray-500 mb-1 flex items-center gap-1">
-                                                    <Users className="w-3 h-3" />
-                                                    {t.actors}:
-                                                </p>
-                                                <div className="flex flex-wrap gap-1">
-                                                    {event.actors.map((actor, i) => (
-                                                        <Badge key={i} variant="outline" className="text-xs">
-                                                            {actor}
-                                                        </Badge>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </CardContent>
-                                </Card>
+                                <TimelineCard event={event} index={idx} lang={lang} />
                             </motion.div>
                         ))
                     )}

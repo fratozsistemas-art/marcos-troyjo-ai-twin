@@ -187,7 +187,7 @@ export default function ArticleView() {
                     </div>
                 </div>
 
-                <div className="prose prose-lg max-w-none">
+                <div className="prose prose-lg prose-slate max-w-none prose-headings:text-[#002D62] prose-a:text-[#8B1538] prose-strong:text-[#002D62] prose-p:text-[#2D2D2D] prose-p:leading-relaxed">
                     <ReactMarkdown>{article.body}</ReactMarkdown>
                 </div>
 

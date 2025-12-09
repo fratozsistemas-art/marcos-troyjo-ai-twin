@@ -6,6 +6,8 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Globe, TrendingUp, Building2, Landmark, BookOpen, MessageSquare, LayoutDashboard, Zap, Network, DollarSign, Brain, Badge as BadgeIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import NeologismShowcase from '@/components/neologisms/NeologismShowcase';
+import AudienceSegmentation from '@/components/audience/AudienceSegmentation';
 
 const translations = {
     pt: {
@@ -170,18 +172,33 @@ export default function Home() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6 }}
                         >
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[#D4AF37]/10 text-[#D4AF37] text-sm font-medium mb-6 border border-[#D4AF37]/20">
-                                <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
-                                Digital Twin Active
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 text-sm font-medium mb-6">
+                                <Sparkles className="w-4 h-4 text-amber-600" />
+                                <span className="text-amber-900">
+                                    {lang === 'pt' ? 'Contexto Atualizado: 09/Dez/2025' : 'Updated Context: 09/Dec/2025'}
+                                </span>
                             </div>
                             <h1 className="text-5xl md:text-6xl font-bold text-[#8B1538] leading-tight mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
-                                {t.title}
+                                {lang === 'pt' ? (
+                                    <>O Pensador que Criou <span className="text-[#D4AF37]">"Trumpulência"</span></>
+                                ) : (
+                                    <>The Thinker who Created <span className="text-[#D4AF37]">"Trumpulence"</span></>
+                                )}
                             </h1>
-                            <p className="text-2xl text-[#D4AF37] font-light mb-2">{t.subtitle}</p>
-                            <p className="text-lg text-[#2D2D2D]/80 mb-6">{t.tagline}</p>
-                            <p className="text-[#2D2D2D] text-lg leading-relaxed mb-8 max-w-xl">
-                                {t.description}
+                            <p className="text-xl text-[#2D2D2D] mb-3">
+                                {lang === 'pt' 
+                                    ? 'De "desglobalização" (2015) a "Novo ESG" (2025): uma década de inovação conceitual'
+                                    : 'From "deglobalization" (2015) to "New ESG" (2025): a decade of conceptual innovation'}
                             </p>
+                            <p className="text-lg text-[#2D2D2D]/80 mb-6">{t.tagline}</p>
+                            <div className="bg-white rounded-lg border-l-4 border-[#D4AF37] p-4 mb-6 max-w-2xl">
+                                <p className="text-sm text-[#2D2D2D] leading-relaxed">
+                                    <strong>{lang === 'pt' ? '📊 Atualização Geopolítica:' : '📊 Geopolitical Update:'}</strong>{' '}
+                                    {lang === 'pt'
+                                        ? 'Após meses de pico da trumpulência, observamos sinais de estabilização — cessar-fogo tarifário EUA-China, distensão com Brasil.'
+                                        : 'After months at peak trumpulence, we observe signs of stabilization — US-China tariff ceasefire, détente with Brazil.'}
+                                </p>
+                            </div>
                             <div className="flex flex-wrap gap-4">
                                 <Link to={createPageUrl('Consultation')}>
                                     <Button size="lg" className="bg-[#8B1538] hover:bg-[#6B0F2A] text-white gap-2 text-lg px-8 rounded">
@@ -384,7 +401,51 @@ export default function Home() {
                         </div>
                         </section>
 
-            {/* Current Capabilities */}
+            {/* Neologisms Showcase */}
+            <section className="py-20 px-6 bg-white">
+                <div className="max-w-7xl mx-auto">
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-12"
+                    >
+                        <h2 className="text-3xl md:text-4xl font-bold text-[#8B1538] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            {lang === 'pt' ? 'Inovação Conceitual: 2015-2025' : 'Conceptual Innovation: 2015-2025'}
+                        </h2>
+                        <p className="text-lg text-[#2D2D2D]/70 max-w-3xl mx-auto">
+                            {lang === 'pt' 
+                                ? 'Os 11 neologismos e frameworks que definem o pensamento estratégico de Troyjo'
+                                : 'The 11 neologisms and frameworks that define Troyjo\'s strategic thinking'}
+                        </p>
+                    </motion.div>
+                    <NeologismShowcase lang={lang} />
+                </div>
+            </section>
+
+            {/* Audience Segmentation */}
+            <section className="py-20 px-6 bg-gradient-to-b from-gray-50 to-white">
+                <div className="max-w-7xl mx-auto">
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-12"
+                    >
+                        <h2 className="text-3xl md:text-4xl font-bold text-[#8B1538] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            {lang === 'pt' ? 'Quem Você É?' : 'Who Are You?'}
+                        </h2>
+                        <p className="text-lg text-[#2D2D2D]/70">
+                            {lang === 'pt' 
+                                ? 'Experiência customizada para diferentes contextos e necessidades'
+                                : 'Customized experience for different contexts and needs'}
+                        </p>
+                    </motion.div>
+                    <AudienceSegmentation lang={lang} />
+                </div>
+            </section>
+
+            {/* Expertise Areas */}
             <section className="py-20 px-6 bg-white">
                 <div className="max-w-7xl mx-auto">
                     <motion.div 

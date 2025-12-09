@@ -236,14 +236,33 @@ export default function GeopoliticalRiskMonitor({ lang = 'pt' }) {
                                         </div>
                                     )}
 
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => setExpandedRisk(isExpanded ? null : risk.id)}
-                                        className="mt-2 text-xs"
-                                    >
-                                        {isExpanded ? t.collapsing : t.expanding}
-                                    </Button>
+                                    <div className="flex gap-2 mt-2">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setExpandedRisk(isExpanded ? null : risk.id)}
+                                            className="text-xs"
+                                        >
+                                            {isExpanded ? t.collapsing : t.expanding}
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={async () => {
+                                                try {
+                                                    const response = await base44.functions.invoke('analyzeGeopoliticalRisk', {
+                                                        risk_id: risk.id
+                                                    });
+                                                    toast.success(lang === 'pt' ? 'Artigo de análise gerado!' : 'Analysis article generated!');
+                                                } catch (error) {
+                                                    toast.error(lang === 'pt' ? 'Erro ao gerar análise' : 'Error generating analysis');
+                                                }
+                                            }}
+                                            className="text-xs"
+                                        >
+                                            {lang === 'pt' ? 'Gerar Análise' : 'Generate Analysis'}
+                                        </Button>
+                                    </div>
                                 </div>
                             );
                         })}

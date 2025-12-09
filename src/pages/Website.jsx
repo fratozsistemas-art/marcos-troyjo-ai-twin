@@ -36,7 +36,7 @@ export default function Website() {
 
     const t = {
         pt: {
-            title: 'O Pensador que Criou "Trumpulência"',
+            title: 'O Pensador que Cunhou "Trumpulência"',
             subtitle: 'De "desglobalização" (2015) a "Novo ESG" (2025): uma década de inovação conceitual',
             tagline: 'Marcos Troyjo · Economista · Ex-Presidente do Banco do BRICS',
             about: 'Expertise Geopolítica de Classe Mundial',
@@ -68,7 +68,7 @@ export default function Website() {
             conceptEvolution: 'Evolução Conceitual'
         },
         en: {
-            title: 'The Thinker who Created "Trumpulence"',
+            title: 'The Thinker who Coined "Trumpulence"',
             subtitle: 'From "deglobalization" (2015) to "New ESG" (2025): a decade of conceptual innovation',
             tagline: 'Marcos Troyjo · Economist · Former BRICS Bank President',
             about: 'World-Class Geopolitical Expertise',

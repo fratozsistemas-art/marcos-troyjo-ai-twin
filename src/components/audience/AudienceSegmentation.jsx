@@ -16,7 +16,7 @@ const audiences = {
             features: [
                 'Análise BRICS 2.0 e multipolaridade',
                 'Novo ESG (Economia + Segurança + Geopolítica)',
-                'Navegação da trumpulência (tarifas, cadeias)'
+                'Navegação da trumpulência gerenciada'
             ],
             gradient: 'from-[#8B1538] to-[#6B0F2A]'
         },
@@ -43,6 +43,42 @@ const audiences = {
                 'Geração de artigos com voz autêntica'
             ],
             gradient: 'from-[#002D62] to-[#001d42]'
+        },
+        {
+            id: 'government',
+            icon: Building2,
+            title: 'Governo / Diplomacia',
+            description: 'Negociações multilaterais, inserção competitiva, arquitetura global',
+            features: [
+                'Experiência NDB (2020-2023, primeiro ocidental)',
+                'Diplomacia econômica prática',
+                'BRICS 2.0: metamorfose do reequilíbrio global'
+            ],
+            gradient: 'from-[#8B1538] to-[#002D62]'
+        },
+        {
+            id: 'media',
+            icon: TrendingUp,
+            title: 'Jornalista / Mídia',
+            description: 'Análise para matérias, contexto geopolítico, expert quotes',
+            features: [
+                'Contexto atualizado (09/Dez/2025: pós-pico trumpulência)',
+                'Frameworks conceituais precisos',
+                'Citações atribuíveis ao pensamento Troyjo'
+            ],
+            gradient: 'from-[#D4AF37] to-[#8B1538]'
+        },
+        {
+            id: 'student',
+            icon: GraduationCap,
+            title: 'Estudante / Jovem Profissional',
+            description: 'Aprendizado em economia global, preparação para contexto policrítico',
+            features: [
+                'Modo Professor (didático, contextualizado)',
+                'Vocabulário técnico explicado',
+                '"Vocês trabalharão em contexto policrítico"'
+            ],
+            gradient: 'from-[#002D62] to-[#D4AF37]'
         }
     ],
     en: [
@@ -54,7 +90,7 @@ const audiences = {
             features: [
                 'BRICS 2.0 and multipolarity analysis',
                 'New ESG (Economy + Security + Geopolitics)',
-                'Trumpulence navigation (tariffs, supply chains)'
+                'Managed trumpulence navigation'
             ],
             gradient: 'from-[#8B1538] to-[#6B0F2A]'
         },
@@ -81,6 +117,42 @@ const audiences = {
                 'Article generation with authentic voice'
             ],
             gradient: 'from-[#002D62] to-[#001d42]'
+        },
+        {
+            id: 'government',
+            icon: Building2,
+            title: 'Government / Diplomacy',
+            description: 'Multilateral negotiations, competitive insertion, global architecture',
+            features: [
+                'NDB experience (2020-2023, first Westerner)',
+                'Practical economic diplomacy',
+                'BRICS 2.0: metamorphosis of global rebalancing'
+            ],
+            gradient: 'from-[#8B1538] to-[#002D62]'
+        },
+        {
+            id: 'media',
+            icon: TrendingUp,
+            title: 'Journalist / Media',
+            description: 'Analysis for stories, geopolitical context, expert quotes',
+            features: [
+                'Updated context (09/Dec/2025: post-peak trumpulence)',
+                'Precise conceptual frameworks',
+                'Attributable quotes from Troyjo thinking'
+            ],
+            gradient: 'from-[#D4AF37] to-[#8B1538]'
+        },
+        {
+            id: 'student',
+            icon: GraduationCap,
+            title: 'Student / Young Professional',
+            description: 'Learning in global economics, preparation for polycrisis context',
+            features: [
+                'Professor mode (didactic, contextualized)',
+                'Technical vocabulary explained',
+                '"You will work in polycrisis context"'
+            ],
+            gradient: 'from-[#002D62] to-[#D4AF37]'
         }
     ]
 };

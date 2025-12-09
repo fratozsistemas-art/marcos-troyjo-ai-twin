@@ -54,9 +54,10 @@ export default function PolicyObservatory({ lang = 'pt' }) {
     const loadEvents = async () => {
         try {
             const data = await base44.entities.TimelineEvent.list('-start_date', 50);
-            setEvents(data);
+            setEvents(data || []);
         } catch (error) {
             console.error('Error loading events:', error);
+            setEvents([]);
         } finally {
             setLoading(false);
         }
@@ -66,7 +67,7 @@ export default function PolicyObservatory({ lang = 'pt' }) {
     
     const filteredEvents = selectedCategory === 'all' 
         ? events 
-        : events.filter(e => e.category === selectedCategory);
+        : events.filter(e => e?.category === selectedCategory);
 
     const getStatusIcon = (status) => {
         switch(status) {
@@ -143,38 +144,38 @@ export default function PolicyObservatory({ lang = 'pt' }) {
                                 className="relative pl-12"
                             >
                                 <div className="absolute left-0 w-8 h-8 bg-white border-4 border-[#002D62] rounded-full flex items-center justify-center">
-                                    {getStatusIcon(event.status)}
+                                    {getStatusIcon(event?.status)}
                                 </div>
                                 
                                 <Card className="hover:shadow-lg transition-shadow">
                                     <CardHeader>
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="flex-1">
-                                                <Badge className={`mb-2 ${getCategoryColor(event.category)}`}>
-                                                    {event.category}
+                                                <Badge className={`mb-2 ${getCategoryColor(event?.category)}`}>
+                                                   {event?.category || 'Uncategorized'}
                                                 </Badge>
-                                                <CardTitle className="text-lg text-[#002D62]">{event.name}</CardTitle>
+                                                <CardTitle className="text-lg text-[#002D62]">{event?.name || 'Untitled Event'}</CardTitle>
                                                 <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
                                                     <span className="flex items-center gap-1">
                                                         <Calendar className="w-4 h-4" />
-                                                        {new Date(event.start_date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', { 
+                                                        {event?.start_date ? new Date(event.start_date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', { 
                                                             year: 'numeric', 
                                                             month: 'short', 
                                                             day: 'numeric' 
-                                                        })}
+                                                        }) : 'N/A'}
                                                     </span>
                                                     <span className="flex items-center gap-1">
                                                         <MapPin className="w-4 h-4" />
-                                                        {event.jurisdiction}
+                                                        {event?.jurisdiction || 'N/A'}
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
                                     </CardHeader>
                                     <CardContent className="space-y-3">
-                                        <p className="text-sm text-gray-700">{event.summary}</p>
+                                        <p className="text-sm text-gray-700">{event?.summary || 'No summary available'}</p>
                                         
-                                        {event.actors && event.actors.length > 0 && (
+                                        {event?.actors && Array.isArray(event.actors) && event.actors.length > 0 && (
                                             <div>
                                                 <p className="text-xs font-medium text-gray-500 mb-1 flex items-center gap-1">
                                                     <Users className="w-3 h-3" />

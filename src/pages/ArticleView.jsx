@@ -11,6 +11,8 @@ import ArticleRevisionPanel from '@/components/editorial/ArticleRevisionPanel';
 import AdminReviewPanel from '@/components/editorial/AdminReviewPanel';
 import QualityBadge from '@/components/editorial/QualityBadge';
 import RelatedContent from '@/components/content/RelatedContent';
+import SEOHead from '@/components/seo/SEOHead';
+import { HelmetProvider } from 'react-helmet-async';
 
 export default function ArticleView() {
     const [article, setArticle] = useState(null);
@@ -83,17 +85,21 @@ export default function ArticleView() {
     }
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA]">
-            {/* SEO Meta Tags */}
-            {article.seo_title && (
-                <title>{article.seo_title}</title>
-            )}
-            {article.seo_description && (
-                <meta name="description" content={article.seo_description} />
-            )}
-            {article.seo_keywords && article.seo_keywords.length > 0 && (
-                <meta name="keywords" content={article.seo_keywords.join(', ')} />
-            )}
+        <HelmetProvider>
+            <SEOHead
+                title={article.seo_title || article.title}
+                description={article.seo_description || article.summary}
+                keywords={article.seo_keywords || article.tags}
+                author={article.authors?.[0] || 'Marcos Troyjo'}
+                type="article"
+                url={window.location.href}
+                publishedTime={article.publication_date}
+                modifiedTime={article.updated_date}
+                section={article.type}
+                tags={article.tags}
+                structuredData={article.structured_data}
+            />
+            <div className="min-h-screen bg-[#FAFAFA]">
             
             <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
                 <div className="max-w-4xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
@@ -221,13 +227,8 @@ export default function ArticleView() {
                     <RelatedContent currentArticle={article} lang={lang} />
                 </div>
 
-                {/* SEO Structured Data */}
-                {article.structured_data && Object.keys(article.structured_data).length > 0 && (
-                    <script type="application/ld+json">
-                        {JSON.stringify(article.structured_data)}
-                    </script>
-                )}
             </article>
-        </div>
+            </div>
+        </HelmetProvider>
     );
 }

@@ -701,11 +701,11 @@ export default function Dashboard() {
                 </motion.div>
                 </main>
 
-                {/* Welcome Flow */}
-                <WelcomeFlow 
+                {/* Welcome Flow - Temporarily disabled */}
+                {/* <WelcomeFlow 
                     open={showWelcome} 
                     onComplete={() => setShowWelcome(false)}
-                />
+                /> */}
                 </div>
                 );
                 }

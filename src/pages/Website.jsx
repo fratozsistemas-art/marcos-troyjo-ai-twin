@@ -3,11 +3,14 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { ArrowRight, BookOpen, Award, FileText, Video, ExternalLink, Globe, Mail } from 'lucide-react';
+import { ArrowRight, BookOpen, Award, FileText, Video, ExternalLink, Globe, Mail, Sparkles, MessageSquare, LayoutDashboard, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import NeologismShowcase from '@/components/neologisms/NeologismShowcase';
+import AudienceSegmentation from '@/components/audience/AudienceSegmentation';
+import ConceptEvolutionTimeline from '@/components/neologisms/ConceptEvolutionTimeline';
 
 export default function Website() {
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
@@ -32,10 +35,11 @@ export default function Website() {
 
     const t = {
         pt: {
-            title: 'Marcos Troyjo',
-            subtitle: 'Economista, Diplomata e Pensador Global',
-            about: 'Sobre',
-            aboutText: 'Marcos Prado Troyjo é economista formado pela PUC-Rio, mestre em Relações Internacionais pela Boston University e doutor em Sociologia pela USP. Foi presidente do Novo Banco de Desenvolvimento (NDB/BRICS) entre 2020-2023, secretário especial de Comércio Exterior do Brasil (2019-2020), e ocupou diversos cargos de destaque no governo brasileiro e em instituições internacionais.',
+            title: 'O Pensador que Criou "Trumpulência"',
+            subtitle: 'De "desglobalização" (2015) a "Novo ESG" (2025): uma década de inovação conceitual',
+            tagline: 'Marcos Troyjo · Economista · Ex-Presidente do Banco do BRICS',
+            about: 'Expertise Geopolítica de Classe Mundial',
+            aboutText: 'Ex-Presidente do Novo Banco de Desenvolvimento (NDB/BRICS, 2020-2023), primeiro ocidental a liderar a instituição. Fellow na Blavatnik School of Government (Oxford), Research Scholar na Columbia University. Criador de frameworks conceituais que moldaram o debate geopolítico brasileiro: de "desglobalização" a "trumpulência" e "Novo ESG".',
             books: 'Principais Livros',
             awards: 'Prêmios & Reconhecimentos',
             publications: 'Artigos & Entrevistas',
@@ -48,15 +52,26 @@ export default function Website() {
             newsletterDesc: 'Receba análises e insights sobre economia global',
             subscribe: 'Inscrever',
             accessTwin: 'Acessar Digital Twin',
+            dashboard: 'Painel',
             filterAll: 'Todos',
             filterArticles: 'Artigos',
-            filterInterviews: 'Entrevistas'
+            filterInterviews: 'Entrevistas',
+            cta: 'Iniciar Consulta',
+            contextUpdate: 'Atualização Geopolítica (09/Dez/2025)',
+            contextText: 'Após meses de volatilidade máxima (Mar-Set 2025), o ambiente comercial global apresenta distensão tática — cessar-fogo EUA-China (até nov/2026), Brasil negocia acordo provisório. A trumpulência está GERENCIADA, não eliminada.',
+            capabilities: 'Capacidades do Digital Twin',
+            audiences: 'Quem Você É?',
+            audiencesDesc: 'Experiência customizada para diferentes contextos',
+            neologisms: 'Inovação Conceitual',
+            neologismsDesc: 'Os 11 neologismos que definem o pensamento estratégico',
+            conceptEvolution: 'Evolução Conceitual'
         },
         en: {
-            title: 'Marcos Troyjo',
-            subtitle: 'Economist, Diplomat and Global Thinker',
-            about: 'About',
-            aboutText: 'Marcos Prado Troyjo is an economist graduated from PUC-Rio, holds a master\'s degree in International Relations from Boston University and a PhD in Sociology from USP. He was president of the New Development Bank (NDB/BRICS) between 2020-2023, special secretary of Foreign Trade of Brazil (2019-2020), and held several prominent positions in the Brazilian government and international institutions.',
+            title: 'The Thinker who Created "Trumpulence"',
+            subtitle: 'From "deglobalization" (2015) to "New ESG" (2025): a decade of conceptual innovation',
+            tagline: 'Marcos Troyjo · Economist · Former BRICS Bank President',
+            about: 'World-Class Geopolitical Expertise',
+            aboutText: 'Former President of New Development Bank (NDB/BRICS, 2020-2023), first Westerner to lead the institution. Fellow at Blavatnik School of Government (Oxford), Research Scholar at Columbia University. Creator of conceptual frameworks that shaped Brazilian geopolitical debate: from "deglobalization" to "trumpulence" and "New ESG".',
             books: 'Main Books',
             awards: 'Awards & Recognition',
             publications: 'Articles & Interviews',
@@ -69,9 +84,19 @@ export default function Website() {
             newsletterDesc: 'Receive analysis and insights on global economics',
             subscribe: 'Subscribe',
             accessTwin: 'Access Digital Twin',
+            dashboard: 'Dashboard',
             filterAll: 'All',
             filterArticles: 'Articles',
-            filterInterviews: 'Interviews'
+            filterInterviews: 'Interviews',
+            cta: 'Start Consultation',
+            contextUpdate: 'Geopolitical Update (09/Dec/2025)',
+            contextText: 'After months at maximum volatility (Mar-Sep 2025), global trade environment shows tactical détente — US-China ceasefire (until Nov/2026), Brazil negotiates provisional agreement. Trumpulence is MANAGED, not eliminated.',
+            capabilities: 'Digital Twin Capabilities',
+            audiences: 'Who Are You?',
+            audiencesDesc: 'Customized experience for different contexts',
+            neologisms: 'Conceptual Innovation',
+            neologismsDesc: 'The 11 neologisms that define strategic thinking',
+            conceptEvolution: 'Conceptual Evolution'
         }
     };
 
@@ -139,17 +164,183 @@ export default function Website() {
                 </div>
             </header>
 
-            <main className="max-w-7xl mx-auto px-4 md:px-6 py-16 space-y-24 relative z-10">
-                {/* Hero */}
-                <section className="text-center space-y-6">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="space-y-4"
-                    >
-                        <h1 className="text-5xl md:text-6xl font-bold text-[#002D62]">{text.title}</h1>
-                        <p className="text-xl md:text-2xl text-[#333F48]">{text.subtitle}</p>
-                    </motion.div>
+            <main className="relative z-10">
+                {/* Hero Section */}
+                <section className="bg-gradient-to-b from-[#FAF7F2] to-white py-24">
+                    <div className="max-w-7xl mx-auto px-4 md:px-6">
+                        <div className="grid lg:grid-cols-2 gap-16 items-center">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6 }}
+                            >
+                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 text-sm font-medium mb-6">
+                                    <Sparkles className="w-4 h-4 text-amber-600" />
+                                    <span className="text-amber-900">
+                                        {lang === 'pt' ? 'Contexto Atualizado: 09/Dez/2025' : 'Updated Context: 09/Dec/2025'}
+                                    </span>
+                                </div>
+                                <h1 className="text-5xl md:text-6xl font-bold text-[#8B1538] leading-tight mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                                    {text.title}
+                                </h1>
+                                <p className="text-xl text-[#2D2D2D] mb-3">{text.subtitle}</p>
+                                <p className="text-lg text-[#2D2D2D]/80 mb-6">{text.tagline}</p>
+                                
+                                <div className="bg-white rounded-lg border-l-4 border-[#D4AF37] p-4 mb-6">
+                                    <p className="text-sm text-[#2D2D2D] leading-relaxed">
+                                        <strong>📊 {text.contextUpdate}:</strong>{' '}
+                                        {text.contextText}
+                                    </p>
+                                </div>
+                                
+                                <div className="flex flex-wrap gap-4">
+                                    <Link to={createPageUrl('Consultation')}>
+                                        <Button size="lg" className="bg-[#8B1538] hover:bg-[#6B0F2A] text-white gap-2 text-lg px-8">
+                                            {text.cta}
+                                            <ArrowRight className="w-5 h-5" />
+                                        </Button>
+                                    </Link>
+                                    <Link to={createPageUrl('Dashboard')}>
+                                        <Button size="lg" variant="outline" className="gap-2 text-lg px-8 border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white">
+                                            <LayoutDashboard className="w-5 h-5" />
+                                            {text.dashboard}
+                                        </Button>
+                                    </Link>
+                                </div>
+
+                                <div className="grid grid-cols-4 gap-4 mt-8">
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-[#8B1538]">95%+</div>
+                                        <div className="text-xs text-[#6B6B6B]">
+                                            {lang === 'pt' ? 'Fidelidade HUA' : 'HUA Fidelity'}
+                                        </div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-[#8B1538]">24/7</div>
+                                        <div className="text-xs text-[#6B6B6B]">
+                                            {lang === 'pt' ? 'Disponível' : 'Available'}
+                                        </div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-[#8B1538]">11</div>
+                                        <div className="text-xs text-[#6B6B6B]">
+                                            {lang === 'pt' ? 'Neologismos' : 'Neologisms'}
+                                        </div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-[#8B1538]">2020-2023</div>
+                                        <div className="text-xs text-[#6B6B6B]">
+                                            {lang === 'pt' ? 'Pres. NDB' : 'NDB Pres.'}
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                            
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.6, delay: 0.2 }}
+                                className="relative"
+                            >
+                                <div className="aspect-square max-w-md mx-auto relative">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-[#8B1538]/15 to-[#D4AF37]/15 rounded-2xl transform rotate-6" />
+                                    <div className="absolute inset-0 rounded-2xl overflow-hidden shadow-2xl">
+                                        <img 
+                                            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/8c955389f_Replace_the_transparent_checkered_background_with_-1765063055494.png"
+                                            alt="Marcos Prado Troyjo"
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#8B1538]/90 via-[#8B1538]/20 to-transparent" />
+                                        <motion.div 
+                                            initial={{ y: 20, opacity: 0 }}
+                                            animate={{ y: 0, opacity: 1 }}
+                                            transition={{ delay: 0.4, duration: 0.6 }}
+                                            className="absolute bottom-8 left-8 right-8"
+                                        >
+                                            <BookOpen className="w-8 h-8 text-[#D4AF37] mb-3" />
+                                            <p className="text-white text-lg italic leading-relaxed font-light" style={{ fontFamily: 'Crimson Text, serif' }}>
+                                                "{lang === 'pt' 
+                                                    ? 'Temos todas as cartas na mão, mas só jogaremos bem se fizermos a lição de casa antes do colapso.'
+                                                    : 'We have all the cards in hand, but we will only play well if we do our homework before the collapse.'}"
+                                            </p>
+                                        </motion.div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Concept Evolution Timeline - Option D */}
+                <section className="py-20 px-4 md:px-6 bg-white">
+                    <div className="max-w-7xl mx-auto">
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            className="text-center mb-12"
+                        >
+                            <h2 className="text-3xl md:text-4xl font-bold text-[#8B1538] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                                {text.conceptEvolution}
+                            </h2>
+                            <p className="text-lg text-[#2D2D2D]/70">
+                                {lang === 'pt'
+                                    ? 'Acompanhe a jornada intelectual de 2015 a 2025'
+                                    : 'Follow the intellectual journey from 2015 to 2025'}
+                            </p>
+                        </motion.div>
+                        <ConceptEvolutionTimeline lang={lang} />
+                    </div>
+                </section>
+
+                {/* Neologisms Showcase */}
+                <section className="py-20 px-4 md:px-6 bg-gradient-to-b from-gray-50 to-white">
+                    <div className="max-w-7xl mx-auto">
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            className="text-center mb-12"
+                        >
+                            <h2 className="text-3xl md:text-4xl font-bold text-[#8B1538] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                                {text.neologisms}
+                            </h2>
+                            <p className="text-lg text-[#2D2D2D]/70">
+                                {text.neologismsDesc}
+                            </p>
+                        </motion.div>
+                        <NeologismShowcase lang={lang} />
+                    </div>
+                </section>
+
+                {/* Audience Segmentation */}
+                <section className="py-20 px-4 md:px-6 bg-white">
+                    <div className="max-w-7xl mx-auto">
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            className="text-center mb-12"
+                        >
+                            <h2 className="text-3xl md:text-4xl font-bold text-[#8B1538] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                                {text.audiences}
+                            </h2>
+                            <p className="text-lg text-[#2D2D2D]/70">
+                                {text.audiencesDesc}
+                            </p>
+                        </motion.div>
+                        <AudienceSegmentation lang={lang} />
+                    </div>
+                </section>
+
+                {/* About Section */}
+                <section className="py-20 px-4 md:px-6 bg-gradient-to-b from-gray-50 to-white">
+                    <div className="max-w-7xl mx-auto">
+                        <h2 className="text-3xl font-bold text-[#8B1538] mb-6" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            {text.about}
+                        </h2>
+                        <p className="text-lg text-[#2D2D2D] leading-relaxed max-w-4xl">{text.aboutText}</p>
+                    </div>
                 </section>
 
                 {/* About */}
@@ -159,137 +350,207 @@ export default function Website() {
                 </section>
 
                 {/* Books */}
-                <section>
-                    <h2 className="text-3xl font-bold text-[#002D62] mb-8 flex items-center gap-3">
-                        <BookOpen className="w-8 h-8" />
-                        {text.books}
-                    </h2>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {books.map((book, idx) => (
-                            <Card key={idx} className="hover:shadow-lg transition-shadow">
-                                <CardHeader>
-                                    <div className="flex items-start justify-between">
-                                        <CardTitle className="text-lg">{book.title}</CardTitle>
-                                        <Badge variant="outline">{book.year}</Badge>
-                                    </div>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-sm text-[#333F48]/70">{book.description}</p>
-                                </CardContent>
-                            </Card>
-                        ))}
+                <section className="py-20 px-4 md:px-6 bg-white">
+                    <div className="max-w-7xl mx-auto">
+                        <h2 className="text-3xl font-bold text-[#8B1538] mb-8 flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            <BookOpen className="w-8 h-8" />
+                            {text.books}
+                        </h2>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {books.map((book, idx) => (
+                                <Card key={idx} className="hover:shadow-lg hover:border-[#8B1538]/30 transition-all">
+                                    <CardHeader>
+                                        <div className="flex items-start justify-between">
+                                            <CardTitle className="text-lg text-[#8B1538]">{book.title}</CardTitle>
+                                            <Badge variant="outline" className="border-[#D4AF37] text-[#D4AF37]">{book.year}</Badge>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="text-sm text-[#2D2D2D]/70">{book.description}</p>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
                     </div>
                 </section>
 
                 {/* Awards */}
-                <section>
-                    <h2 className="text-3xl font-bold text-[#002D62] mb-8 flex items-center gap-3">
-                        <Award className="w-8 h-8" />
-                        {text.awards}
-                    </h2>
-                    <div className="grid md:grid-cols-2 gap-4">
-                        {awards.map((award, idx) => (
-                            <div key={idx} className="flex items-start gap-3 p-4 rounded-lg border border-gray-100 bg-white">
-                                <Award className="w-5 h-5 text-[#B8860B] flex-shrink-0 mt-0.5" />
-                                <span className="text-[#333F48]">{award}</span>
-                            </div>
-                        ))}
+                <section className="py-20 px-4 md:px-6 bg-gradient-to-b from-gray-50 to-white">
+                    <div className="max-w-7xl mx-auto">
+                        <h2 className="text-3xl font-bold text-[#8B1538] mb-8 flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            <Award className="w-8 h-8" />
+                            {text.awards}
+                        </h2>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            {awards.map((award, idx) => (
+                                <div key={idx} className="flex items-start gap-3 p-4 rounded-lg border border-gray-100 bg-white hover:border-[#D4AF37]/30 hover:shadow-md transition-all">
+                                    <Award className="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5" />
+                                    <span className="text-[#2D2D2D]">{award}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </section>
 
                 {/* Publications */}
-                <section>
-                    <h2 className="text-3xl font-bold text-[#002D62] mb-8 flex items-center gap-3">
-                        <FileText className="w-8 h-8" />
-                        {text.publications}
-                    </h2>
+                <section className="py-20 px-4 md:px-6 bg-white">
+                    <div className="max-w-7xl mx-auto">
+                        <h2 className="text-3xl font-bold text-[#8B1538] mb-8 flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            <FileText className="w-8 h-8" />
+                            {text.publications}
+                        </h2>
 
-                    <div className="flex gap-2 mb-6">
-                        <Button
-                            variant={filter === 'all' ? 'default' : 'outline'}
-                            onClick={() => setFilter('all')}
-                            className={filter === 'all' ? 'bg-[#002D62]' : ''}
-                        >
-                            {text.filterAll}
-                        </Button>
-                        <Button
-                            variant={filter === 'article' ? 'default' : 'outline'}
-                            onClick={() => setFilter('article')}
-                            className={filter === 'article' ? 'bg-[#002D62]' : ''}
-                        >
-                            {text.filterArticles}
-                        </Button>
-                        <Button
-                            variant={filter === 'interview' ? 'default' : 'outline'}
-                            onClick={() => setFilter('interview')}
-                            className={filter === 'interview' ? 'bg-[#002D62]' : ''}
-                        >
-                            {text.filterInterviews}
-                        </Button>
-                    </div>
+                        <div className="flex gap-2 mb-6">
+                            <Button
+                                variant={filter === 'all' ? 'default' : 'outline'}
+                                onClick={() => setFilter('all')}
+                                className={filter === 'all' ? 'bg-[#8B1538] hover:bg-[#6B0F2A]' : 'border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white'}
+                            >
+                                {text.filterAll}
+                            </Button>
+                            <Button
+                                variant={filter === 'article' ? 'default' : 'outline'}
+                                onClick={() => setFilter('article')}
+                                className={filter === 'article' ? 'bg-[#8B1538] hover:bg-[#6B0F2A]' : 'border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white'}
+                            >
+                                {text.filterArticles}
+                            </Button>
+                            <Button
+                                variant={filter === 'interview' ? 'default' : 'outline'}
+                                onClick={() => setFilter('interview')}
+                                className={filter === 'interview' ? 'bg-[#8B1538] hover:bg-[#6B0F2A]' : 'border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white'}
+                            >
+                                {text.filterInterviews}
+                            </Button>
+                        </div>
 
-                    <div className="grid md:grid-cols-2 gap-6">
-                        {filteredPublications.map((pub, idx) => (
-                            <Card key={idx} className="hover:shadow-lg transition-shadow">
-                                <CardHeader>
-                                    <div className="flex items-start justify-between mb-2">
-                                        <Badge variant={pub.type === 'interview' ? 'secondary' : 'default'}>
-                                            {pub.type === 'interview' ? text.interviews : text.articles}
-                                        </Badge>
-                                        {pub.publication_date && (
-                                            <span className="text-sm text-[#333F48]/60">
-                                                {new Date(pub.publication_date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US')}
-                                            </span>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {filteredPublications.map((pub, idx) => (
+                                <Card key={idx} className="hover:shadow-lg hover:border-[#8B1538]/30 transition-all">
+                                    <CardHeader>
+                                        <div className="flex items-start justify-between mb-2">
+                                            <Badge variant={pub.type === 'interview' ? 'secondary' : 'default'} className={pub.type === 'interview' ? '' : 'bg-[#8B1538]'}>
+                                                {pub.type === 'interview' ? text.interviews : text.articles}
+                                            </Badge>
+                                            {pub.publication_date && (
+                                                <span className="text-sm text-[#6B6B6B]">
+                                                    {new Date(pub.publication_date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US')}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <CardTitle className="text-lg text-[#8B1538]">{pub.title}</CardTitle>
+                                        {pub.outlet && (
+                                            <p className="text-sm text-[#6B6B6B] mt-1">{pub.outlet}</p>
                                         )}
-                                    </div>
-                                    <CardTitle className="text-lg">{pub.title}</CardTitle>
-                                    {pub.outlet && (
-                                        <p className="text-sm text-[#333F48]/60 mt-1">{pub.outlet}</p>
-                                    )}
-                                </CardHeader>
-                                <CardContent>
-                                    {pub.summary && (
-                                        <p className="text-sm text-[#333F48] mb-4">{pub.summary}</p>
-                                    )}
-                                    <div className="flex flex-wrap gap-2">
-                                        {pub.url && (
-                                            <a href={pub.url} target="_blank" rel="noopener noreferrer">
-                                                <Button size="sm" variant="outline" className="gap-2">
-                                                    <ExternalLink className="w-3 h-3" />
-                                                    {text.viewArticle}
-                                                </Button>
-                                            </a>
+                                    </CardHeader>
+                                    <CardContent>
+                                        {pub.summary && (
+                                            <p className="text-sm text-[#2D2D2D] mb-4">{pub.summary}</p>
                                         )}
-                                        {pub.video_link && (
-                                            <a href={pub.video_link} target="_blank" rel="noopener noreferrer">
-                                                <Button size="sm" variant="outline" className="gap-2">
-                                                    <Video className="w-3 h-3" />
-                                                    {text.watch}
-                                                </Button>
-                                            </a>
-                                        )}
-                                        {pub.purchase_link && (
-                                            <a href={pub.purchase_link} target="_blank" rel="noopener noreferrer">
-                                                <Button size="sm" className="gap-2 bg-[#B8860B] hover:bg-[#9a7209]">
-                                                    <BookOpen className="w-3 h-3" />
-                                                    {text.purchase}
-                                                </Button>
-                                            </a>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
+                                        <div className="flex flex-wrap gap-2">
+                                            {pub.url && (
+                                                <a href={pub.url} target="_blank" rel="noopener noreferrer">
+                                                    <Button size="sm" variant="outline" className="gap-2 border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white">
+                                                        <ExternalLink className="w-3 h-3" />
+                                                        {text.viewArticle}
+                                                    </Button>
+                                                </a>
+                                            )}
+                                            {pub.video_link && (
+                                                <a href={pub.video_link} target="_blank" rel="noopener noreferrer">
+                                                    <Button size="sm" variant="outline" className="gap-2 border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white">
+                                                        <Video className="w-3 h-3" />
+                                                        {text.watch}
+                                                    </Button>
+                                                </a>
+                                            )}
+                                            {pub.purchase_link && (
+                                                <a href={pub.purchase_link} target="_blank" rel="noopener noreferrer">
+                                                    <Button size="sm" className="gap-2 bg-[#D4AF37] hover:bg-[#C19B2A] text-[#2D2D2D]">
+                                                        <BookOpen className="w-3 h-3" />
+                                                        {text.purchase}
+                                                    </Button>
+                                                </a>
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
                     </div>
                 </section>
             </main>
 
             {/* Footer */}
-            <footer className="bg-[#002D62] text-white py-12 relative z-10">
+            <footer className="bg-[#2D2D2D] text-[#FAF7F2] py-16 relative z-10">
                 <div className="max-w-7xl mx-auto px-4 md:px-6">
-                    <div className="text-center">
-                        <p className="text-sm opacity-80">
-                            © 2025 Marcos Troyjo Digital Twin - {lang === 'pt' ? 'Desenvolvido por' : 'Developed by'} CAIO.Vision
+                    <div className="grid md:grid-cols-4 gap-8 mb-12">
+                        <div>
+                            <h4 className="text-[#D4AF37] font-semibold mb-4">Marcos Troyjo Digital Twin</h4>
+                            <p className="text-sm text-[#FAF7F2]/70 leading-relaxed">
+                                {lang === 'pt' 
+                                    ? 'Expertise geopolítica de classe mundial, disponível 24/7 via IA com 95%+ de fidelidade HUA-validada.'
+                                    : 'World-class geopolitical expertise, available 24/7 via AI with 95%+ HUA-validated fidelity.'}
+                            </p>
+                        </div>
+                        <div>
+                            <h4 className="text-[#D4AF37] font-semibold mb-4">
+                                {lang === 'pt' ? 'Produto' : 'Product'}
+                            </h4>
+                            <ul className="space-y-2 text-sm">
+                                <li><a href="#neologisms" className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                    {lang === 'pt' ? 'Neologismos' : 'Neologisms'}
+                                </a></li>
+                                <li><a href="#audiences" className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                    {lang === 'pt' ? 'Audiências' : 'Audiences'}
+                                </a></li>
+                                <li><Link to={createPageUrl('Dashboard')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                    Dashboard
+                                </Link></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="text-[#D4AF37] font-semibold mb-4">
+                                {lang === 'pt' ? 'Recursos' : 'Resources'}
+                            </h4>
+                            <ul className="space-y-2 text-sm">
+                                <li><Link to={createPageUrl('StrategicIntelligenceBlog')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                    Blog
+                                </Link></li>
+                                <li><a href="#concept-evolution" className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                    ConceptEvolution
+                                </a></li>
+                                <li><a href="#hua-protocol" className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                    {lang === 'pt' ? 'Protocolo HUA' : 'HUA Protocol'}
+                                </a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="text-[#D4AF37] font-semibold mb-4">
+                                {lang === 'pt' ? 'Empresa' : 'Company'}
+                            </h4>
+                            <ul className="space-y-2 text-sm">
+                                <li><Link to={createPageUrl('PrivacyPolicy')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                    {lang === 'pt' ? 'Privacidade' : 'Privacy'}
+                                </Link></li>
+                                <li><Link to={createPageUrl('TermsOfService')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                    {lang === 'pt' ? 'Termos' : 'Terms'}
+                                </Link></li>
+                                <li><a href="https://caiovision.com.br" target="_blank" className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                    CAIO.Vision
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <Separator className="bg-[#6B6B6B] mb-8" />
+                    <div className="text-center space-y-2">
+                        <p className="text-sm text-[#FAF7F2]/60">
+                            © 2025 Marcos Troyjo Digital Twin. {lang === 'pt' ? 'Parte do Ecossistema CAIO. Todos os direitos reservados.' : 'Part of CAIO Ecosystem. All rights reserved.'}
+                        </p>
+                        <p className="text-xs text-[#FAF7F2]/40">
+                            {lang === 'pt' 
+                                ? 'Desenvolvido com TSI v9.3 Framework | HUA Protocol 95%+ Fidelity'
+                                : 'Developed with TSI v9.3 Framework | HUA Protocol 95%+ Fidelity'}
                         </p>
                     </div>
                 </div>

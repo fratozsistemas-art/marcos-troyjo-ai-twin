@@ -167,7 +167,7 @@ export default function Home() {
                             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 text-sm font-medium mb-6">
                                 <Sparkles className="w-4 h-4 text-amber-600" />
                                 <span className="text-amber-900">
-                                    {lang === 'pt' ? 'Contexto Atualizado: 09/Dez/2025' : 'Updated Context: 09/Dec/2025'}
+                                    {lang === 'pt' ? 'Contexto Atualizado: Nov/2025' : 'Updated Context: Nov/2025'}
                                 </span>
                             </div>
                             <h1 className="text-5xl md:text-6xl font-bold text-[#002D62] leading-tight mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
@@ -184,12 +184,15 @@ export default function Home() {
                             </p>
                             <p className="text-lg text-[#2D2D2D]/80 mb-6">{t.tagline}</p>
                             <div className="bg-white rounded-lg border-l-4 border-[#D4AF37] p-4 mb-6 max-w-2xl">
-                                <p className="text-sm text-[#2D2D2D] leading-relaxed">
-                                    <strong>{lang === 'pt' ? '📊 Atualização Geopolítica:' : '📊 Geopolitical Update:'}</strong>{' '}
+                                <p className="text-sm text-[#2D2D2D] leading-relaxed mb-2">
+                                    <strong>{lang === 'pt' ? '📊 Atualização Geopolítica (nov/2025):' : '📊 Geopolitical Update (Nov/2025):'}</strong>{' '}
                                     {lang === 'pt'
                                         ? 'Após meses de pico da trumpulência, observamos sinais de estabilização — cessar-fogo tarifário EUA-China, distensão com Brasil.'
                                         : 'After months at peak trumpulence, we observe signs of stabilization — US-China tariff ceasefire, détente with Brazil.'}
                                 </p>
+                                <Link to={createPageUrl('StrategicIntelligenceBlog')} className="text-xs text-[#002D62] hover:text-[#D4AF37] underline font-medium">
+                                    {lang === 'pt' ? 'Ler artigo completo →' : 'Read full article →'}
+                                </Link>
                             </div>
                             <div className="flex flex-wrap gap-4">
                                 <Link to={createPageUrl('Consultation')}>

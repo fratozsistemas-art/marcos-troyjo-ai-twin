@@ -186,7 +186,7 @@ export default function AudienceSegmentation({ lang = 'pt' }) {
                                 <ul className="space-y-2 mb-6">
                                     {audience.features.map((feature, idx) => (
                                         <li key={idx} className="flex items-start gap-2 text-sm text-[#2D2D2D]">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] mt-1.5 flex-shrink-0" />
+                                            <span className="w-1 h-1 rounded-full bg-[#D4AF37] mt-2 flex-shrink-0" />
                                             <span>{feature}</span>
                                         </li>
                                     ))}

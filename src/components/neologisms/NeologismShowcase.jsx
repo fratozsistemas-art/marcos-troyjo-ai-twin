@@ -1,8 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { TrendingUp, Globe, Zap, DollarSign } from 'lucide-react';
+import { TrendingUp, Globe, Zap, DollarSign, ArrowRight } from 'lucide-react';
 
 const neologisms = {
     pt: [
@@ -254,15 +256,24 @@ export default function NeologismShowcase({ lang = 'pt' }) {
                                             <strong>{lang === 'pt' ? 'Definição:' : 'Definition:'}</strong> {neologism.definition}
                                         </p>
                                         {neologism.context && (
-                                            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                                            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-3">
                                                 <p className="text-sm text-amber-900 leading-relaxed">
-                                                    <strong>{lang === 'pt' ? 'Contexto (09/Dez/2025):' : 'Context (09/Dec/2025):'}</strong> {neologism.context}
+                                                    <strong>{lang === 'pt' ? 'Contexto (nov/2025):' : 'Context (Nov/2025):'}</strong> {neologism.context}
                                                 </p>
                                             </div>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                            )}
+                                            {neologism.articleSlug && (
+                                            <Link 
+                                                to={createPageUrl('StrategicIntelligenceBlog') + `?article=${neologism.articleSlug}`}
+                                                className="inline-flex items-center gap-2 text-sm text-[#002D62] hover:text-[#D4AF37] font-medium transition-colors"
+                                            >
+                                                {lang === 'pt' ? 'Ler artigo completo' : 'Read full article'}
+                                                <ArrowRight className="w-4 h-4" />
+                                            </Link>
+                                            )}
+                                            </div>
+                                            </CardContent>
+                                            </Card>
                         </motion.div>
                     );
                 })}
@@ -294,9 +305,17 @@ export default function NeologismShowcase({ lang = 'pt' }) {
                                             {neologism.badge}
                                         </Badge>
                                     </div>
-                                    <p className="text-xs text-[#2D2D2D] leading-relaxed">{neologism.definition}</p>
-                                </CardContent>
-                            </Card>
+                                    <p className="text-xs text-[#2D2D2D] leading-relaxed mb-2">{neologism.definition}</p>
+                                    {neologism.articleSlug && (
+                                        <Link 
+                                            to={createPageUrl('StrategicIntelligenceBlog') + `?article=${neologism.articleSlug}`}
+                                            className="inline-flex items-center gap-1 text-xs text-[#002D62] hover:text-[#D4AF37] font-medium transition-colors"
+                                        >
+                                            {lang === 'pt' ? 'Ler artigo →' : 'Read article →'}
+                                        </Link>
+                                    )}
+                                    </CardContent>
+                                    </Card>
                         </motion.div>
                     );
                 })}

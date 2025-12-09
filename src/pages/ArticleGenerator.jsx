@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Loader2, FileText, Copy, Download, Share2, History } from 'lucide-react';
+import { ArrowLeft, Loader2, FileText, Copy, Download, Share2, History, Sparkles } from 'lucide-react';
 import DocumentSelector from '@/components/documents/DocumentSelector';
 import ReactMarkdown from 'react-markdown';
 import ShareDialog from '@/components/collaboration/ShareDialog';
@@ -31,6 +31,7 @@ export default function ArticleGenerator() {
     const [shareOpen, setShareOpen] = useState(false);
     const [versionOpen, setVersionOpen] = useState(false);
     const [currentArticleId, setCurrentArticleId] = useState(null);
+    const [summarizing, setSummarizing] = useState(false);
 
     const translations = {
         pt: {
@@ -52,6 +53,9 @@ export default function ArticleGenerator() {
             download: 'Download',
             share: 'Compartilhar',
             versions: 'Versões',
+            summarize: 'Resumir',
+            summarizing: 'Resumindo...',
+            summaryFormat: 'Formato do Resumo',
             tones: {
                 analytical: 'Analítico',
                 diplomatic: 'Diplomático',
@@ -78,6 +82,9 @@ export default function ArticleGenerator() {
             download: 'Download',
             share: 'Share',
             versions: 'Versions',
+            summarize: 'Summarize',
+            summarizing: 'Summarizing...',
+            summaryFormat: 'Summary Format',
             tones: {
                 analytical: 'Analytical',
                 diplomatic: 'Diplomatic',
@@ -172,6 +179,25 @@ export default function ArticleGenerator() {
             content: versionContent,
             change_summary: 'Restored from previous version'
         });
+    };
+
+    const handleSummarize = async (format) => {
+        setSummarizing(true);
+        try {
+            const response = await base44.functions.invoke('summarizeData', {
+                text: result.article,
+                output_format: format
+            });
+            
+            // Copy summary to clipboard
+            await navigator.clipboard.writeText(response.data.summary);
+            toast.success(lang === 'pt' ? 'Resumo copiado!' : 'Summary copied!');
+        } catch (error) {
+            console.error('Error summarizing:', error);
+            toast.error(lang === 'pt' ? 'Erro ao gerar resumo' : 'Error generating summary');
+        } finally {
+            setSummarizing(false);
+        }
     };
 
     return (
@@ -306,7 +332,18 @@ export default function ArticleGenerator() {
                                 <ArrowLeft className="w-4 h-4" />
                                 {t.newArticle}
                             </Button>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 flex-wrap">
+                                <Select onValueChange={handleSummarize} disabled={summarizing}>
+                                    <SelectTrigger className="w-40">
+                                        <SelectValue placeholder={summarizing ? t.summarizing : t.summarize} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="lead_paragraph">Lead Paragraph</SelectItem>
+                                        <SelectItem value="social_media">Social Media</SelectItem>
+                                        <SelectItem value="executive_summary">Executive Summary</SelectItem>
+                                        <SelectItem value="key_insights">Key Insights</SelectItem>
+                                    </SelectContent>
+                                </Select>
                                 <Button onClick={() => setShareOpen(true)} variant="outline" className="gap-2">
                                     <Share2 className="w-4 h-4" />
                                     <span className="hidden md:inline">{t.share}</span>

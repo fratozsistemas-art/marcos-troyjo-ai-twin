@@ -8,6 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertTriangle, TrendingUp, TrendingDown, Minus, RefreshCw, Loader2, Globe, Sparkles, Target, FileText, BarChart3 } from 'lucide-react';
 import { toast } from 'sonner';
+import RiskTrendChart from '@/components/visualizations/RiskTrendChart';
+import ScenarioChart from '@/components/visualizations/ScenarioChart';
 
 const SEVERITY_COLORS = {
     critical: 'bg-red-100 text-red-800 border-red-200',
@@ -534,10 +536,19 @@ export default function GeopoliticalRiskMonitor({ lang = 'pt' }) {
                             </ul>
                         </div>
                         <Badge>{t.confidence}: {prediction.prediction.confidence_level}</Badge>
-                    </div>
-                )}
-            </DialogContent>
-        </Dialog>
+                        </div>
+                        )}
+                        {prediction && (
+                        <div className="mt-6 pt-6 border-t">
+                        <RiskTrendChart 
+                            prediction={prediction}
+                            riskTitle={risks.find(r => r.id === predictionDialog)?.title || ''}
+                            lang={lang}
+                        />
+                        </div>
+                        )}
+                        </DialogContent>
+                        </Dialog>
 
         {/* Scenario Simulation Dialog */}
         <Dialog open={scenarioDialog} onOpenChange={setScenarioDialog}>
@@ -629,6 +640,15 @@ export default function GeopoliticalRiskMonitor({ lang = 'pt' }) {
                                     ))}
                                 </ul>
                             </div>
+                        </div>
+                    )}
+
+                    {scenarioResult && scenarioResult.simulation?.scenarios && (
+                        <div className="mt-6 pt-6 border-t">
+                            <ScenarioChart 
+                                scenarios={scenarioResult.simulation.scenarios}
+                                lang={lang}
+                            />
                         </div>
                     )}
                 </div>

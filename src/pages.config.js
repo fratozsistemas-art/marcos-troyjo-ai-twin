@@ -21,6 +21,7 @@ import Pricing from './pages/Pricing';
 import Welcome from './pages/Welcome';
 import Website from './pages/Website';
 import StrategicIntelligenceBlog from './pages/StrategicIntelligenceBlog';
+import SystemHealth from './pages/SystemHealth';
 import __Layout from './Layout.jsx';
 
 
@@ -48,6 +49,7 @@ export const PAGES = {
     "Welcome": Welcome,
     "Website": Website,
     "StrategicIntelligenceBlog": StrategicIntelligenceBlog,
+    "SystemHealth": SystemHealth,
 }
 
 export const pagesConfig = {

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, ArrowLeft, Globe, Loader2, MessageSquare, Plus, LayoutDashboard, Menu } from 'lucide-react';
+import { Send, ArrowLeft, Globe, Loader2, MessageSquare, Plus, LayoutDashboard, Menu, Paperclip, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import MessageBubble from '@/components/chat/MessageBubble';
@@ -55,8 +55,11 @@ function ConsultationInner() {
     const [isInitializing, setIsInitializing] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [personaSelectorOpen, setPersonaSelectorOpen] = useState(false);
+    const [attachedFiles, setAttachedFiles] = useState([]);
+    const [uploadingFiles, setUploadingFiles] = useState(false);
     const messagesEndRef = useRef(null);
     const textareaRef = useRef(null);
+    const fileInputRef = useRef(null);
     const t = translations[lang];
     const { analyzeInteraction, getContextualPrompt } = usePersonaAdaptation();
     const { canUseFeature, incrementUsage } = useSubscription();
@@ -161,9 +164,41 @@ function ConsultationInner() {
         return [];
     };
 
+    const handleFileSelect = async (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
+
+        setUploadingFiles(true);
+        try {
+            const uploadedFiles = [];
+            for (const file of files) {
+                const result = await base44.integrations.Core.UploadFile({ file });
+                if (result?.file_url) {
+                    uploadedFiles.push({
+                        name: file.name,
+                        url: result.file_url,
+                        size: file.size,
+                        type: file.type
+                    });
+                }
+            }
+            setAttachedFiles(prev => [...prev, ...uploadedFiles]);
+            toast.success(lang === 'pt' ? 'Arquivo(s) anexado(s)' : 'File(s) attached');
+        } catch (error) {
+            console.error('Error uploading files:', error);
+            toast.error(lang === 'pt' ? 'Erro ao anexar arquivos' : 'Error attaching files');
+        } finally {
+            setUploadingFiles(false);
+        }
+    };
+
+    const removeAttachedFile = (index) => {
+        setAttachedFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
     const handleSend = async (customMessage) => {
         const messageText = customMessage || input.trim();
-        if (!messageText || !conversation?.id || isLoading) return;
+        if ((!messageText && attachedFiles.length === 0) || !conversation?.id || isLoading) return;
 
         if (!canUseFeature('consultations_per_month')) {
             toast.error(lang === 'pt' ? 'Limite de consultas atingido' : 'Consultation limit reached');
@@ -171,16 +206,24 @@ function ConsultationInner() {
         }
 
         setInput('');
+        const filesToSend = [...attachedFiles];
+        setAttachedFiles([]);
         setIsLoading(true);
 
         try {
             await incrementUsage('consultations');
 
-            // Add message
-            await base44.agents.addMessage(conversation, {
+            // Add message with file URLs
+            const messageData = {
                 role: 'user',
-                content: messageText
-            });
+                content: messageText || (lang === 'pt' ? 'Arquivo(s) anexado(s)' : 'File(s) attached')
+            };
+
+            if (filesToSend.length > 0) {
+                messageData.file_urls = filesToSend.map(f => f.url);
+            }
+
+            await base44.agents.addMessage(conversation, messageData);
 
             if (messages.length === 0 || messages.length === 2) {
                 setTimeout(async () => {
@@ -429,6 +472,24 @@ function ConsultationInner() {
             {/* Input Area */}
             <footer className="sticky bottom-0 bg-white border-t border-gray-200 py-4 px-4 shadow-lg">
                 <div className="max-w-4xl mx-auto">
+                    {/* Attached Files Preview */}
+                    {attachedFiles.length > 0 && (
+                        <div className="mb-3 flex flex-wrap gap-2">
+                            {attachedFiles.map((file, index) => (
+                                <div key={index} className="flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-2 text-sm">
+                                    <Paperclip className="w-4 h-4 text-gray-500" />
+                                    <span className="text-gray-700 truncate max-w-[200px]">{file.name}</span>
+                                    <button
+                                        onClick={() => removeAttachedFile(index)}
+                                        className="hover:bg-gray-200 rounded-full p-0.5"
+                                    >
+                                        <X className="w-3 h-3 text-gray-500" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
                     <div className="flex gap-3 items-end">
                         <div className="flex-1 relative">
                             <Textarea
@@ -443,11 +504,31 @@ function ConsultationInner() {
                                 rows={1}
                             />
                         </div>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            multiple
+                            accept=".pdf,.docx,.doc,.txt,.csv,.png,.jpg,.jpeg"
+                            className="hidden"
+                            onChange={handleFileSelect}
+                        />
+                        <Button
+                            variant="outline"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploadingFiles || isLoading}
+                            className="h-[52px] w-[52px] rounded-xl"
+                        >
+                            {uploadingFiles ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                                <Paperclip className="w-5 h-5" />
+                            )}
+                        </Button>
                         <Button
                             data-ai-id="btn_send_message"
                             data-ai-role="button"
                             onClick={() => handleSend()}
-                            disabled={!input.trim() || isLoading || !conversation?.id}
+                            disabled={(!input.trim() && attachedFiles.length === 0) || isLoading || !conversation?.id}
                             className="h-[52px] w-[52px] rounded-xl bg-[#002D62] hover:bg-[#001d42] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading ? (

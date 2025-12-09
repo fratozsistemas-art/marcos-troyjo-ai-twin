@@ -39,6 +39,25 @@ export default function GeopoliticalRiskMonitor({ lang = 'pt' }) {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [expandedRisk, setExpandedRisk] = useState(null);
+    const [predictionDialog, setPredictionDialog] = useState(null);
+    const [scenarioDialog, setScenarioDialog] = useState(false);
+    const [reportDialog, setReportDialog] = useState(false);
+    const [vizDialog, setVizDialog] = useState(null);
+    const [predicting, setPredicting] = useState(false);
+    const [simulating, setSimulating] = useState(false);
+    const [generatingReport, setGeneratingReport] = useState(false);
+    const [generatingViz, setGeneratingViz] = useState(false);
+    const [prediction, setPrediction] = useState(null);
+    const [scenarioResult, setScenarioResult] = useState(null);
+    const [report, setReport] = useState(null);
+    const [visualization, setVisualization] = useState(null);
+    const [scenarioInput, setScenarioInput] = useState({
+        description: '',
+        regions: [],
+        riskTypes: [],
+        timeHorizon: '12'
+    });
+    const [selectedRisksForReport, setSelectedRisksForReport] = useState([]);
 
     const t = {
         pt: {
@@ -270,5 +289,259 @@ export default function GeopoliticalRiskMonitor({ lang = 'pt' }) {
                 )}
             </CardContent>
         </Card>
+
+        {/* Prediction Dialog */}
+        <Dialog open={!!predictionDialog} onOpenChange={() => setPredictionDialog(null)}>
+            <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle>{t.predict}: {prediction?.risk_title}</DialogTitle>
+                    <DialogDescription>AI-powered trend analysis and outlook</DialogDescription>
+                </DialogHeader>
+                {prediction && (
+                    <div className="space-y-4">
+                        <div className="grid gap-4">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="text-sm">{t.shortTerm}</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-sm mb-2">{prediction.prediction.short_term?.outlook}</p>
+                                    <div className="flex justify-between text-xs text-gray-500">
+                                        <span>Probability: {prediction.prediction.short_term?.probability}%</span>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="text-sm">{t.mediumTerm}</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-sm mb-2">{prediction.prediction.medium_term?.outlook}</p>
+                                    <div className="flex justify-between text-xs text-gray-500">
+                                        <span>Probability: {prediction.prediction.medium_term?.probability}%</span>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="text-sm">{t.longTerm}</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-sm mb-2">{prediction.prediction.long_term?.outlook}</p>
+                                    <div className="flex justify-between text-xs text-gray-500">
+                                        <span>Probability: {prediction.prediction.long_term?.probability}%</span>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <h4 className="font-semibold text-sm mb-2">{t.acceleratingFactors}</h4>
+                                <ul className="space-y-1">
+                                    {prediction.prediction.accelerating_factors?.map((f, i) => (
+                                        <li key={i} className="text-xs flex items-start gap-2">
+                                            <TrendingUp className="w-3 h-3 text-red-500 mt-0.5" />
+                                            {f}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-sm mb-2">{t.mitigatingFactors}</h4>
+                                <ul className="space-y-1">
+                                    {prediction.prediction.mitigating_factors?.map((f, i) => (
+                                        <li key={i} className="text-xs flex items-start gap-2">
+                                            <TrendingDown className="w-3 h-3 text-green-500 mt-0.5" />
+                                            {f}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold text-sm mb-2">{t.monitoringIndicators}</h4>
+                            <ul className="space-y-1">
+                                {prediction.prediction.monitoring_indicators?.map((i, idx) => (
+                                    <li key={idx} className="text-xs">• {i}</li>
+                                ))}
+                            </ul>
+                        </div>
+                        <Badge>{t.confidence}: {prediction.prediction.confidence_level}</Badge>
+                    </div>
+                )}
+            </DialogContent>
+        </Dialog>
+
+        {/* Scenario Simulation Dialog */}
+        <Dialog open={scenarioDialog} onOpenChange={setScenarioDialog}>
+            <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle>{t.simulate}</DialogTitle>
+                    <DialogDescription>Model geopolitical scenarios and analyze potential impacts</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                    <Textarea
+                        placeholder={t.scenarioDescription}
+                        value={scenarioInput.description}
+                        onChange={(e) => setScenarioInput({...scenarioInput, description: e.target.value})}
+                        rows={4}
+                    />
+                    <Input
+                        placeholder={t.affectedRegions + " (comma-separated)"}
+                        value={scenarioInput.regions.join(', ')}
+                        onChange={(e) => setScenarioInput({...scenarioInput, regions: e.target.value.split(',').map(s => s.trim())})}
+                    />
+                    <Input
+                        placeholder={t.riskTypes + " (comma-separated)"}
+                        value={scenarioInput.riskTypes.join(', ')}
+                        onChange={(e) => setScenarioInput({...scenarioInput, riskTypes: e.target.value.split(',').map(s => s.trim())})}
+                    />
+                    <Input
+                        type="number"
+                        placeholder={t.timeHorizon}
+                        value={scenarioInput.timeHorizon}
+                        onChange={(e) => setScenarioInput({...scenarioInput, timeHorizon: e.target.value})}
+                    />
+                    <Button 
+                        onClick={handleSimulateScenario}
+                        disabled={simulating || !scenarioInput.description}
+                        className="w-full"
+                    >
+                        {simulating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                        {simulating ? t.simulating : t.simulate}
+                    </Button>
+
+                    {scenarioResult && (
+                        <div className="mt-6 space-y-4 border-t pt-4">
+                            <h3 className="font-semibold">{scenarioResult.simulation.scenario_name}</h3>
+                            <div>
+                                <Badge>Probability: {scenarioResult.simulation.probability_of_occurrence}%</Badge>
+                                <Badge className="ml-2">{scenarioResult.simulation.confidence_level}</Badge>
+                            </div>
+                            
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="text-sm">{t.marketImpacts}</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="text-xs space-y-2">
+                                        <div><strong>Equity:</strong> {scenarioResult.simulation.market_impacts?.equity_markets}</div>
+                                        <div><strong>Currencies:</strong> {scenarioResult.simulation.market_impacts?.currencies}</div>
+                                        <div><strong>Commodities:</strong> {scenarioResult.simulation.market_impacts?.commodities}</div>
+                                    </CardContent>
+                                </Card>
+                                
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="text-sm">{t.economicImpacts}</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="text-xs">
+                                        {scenarioResult.simulation.economic_impacts?.slice(0, 3).map((impact, i) => (
+                                            <div key={i} className="mb-2">
+                                                <strong>{impact.region} - {impact.sector}:</strong> {impact.impact_description}
+                                            </div>
+                                        ))}
+                                    </CardContent>
+                                </Card>
+                            </div>
+
+                            <div>
+                                <h4 className="font-semibold text-sm mb-2">{t.politicalConsequences}</h4>
+                                <ul className="text-xs space-y-1">
+                                    {scenarioResult.simulation.political_consequences?.map((c, i) => (
+                                        <li key={i}>• {c}</li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h4 className="font-semibold text-sm mb-2">{t.mitigationStrategies}</h4>
+                                <ul className="text-xs space-y-1">
+                                    {scenarioResult.simulation.mitigation_strategies?.map((s, i) => (
+                                        <li key={i}>• {s}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </DialogContent>
+        </Dialog>
+
+        {/* Report Generation Dialog */}
+        <Dialog open={reportDialog} onOpenChange={setReportDialog}>
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle>{t.generateReport}</DialogTitle>
+                    <DialogDescription>Create comprehensive risk analysis reports</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                    <div className="flex gap-2">
+                        <Button 
+                            onClick={() => handleGenerateReport(false)}
+                            disabled={generatingReport || selectedRisksForReport.length === 0}
+                            variant="outline"
+                        >
+                            {generatingReport ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                            {t.generateReport}
+                        </Button>
+                        <Button 
+                            onClick={() => handleGenerateReport(true)}
+                            disabled={generatingReport || selectedRisksForReport.length === 0}
+                        >
+                            {generatingReport ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                            {t.includePredict}
+                        </Button>
+                    </div>
+
+                    {report && (
+                        <div className="border rounded-lg p-4 space-y-4">
+                            <div className="flex justify-between items-center">
+                                <h3 className="font-semibold">{report.title}</h3>
+                                <div className="flex gap-2">
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => navigator.clipboard.writeText(report.content)}
+                                    >
+                                        {t.copyReport}
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        onClick={handleDownloadReport}
+                                    >
+                                        {t.downloadReport}
+                                    </Button>
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                <Badge>Total: {report.summary_statistics.total_risks}</Badge>
+                                <Badge variant="destructive">Critical: {report.summary_statistics.critical_risks}</Badge>
+                                <Badge className="bg-orange-500">High: {report.summary_statistics.high_risks}</Badge>
+                                <Badge className="bg-yellow-500">Increasing: {report.summary_statistics.increasing_trends}</Badge>
+                            </div>
+                            <div className="prose prose-sm max-w-none bg-gray-50 rounded p-4 max-h-96 overflow-y-auto">
+                                <pre className="whitespace-pre-wrap text-xs">{report.content}</pre>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </DialogContent>
+        </Dialog>
+
+        {/* Visualization Dialog */}
+        <Dialog open={!!vizDialog} onOpenChange={() => setVizDialog(null)}>
+            <DialogContent className="max-w-4xl">
+                <DialogHeader>
+                    <DialogTitle>{t.visualize}</DialogTitle>
+                </DialogHeader>
+                {visualization && (
+                    <div className="space-y-4">
+                        <div dangerouslySetInnerHTML={{ __html: visualization.html }} />
+                    </div>
+                )}
+            </DialogContent>
+        </Dialog>
+    </>
     );
 }

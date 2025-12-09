@@ -13,7 +13,8 @@ const neologisms = {
             context: 'Após meses de pico, observamos estabilização — cessar-fogo EUA-China, distensão Brasil',
             badge: 'Mais Usado Q4 2025',
             icon: TrendingUp,
-            featured: true
+            featured: true,
+            articleSlug: 'trumpulencia'
         },
         {
             term: 'Novo ESG',
@@ -22,7 +23,8 @@ const neologisms = {
             context: 'Realidade geopolítica exige resiliência econômica e segurança de cadeias, não apenas métricas verdes',
             badge: 'Mudança de Paradigma',
             icon: Globe,
-            featured: true
+            featured: true,
+            articleSlug: 'novo-esg'
         },
         {
             term: 'Desglobalização',
@@ -30,7 +32,8 @@ const neologisms = {
             definition: 'Reversão da globalização profunda pós-2008',
             badge: 'Legacy Term',
             icon: Globe,
-            featured: false
+            featured: false,
+            articleSlug: 'desglobalizacao'
         },
         {
             term: 'Poli-oportunidades',
@@ -105,7 +108,8 @@ const neologisms = {
             context: 'After months at peak, we observe stabilization — US-China tariff ceasefire, Brazil détente',
             badge: 'Most Used Q4 2025',
             icon: TrendingUp,
-            featured: true
+            featured: true,
+            articleSlug: 'trumpulencia'
         },
         {
             term: 'New ESG',
@@ -114,7 +118,8 @@ const neologisms = {
             context: 'Geopolitical reality demands economic resilience and supply chain security, not just green metrics',
             badge: 'Paradigm Shift',
             icon: Globe,
-            featured: true
+            featured: true,
+            articleSlug: 'novo-esg'
         },
         {
             term: 'Deglobalization',
@@ -122,7 +127,8 @@ const neologisms = {
             definition: 'Reversal of deep post-2008 globalization',
             badge: 'Legacy Term',
             icon: Globe,
-            featured: false
+            featured: false,
+            articleSlug: 'desglobalizacao'
         },
         {
             term: 'Poly-opportunities',

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Globe } from 'lucide-react';
 import NavigationMenu from '@/components/navigation/NavigationMenu';
+import TroyjoLogo from '@/components/branding/TroyjoLogo';
 import TrialBanner from '@/components/subscription/TrialBanner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Toaster } from 'sonner';
@@ -69,12 +70,7 @@ export default function Layout({ children, currentPageName }) {
             <aside className="hidden lg:block w-70 bg-white border-r border-gray-200 flex-shrink-0">
                 <div className="sticky top-0">
                     <div className="flex items-center gap-2 p-4 border-b border-gray-200">
-                        <img 
-                            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/b9736976f_Monochrome_version_of_Troyjo_Digital_Twin_logo_for-1765281248218.png"
-                            alt="Troyjo Digital Twin"
-                            className="w-8 h-8 object-contain brightness-0 invert"
-                            style={{ filter: 'brightness(0) saturate(100%) invert(13%) sepia(89%) saturate(1953%) hue-rotate(192deg) brightness(95%) contrast(101%)' }}
-                        />
+                        <TroyjoLogo size={32} />
                         <span className="font-semibold text-[#002D62]">Troyjo Twin</span>
                     </div>
                     <NavigationMenu lang={lang} />

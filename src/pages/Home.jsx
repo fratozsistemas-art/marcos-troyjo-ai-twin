@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Globe, TrendingUp, Building2, Landmark, BookOpen, MessageSquare, LayoutDashboard, Zap, Network, DollarSign, Brain, Badge as BadgeIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import TroyjoLogo from '@/components/branding/TroyjoLogo';
 import NeologismShowcase from '@/components/neologisms/NeologismShowcase';
 import AudienceSegmentation from '@/components/audience/AudienceSegmentation';
 import ConceptEvolutionTimeline from '@/components/neologisms/ConceptEvolutionTimeline';
@@ -127,12 +128,7 @@ export default function Home() {
             <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <img 
-                            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/b9736976f_Monochrome_version_of_Troyjo_Digital_Twin_logo_for-1765281248218.png"
-                            alt="Troyjo Digital Twin"
-                            className="w-10 h-10 object-contain"
-                            style={{ filter: 'brightness(0) saturate(100%) invert(13%) sepia(89%) saturate(1953%) hue-rotate(192deg) brightness(95%) contrast(101%)' }}
-                        />
+                        <TroyjoLogo size={40} />
                         <span className="font-semibold text-[#333F48] hidden sm:block">Troyjo Digital Twin</span>
                     </div>
                     <div className="flex items-center gap-2 md:gap-4">

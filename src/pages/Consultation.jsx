@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, ArrowLeft, Globe, Loader2, MessageSquare, Plus, LayoutDashboard, Menu, Paperclip, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import TroyjoLogo from '@/components/branding/TroyjoLogo';
 import { Textarea } from '@/components/ui/textarea';
 import MessageBubble from '@/components/chat/MessageBubble';
 import TopicCards from '@/components/chat/TopicCards';
@@ -350,12 +351,7 @@ function ConsultationInner() {
                             </Button>
                         </Link>
                         <div className="flex items-center gap-3">
-                            <img 
-                                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/b9736976f_Monochrome_version_of_Troyjo_Digital_Twin_logo_for-1765281248218.png"
-                                alt="Troyjo Digital Twin"
-                                className="w-9 h-9 object-contain"
-                                style={{ filter: 'brightness(0) saturate(100%) invert(13%) sepia(89%) saturate(1953%) hue-rotate(192deg) brightness(95%) contrast(101%)' }}
-                            />
+                            <TroyjoLogo size={36} />
                             <div>
                                 <h1 className="font-semibold text-[#333F48] text-sm">{t.title}</h1>
                                 <p className="text-xs text-[#333F48]/50">{t.subtitle}</p>
@@ -427,12 +423,7 @@ function ConsultationInner() {
                             <div className="bg-white rounded-2xl border border-gray-100 p-6 md:p-8 mb-8 shadow-sm">
                                 <div className="flex items-start gap-4">
                                     <div className="w-12 h-12 rounded-lg bg-white shadow-md flex items-center justify-center flex-shrink-0">
-                                        <img 
-                                            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/b9736976f_Monochrome_version_of_Troyjo_Digital_Twin_logo_for-1765281248218.png"
-                                            alt="Troyjo Digital Twin"
-                                            className="w-10 h-10 object-contain"
-                                            style={{ filter: 'brightness(0) saturate(100%) invert(13%) sepia(89%) saturate(1953%) hue-rotate(192deg) brightness(95%) contrast(101%)' }}
-                                        />
+                                        <TroyjoLogo size={48} />
                                     </div>
                                     <div>
                                         <p className="text-[#002D62] font-semibold mb-2">{t.greeting}</p>

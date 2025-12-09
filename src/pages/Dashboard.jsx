@@ -4,6 +4,7 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import TroyjoLogo from '@/components/branding/TroyjoLogo';
 
 import { 
     ArrowLeft, Globe, BookOpen, Award, MessageSquare, 

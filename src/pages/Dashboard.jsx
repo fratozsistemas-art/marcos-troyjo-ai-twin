@@ -380,41 +380,43 @@ export default function Dashboard() {
                     </motion.div>
                 </div>
 
-                {/* Proactive Suggestions Row */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-                    <ProactiveSuggestions lang={lang} />
-                </motion.div>
-
                 {/* Geopolitical Risk Monitor */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
                     <GeopoliticalRiskMonitor lang={lang} />
                 </motion.div>
 
                 {/* Intelligence Resources */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }}>
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.27 }}>
                     <IntelligenceResources lang={lang} />
                 </motion.div>
 
                 {/* Third Row - Knowledge Hub Full Width */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                     <KnowledgeHub lang={lang} />
                 </motion.div>
 
-                {/* Fourth Row - Topic Tracker, Deep Dive & Persona Analytics */}
-                <div className="grid lg:grid-cols-3 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                {/* Fourth Row - Topic Tracker & Persona Analytics (Compact Cards) */}
+                <div className="grid lg:grid-cols-2 gap-6">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }}>
                         <TopicTracker lang={lang} />
                     </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-                        <TopicDeepDive lang={lang} />
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.34 }}>
                         <PersonaAnalytics lang={lang} />
                     </motion.div>
                 </div>
 
-                {/* Fifth Row - Expertise Full Width */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.425 }}>
+                {/* Fifth Row - Proactive Suggestions & Topic Deep Dive (Taller Cards) */}
+                <div className="grid lg:grid-cols-2 gap-6">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.36 }}>
+                        <ProactiveSuggestions lang={lang} />
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }}>
+                        <TopicDeepDive lang={lang} />
+                    </motion.div>
+                </div>
+
+                {/* Sixth Row - Expertise Full Width */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-[#8B1538]">
@@ -450,23 +452,23 @@ export default function Dashboard() {
                     </Card>
                 </motion.div>
 
-                        {/* Sixth Row - Insights */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
+                        {/* Seventh Row - Insights */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.42 }}>
                         <InsightsSection lang={lang} />
                         </motion.div>
 
-                {/* Seventh Row - Persona Settings & Custom Traits */}
+                {/* Eighth Row - Persona Settings & Custom Traits */}
                 <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.44 }} className="h-full">
                         <PersonaSettings lang={lang} />
                     </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.525 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.46 }} className="h-full">
                         <CustomPersonaTraits lang={lang} />
                     </motion.div>
                 </div>
 
-                {/* Eighth Row - Conversations */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
+                {/* Ninth Row - Conversations */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.48 }}>
                         <Card className="h-full">
                             <CardHeader>
                                 <div className="flex items-center justify-between">
@@ -615,7 +617,7 @@ export default function Dashboard() {
                 {/* Bottom Section - Reorganized Grid */}
                 <div className="grid lg:grid-cols-2 gap-6">
                     {/* Books & Awards Combined */}
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="h-full">
                         <Card className="h-full">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-[#002D62]">
@@ -651,7 +653,7 @@ export default function Dashboard() {
                     </motion.div>
 
                     {/* Knowledge Base & Language */}
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.52 }} className="h-full">
                         <Card className="h-full">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-[#002D62]">
@@ -689,12 +691,12 @@ export default function Dashboard() {
                 </div>
 
                 {/* Publications Section */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.54 }}>
                     <PublicationsSection lang={lang} />
                 </motion.div>
 
                 {/* Voice Calibration Section */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.75 }}>
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.56 }}>
                     <VoiceCalibration lang={lang} />
                 </motion.div>
                 </main>

@@ -363,16 +363,26 @@ export default function HistoryViewer({ lang = 'pt', onReuse }) {
                         <div className="space-y-6">
                             <div>
                                 <h3 className="font-semibold text-[#002D62] mb-3">{t.inputs}</h3>
-                                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                                <div className="grid gap-3">
                                     {Object.entries(selectedItem.inputs).map(([key, value]) => (
-                                        <div key={key} className="border-b border-gray-200 last:border-0 pb-3 last:pb-0">
-                                            <p className="text-xs font-semibold text-[#002D62] uppercase mb-1">
-                                                {key.replace(/_/g, ' ')}
-                                            </p>
-                                            <p className="text-sm text-[#333F48]">
-                                                {typeof value === 'object' ? JSON.stringify(value, null, 2) : value}
-                                            </p>
-                                        </div>
+                                        <Card key={key}>
+                                            <CardHeader className="pb-3">
+                                                <CardTitle className="text-sm text-[#002D62] uppercase">
+                                                    {key.replace(/_/g, ' ')}
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                {typeof value === 'object' ? (
+                                                    <pre className="bg-gray-50 p-3 rounded-lg text-xs overflow-x-auto border border-gray-200">
+                                                        {JSON.stringify(value, null, 2)}
+                                                    </pre>
+                                                ) : (
+                                                    <p className="text-sm text-[#333F48] leading-relaxed whitespace-pre-wrap">
+                                                        {value}
+                                                    </p>
+                                                )}
+                                            </CardContent>
+                                        </Card>
                                     ))}
                                 </div>
                             </div>
@@ -393,32 +403,79 @@ export default function HistoryViewer({ lang = 'pt', onReuse }) {
 
                             <div>
                                 <h3 className="font-semibold text-[#002D62] mb-3">{t.outputs}</h3>
-                                <div className="bg-white rounded-lg p-6 border border-green-200 space-y-4">
+                                <div className="grid gap-3">
                                     {typeof selectedItem.outputs === 'object' && selectedItem.outputs !== null ? (
                                         Object.entries(selectedItem.outputs).map(([key, value]) => (
-                                            <div key={key} className="border-b border-gray-200 last:border-0 pb-4 last:pb-0">
-                                                <p className="text-xs font-semibold text-[#002D62] uppercase mb-2">
-                                                    {key.replace(/_/g, ' ')}
-                                                </p>
-                                                <div className="prose prose-sm max-w-none">
-                                                    {typeof value === 'string' && (value.includes('<') || value.includes('**')) ? (
-                                                        <div dangerouslySetInnerHTML={{ __html: value }} />
+                                            <Card key={key} className="border-green-200 bg-green-50/30">
+                                                <CardHeader className="pb-3">
+                                                    <CardTitle className="text-sm text-[#002D62] uppercase flex items-center gap-2">
+                                                        {key.replace(/_/g, ' ')}
+                                                    </CardTitle>
+                                                </CardHeader>
+                                                <CardContent>
+                                                    {typeof value === 'string' && value.startsWith('[') ? (
+                                                        <div className="space-y-2">
+                                                            {(() => {
+                                                                try {
+                                                                    const items = JSON.parse(value);
+                                                                    return Array.isArray(items) ? items.map((item, i) => (
+                                                                        <Card key={i} className="bg-white">
+                                                                            <CardContent className="p-3">
+                                                                                {typeof item === 'object' ? (
+                                                                                    <div className="space-y-2">
+                                                                                        {Object.entries(item).map(([k, v]) => (
+                                                                                            <div key={k}>
+                                                                                                <p className="text-xs font-semibold text-[#002D62] mb-1">
+                                                                                                    {k.replace(/_/g, ' ')}:
+                                                                                                </p>
+                                                                                                <p className="text-sm text-[#333F48] leading-relaxed">
+                                                                                                    {typeof v === 'object' ? JSON.stringify(v) : v}
+                                                                                                </p>
+                                                                                            </div>
+                                                                                        ))}
+                                                                                    </div>
+                                                                                ) : (
+                                                                                    <p className="text-sm text-[#333F48]">{item}</p>
+                                                                                )}
+                                                                            </CardContent>
+                                                                        </Card>
+                                                                    )) : <pre className="bg-white p-3 rounded-lg text-xs overflow-x-auto border">{value}</pre>;
+                                                                } catch {
+                                                                    return <pre className="bg-white p-3 rounded-lg text-xs overflow-x-auto border">{value}</pre>;
+                                                                }
+                                                            })()}
+                                                        </div>
                                                     ) : typeof value === 'object' ? (
-                                                        <pre className="bg-gray-50 p-3 rounded text-xs overflow-x-auto">{JSON.stringify(value, null, 2)}</pre>
+                                                        <div className="space-y-2">
+                                                            {Object.entries(value).map(([k, v]) => (
+                                                                <div key={k} className="bg-white rounded-lg p-3 border">
+                                                                    <p className="text-xs font-semibold text-[#002D62] mb-1">
+                                                                        {k.replace(/_/g, ' ')}:
+                                                                    </p>
+                                                                    <p className="text-sm text-[#333F48] leading-relaxed whitespace-pre-wrap">
+                                                                        {typeof v === 'object' ? JSON.stringify(v, null, 2) : v}
+                                                                    </p>
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     ) : (
-                                                        <p className="text-[#333F48] whitespace-pre-wrap">{value}</p>
+                                                        <div className="bg-white rounded-lg p-4 border">
+                                                            <p className="text-sm text-[#333F48] leading-relaxed whitespace-pre-wrap">
+                                                                {value}
+                                                            </p>
+                                                        </div>
                                                     )}
-                                                </div>
-                                            </div>
+                                                </CardContent>
+                                            </Card>
                                         ))
                                     ) : (
-                                        <div className="prose prose-sm max-w-none">
-                                            {typeof selectedItem.outputs === 'string' && (selectedItem.outputs.includes('<') || selectedItem.outputs.includes('**')) ? (
-                                                <div dangerouslySetInnerHTML={{ __html: selectedItem.outputs }} />
-                                            ) : (
-                                                <p className="text-[#333F48]">{String(selectedItem.outputs)}</p>
-                                            )}
-                                        </div>
+                                        <Card className="border-green-200 bg-green-50/30">
+                                            <CardContent className="p-4">
+                                                <p className="text-sm text-[#333F48] leading-relaxed whitespace-pre-wrap">
+                                                    {String(selectedItem.outputs)}
+                                                </p>
+                                            </CardContent>
+                                        </Card>
                                     )}
                                 </div>
                             </div>

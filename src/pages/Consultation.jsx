@@ -278,9 +278,11 @@ function ConsultationInner() {
         return (
             <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
                 <div className="text-center">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#002D62] to-[#00654A] flex items-center justify-center mx-auto mb-4 animate-pulse">
-                        <span className="text-white font-bold text-xl">MT</span>
-                    </div>
+                    <img 
+                        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/8c955389f_Replace_the_transparent_checkered_background_with_-1765063055494.png"
+                        alt="Marcos Troyjo"
+                        className="w-16 h-16 rounded-full object-cover mx-auto mb-4 animate-pulse border-2 border-[#D4AF37]"
+                    />
                     <p className="text-[#333F48]/60">{lang === 'pt' ? 'Iniciando sessão...' : 'Starting session...'}</p>
                 </div>
             </div>
@@ -422,9 +424,11 @@ function ConsultationInner() {
                             {/* Welcome Message */}
                             <div className="bg-white rounded-2xl border border-gray-100 p-6 md:p-8 mb-8 shadow-sm">
                                 <div className="flex items-start gap-4">
-                                    <div className="w-12 h-12 rounded-lg bg-white shadow-md flex items-center justify-center flex-shrink-0">
-                                        <TroyjoLogo size={48} />
-                                    </div>
+                                    <img 
+                                        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/8c955389f_Replace_the_transparent_checkered_background_with_-1765063055494.png"
+                                        alt="Marcos Troyjo"
+                                        className="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-[#D4AF37]"
+                                    />
                                     <div>
                                         <p className="text-[#002D62] font-semibold mb-2">{t.greeting}</p>
                                         <p className="text-[#333F48] leading-relaxed mb-4">{t.greetingText}</p>

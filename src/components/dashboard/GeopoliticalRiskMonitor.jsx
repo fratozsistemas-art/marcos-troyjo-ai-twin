@@ -287,6 +287,7 @@ export default function GeopoliticalRiskMonitor({ lang = 'pt' }) {
     };
 
     return (
+        <>
         <Card>
             <CardHeader>
                 <div className="flex items-center justify-between">
@@ -708,5 +709,6 @@ export default function GeopoliticalRiskMonitor({ lang = 'pt' }) {
                 )}
             </DialogContent>
         </Dialog>
+        </>
     );
 }

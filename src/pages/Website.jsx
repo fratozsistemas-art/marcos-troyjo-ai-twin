@@ -12,6 +12,7 @@ import NeologismShowcase from '@/components/neologisms/NeologismShowcase';
 import AudienceSegmentation from '@/components/audience/AudienceSegmentation';
 import ConceptEvolutionTimeline from '@/components/neologisms/ConceptEvolutionTimeline';
 import PublicationCard from '@/components/media/PublicationCard';
+import PolicyObservatory from '@/components/observatory/PolicyObservatory';
 
 export default function Website() {
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
@@ -341,6 +342,28 @@ export default function Website() {
                             </p>
                         </motion.div>
                         <NeologismShowcase lang={lang} />
+                    </div>
+                </section>
+
+                {/* Policy Observatory */}
+                <section className="py-20 px-4 md:px-6 bg-gradient-to-b from-white to-gray-50">
+                    <div className="max-w-7xl mx-auto">
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            className="text-center mb-12"
+                        >
+                            <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                                {lang === 'pt' ? 'Observatório de Políticas' : 'Policy Observatory'}
+                            </h2>
+                            <p className="text-lg text-[#2D2D2D]/70">
+                                {lang === 'pt'
+                                    ? 'Linha do tempo de eventos geopolíticos críticos desde 2023'
+                                    : 'Timeline of critical geopolitical events since 2023'}
+                            </p>
+                        </motion.div>
+                        <PolicyObservatory lang={lang} />
                     </div>
                 </section>
 

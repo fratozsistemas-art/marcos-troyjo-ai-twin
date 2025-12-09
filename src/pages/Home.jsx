@@ -170,21 +170,21 @@ export default function Home() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6 }}
                         >
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#B8860B]/10 text-[#B8860B] text-sm font-medium mb-6">
-                                <span className="w-2 h-2 rounded-full bg-[#B8860B] animate-pulse" />
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[#D4AF37]/10 text-[#D4AF37] text-sm font-medium mb-6 border border-[#D4AF37]/20">
+                                <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
                                 Digital Twin Active
                             </div>
-                            <h1 className="text-5xl md:text-6xl font-bold text-[#002D62] leading-tight mb-4">
+                            <h1 className="text-5xl md:text-6xl font-bold text-[#8B1538] leading-tight mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                                 {t.title}
                             </h1>
-                            <p className="text-2xl text-[#00654A] font-light mb-2">{t.subtitle}</p>
-                            <p className="text-lg text-[#333F48]/70 mb-6">{t.tagline}</p>
-                            <p className="text-[#333F48] text-lg leading-relaxed mb-8 max-w-xl">
+                            <p className="text-2xl text-[#D4AF37] font-light mb-2">{t.subtitle}</p>
+                            <p className="text-lg text-[#2D2D2D]/80 mb-6">{t.tagline}</p>
+                            <p className="text-[#2D2D2D] text-lg leading-relaxed mb-8 max-w-xl">
                                 {t.description}
                             </p>
                             <div className="flex flex-wrap gap-4">
                                 <Link to={createPageUrl('Consultation')}>
-                                    <Button size="lg" className="bg-[#002D62] hover:bg-[#001d42] text-white gap-2 text-lg px-8">
+                                    <Button size="lg" className="bg-[#8B1538] hover:bg-[#6B0F2A] text-white gap-2 text-lg px-8 rounded">
                                         {t.cta}
                                         <ArrowRight className="w-5 h-5" />
                                     </Button>
@@ -199,8 +199,8 @@ export default function Home() {
                             className="relative"
                         >
                             <div className="aspect-square max-w-md mx-auto relative">
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#002D62]/20 to-[#00654A]/20 rounded-3xl transform rotate-6" />
-                                <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-2xl">
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#8B1538]/15 to-[#D4AF37]/15 rounded-2xl transform rotate-6" />
+                                <div className="absolute inset-0 rounded-2xl overflow-hidden shadow-2xl">
                                     {slides.map((slide, index) => (
                                         <motion.div
                                             key={index}
@@ -213,14 +213,14 @@ export default function Home() {
                                             className="absolute inset-0"
                                         >
                                             {slide.type === "narrative" ? (
-                                                <div className="w-full h-full bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center p-12 relative overflow-hidden">
+                                                <div className="w-full h-full bg-gradient-to-br from-[#F5F1E8] via-[#FDFBF7] to-[#F5F1E8] flex items-center justify-center p-12 relative overflow-hidden">
                                                     <div className="absolute inset-0 opacity-5">
                                                         <svg className="w-full h-full" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M400,100 Q500,200 400,300 T400,500 T400,700" fill="none" stroke="#002D62" strokeWidth="2"/>
-                                                            <path d="M200,100 Q300,200 200,300 T200,500 T200,700" fill="none" stroke="#00654A" strokeWidth="2"/>
-                                                            <path d="M600,100 Q700,200 600,300 T600,500 T600,700" fill="none" stroke="#B8860B" strokeWidth="2"/>
-                                                            <circle cx="400" cy="400" r="120" fill="none" stroke="#002D62" strokeWidth="3" opacity="0.3"/>
-                                                            <circle cx="400" cy="400" r="90" fill="none" stroke="#00654A" strokeWidth="2" opacity="0.3"/>
+                                                            <path d="M400,100 Q500,200 400,300 T400,500 T400,700" fill="none" stroke="#8B1538" strokeWidth="2"/>
+                                                            <path d="M200,100 Q300,200 200,300 T200,500 T200,700" fill="none" stroke="#D4AF37" strokeWidth="2"/>
+                                                            <path d="M600,100 Q700,200 600,300 T600,500 T600,700" fill="none" stroke="#8B1538" strokeWidth="2"/>
+                                                            <circle cx="400" cy="400" r="120" fill="none" stroke="#8B1538" strokeWidth="3" opacity="0.3"/>
+                                                            <circle cx="400" cy="400" r="90" fill="none" stroke="#D4AF37" strokeWidth="2" opacity="0.3"/>
                                                         </svg>
                                                     </div>
                                                     <motion.p 
@@ -230,7 +230,8 @@ export default function Home() {
                                                             opacity: currentSlide === index ? 1 : 0
                                                         }}
                                                         transition={{ delay: 0.3, duration: 0.6 }}
-                                                        className="text-3xl md:text-4xl font-light text-[#002D62] text-center leading-relaxed relative z-10"
+                                                        className="text-3xl md:text-4xl font-light text-[#8B1538] text-center leading-relaxed relative z-10"
+                                                        style={{ fontFamily: 'Crimson Text, serif' }}
                                                     >
                                                         {slide.text}
                                                     </motion.p>
@@ -244,7 +245,7 @@ export default function Home() {
                                                     />
                                                     {slide.quote && (
                                                         <>
-                                                            <div className="absolute inset-0 bg-gradient-to-t from-[#002D62]/90 via-[#002D62]/20 to-transparent" />
+                                                            <div className="absolute inset-0 bg-gradient-to-t from-[#8B1538]/90 via-[#8B1538]/20 to-transparent" />
                                                             <motion.div 
                                                                 initial={{ y: 20, opacity: 0 }}
                                                                 animate={{ 
@@ -254,8 +255,8 @@ export default function Home() {
                                                                 transition={{ delay: 0.4, duration: 0.6 }}
                                                                 className="absolute bottom-8 left-8 right-8"
                                                             >
-                                                                <BookOpen className="w-8 h-8 text-[#B8860B] mb-3" />
-                                                                <p className="text-white text-lg italic leading-relaxed font-light">
+                                                                <BookOpen className="w-8 h-8 text-[#D4AF37] mb-3" />
+                                                                <p className="text-white text-lg italic leading-relaxed font-light" style={{ fontFamily: 'Crimson Text, serif' }}>
                                                                     "{slide.quote}"
                                                                 </p>
                                                             </motion.div>
@@ -369,12 +370,12 @@ export default function Home() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
-                                className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-[#002D62]/30 hover:shadow-xl transition-all duration-300 group"
-                            >
-                                <h3 className="text-xl font-bold text-[#002D62] mb-3">
+                                className="bg-white rounded-lg p-6 border border-gray-100 hover:border-[#8B1538]/30 hover:shadow-xl transition-all duration-300 group"
+                                >
+                                <h3 className="text-xl font-bold text-[#8B1538] mb-3">
                                     {capability.title}
                                 </h3>
-                                <p className="text-[#333F48] leading-relaxed">
+                                <p className="text-[#2D2D2D] leading-relaxed">
                                     {capability.desc}
                                 </p>
                             </motion.div>
@@ -392,8 +393,8 @@ export default function Home() {
                         viewport={{ once: true }}
                         className="text-center mb-12"
                     >
-                        <h2 className="text-3xl font-bold text-[#002D62] mb-4">{t.topics}</h2>
-                        <p className="text-lg text-[#333F48]/70">
+                        <h2 className="text-3xl font-bold text-[#8B1538] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>{t.topics}</h2>
+                        <p className="text-lg text-[#2D2D2D]/70">
                             {lang === 'pt' 
                                 ? 'Análise profunda em áreas críticas da economia global'
                                 : 'Deep analysis in critical areas of the global economy'}
@@ -407,13 +408,13 @@ export default function Home() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
-                                className="group p-6 rounded-2xl border border-gray-100 hover:border-[#002D62]/20 hover:shadow-lg transition-all duration-300 bg-white"
-                            >
-                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#002D62] to-[#00654A] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                className="group p-6 rounded-lg border border-gray-100 hover:border-[#8B1538]/20 hover:shadow-lg transition-all duration-300 bg-white"
+                                >
+                                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#8B1538] to-[#D4AF37] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                     <topic.icon className="w-6 h-6 text-white" />
                                 </div>
-                                <h3 className="font-semibold text-[#333F48] mb-2">{topic.title}</h3>
-                                <p className="text-sm text-[#333F48]/60">{topic.desc}</p>
+                                <h3 className="font-semibold text-[#2D2D2D] mb-2">{topic.title}</h3>
+                                <p className="text-sm text-[#2D2D2D]/60">{topic.desc}</p>
                             </motion.div>
                         ))}
                     </div>
@@ -429,14 +430,14 @@ export default function Home() {
                         viewport={{ once: true }}
                         className="text-center mb-12"
                     >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00654A]/10 text-[#00654A] text-sm font-medium mb-4">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[#D4AF37]/10 text-[#D4AF37] text-sm font-medium mb-4 border border-[#D4AF37]/20">
                             <Zap className="w-4 h-4" />
                             {lang === 'pt' ? 'Evolução Contínua' : 'Continuous Evolution'}
                         </div>
-                        <h2 className="text-3xl font-bold text-[#002D62] mb-4">
+                        <h2 className="text-3xl font-bold text-[#8B1538] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                             {lang === 'pt' ? 'Próximos Capítulos' : 'Next Chapters'}
                         </h2>
-                        <p className="text-lg text-[#333F48]/70 max-w-2xl mx-auto">
+                        <p className="text-lg text-[#2D2D2D]/70 max-w-2xl mx-auto">
                             {lang === 'pt'
                                 ? 'O Digital Twin evolui continuamente, integrando novas dimensões do pensamento Troyjo'
                                 : 'The Digital Twin evolves continuously, integrating new dimensions of Troyjo\'s thinking'}
@@ -494,15 +495,15 @@ export default function Home() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
-                                className="p-6 rounded-2xl border border-gray-200 bg-white hover:border-[#00654A]/30 hover:shadow-lg transition-all"
-                            >
+                                className="p-6 rounded-lg border border-gray-200 bg-white hover:border-[#D4AF37]/30 hover:shadow-lg transition-all"
+                                >
                                 <div className="flex items-start justify-between mb-3">
-                                    <h3 className="font-semibold text-[#002D62] text-lg">{feature.title}</h3>
-                                    <Badge variant="outline" className="text-xs whitespace-nowrap">
+                                    <h3 className="font-semibold text-[#8B1538] text-lg">{feature.title}</h3>
+                                    <Badge variant="outline" className="text-xs whitespace-nowrap border-[#D4AF37] text-[#D4AF37]">
                                         {feature.status}
                                     </Badge>
                                 </div>
-                                <p className="text-sm text-[#333F48]/70 leading-relaxed">{feature.desc}</p>
+                                <p className="text-sm text-[#2D2D2D]/70 leading-relaxed">{feature.desc}</p>
                             </motion.div>
                         ))}
                     </div>
@@ -516,7 +517,8 @@ export default function Home() {
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
-                        className="text-3xl font-bold text-[#002D62] mb-12 text-center"
+                        className="text-3xl font-bold text-[#8B1538] mb-12 text-center"
+                        style={{ fontFamily: 'Crimson Text, serif' }}
                     >
                         {t.credentials}
                     </motion.h2>
@@ -529,12 +531,12 @@ export default function Home() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
-                                className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-[#002D62]/20 hover:shadow-lg transition-all duration-300"
-                            >
+                                className="bg-white rounded-lg p-6 border border-gray-100 hover:border-[#8B1538]/20 hover:shadow-lg transition-all duration-300"
+                                >
                                 <div className="flex items-start gap-4">
-                                    <div className="w-3 h-3 rounded-full bg-[#B8860B] mt-1 flex-shrink-0" />
+                                    <div className="w-3 h-3 rounded-full bg-[#D4AF37] mt-1 flex-shrink-0" />
                                     <div>
-                                        <p className="text-[#002D62] font-semibold leading-relaxed">{credential}</p>
+                                        <p className="text-[#8B1538] font-semibold leading-relaxed">{credential}</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -545,9 +547,9 @@ export default function Home() {
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="bg-gradient-to-br from-[#002D62] to-[#00654A] rounded-3xl p-8 md:p-12"
+                        className="bg-gradient-to-br from-[#8B1538] to-[#6B0F2A] rounded-2xl p-8 md:p-12"
                     >
-                        <h3 className="text-xl font-bold text-white mb-6">
+                        <h3 className="text-xl font-bold text-white mb-6" style={{ fontFamily: 'Crimson Text, serif' }}>
                             {lang === 'pt' ? 'Acesso Especializado' : 'Specialized Access'}
                         </h3>
                         <p className="text-white/90 mb-8 leading-relaxed">
@@ -557,13 +559,13 @@ export default function Home() {
                         </p>
                         <div className="flex flex-wrap gap-4">
                             <Link to={createPageUrl('Consultation') + '?context=board'}>
-                                <Button variant="secondary" className="bg-white text-[#002D62] hover:bg-gray-100 gap-2">
+                                <Button variant="secondary" className="bg-white text-[#8B1538] hover:bg-gray-100 gap-2 rounded">
                                     <Building2 className="w-4 h-4" />
                                     {t.forBoards}
                                 </Button>
                             </Link>
                             <Link to={createPageUrl('Consultation') + '?context=media'}>
-                                <Button variant="outline" className="border-white/60 bg-white/10 text-white hover:bg-white/20 hover:border-white gap-2">
+                                <Button variant="outline" className="border-white/60 bg-white/10 text-white hover:bg-white/20 hover:border-white gap-2 rounded">
                                     <MessageSquare className="w-4 h-4" />
                                     {t.forMedia}
                                 </Button>
@@ -578,26 +580,26 @@ export default function Home() {
                 <div className="max-w-7xl mx-auto">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                         {/* Left side */}
-                        <div className="flex flex-col items-center md:items-start gap-2 text-sm text-[#333F48]/70">
+                        <div className="flex flex-col items-center md:items-start gap-2 text-sm text-[#2D2D2D]/70">
                             <p>© 2025 Marcos Prado Troyjo Digital Twin</p>
-                            <p className="font-medium text-[#002D62]">
+                            <p className="font-medium text-[#8B1538]">
                                 Desenvolvido por Grupo Fratoz. Powered by CAIO.Vision.
                             </p>
                         </div>
                         
                         {/* Center - Links */}
                         <div className="flex items-center gap-4 text-sm">
-                            <Link to={createPageUrl('PrivacyPolicy')} className="text-[#333F48]/70 hover:text-[#002D62] transition-colors">
+                            <Link to={createPageUrl('PrivacyPolicy')} className="text-[#2D2D2D]/70 hover:text-[#8B1538] transition-colors">
                                 {lang === 'pt' ? 'Privacidade' : 'Privacy'}
                             </Link>
-                            <span className="text-[#333F48]/40">•</span>
-                            <Link to={createPageUrl('TermsOfService')} className="text-[#333F48]/70 hover:text-[#002D62] transition-colors">
+                            <span className="text-[#2D2D2D]/40">•</span>
+                            <Link to={createPageUrl('TermsOfService')} className="text-[#2D2D2D]/70 hover:text-[#8B1538] transition-colors">
                                 {lang === 'pt' ? 'Termos' : 'Terms'}
                             </Link>
                         </div>
-                        
+
                         {/* Right side */}
-                        <p className="text-sm text-[#333F48]/70">
+                        <p className="text-sm text-[#2D2D2D]/70">
                             {lang === 'pt' ? 'Conhecimento base até dezembro de 2025' : 'Knowledge base up to December 2025'}
                         </p>
                     </div>

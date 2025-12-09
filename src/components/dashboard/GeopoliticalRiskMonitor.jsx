@@ -3,7 +3,10 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, TrendingUp, TrendingDown, Minus, RefreshCw, Loader2, Globe } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AlertTriangle, TrendingUp, TrendingDown, Minus, RefreshCw, Loader2, Globe, Sparkles, Target, FileText, BarChart3 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const SEVERITY_COLORS = {
@@ -78,7 +81,33 @@ export default function GeopoliticalRiskMonitor({ lang = 'pt' }) {
             immediate: 'Imediato',
             short_term: 'Curto Prazo',
             medium_term: 'Médio Prazo',
-            long_term: 'Longo Prazo'
+            long_term: 'Longo Prazo',
+            predict: 'Prever Tendências',
+            simulate: 'Simular Cenário',
+            generateReport: 'Gerar Relatório',
+            visualize: 'Visualizar',
+            predicting: 'Prevendo...',
+            simulating: 'Simulando...',
+            generatingReport: 'Gerando...',
+            scenarioDescription: 'Descreva o cenário',
+            affectedRegions: 'Regiões afetadas',
+            riskTypes: 'Tipos de risco',
+            timeHorizon: 'Horizonte temporal (meses)',
+            selectRisks: 'Selecione riscos para relatório',
+            includePredict: 'Incluir previsões',
+            shortTerm: 'Curto prazo (1-3 meses)',
+            mediumTerm: 'Médio prazo (3-6 meses)',
+            longTerm: 'Longo prazo (6-12 meses)',
+            acceleratingFactors: 'Fatores Aceleradores',
+            mitigatingFactors: 'Fatores Mitigadores',
+            monitoringIndicators: 'Indicadores de Monitoramento',
+            confidence: 'Nível de Confiança',
+            marketImpacts: 'Impactos no Mercado',
+            economicImpacts: 'Impactos Econômicos',
+            politicalConsequences: 'Consequências Políticas',
+            mitigationStrategies: 'Estratégias de Mitigação',
+            copyReport: 'Copiar Relatório',
+            downloadReport: 'Baixar Relatório'
         },
         en: {
             title: 'Geopolitical Risk Monitor',
@@ -98,7 +127,33 @@ export default function GeopoliticalRiskMonitor({ lang = 'pt' }) {
             immediate: 'Immediate',
             short_term: 'Short Term',
             medium_term: 'Medium Term',
-            long_term: 'Long Term'
+            long_term: 'Long Term',
+            predict: 'Predict Trends',
+            simulate: 'Simulate Scenario',
+            generateReport: 'Generate Report',
+            visualize: 'Visualize',
+            predicting: 'Predicting...',
+            simulating: 'Simulating...',
+            generatingReport: 'Generating...',
+            scenarioDescription: 'Describe the scenario',
+            affectedRegions: 'Affected regions',
+            riskTypes: 'Risk types',
+            timeHorizon: 'Time horizon (months)',
+            selectRisks: 'Select risks for report',
+            includePredict: 'Include predictions',
+            shortTerm: 'Short-term (1-3 months)',
+            mediumTerm: 'Medium-term (3-6 months)',
+            longTerm: 'Long-term (6-12 months)',
+            acceleratingFactors: 'Accelerating Factors',
+            mitigatingFactors: 'Mitigating Factors',
+            monitoringIndicators: 'Monitoring Indicators',
+            confidence: 'Confidence Level',
+            marketImpacts: 'Market Impacts',
+            economicImpacts: 'Economic Impacts',
+            politicalConsequences: 'Political Consequences',
+            mitigationStrategies: 'Mitigation Strategies',
+            copyReport: 'Copy Report',
+            downloadReport: 'Download Report'
         }
     }[lang];
 
@@ -146,6 +201,91 @@ export default function GeopoliticalRiskMonitor({ lang = 'pt' }) {
         return 'text-gray-500';
     };
 
+    const handlePredictTrends = async (riskId) => {
+        setPredicting(true);
+        try {
+            const response = await base44.functions.invoke('predictRiskTrends', { risk_id: riskId });
+            setPrediction(response.data);
+            setPredictionDialog(riskId);
+            toast.success(t.predict + ' ' + (lang === 'pt' ? 'concluído' : 'completed'));
+        } catch (error) {
+            console.error('Error predicting trends:', error);
+            toast.error(lang === 'pt' ? 'Erro ao prever tendências' : 'Error predicting trends');
+        } finally {
+            setPredicting(false);
+        }
+    };
+
+    const handleSimulateScenario = async () => {
+        setSimulating(true);
+        try {
+            const response = await base44.functions.invoke('simulateScenario', {
+                scenario_description: scenarioInput.description,
+                affected_regions: scenarioInput.regions,
+                risk_types: scenarioInput.riskTypes,
+                time_horizon: scenarioInput.timeHorizon
+            });
+            setScenarioResult(response.data);
+            toast.success(t.simulate + ' ' + (lang === 'pt' ? 'concluído' : 'completed'));
+        } catch (error) {
+            console.error('Error simulating scenario:', error);
+            toast.error(lang === 'pt' ? 'Erro ao simular cenário' : 'Error simulating scenario');
+        } finally {
+            setSimulating(false);
+        }
+    };
+
+    const handleGenerateReport = async (includePredictions) => {
+        setGeneratingReport(true);
+        try {
+            const response = await base44.functions.invoke('generateRiskReport', {
+                risk_ids: selectedRisksForReport,
+                report_format: 'executive_summary',
+                include_predictions: includePredictions
+            });
+            setReport(response.data);
+            toast.success(t.generateReport + ' ' + (lang === 'pt' ? 'concluído' : 'completed'));
+        } catch (error) {
+            console.error('Error generating report:', error);
+            toast.error(lang === 'pt' ? 'Erro ao gerar relatório' : 'Error generating report');
+        } finally {
+            setGeneratingReport(false);
+        }
+    };
+
+    const handleGenerateVisualization = async (riskId) => {
+        setGeneratingViz(true);
+        try {
+            const risk = risks.find(r => r.id === riskId);
+            const response = await base44.functions.invoke('generateDataVisualization', {
+                data_description: `Geopolitical risk: ${risk.title}. Severity: ${risk.severity}, Trend: ${risk.trend}, Probability: ${risk.probability}%, Impact areas: ${risk.impact_areas?.join(', ')}`,
+                chart_type: 'risk_dashboard',
+                title: risk.title
+            });
+            setVisualization(response.data);
+            setVizDialog(riskId);
+            toast.success(t.visualize + ' ' + (lang === 'pt' ? 'gerado' : 'generated'));
+        } catch (error) {
+            console.error('Error generating visualization:', error);
+            toast.error(lang === 'pt' ? 'Erro ao gerar visualização' : 'Error generating visualization');
+        } finally {
+            setGeneratingViz(false);
+        }
+    };
+
+    const handleDownloadReport = () => {
+        if (!report) return;
+        const blob = new Blob([report.content], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `risk-report-${new Date().toISOString().split('T')[0]}.md`;
+        document.body.appendChild(a);
+        a.click();
+        URL.revokeObjectURL(url);
+        a.remove();
+    };
+
     return (
         <Card>
             <CardHeader>
@@ -157,24 +297,47 @@ export default function GeopoliticalRiskMonitor({ lang = 'pt' }) {
                         </CardTitle>
                         <CardDescription>{t.description}</CardDescription>
                     </div>
-                    <Button
-                        onClick={refreshRisks}
-                        disabled={refreshing}
-                        variant="outline"
-                        size="sm"
-                    >
-                        {refreshing ? (
-                            <>
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                {t.refreshing}
-                            </>
-                        ) : (
-                            <>
-                                <RefreshCw className="w-4 h-4 mr-2" />
-                                {t.refresh}
-                            </>
-                        )}
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button 
+                            onClick={() => setScenarioDialog(true)}
+                            variant="outline"
+                            size="sm"
+                            className="gap-2"
+                        >
+                            <Target className="w-4 h-4" />
+                            {t.simulate}
+                        </Button>
+                        <Button 
+                            onClick={() => {
+                                setSelectedRisksForReport(risks.map(r => r.id));
+                                setReportDialog(true);
+                            }}
+                            variant="outline"
+                            size="sm"
+                            className="gap-2"
+                        >
+                            <FileText className="w-4 h-4" />
+                            {t.generateReport}
+                        </Button>
+                        <Button
+                            onClick={refreshRisks}
+                            disabled={refreshing}
+                            variant="outline"
+                            size="sm"
+                        >
+                            {refreshing ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    {t.refreshing}
+                                </>
+                            ) : (
+                                <>
+                                    <RefreshCw className="w-4 h-4 mr-2" />
+                                    {t.refresh}
+                                </>
+                            )}
+                        </Button>
+                    </div>
                 </div>
             </CardHeader>
             <CardContent>
@@ -267,19 +430,22 @@ export default function GeopoliticalRiskMonitor({ lang = 'pt' }) {
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={async () => {
-                                                try {
-                                                    const response = await base44.functions.invoke('analyzeGeopoliticalRisk', {
-                                                        risk_id: risk.id
-                                                    });
-                                                    toast.success(lang === 'pt' ? 'Artigo de análise gerado!' : 'Analysis article generated!');
-                                                } catch (error) {
-                                                    toast.error(lang === 'pt' ? 'Erro ao gerar análise' : 'Error generating analysis');
-                                                }
-                                            }}
-                                            className="text-xs"
+                                            onClick={() => handlePredictTrends(risk.id)}
+                                            disabled={predicting}
+                                            className="text-xs gap-1"
                                         >
-                                            {lang === 'pt' ? 'Gerar Análise' : 'Generate Analysis'}
+                                            <Sparkles className="w-3 h-3" />
+                                            {predicting ? t.predicting : t.predict}
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleGenerateVisualization(risk.id)}
+                                            disabled={generatingViz}
+                                            className="text-xs gap-1"
+                                        >
+                                            <BarChart3 className="w-3 h-3" />
+                                            {t.visualize}
                                         </Button>
                                     </div>
                                 </div>
@@ -289,7 +455,7 @@ export default function GeopoliticalRiskMonitor({ lang = 'pt' }) {
                 )}
             </CardContent>
         </Card>
-
+        
         {/* Prediction Dialog */}
         <Dialog open={!!predictionDialog} onOpenChange={() => setPredictionDialog(null)}>
             <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
@@ -542,6 +708,5 @@ export default function GeopoliticalRiskMonitor({ lang = 'pt' }) {
                 )}
             </DialogContent>
         </Dialog>
-    </>
     );
 }

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X, Plus, Save, Loader2 } from 'lucide-react';
+import { X, Plus, Save, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 
 const INDUSTRIES = [
     'Agronegócio', 'Energia', 'Tecnologia', 'Manufatura', 'Serviços Financeiros',
@@ -31,6 +31,7 @@ export default function ProfileSettings({ lang = 'pt' }) {
     const [saving, setSaving] = useState(false);
     const [newInterest, setNewInterest] = useState('');
     const [user, setUser] = useState(null);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     const translations = {
         pt: {
@@ -204,14 +205,24 @@ export default function ProfileSettings({ lang = 'pt' }) {
     return (
         <div className="space-y-6">
             <Card>
-                <CardHeader>
-                    <CardTitle className="text-[#002D62]">{t.title}</CardTitle>
-                    <CardDescription>{t.description}</CardDescription>
+                <CardHeader className="cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <CardTitle className="text-[#8B1538]">{t.title}</CardTitle>
+                            <CardDescription>{t.description}</CardDescription>
+                        </div>
+                        {isExpanded ? (
+                            <ChevronUp className="w-5 h-5 text-[#8B1538]" />
+                        ) : (
+                            <ChevronDown className="w-5 h-5 text-[#8B1538]" />
+                        )}
+                    </div>
                 </CardHeader>
+                {isExpanded && (
                 <CardContent className="space-y-6 flex-1 overflow-y-auto">
                     {/* Interests Section */}
                     <div>
-                        <h3 className="font-semibold text-[#002D62] mb-4">{t.interests}</h3>
+                        <h3 className="font-semibold text-[#8B1538] mb-4">{t.interests}</h3>
                         
                         {/* Industries */}
                         <div className="mb-4">
@@ -223,7 +234,7 @@ export default function ProfileSettings({ lang = 'pt' }) {
                                         onClick={() => toggleInterest('industries', industry)}
                                         className={`cursor-pointer transition-colors ${
                                             profile?.interests?.industries?.includes(industry)
-                                                ? 'bg-[#00654A] text-white hover:bg-[#004d38]'
+                                                ? 'bg-[#8B1538] text-white hover:bg-[#6B0F2A]'
                                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
                                     >
@@ -243,7 +254,7 @@ export default function ProfileSettings({ lang = 'pt' }) {
                                         onClick={() => toggleInterest('regions', region)}
                                         className={`cursor-pointer transition-colors ${
                                             profile?.interests?.regions?.includes(region)
-                                                ? 'bg-[#002D62] text-white hover:bg-[#001d42]'
+                                                ? 'bg-[#D4AF37] text-white hover:bg-[#B8961F]'
                                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
                                     >
@@ -263,7 +274,7 @@ export default function ProfileSettings({ lang = 'pt' }) {
                                         onClick={() => toggleInterest('economic_theories', theory)}
                                         className={`cursor-pointer transition-colors ${
                                             profile?.interests?.economic_theories?.includes(theory)
-                                                ? 'bg-[#B8860B] text-white hover:bg-[#8B6508]'
+                                                ? 'bg-[#2D2D2D] text-white hover:bg-[#1A1A1A]'
                                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
                                     >
@@ -309,7 +320,7 @@ export default function ProfileSettings({ lang = 'pt' }) {
 
                     {/* Dashboard Preferences */}
                     <div className="pt-6 border-t">
-                        <h3 className="font-semibold text-[#002D62] mb-4">{t.dashboard}</h3>
+                        <h3 className="font-semibold text-[#8B1538] mb-4">{t.dashboard}</h3>
                         
                         <div className="grid grid-cols-2 gap-4">
                             <div>
@@ -350,7 +361,7 @@ export default function ProfileSettings({ lang = 'pt' }) {
 
                     {/* Notifications */}
                     <div className="pt-6 border-t">
-                        <h3 className="font-semibold text-[#002D62] mb-4">{t.notifications}</h3>
+                        <h3 className="font-semibold text-[#8B1538] mb-4">{t.notifications}</h3>
                         
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
@@ -375,7 +386,7 @@ export default function ProfileSettings({ lang = 'pt' }) {
                         <Button
                             onClick={saveProfile}
                             disabled={saving}
-                            className="w-full bg-[#002D62] hover:bg-[#001d42]"
+                            className="w-full bg-[#8B1538] hover:bg-[#6B0F2A]"
                         >
                             {saving ? (
                                 <>
@@ -391,6 +402,7 @@ export default function ProfileSettings({ lang = 'pt' }) {
                         </Button>
                     </div>
                 </CardContent>
+                )}
             </Card>
         </div>
     );

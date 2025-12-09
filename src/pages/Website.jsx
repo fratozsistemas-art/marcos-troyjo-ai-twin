@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import NeologismShowcase from '@/components/neologisms/NeologismShowcase';
 import AudienceSegmentation from '@/components/audience/AudienceSegmentation';
 import ConceptEvolutionTimeline from '@/components/neologisms/ConceptEvolutionTimeline';
+import PublicationCard from '@/components/media/PublicationCard';
 
 export default function Website() {
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
@@ -103,11 +104,36 @@ export default function Website() {
     const text = t[lang];
 
     const books = [
-        { title: 'Tecnologia e Diplomacia', year: '2003', description: 'Análise sobre o papel da tecnologia nas relações internacionais' },
-        { title: 'Nação-Comerciante', year: '2007', description: 'Estratégias de inserção internacional competitiva' },
-        { title: 'Desglobalização', year: '2016', description: 'Reflexões sobre o futuro da globalização' },
-        { title: 'A Metamorfose dos BRICS', year: '2016', description: 'Transformações nas economias emergentes' },
-        { title: 'Trading Up', year: '2022', description: 'Competitividade global no século XXI' }
+        { 
+            title: 'Tecnologia e Diplomacia', 
+            year: '2003', 
+            description: 'Análise sobre o papel da tecnologia nas relações internacionais',
+            purchaseLink: 'https://www.amazon.com.br/s?k=Tecnologia+Diplomacia+Marcos+Troyjo'
+        },
+        { 
+            title: 'Nação-Comerciante', 
+            year: '2007', 
+            description: 'Estratégias de inserção internacional competitiva',
+            purchaseLink: 'https://www.amazon.com.br/Na%C3%A7%C3%A3o-Comerciante-Marcos-Troyjo/dp/8535220496'
+        },
+        { 
+            title: 'Desglobalização', 
+            year: '2016', 
+            description: 'Reflexões sobre o futuro da globalização',
+            purchaseLink: 'https://www.amazon.com.br/Desglobaliza%C3%A7%C3%A3o-Marcos-Troyjo/dp/8501109568'
+        },
+        { 
+            title: 'A Metamorfose dos BRICS', 
+            year: '2016', 
+            description: 'Transformações nas economias emergentes',
+            purchaseLink: 'https://www.amazon.com.br/Metamorfose-dos-BRICS-Marcos-Troyjo/dp/8501110477'
+        },
+        { 
+            title: 'Trading Up', 
+            year: '2022', 
+            description: 'Competitividade global no século XXI',
+            purchaseLink: 'https://www.amazon.com.br/Trading-Up-Brasil-tornar-pot%C3%AAncia/dp/8501117420'
+        }
     ];
 
     const awards = [
@@ -358,15 +384,23 @@ export default function Website() {
                         </h2>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {books.map((book, idx) => (
-                                <Card key={idx} className="hover:shadow-lg hover:border-[#8B1538]/30 transition-all">
+                                <Card key={idx} className="hover:shadow-lg hover:border-[#8B1538]/30 transition-all group">
                                     <CardHeader>
                                         <div className="flex items-start justify-between">
                                             <CardTitle className="text-lg text-[#8B1538]">{book.title}</CardTitle>
                                             <Badge variant="outline" className="border-[#D4AF37] text-[#D4AF37]">{book.year}</Badge>
                                         </div>
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="space-y-4">
                                         <p className="text-sm text-[#2D2D2D]/70">{book.description}</p>
+                                        {book.purchaseLink && (
+                                            <a href={book.purchaseLink} target="_blank" rel="noopener noreferrer">
+                                                <Button size="sm" className="w-full gap-2 bg-[#D4AF37] hover:bg-[#C19B2A] text-[#2D2D2D]">
+                                                    <BookOpen className="w-4 h-4" />
+                                                    {text.purchase}
+                                                </Button>
+                                            </a>
+                                        )}
                                     </CardContent>
                                 </Card>
                             ))}
@@ -426,55 +460,7 @@ export default function Website() {
 
                         <div className="grid md:grid-cols-2 gap-6">
                             {filteredPublications.map((pub, idx) => (
-                                <Card key={idx} className="hover:shadow-lg hover:border-[#8B1538]/30 transition-all">
-                                    <CardHeader>
-                                        <div className="flex items-start justify-between mb-2">
-                                            <Badge variant={pub.type === 'interview' ? 'secondary' : 'default'} className={pub.type === 'interview' ? '' : 'bg-[#8B1538]'}>
-                                                {pub.type === 'interview' ? text.interviews : text.articles}
-                                            </Badge>
-                                            {pub.publication_date && (
-                                                <span className="text-sm text-[#6B6B6B]">
-                                                    {new Date(pub.publication_date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US')}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <CardTitle className="text-lg text-[#8B1538]">{pub.title}</CardTitle>
-                                        {pub.outlet && (
-                                            <p className="text-sm text-[#6B6B6B] mt-1">{pub.outlet}</p>
-                                        )}
-                                    </CardHeader>
-                                    <CardContent>
-                                        {pub.summary && (
-                                            <p className="text-sm text-[#2D2D2D] mb-4">{pub.summary}</p>
-                                        )}
-                                        <div className="flex flex-wrap gap-2">
-                                            {pub.url && (
-                                                <a href={pub.url} target="_blank" rel="noopener noreferrer">
-                                                    <Button size="sm" variant="outline" className="gap-2 border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white">
-                                                        <ExternalLink className="w-3 h-3" />
-                                                        {text.viewArticle}
-                                                    </Button>
-                                                </a>
-                                            )}
-                                            {pub.video_link && (
-                                                <a href={pub.video_link} target="_blank" rel="noopener noreferrer">
-                                                    <Button size="sm" variant="outline" className="gap-2 border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white">
-                                                        <Video className="w-3 h-3" />
-                                                        {text.watch}
-                                                    </Button>
-                                                </a>
-                                            )}
-                                            {pub.purchase_link && (
-                                                <a href={pub.purchase_link} target="_blank" rel="noopener noreferrer">
-                                                    <Button size="sm" className="gap-2 bg-[#D4AF37] hover:bg-[#C19B2A] text-[#2D2D2D]">
-                                                        <BookOpen className="w-3 h-3" />
-                                                        {text.purchase}
-                                                    </Button>
-                                                </a>
-                                            )}
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                <PublicationCard key={idx} publication={pub} lang={lang} />
                             ))}
                         </div>
                     </div>

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import NeologismShowcase from '@/components/neologisms/NeologismShowcase';
 import AudienceSegmentation from '@/components/audience/AudienceSegmentation';
+import ConceptEvolutionTimeline from '@/components/neologisms/ConceptEvolutionTimeline';
 
 const translations = {
     pt: {
@@ -21,11 +22,7 @@ const translations = {
             { icon: Globe, title: "Economia Global", desc: "Análise das dinâmicas geoeconômicas contemporâneas" },
             { icon: TrendingUp, title: "Comércio Internacional", desc: "Estratégias para inserção competitiva global" },
             { icon: Building2, title: "BRICS & Emergentes", desc: "O futuro das economias em desenvolvimento" },
-            { icon: Landmark, title: "Diplomacia Econômica", desc: "Negociações e acordos multilaterais" },
-            { icon: Zap, title: "Segurança Energética", desc: "Transição energética e geopolítica dos recursos" },
-            { icon: Network, title: "Cadeias de Suprimentos", desc: "Resiliência e reconfiguração das cadeias globais" },
-            { icon: Brain, title: "IA na Geopolítica", desc: "Inteligência artificial como ferramenta de poder" },
-            { icon: DollarSign, title: "Finanças Internacionais", desc: "Arquitetura monetária e fluxos de capital" },
+            { icon: Landmark, title: "Diplomacia Econômica", desc: "Negociações e acordos multilaterais" }
         ],
         credentials: "Credenciais",
         credentialsList: [
@@ -49,11 +46,7 @@ const translations = {
             { icon: Globe, title: "Global Economics", desc: "Analysis of contemporary geoeconomic dynamics" },
             { icon: TrendingUp, title: "International Trade", desc: "Strategies for competitive global insertion" },
             { icon: Building2, title: "BRICS & Emerging Markets", desc: "The future of developing economies" },
-            { icon: Landmark, title: "Economic Diplomacy", desc: "Multilateral negotiations and agreements" },
-            { icon: Zap, title: "Energy Security", desc: "Energy transition and resource geopolitics" },
-            { icon: Network, title: "Supply Chains", desc: "Resilience and reconfiguration of global chains" },
-            { icon: Brain, title: "AI in Geopolitics", desc: "Artificial intelligence as a tool of power" },
-            { icon: DollarSign, title: "International Finance", desc: "Monetary architecture and capital flows" },
+            { icon: Landmark, title: "Economic Diplomacy", desc: "Multilateral negotiations and agreements" }
         ],
         credentials: "Credentials",
         credentialsList: [
@@ -401,8 +394,30 @@ export default function Home() {
                         </div>
                         </section>
 
-            {/* Neologisms Showcase */}
+            {/* Concept Evolution Timeline - Option D */}
             <section className="py-20 px-6 bg-white">
+                <div className="max-w-7xl mx-auto">
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-12"
+                    >
+                        <h2 className="text-3xl md:text-4xl font-bold text-[#8B1538] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            {lang === 'pt' ? 'Evolução Conceitual: 2015-2025' : 'Conceptual Evolution: 2015-2025'}
+                        </h2>
+                        <p className="text-lg text-[#2D2D2D]/70 max-w-3xl mx-auto">
+                            {lang === 'pt'
+                                ? 'Acompanhe a jornada intelectual que moldou o pensamento geopolítico brasileiro'
+                                : 'Follow the intellectual journey that shaped Brazilian geopolitical thinking'}
+                        </p>
+                    </motion.div>
+                    <ConceptEvolutionTimeline lang={lang} />
+                </div>
+            </section>
+
+            {/* Neologisms Showcase */}
+            <section className="py-20 px-6 bg-gradient-to-b from-gray-50 to-white">
                 <div className="max-w-7xl mx-auto">
                     <motion.div 
                         initial={{ opacity: 0 }}
@@ -461,7 +476,7 @@ export default function Home() {
                                 : 'Deep analysis in critical areas of the global economy'}
                         </p>
                     </motion.div>
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
                         {t.topicsList.map((topic, index) => (
                             <motion.div
                                 key={index}

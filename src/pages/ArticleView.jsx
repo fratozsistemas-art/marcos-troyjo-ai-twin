@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import ArticleRevisionPanel from '@/components/editorial/ArticleRevisionPanel';
 import AdminReviewPanel from '@/components/editorial/AdminReviewPanel';
 import QualityBadge from '@/components/editorial/QualityBadge';
+import RelatedContent from '@/components/content/RelatedContent';
 
 export default function ArticleView() {
     const [article, setArticle] = useState(null);
@@ -83,6 +84,17 @@ export default function ArticleView() {
 
     return (
         <div className="min-h-screen bg-[#FAFAFA]">
+            {/* SEO Meta Tags */}
+            {article.seo_title && (
+                <title>{article.seo_title}</title>
+            )}
+            {article.seo_description && (
+                <meta name="description" content={article.seo_description} />
+            )}
+            {article.seo_keywords && article.seo_keywords.length > 0 && (
+                <meta name="keywords" content={article.seo_keywords.join(', ')} />
+            )}
+            
             <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
                 <div className="max-w-4xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
                     <Link to={createPageUrl('LandingPage')}>
@@ -202,6 +214,18 @@ export default function ArticleView() {
                             ))}
                         </div>
                     </div>
+                )}
+
+                {/* Related Content */}
+                <div className="mt-8">
+                    <RelatedContent currentArticle={article} lang={lang} />
+                </div>
+
+                {/* SEO Structured Data */}
+                {article.structured_data && Object.keys(article.structured_data).length > 0 && (
+                    <script type="application/ld+json">
+                        {JSON.stringify(article.structured_data)}
+                    </script>
                 )}
             </article>
         </div>

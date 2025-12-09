@@ -223,9 +223,10 @@ export default function NeologismShowcase({ lang = 'pt' }) {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1 }}
+                            className="flex"
                         >
-                            <Card className="border-2 border-[#002D62]/20 hover:border-[#002D62] hover:shadow-xl transition-all duration-300">
-                                <CardContent className="p-6">
+                            <Card className="border-2 border-[#002D62]/20 hover:border-[#002D62] hover:shadow-xl transition-all duration-300 flex-1">
+                                <CardContent className="p-6 flex flex-col h-full">
                                     <div className="flex items-start justify-between mb-4">
                                         <div className="flex items-center gap-3">
                                             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#002D62] to-[#00654A] flex items-center justify-center">
@@ -242,16 +243,18 @@ export default function NeologismShowcase({ lang = 'pt' }) {
                                             {neologism.badge}
                                         </Badge>
                                     </div>
-                                    <p className="text-[#2D2D2D] mb-3 leading-relaxed">
-                                        <strong>{lang === 'pt' ? 'Definição:' : 'Definition:'}</strong> {neologism.definition}
-                                    </p>
-                                    {neologism.context && (
-                                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                                            <p className="text-sm text-amber-900 leading-relaxed">
-                                                <strong>{lang === 'pt' ? 'Contexto (09/Dez/2025):' : 'Context (09/Dec/2025):'}</strong> {neologism.context}
-                                            </p>
-                                        </div>
-                                    )}
+                                    <div className="flex-1">
+                                        <p className="text-[#2D2D2D] mb-3 leading-relaxed">
+                                            <strong>{lang === 'pt' ? 'Definição:' : 'Definition:'}</strong> {neologism.definition}
+                                        </p>
+                                        {neologism.context && (
+                                            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                                                <p className="text-sm text-amber-900 leading-relaxed">
+                                                    <strong>{lang === 'pt' ? 'Contexto (09/Dez/2025):' : 'Context (09/Dec/2025):'}</strong> {neologism.context}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
                                 </CardContent>
                             </Card>
                         </motion.div>

@@ -207,7 +207,11 @@ export default function Website() {
                                     </span>
                                 </div>
                                 <h1 className="text-5xl md:text-6xl font-bold text-[#002D62] leading-tight mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
-                                    {text.title}
+                                    {lang === 'pt' ? (
+                                        <>O Pensador que Cunhou <span className="text-[#D4AF37]">"Trumpulência"</span></>
+                                    ) : (
+                                        <>The Thinker who Coined <span className="text-[#D4AF37]">"Trumpulence"</span></>
+                                    )}
                                 </h1>
                                 <p className="text-xl text-[#2D2D2D] mb-3">{text.subtitle}</p>
                                 <p className="text-lg text-[#2D2D2D]/80 mb-6">{text.tagline}</p>

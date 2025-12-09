@@ -173,9 +173,9 @@ export default function Home() {
                             </div>
                             <h1 className="text-5xl md:text-6xl font-bold text-[#002D62] leading-tight mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                                 {lang === 'pt' ? (
-                                    <>O Pensador que Criou <span className="text-[#D4AF37]">"Trumpulência"</span></>
+                                    <>O Pensador que Cunhou <span className="text-[#D4AF37]">"Trumpulência"</span></>
                                 ) : (
-                                    <>The Thinker who Created <span className="text-[#D4AF37]">"Trumpulence"</span></>
+                                    <>The Thinker who Coined <span className="text-[#D4AF37]">"Trumpulence"</span></>
                                 )}
                             </h1>
                             <p className="text-xl text-[#2D2D2D] mb-3">

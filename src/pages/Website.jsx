@@ -202,6 +202,7 @@ export default function Website() {
                     </div>
                 </div>
             ) : (
+            <>
             <main className="relative z-10">
                 {/* Hero Section */}
                 <section className="bg-gradient-to-b from-[#FAF7F2] to-white py-24">

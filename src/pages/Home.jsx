@@ -315,34 +315,52 @@ export default function Home() {
                                     : 'The Digital Twin automatically adjusts its communication style (Professor, Technical, Diplomatic) based on your profile and interactions'
                             },
                             {
+                                title: lang === 'pt' ? 'Análise de Documentos' : 'Document Analysis',
+                                desc: lang === 'pt'
+                                    ? 'Upload e chat com documentos PDF, DOCX e TXT para análise geopolítica contextualizada'
+                                    : 'Upload and chat with PDF, DOCX and TXT documents for contextualized geopolitical analysis'
+                            },
+                            {
+                                title: lang === 'pt' ? 'Monitoramento de Riscos' : 'Risk Monitoring',
+                                desc: lang === 'pt'
+                                    ? 'Alertas de riscos geopolíticos por região, país e setor de interesse personalizado'
+                                    : 'Geopolitical risk alerts by region, country and customized sector of interest'
+                            },
+                            {
                                 title: lang === 'pt' ? 'Rastreamento de Tópicos' : 'Topic Tracking',
                                 desc: lang === 'pt'
                                     ? 'Sistema inteligente que monitora tópicos frequentes e oferece sugestões proativas de conteúdo relevante'
                                     : 'Intelligent system that monitors frequent topics and offers proactive suggestions for relevant content'
                             },
                             {
-                                title: lang === 'pt' ? 'Perfil Personalizável' : 'Customizable Profile',
+                                title: lang === 'pt' ? 'Geração de Artigos' : 'Article Generation',
                                 desc: lang === 'pt'
-                                    ? 'Defina suas áreas de interesse (indústrias, regiões, teorias) para experiência sob medida'
-                                    : 'Define your areas of interest (industries, regions, theories) for tailored experience'
+                                    ? 'Crie policy papers, relatórios e análises com a voz autêntica de Marcos Troyjo'
+                                    : 'Create policy papers, reports and analyses with Marcos Troyjo\'s authentic voice'
                             },
                             {
-                                title: lang === 'pt' ? 'Feedback Integrado' : 'Integrated Feedback',
+                                title: lang === 'pt' ? 'Exportação Avançada' : 'Advanced Export',
                                 desc: lang === 'pt'
-                                    ? 'Avalie respostas diretamente nas mensagens para refinar continuamente a qualidade das interações'
-                                    : 'Rate responses directly in messages to continuously refine interaction quality'
+                                    ? 'Exporte conversas em PDF, Markdown ou JSON com formatação profissional'
+                                    : 'Export conversations in PDF, Markdown or JSON with professional formatting'
                             },
                             {
-                                title: lang === 'pt' ? 'Dashboard Dinâmico' : 'Dynamic Dashboard',
+                                title: lang === 'pt' ? 'Base de Conhecimento' : 'Knowledge Base',
                                 desc: lang === 'pt'
-                                    ? 'Visualização customizável com insights, vocabulário técnico e análise de conversas'
-                                    : 'Customizable visualization with insights, technical vocabulary and conversation analysis'
+                                    ? 'Acesso a posições conhecidas, vocabulário técnico e evolução conceitual de Troyjo'
+                                    : 'Access to known positions, technical vocabulary and Troyjo\'s conceptual evolution'
                             },
                             {
                                 title: lang === 'pt' ? 'Protocolo HUA' : 'HUA Protocol',
                                 desc: lang === 'pt'
                                     ? 'Validação rigorosa de Hierarquia, Utilidade e Aderência para garantir máxima fidelidade ao pensamento Troyjo'
                                     : 'Rigorous validation of Hierarchy, Utility and Adherence to ensure maximum fidelity to Troyjo\'s thinking'
+                            },
+                            {
+                                title: lang === 'pt' ? 'Analytics de Persona' : 'Persona Analytics',
+                                desc: lang === 'pt'
+                                    ? 'Visualize como o Digital Twin adapta respostas ao seu perfil ao longo do tempo'
+                                    : 'Visualize how the Digital Twin adapts responses to your profile over time'
                             }
                         ].map((capability, index) => (
                             <motion.div

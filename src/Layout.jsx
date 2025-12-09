@@ -100,10 +100,26 @@ export default function Layout({ children, currentPageName }) {
                     </button>
                 </header>
 
-                {/* Page Content */}
-                <main className="flex-1">
-                    {children}
-                </main>
+                {/* Beta Watermark */}
+                                <div className="fixed top-20 right-4 z-50 pointer-events-none">
+                                    <div className="relative">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-lg blur-sm opacity-75"></div>
+                                        <div className="relative bg-white rounded-lg px-3 py-1.5 border-2 border-transparent" style={{
+                                            backgroundImage: 'linear-gradient(white, white), linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)',
+                                            backgroundOrigin: 'border-box',
+                                            backgroundClip: 'padding-box, border-box'
+                                        }}>
+                                            <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-sm tracking-wider">
+                                                BETA
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Page Content */}
+                                <main className="flex-1">
+                                    {children}
+                                </main>
             </div>
             </div>
             <Toaster position="top-right" richColors />

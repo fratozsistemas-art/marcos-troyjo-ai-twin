@@ -138,19 +138,24 @@ export default function DocumentManager({ lang = 'pt', onDocumentSelect }) {
         setUploading(true);
         try {
             for (const file of selectedFiles) {
-                const { file_url } = await base44.integrations.Core.UploadFile({ file });
+                const uploadResult = await base44.integrations.Core.UploadFile({ file });
+                
+                if (!uploadResult || !uploadResult.file_url) {
+                    throw new Error('Upload falhou: URL do arquivo não recebida');
+                }
                 
                 const ext = file.name.split('.').pop().toLowerCase();
                 const tags = currentDoc.tags ? currentDoc.tags.split(',').map(t => t.trim()).filter(t => t) : [];
 
                 await base44.entities.Document.create({
                     title: selectedFiles.length > 1 ? file.name : currentDoc.title,
-                    file_url,
+                    file_url: uploadResult.file_url,
                     file_type: ext,
                     file_size: file.size,
                     description: currentDoc.description || '',
                     tags,
-                    usage_count: 0
+                    usage_count: 0,
+                    category: 'other'
                 });
             }
 
@@ -161,7 +166,7 @@ export default function DocumentManager({ lang = 'pt', onDocumentSelect }) {
             setCurrentDoc({ title: '', description: '', tags: '' });
         } catch (error) {
             console.error('Error uploading:', error);
-            toast.error('Erro ao fazer upload');
+            toast.error(`Erro ao fazer upload: ${error.message}`);
         } finally {
             setUploading(false);
         }

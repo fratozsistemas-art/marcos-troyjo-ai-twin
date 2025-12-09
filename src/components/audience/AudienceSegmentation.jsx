@@ -4,7 +4,7 @@ import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Building2, TrendingUp, GraduationCap } from 'lucide-react';
+import { Building2, TrendingUp, GraduationCap, Landmark, Newspaper, Users } from 'lucide-react';
 
 const audiences = {
     pt: [
@@ -18,7 +18,7 @@ const audiences = {
                 'Novo ESG (Economia + Segurança + Geopolítica)',
                 'Navegação da trumpulência gerenciada'
             ],
-            gradient: 'from-[#8B1538] to-[#6B0F2A]'
+            gradient: 'from-[#002D62] to-[#001d42]'
         },
         {
             id: 'investor',
@@ -46,7 +46,7 @@ const audiences = {
         },
         {
             id: 'government',
-            icon: Building2,
+            icon: Landmark,
             title: 'Governo / Diplomacia',
             description: 'Negociações multilaterais, inserção competitiva, arquitetura global',
             features: [
@@ -58,7 +58,7 @@ const audiences = {
         },
         {
             id: 'media',
-            icon: TrendingUp,
+            icon: Newspaper,
             title: 'Jornalista / Mídia',
             description: 'Análise para matérias, contexto geopolítico, expert quotes',
             features: [
@@ -70,7 +70,7 @@ const audiences = {
         },
         {
             id: 'student',
-            icon: GraduationCap,
+            icon: Users,
             title: 'Estudante / Jovem Profissional',
             description: 'Aprendizado em economia global, preparação para contexto policrítico',
             features: [
@@ -92,7 +92,7 @@ const audiences = {
                 'New ESG (Economy + Security + Geopolitics)',
                 'Managed trumpulence navigation'
             ],
-            gradient: 'from-[#8B1538] to-[#6B0F2A]'
+            gradient: 'from-[#002D62] to-[#001d42]'
         },
         {
             id: 'investor',
@@ -120,7 +120,7 @@ const audiences = {
         },
         {
             id: 'government',
-            icon: Building2,
+            icon: Landmark,
             title: 'Government / Diplomacy',
             description: 'Multilateral negotiations, competitive insertion, global architecture',
             features: [
@@ -132,7 +132,7 @@ const audiences = {
         },
         {
             id: 'media',
-            icon: TrendingUp,
+            icon: Newspaper,
             title: 'Journalist / Media',
             description: 'Analysis for stories, geopolitical context, expert quotes',
             features: [
@@ -144,7 +144,7 @@ const audiences = {
         },
         {
             id: 'student',
-            icon: GraduationCap,
+            icon: Users,
             title: 'Student / Young Professional',
             description: 'Learning in global economics, preparation for polycrisis context',
             features: [
@@ -177,7 +177,7 @@ export default function AudienceSegmentation({ lang = 'pt' }) {
                                 <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${audience.gradient} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                                     <Icon className="w-8 h-8 text-white" />
                                 </div>
-                                <h3 className="text-xl font-bold text-[#8B1538] mb-2" style={{ fontFamily: 'Crimson Text, serif' }}>
+                                <h3 className="text-xl font-bold text-[#002D62] mb-2" style={{ fontFamily: 'Crimson Text, serif' }}>
                                     {audience.title}
                                 </h3>
                                 <p className="text-sm text-[#2D2D2D]/70 mb-4 leading-relaxed">
@@ -194,7 +194,7 @@ export default function AudienceSegmentation({ lang = 'pt' }) {
                                 <Link to={createPageUrl('Consultation') + `?context=${audience.id}`}>
                                     <Button 
                                         variant="outline" 
-                                        className="w-full border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white transition-all"
+                                        className="w-full border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white transition-all"
                                     >
                                         {lang === 'pt' ? 'Explorar →' : 'Explore →'}
                                     </Button>

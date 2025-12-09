@@ -206,7 +206,7 @@ export default function Website() {
                                         {lang === 'pt' ? 'Contexto Atualizado: 09/Dez/2025' : 'Updated Context: 09/Dec/2025'}
                                     </span>
                                 </div>
-                                <h1 className="text-5xl md:text-6xl font-bold text-[#8B1538] leading-tight mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                                <h1 className="text-5xl md:text-6xl font-bold text-[#002D62] leading-tight mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                                     {text.title}
                                 </h1>
                                 <p className="text-xl text-[#2D2D2D] mb-3">{text.subtitle}</p>
@@ -221,13 +221,13 @@ export default function Website() {
                                 
                                 <div className="flex flex-wrap gap-4">
                                     <Link to={createPageUrl('Consultation')}>
-                                        <Button size="lg" className="bg-[#8B1538] hover:bg-[#6B0F2A] text-white gap-2 text-lg px-8">
+                                        <Button size="lg" className="bg-[#002D62] hover:bg-[#001d42] text-white gap-2 text-lg px-8">
                                             {text.cta}
                                             <ArrowRight className="w-5 h-5" />
                                         </Button>
                                     </Link>
                                     <Link to={createPageUrl('Dashboard')}>
-                                        <Button size="lg" variant="outline" className="gap-2 text-lg px-8 border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white">
+                                        <Button size="lg" variant="outline" className="gap-2 text-lg px-8 border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white">
                                             <LayoutDashboard className="w-5 h-5" />
                                             {text.dashboard}
                                         </Button>
@@ -236,25 +236,25 @@ export default function Website() {
 
                                 <div className="grid grid-cols-4 gap-4 mt-8">
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-[#8B1538]">95%+</div>
+                                        <div className="text-2xl font-bold text-[#002D62]">95%+</div>
                                         <div className="text-xs text-[#6B6B6B]">
                                             {lang === 'pt' ? 'Fidelidade HUA' : 'HUA Fidelity'}
                                         </div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-[#8B1538]">24/7</div>
+                                        <div className="text-2xl font-bold text-[#002D62]">24/7</div>
                                         <div className="text-xs text-[#6B6B6B]">
                                             {lang === 'pt' ? 'Disponível' : 'Available'}
                                         </div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-[#8B1538]">11</div>
+                                        <div className="text-2xl font-bold text-[#002D62]">11</div>
                                         <div className="text-xs text-[#6B6B6B]">
                                             {lang === 'pt' ? 'Neologismos' : 'Neologisms'}
                                         </div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-[#8B1538]">2020-2023</div>
+                                        <div className="text-2xl font-bold text-[#002D62]">2020-2023</div>
                                         <div className="text-xs text-[#6B6B6B]">
                                             {lang === 'pt' ? 'Pres. NDB' : 'NDB Pres.'}
                                         </div>
@@ -277,6 +277,7 @@ export default function Website() {
                                             className="w-full h-full object-cover"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-[#8B1538]/90 via-[#8B1538]/20 to-transparent" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#002D62]/90 via-[#002D62]/20 to-transparent" />
                                         <motion.div 
                                             initial={{ y: 20, opacity: 0 }}
                                             animate={{ y: 0, opacity: 1 }}
@@ -306,7 +307,7 @@ export default function Website() {
                             viewport={{ once: true }}
                             className="text-center mb-12"
                         >
-                            <h2 className="text-3xl md:text-4xl font-bold text-[#8B1538] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                                 {text.conceptEvolution}
                             </h2>
                             <p className="text-lg text-[#2D2D2D]/70">
@@ -328,7 +329,7 @@ export default function Website() {
                             viewport={{ once: true }}
                             className="text-center mb-12"
                         >
-                            <h2 className="text-3xl md:text-4xl font-bold text-[#8B1538] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                                 {text.neologisms}
                             </h2>
                             <p className="text-lg text-[#2D2D2D]/70">
@@ -348,7 +349,7 @@ export default function Website() {
                             viewport={{ once: true }}
                             className="text-center mb-12"
                         >
-                            <h2 className="text-3xl md:text-4xl font-bold text-[#8B1538] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                                 {text.audiences}
                             </h2>
                             <p className="text-lg text-[#2D2D2D]/70">
@@ -362,7 +363,7 @@ export default function Website() {
                 {/* About Section */}
                 <section className="py-20 px-4 md:px-6 bg-gradient-to-b from-gray-50 to-white">
                     <div className="max-w-7xl mx-auto">
-                        <h2 className="text-3xl font-bold text-[#8B1538] mb-6" style={{ fontFamily: 'Crimson Text, serif' }}>
+                        <h2 className="text-3xl font-bold text-[#002D62] mb-6" style={{ fontFamily: 'Crimson Text, serif' }}>
                             {text.about}
                         </h2>
                         <p className="text-lg text-[#2D2D2D] leading-relaxed max-w-4xl">{text.aboutText}</p>
@@ -378,7 +379,7 @@ export default function Website() {
                 {/* Books */}
                 <section className="py-20 px-4 md:px-6 bg-white">
                     <div className="max-w-7xl mx-auto">
-                        <h2 className="text-3xl font-bold text-[#8B1538] mb-8 flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
+                        <h2 className="text-3xl font-bold text-[#002D62] mb-8 flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
                             <BookOpen className="w-8 h-8" />
                             {text.books}
                         </h2>
@@ -387,7 +388,7 @@ export default function Website() {
                                 <Card key={idx} className="hover:shadow-lg hover:border-[#8B1538]/30 transition-all group">
                                     <CardHeader>
                                         <div className="flex items-start justify-between">
-                                            <CardTitle className="text-lg text-[#8B1538]">{book.title}</CardTitle>
+                                            <CardTitle className="text-lg text-[#002D62]">{book.title}</CardTitle>
                                             <Badge variant="outline" className="border-[#D4AF37] text-[#D4AF37]">{book.year}</Badge>
                                         </div>
                                     </CardHeader>
@@ -411,7 +412,7 @@ export default function Website() {
                 {/* Awards */}
                 <section className="py-20 px-4 md:px-6 bg-gradient-to-b from-gray-50 to-white">
                     <div className="max-w-7xl mx-auto">
-                        <h2 className="text-3xl font-bold text-[#8B1538] mb-8 flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
+                        <h2 className="text-3xl font-bold text-[#002D62] mb-8 flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
                             <Award className="w-8 h-8" />
                             {text.awards}
                         </h2>
@@ -429,7 +430,7 @@ export default function Website() {
                 {/* Publications */}
                 <section className="py-20 px-4 md:px-6 bg-white">
                     <div className="max-w-7xl mx-auto">
-                        <h2 className="text-3xl font-bold text-[#8B1538] mb-8 flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
+                        <h2 className="text-3xl font-bold text-[#002D62] mb-8 flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
                             <FileText className="w-8 h-8" />
                             {text.publications}
                         </h2>
@@ -438,21 +439,21 @@ export default function Website() {
                             <Button
                                 variant={filter === 'all' ? 'default' : 'outline'}
                                 onClick={() => setFilter('all')}
-                                className={filter === 'all' ? 'bg-[#8B1538] hover:bg-[#6B0F2A]' : 'border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white'}
+                                className={filter === 'all' ? 'bg-[#002D62] hover:bg-[#001d42]' : 'border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white'}
                             >
                                 {text.filterAll}
                             </Button>
                             <Button
                                 variant={filter === 'article' ? 'default' : 'outline'}
                                 onClick={() => setFilter('article')}
-                                className={filter === 'article' ? 'bg-[#8B1538] hover:bg-[#6B0F2A]' : 'border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white'}
+                                className={filter === 'article' ? 'bg-[#002D62] hover:bg-[#001d42]' : 'border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white'}
                             >
                                 {text.filterArticles}
                             </Button>
                             <Button
                                 variant={filter === 'interview' ? 'default' : 'outline'}
                                 onClick={() => setFilter('interview')}
-                                className={filter === 'interview' ? 'bg-[#8B1538] hover:bg-[#6B0F2A]' : 'border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white'}
+                                className={filter === 'interview' ? 'bg-[#002D62] hover:bg-[#001d42]' : 'border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white'}
                             >
                                 {text.filterInterviews}
                             </Button>

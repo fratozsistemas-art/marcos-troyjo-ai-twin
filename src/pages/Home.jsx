@@ -171,7 +171,7 @@ export default function Home() {
                                     {lang === 'pt' ? 'Contexto Atualizado: 09/Dez/2025' : 'Updated Context: 09/Dec/2025'}
                                 </span>
                             </div>
-                            <h1 className="text-5xl md:text-6xl font-bold text-[#8B1538] leading-tight mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            <h1 className="text-5xl md:text-6xl font-bold text-[#002D62] leading-tight mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                                 {lang === 'pt' ? (
                                     <>O Pensador que Criou <span className="text-[#D4AF37]">"Trumpulência"</span></>
                                 ) : (
@@ -194,7 +194,7 @@ export default function Home() {
                             </div>
                             <div className="flex flex-wrap gap-4">
                                 <Link to={createPageUrl('Consultation')}>
-                                    <Button size="lg" className="bg-[#8B1538] hover:bg-[#6B0F2A] text-white gap-2 text-lg px-8 rounded">
+                                    <Button size="lg" className="bg-[#002D62] hover:bg-[#001d42] text-white gap-2 text-lg px-8 rounded">
                                         {t.cta}
                                         <ArrowRight className="w-5 h-5" />
                                     </Button>
@@ -403,7 +403,7 @@ export default function Home() {
                         viewport={{ once: true }}
                         className="text-center mb-12"
                     >
-                        <h2 className="text-3xl md:text-4xl font-bold text-[#8B1538] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                        <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                             {lang === 'pt' ? 'Evolução Conceitual: 2015-2025' : 'Conceptual Evolution: 2015-2025'}
                         </h2>
                         <p className="text-lg text-[#2D2D2D]/70 max-w-3xl mx-auto">
@@ -425,7 +425,7 @@ export default function Home() {
                         viewport={{ once: true }}
                         className="text-center mb-12"
                     >
-                        <h2 className="text-3xl md:text-4xl font-bold text-[#8B1538] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                        <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                             {lang === 'pt' ? 'Inovação Conceitual: 2015-2025' : 'Conceptual Innovation: 2015-2025'}
                         </h2>
                         <p className="text-lg text-[#2D2D2D]/70 max-w-3xl mx-auto">
@@ -447,7 +447,7 @@ export default function Home() {
                         viewport={{ once: true }}
                         className="text-center mb-12"
                     >
-                        <h2 className="text-3xl md:text-4xl font-bold text-[#8B1538] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                        <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                             {lang === 'pt' ? 'Quem Você É?' : 'Who Are You?'}
                         </h2>
                         <p className="text-lg text-[#2D2D2D]/70">
@@ -484,9 +484,9 @@ export default function Home() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
-                                className="group p-6 rounded-lg border border-gray-100 hover:border-[#8B1538]/20 hover:shadow-lg transition-all duration-300 bg-white"
+                                className="group p-6 rounded-lg border border-gray-100 hover:border-[#002D62]/20 hover:shadow-lg transition-all duration-300 bg-white"
                                 >
-                                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#8B1538] to-[#D4AF37] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#002D62] to-[#00654A] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                     <topic.icon className="w-6 h-6 text-white" />
                                 </div>
                                 <h3 className="font-semibold text-[#2D2D2D] mb-2">{topic.title}</h3>
@@ -623,7 +623,7 @@ export default function Home() {
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="bg-gradient-to-br from-[#8B1538] to-[#6B0F2A] rounded-2xl p-8 md:p-12"
+                        className="bg-gradient-to-br from-[#002D62] to-[#001d42] rounded-2xl p-8 md:p-12"
                     >
                         <h3 className="text-xl font-bold text-white mb-6" style={{ fontFamily: 'Crimson Text, serif' }}>
                             {lang === 'pt' ? 'Acesso Especializado' : 'Specialized Access'}
@@ -635,7 +635,7 @@ export default function Home() {
                         </p>
                         <div className="flex flex-wrap gap-4">
                             <Link to={createPageUrl('Consultation') + '?context=board'}>
-                                <Button variant="secondary" className="bg-white text-[#8B1538] hover:bg-gray-100 gap-2 rounded">
+                                <Button variant="secondary" className="bg-white text-[#002D62] hover:bg-gray-100 gap-2 rounded">
                                     <Building2 className="w-4 h-4" />
                                     {t.forBoards}
                                 </Button>
@@ -665,13 +665,13 @@ export default function Home() {
                         
                         {/* Center - Links */}
                         <div className="flex items-center gap-4 text-sm">
-                            <Link to={createPageUrl('PrivacyPolicy')} className="text-[#2D2D2D]/70 hover:text-[#8B1538] transition-colors">
-                                {lang === 'pt' ? 'Privacidade' : 'Privacy'}
-                            </Link>
-                            <span className="text-[#2D2D2D]/40">•</span>
-                            <Link to={createPageUrl('TermsOfService')} className="text-[#2D2D2D]/70 hover:text-[#8B1538] transition-colors">
-                                {lang === 'pt' ? 'Termos' : 'Terms'}
-                            </Link>
+                            <Link to={createPageUrl('PrivacyPolicy')} className="text-[#2D2D2D]/70 hover:text-[#002D62] transition-colors">
+                                    {lang === 'pt' ? 'Privacidade' : 'Privacy'}
+                                </Link>
+                                <span className="text-[#2D2D2D]/40">•</span>
+                                <Link to={createPageUrl('TermsOfService')} className="text-[#2D2D2D]/70 hover:text-[#002D62] transition-colors">
+                                    {lang === 'pt' ? 'Termos' : 'Terms'}
+                                </Link>
                         </div>
 
                         {/* Right side */}

@@ -54,7 +54,7 @@ const conceptEvolution = {
             impact: 'Framework usado em análise de expansão BRICS',
             sources: ['Financial Times', 'The Economist', 'Foreign Affairs'],
             position: 75,
-            color: '#8B1538'
+            color: '#002D62'
         },
         {
             year: '2025',
@@ -128,7 +128,7 @@ const conceptEvolution = {
             impact: 'Framework used in BRICS expansion analysis',
             sources: ['Financial Times', 'The Economist', 'Foreign Affairs'],
             position: 75,
-            color: '#8B1538'
+            color: '#002D62'
         },
         {
             year: '2025',
@@ -162,7 +162,7 @@ export default function ConceptEvolutionTimeline({ lang = 'pt' }) {
     return (
         <div className="w-full space-y-8">
             <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-[#8B1538] mb-2" style={{ fontFamily: 'Crimson Text, serif' }}>
+                <h3 className="text-2xl font-bold text-[#002D62] mb-2" style={{ fontFamily: 'Crimson Text, serif' }}>
                     {lang === 'pt' ? 'Evolução Conceitual: 2015-2025' : 'Conceptual Evolution: 2015-2025'}
                 </h3>
                 <p className="text-[#6B6B6B]">
@@ -175,7 +175,7 @@ export default function ConceptEvolutionTimeline({ lang = 'pt' }) {
             {/* Interactive Timeline */}
             <div className="relative">
                 {/* Timeline track */}
-                <div className="relative h-3 bg-gradient-to-r from-[#8B1538] via-[#D4AF37] to-[#D4AF37] rounded-full overflow-hidden">
+                <div className="relative h-3 bg-gradient-to-r from-[#002D62] via-[#00654A] to-[#D4AF37] rounded-full overflow-hidden">
                     <motion.div
                         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
                         animate={{ x: ['-100%', '200%'] }}
@@ -240,7 +240,7 @@ export default function ConceptEvolutionTimeline({ lang = 'pt' }) {
                                     <CardContent className="p-4">
                                         <div className="flex items-start justify-between mb-2">
                                             <div>
-                                                <h4 className="font-bold text-[#8B1538] text-sm mb-1">{concept.term}</h4>
+                                                <h4 className="font-bold text-[#002D62] text-sm mb-1">{concept.term}</h4>
                                                 <div className="flex items-center gap-2 text-xs text-[#6B6B6B]">
                                                     <Calendar className="w-3 h-3" />
                                                     <span>{concept.year}</span>
@@ -268,7 +268,7 @@ export default function ConceptEvolutionTimeline({ lang = 'pt' }) {
                                                     <div className="flex items-start gap-2">
                                                         <TrendingUp className="w-3 h-3 text-[#D4AF37] mt-0.5 flex-shrink-0" />
                                                         <div>
-                                                            <p className="text-xs font-semibold text-[#8B1538] mb-1">
+                                                            <p className="text-xs font-semibold text-[#002D62] mb-1">
                                                                 {concept.milestone}
                                                             </p>
                                                             <p className="text-xs text-[#6B6B6B]">{concept.impact}</p>
@@ -278,7 +278,7 @@ export default function ConceptEvolutionTimeline({ lang = 'pt' }) {
                                                 
                                                 <div className="flex flex-wrap gap-1">
                                                     {concept.sources.map((source, idx) => (
-                                                        <Badge key={idx} variant="outline" className="text-xs border-[#8B1538]/30">
+                                                        <Badge key={idx} variant="outline" className="text-xs border-[#002D62]/30">
                                                             <BookOpen className="w-3 h-3 mr-1" />
                                                             {source}
                                                         </Badge>
@@ -298,7 +298,7 @@ export default function ConceptEvolutionTimeline({ lang = 'pt' }) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
                 <Card>
                     <CardContent className="p-4 text-center">
-                        <div className="text-2xl font-bold text-[#8B1538]">7</div>
+                        <div className="text-2xl font-bold text-[#002D62]">7</div>
                         <div className="text-xs text-[#6B6B6B]">
                             {lang === 'pt' ? 'Conceitos Principais' : 'Main Concepts'}
                         </div>
@@ -306,7 +306,7 @@ export default function ConceptEvolutionTimeline({ lang = 'pt' }) {
                 </Card>
                 <Card>
                     <CardContent className="p-4 text-center">
-                        <div className="text-2xl font-bold text-[#8B1538]">10</div>
+                        <div className="text-2xl font-bold text-[#002D62]">10</div>
                         <div className="text-xs text-[#6B6B6B]">
                             {lang === 'pt' ? 'Anos de Evolução' : 'Years of Evolution'}
                         </div>
@@ -314,7 +314,7 @@ export default function ConceptEvolutionTimeline({ lang = 'pt' }) {
                 </Card>
                 <Card>
                     <CardContent className="p-4 text-center">
-                        <div className="text-2xl font-bold text-[#8B1538]">2</div>
+                        <div className="text-2xl font-bold text-[#002D62]">2</div>
                         <div className="text-xs text-[#6B6B6B]">
                             {lang === 'pt' ? 'Termos Virais (2025)' : 'Viral Terms (2025)'}
                         </div>
@@ -322,7 +322,7 @@ export default function ConceptEvolutionTimeline({ lang = 'pt' }) {
                 </Card>
                 <Card>
                     <CardContent className="p-4 text-center">
-                        <div className="text-2xl font-bold text-[#8B1538]">95%</div>
+                        <div className="text-2xl font-bold text-[#002D62]">95%</div>
                         <div className="text-xs text-[#6B6B6B]">
                             {lang === 'pt' ? 'Fidelidade HUA' : 'HUA Fidelity'}
                         </div>

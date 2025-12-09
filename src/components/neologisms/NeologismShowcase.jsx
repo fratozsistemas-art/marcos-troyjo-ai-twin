@@ -192,12 +192,12 @@ const neologisms = {
 };
 
 const badgeColors = {
-    'Mais Usado Q4 2025': 'bg-[#D4AF37] text-white',
-    'Most Used Q4 2025': 'bg-[#D4AF37] text-white',
-    'Mudança de Paradigma': 'bg-[#8B1538] text-white',
-    'Paradigm Shift': 'bg-[#8B1538] text-white',
+    'Mais Usado Q4 2025': 'bg-[#D4AF37] text-[#2D2D2D]',
+    'Most Used Q4 2025': 'bg-[#D4AF37] text-[#2D2D2D]',
+    'Mudança de Paradigma': 'bg-[#002D62] text-white',
+    'Paradigm Shift': 'bg-[#002D62] text-white',
     'Legacy Term': 'bg-gray-600 text-white',
-    'Framework': 'bg-blue-600 text-white',
+    'Framework': 'bg-[#00654A] text-white',
     'Opportunity': 'bg-green-600 text-white',
     'Trend': 'bg-purple-600 text-white',
     'Context': 'bg-orange-600 text-white',
@@ -224,15 +224,15 @@ export default function NeologismShowcase({ lang = 'pt' }) {
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1 }}
                         >
-                            <Card className="border-2 border-[#8B1538]/20 hover:border-[#8B1538] hover:shadow-xl transition-all duration-300">
+                            <Card className="border-2 border-[#002D62]/20 hover:border-[#002D62] hover:shadow-xl transition-all duration-300">
                                 <CardContent className="p-6">
                                     <div className="flex items-start justify-between mb-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#8B1538] to-[#D4AF37] flex items-center justify-center">
+                                            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#002D62] to-[#00654A] flex items-center justify-center">
                                                 <Icon className="w-6 h-6 text-white" />
                                             </div>
                                             <div>
-                                                <h3 className="text-2xl font-bold text-[#8B1538]" style={{ fontFamily: 'Crimson Text, serif' }}>
+                                                <h3 className="text-2xl font-bold text-[#002D62]" style={{ fontFamily: 'Crimson Text, serif' }}>
                                                     {neologism.term}
                                                 </h3>
                                                 <span className="text-sm text-gray-500">{neologism.year}</span>
@@ -271,14 +271,14 @@ export default function NeologismShowcase({ lang = 'pt' }) {
                             viewport={{ once: true }}
                             transition={{ delay: (index + featured.length) * 0.05 }}
                         >
-                            <Card className="hover:border-[#8B1538]/40 hover:shadow-lg transition-all duration-300 h-full">
+                            <Card className="hover:border-[#002D62]/40 hover:shadow-lg transition-all duration-300 h-full">
                                 <CardContent className="p-4">
                                     <div className="flex items-start gap-3 mb-2">
-                                        <div className="w-8 h-8 rounded-lg bg-[#8B1538]/10 flex items-center justify-center flex-shrink-0">
-                                            <Icon className="w-4 h-4 text-[#8B1538]" />
+                                        <div className="w-8 h-8 rounded-lg bg-[#002D62]/10 flex items-center justify-center flex-shrink-0">
+                                            <Icon className="w-4 h-4 text-[#002D62]" />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="font-bold text-[#8B1538] text-sm mb-1">{neologism.term}</h4>
+                                            <h4 className="font-bold text-[#002D62] text-sm mb-1">{neologism.term}</h4>
                                             <span className="text-xs text-gray-500">{neologism.year}</span>
                                         </div>
                                         <Badge variant="outline" className="text-xs whitespace-nowrap">

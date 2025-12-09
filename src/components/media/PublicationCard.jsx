@@ -38,7 +38,7 @@ export default function PublicationCard({ publication, lang = 'pt' }) {
                 <div className="flex items-start justify-between mb-2">
                     <Badge 
                         variant={publication.type === 'interview' ? 'secondary' : 'default'} 
-                        className={publication.type === 'interview' ? '' : 'bg-[#8B1538]'}
+                        className={publication.type === 'interview' ? '' : 'bg-[#002D62]'}
                     >
                         {publication.type === 'interview' ? t.interview : t.article}
                     </Badge>
@@ -52,7 +52,7 @@ export default function PublicationCard({ publication, lang = 'pt' }) {
                         </span>
                     )}
                 </div>
-                <CardTitle className="text-lg text-[#8B1538]">{publication.title}</CardTitle>
+                <CardTitle className="text-lg text-[#002D62]">{publication.title}</CardTitle>
                 {publication.outlet && (
                     <p className="text-sm text-[#6B6B6B] mt-1">{publication.outlet}</p>
                 )}
@@ -69,7 +69,7 @@ export default function PublicationCard({ publication, lang = 'pt' }) {
                             variant="ghost"
                             size="sm"
                             onClick={() => setExpanded(!expanded)}
-                            className="mb-2 text-[#8B1538] hover:text-[#6B0F2A] gap-2"
+                            className="mb-2 text-[#002D62] hover:text-[#001d42] gap-2"
                         >
                             <Video className="w-4 h-4" />
                             {expanded ? t.showLess : t.watchVideo}
@@ -94,7 +94,7 @@ export default function PublicationCard({ publication, lang = 'pt' }) {
                 <div className="flex flex-wrap gap-2">
                     {publication.url && (
                         <a href={publication.url} target="_blank" rel="noopener noreferrer">
-                            <Button size="sm" variant="outline" className="gap-2 border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white">
+                            <Button size="sm" variant="outline" className="gap-2 border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white">
                                 <ExternalLink className="w-3 h-3" />
                                 {t.viewArticle}
                             </Button>

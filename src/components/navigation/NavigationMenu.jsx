@@ -15,7 +15,8 @@ import {
     UserCog,
     Database,
     Shield,
-    CreditCard
+    CreditCard,
+    Activity
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -26,6 +27,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
         pt: {
             home: 'Início',
             dashboard: 'Painel',
+            systemHealth: 'Saúde do Sistema',
             consultation: 'Consulta',
             knowledgeHub: 'Hub de Conhecimento',
             personas: 'Personas',
@@ -42,6 +44,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
         en: {
             home: 'Home',
             dashboard: 'Dashboard',
+            systemHealth: 'System Health',
             consultation: 'Consultation',
             knowledgeHub: 'Knowledge Hub',
             personas: 'Personas',
@@ -62,6 +65,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
     const menuItems = [
         { label: t.home, path: 'Website', icon: Home },
         { label: t.dashboard, path: 'Dashboard', icon: LayoutDashboard },
+        { label: t.systemHealth, path: 'SystemHealth', icon: Activity },
         { label: t.consultation, path: 'Consultation', icon: MessageSquare },
         { label: t.knowledgeHub, path: 'KnowledgeHub', icon: Database },
         { label: t.personas, path: 'PersonaManagement', icon: UserCog },

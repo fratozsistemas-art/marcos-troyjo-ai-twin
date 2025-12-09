@@ -27,9 +27,10 @@ export default function Website() {
         setLoading(true);
         try {
             const pubs = await base44.entities.Publication.list('-publication_date', 50);
-            setPublications(pubs);
+            setPublications(pubs || []);
         } catch (error) {
             console.error('Error loading publications:', error);
+            setPublications([]);
         } finally {
             setLoading(false);
         }
@@ -191,6 +192,16 @@ export default function Website() {
                 </div>
             </header>
 
+            {loading ? (
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="text-center">
+                        <div className="w-16 h-16 border-4 border-[#002D62] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                        <p className="text-[#2D2D2D]/60">
+                            {lang === 'pt' ? 'Carregando...' : 'Loading...'}
+                        </p>
+                    </div>
+                </div>
+            ) : (
             <main className="relative z-10">
                 {/* Hero Section */}
                 <section className="bg-gradient-to-b from-[#FAF7F2] to-white py-24">
@@ -480,11 +491,17 @@ export default function Website() {
                             </Button>
                         </div>
 
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {filteredPublications.map((pub, idx) => (
-                                <PublicationCard key={idx} publication={pub} lang={lang} />
-                            ))}
-                        </div>
+                        {filteredPublications.length > 0 ? (
+                            <div className="grid md:grid-cols-2 gap-6">
+                                {filteredPublications.map((pub, idx) => (
+                                    <PublicationCard key={idx} publication={pub} lang={lang} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-12 text-[#2D2D2D]/60">
+                                {lang === 'pt' ? 'Nenhuma publicação encontrada' : 'No publications found'}
+                            </div>
+                        )}
                     </div>
                 </section>
             </main>
@@ -563,6 +580,7 @@ export default function Website() {
                     </div>
                 </div>
             </footer>
+            )}
         </div>
     );
 }

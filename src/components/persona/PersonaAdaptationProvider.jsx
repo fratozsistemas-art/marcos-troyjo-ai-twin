@@ -106,14 +106,18 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
         }
     };
 
-    const setManualPersona = (personaId) => {
-        setUserProfile(prev => ({
-            ...prev,
+    const setManualPersona = async (personaId) => {
+        const newProfile = {
+            ...userProfile,
             manualMode: personaId,
-            mode: personaId || prev.mode,
-            activeProfileId: null // Clear profile when setting manual mode
-        }));
+            mode: personaId || userProfile.mode,
+            activeProfileId: null
+        };
+        setUserProfile(newProfile);
         setActiveProfile(null);
+        
+        // Save to persona memory
+        await savePersonaMemory(personaId || userProfile.mode, userProfile.technicality);
     };
 
     const setCustomProfile = async (profileId) => {
@@ -121,13 +125,17 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
             const profile = customProfiles.find(p => p.id === profileId);
             if (profile) {
                 setActiveProfile(profile);
-                setUserProfile(prev => ({
-                    ...prev,
+                const newProfile = {
+                    ...userProfile,
                     activeProfileId: profileId,
                     mode: profile.base_mode,
                     technicality: profile.stylistic_preferences?.technicality || 50,
-                    manualMode: null // Clear manual mode when using profile
-                }));
+                    manualMode: null
+                };
+                setUserProfile(newProfile);
+                
+                // Save to persona memory with profile ID
+                await savePersonaMemory(profile.base_mode, newProfile.technicality);
                 
                 // Increment usage count
                 await base44.entities.PersonaProfile.update(profileId, {
@@ -139,7 +147,7 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
         }
     };
 
-    const analyzeInteraction = (message) => {
+    const analyzeInteraction = async (message) => {
         if (!message || message.role !== 'user') return;
 
         const newHistory = [...messageHistory, message].slice(-10);
@@ -152,17 +160,23 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
         
         const newProfile = {
             level: analysis.level,
-            mode: userProfile.manualMode || detectedMode, // Manual overrides auto
+            mode: userProfile.manualMode || userProfile.activeProfileId ? userProfile.mode : detectedMode,
             confidence: analysis.confidence,
             technicality: analysis.technicality,
             interactions: userProfile.interactions + 1,
             keywords: analysis.keywords,
             complexity: analysis.complexity,
             manualMode: userProfile.manualMode,
-            autoDetectedMode: detectedMode // Store what auto-detection thinks
+            activeProfileId: userProfile.activeProfileId,
+            autoDetectedMode: detectedMode
         };
 
         setUserProfile(newProfile);
+        
+        // Save persona memory every 5 interactions
+        if (newProfile.interactions % 5 === 0) {
+            await savePersonaMemory(newProfile.mode, newProfile.technicality);
+        }
 
         return newProfile;
     };

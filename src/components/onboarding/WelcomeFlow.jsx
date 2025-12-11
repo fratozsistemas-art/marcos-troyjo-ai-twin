@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 export default function WelcomeFlow({ open, onComplete }) {
     const [step, setStep] = useState(1);
     const [selectedInterests, setSelectedInterests] = useState([]);
+    const [dontShowAgain, setDontShowAgain] = useState(false);
     const [lang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
 
     const t = {
@@ -22,6 +23,7 @@ export default function WelcomeFlow({ open, onComplete }) {
             continue: "Continuar",
             finish: "Começar",
             skip: "Pular",
+            dontShow: "Não mostrar novamente",
             interests: {
                 title: "Escolha seus interesses",
                 industries: "Indústrias",
@@ -55,6 +57,7 @@ export default function WelcomeFlow({ open, onComplete }) {
             continue: "Continue",
             finish: "Start",
             skip: "Skip",
+            dontShow: "Don't show again",
             interests: {
                 title: "Choose your interests",
                 industries: "Industries",
@@ -105,7 +108,8 @@ export default function WelcomeFlow({ open, onComplete }) {
                     dashboard_preferences: {
                         ...profiles[0].dashboard_preferences,
                         onboarding_completed: true,
-                        onboarding_skipped: true
+                        onboarding_skipped: true,
+                        hide_welcome: dontShowAgain
                     }
                 });
             } else {
@@ -115,6 +119,7 @@ export default function WelcomeFlow({ open, onComplete }) {
                     dashboard_preferences: {
                         onboarding_completed: true,
                         onboarding_skipped: true,
+                        hide_welcome: dontShowAgain,
                         layout: 'comfortable',
                         theme: 'light',
                         language: lang
@@ -169,7 +174,8 @@ export default function WelcomeFlow({ open, onComplete }) {
                     interests: interestData,
                     dashboard_preferences: {
                         ...profiles[0].dashboard_preferences,
-                        onboarding_completed: true
+                        onboarding_completed: true,
+                        hide_welcome: dontShowAgain
                     }
                 });
             } else {
@@ -178,6 +184,7 @@ export default function WelcomeFlow({ open, onComplete }) {
                     interests: interestData,
                     dashboard_preferences: {
                         onboarding_completed: true,
+                        hide_welcome: dontShowAgain,
                         layout: 'comfortable',
                         theme: 'light',
                         language: lang
@@ -270,14 +277,26 @@ export default function WelcomeFlow({ open, onComplete }) {
                             </div>
                         ))}
 
-                        <div className="flex justify-between pt-4">
-                            <Button variant="ghost" onClick={handleSkip}>
-                                {t.skip}
-                            </Button>
-                            <Button onClick={() => setStep(2)} className="bg-[#8B1538] hover:bg-[#6B0F2A]">
-                                {t.continue}
-                                <ArrowRight className="w-4 h-4 ml-2" />
-                            </Button>
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-2 px-2">
+                                <Checkbox 
+                                    id="dont-show" 
+                                    checked={dontShowAgain}
+                                    onCheckedChange={setDontShowAgain}
+                                />
+                                <label htmlFor="dont-show" className="text-sm text-gray-600 cursor-pointer">
+                                    {t.dontShow}
+                                </label>
+                            </div>
+                            <div className="flex justify-between pt-2">
+                                <Button variant="ghost" onClick={handleSkip}>
+                                    {t.skip}
+                                </Button>
+                                <Button onClick={() => setStep(2)} className="bg-[#8B1538] hover:bg-[#6B0F2A]">
+                                    {t.continue}
+                                    <ArrowRight className="w-4 h-4 ml-2" />
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -308,14 +327,26 @@ export default function WelcomeFlow({ open, onComplete }) {
                             })}
                         </div>
 
-                        <div className="flex justify-between pt-4">
-                            <Button variant="ghost" onClick={() => setStep(1)}>
-                                {lang === 'pt' ? 'Voltar' : 'Back'}
-                            </Button>
-                            <Button onClick={handleFinish} className="bg-[#8B1538] hover:bg-[#6B0F2A]">
-                                {t.finish}
-                                <ArrowRight className="w-4 h-4 ml-2" />
-                            </Button>
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-2 px-2">
+                                <Checkbox 
+                                    id="dont-show-2" 
+                                    checked={dontShowAgain}
+                                    onCheckedChange={setDontShowAgain}
+                                />
+                                <label htmlFor="dont-show-2" className="text-sm text-gray-600 cursor-pointer">
+                                    {t.dontShow}
+                                </label>
+                            </div>
+                            <div className="flex justify-between pt-2">
+                                <Button variant="ghost" onClick={() => setStep(1)}>
+                                    {lang === 'pt' ? 'Voltar' : 'Back'}
+                                </Button>
+                                <Button onClick={handleFinish} className="bg-[#8B1538] hover:bg-[#6B0F2A]">
+                                    {t.finish}
+                                    <ArrowRight className="w-4 h-4 ml-2" />
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 )}

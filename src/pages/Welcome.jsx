@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Globe, Sparkles, BookOpen, TrendingUp } from 'lucide-react';
+import { ArrowRight, Globe, Sparkles, BookOpen, TrendingUp, BarChart3, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 

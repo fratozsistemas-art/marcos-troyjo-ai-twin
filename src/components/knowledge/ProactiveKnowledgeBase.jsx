@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Brain, RefreshCw, Loader2, Book, HelpCircle, TrendingUp } from 'lucide-react';
+import { Brain, RefreshCw, Loader2, Book, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ProactiveKnowledgeBase({ lang = 'pt' }) {
@@ -77,23 +79,31 @@ export default function ProactiveKnowledgeBase({ lang = 'pt' }) {
                         <Brain className="w-5 h-5" />
                         {text.title}
                     </CardTitle>
-                    <Button
-                        onClick={generateArticles}
-                        disabled={generating}
-                        size="sm"
-                    >
-                        {generating ? (
-                            <>
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                {text.generating}
-                            </>
-                        ) : (
-                            <>
-                                <RefreshCw className="w-4 h-4 mr-2" />
-                                {text.generate}
-                            </>
-                        )}
-                    </Button>
+                    <div className="flex gap-2">
+                        <Link to={createPageUrl('KnowledgeBase')}>
+                            <Button size="sm" variant="outline">
+                                <ExternalLink className="w-4 h-4 mr-2" />
+                                Ver Tudo
+                            </Button>
+                        </Link>
+                        <Button
+                            onClick={generateArticles}
+                            disabled={generating}
+                            size="sm"
+                        >
+                            {generating ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    {text.generating}
+                                </>
+                            ) : (
+                                <>
+                                    <RefreshCw className="w-4 h-4 mr-2" />
+                                    {text.generate}
+                                </>
+                            )}
+                        </Button>
+                    </div>
                 </div>
             </CardHeader>
             <CardContent>

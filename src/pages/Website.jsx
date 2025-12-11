@@ -18,6 +18,19 @@ export default function Website() {
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
     const [publications, setPublications] = useState([]);
     const [loading, setLoading] = useState(true);
+    
+    // Supported languages
+    const supportedLangs = ['pt', 'en', 'zh', 'ar', 'ru', 'hi', 'fr', 'es'];
+    const langNames = {
+        pt: 'Português',
+        en: 'English',
+        zh: '中文',
+        ar: 'العربية',
+        ru: 'Русский',
+        hi: 'हिन्दी',
+        fr: 'Français',
+        es: 'Español'
+    };
 
     useEffect(() => {
         loadPublications();
@@ -110,31 +123,36 @@ export default function Website() {
             title: 'Tecnologia e Diplomacia', 
             year: '2003', 
             description: 'Análise sobre o papel da tecnologia nas relações internacionais',
-            purchaseLink: 'https://www.amazon.com.br/s?k=Tecnologia+Diplomacia+Marcos+Troyjo'
+            purchaseLink: 'https://www.amazon.com.br/s?k=Tecnologia+Diplomacia+Marcos+Troyjo',
+            cover: 'https://m.media-amazon.com/images/I/51MxQnB7qNL._SY344_BO1,204,203,200_.jpg'
         },
         { 
             title: 'Nação-Comerciante', 
             year: '2007', 
             description: 'Estratégias de inserção internacional competitiva',
-            purchaseLink: 'https://www.amazon.com.br/Na%C3%A7%C3%A3o-Comerciante-Marcos-Troyjo/dp/8535220496'
+            purchaseLink: 'https://www.amazon.com.br/Na%C3%A7%C3%A3o-Comerciante-Marcos-Troyjo/dp/8535220496',
+            cover: 'https://m.media-amazon.com/images/I/41YZwQXnCLL._SY344_BO1,204,203,200_.jpg'
         },
         { 
             title: 'Desglobalização', 
             year: '2016', 
             description: 'Reflexões sobre o futuro da globalização',
-            purchaseLink: 'https://www.amazon.com.br/Desglobaliza%C3%A7%C3%A3o-Marcos-Troyjo/dp/8501109568'
+            purchaseLink: 'https://www.amazon.com.br/Desglobaliza%C3%A7%C3%A3o-Marcos-Troyjo/dp/8501109568',
+            cover: 'https://m.media-amazon.com/images/I/51XQmB9VWZL._SY344_BO1,204,203,200_QL70_ML2_.jpg'
         },
         { 
             title: 'A Metamorfose dos BRICS', 
             year: '2016', 
             description: 'Transformações nas economias emergentes',
-            purchaseLink: 'https://www.amazon.com.br/Metamorfose-dos-BRICS-Marcos-Troyjo/dp/8501110477'
+            purchaseLink: 'https://www.amazon.com.br/Metamorfose-dos-BRICS-Marcos-Troyjo/dp/8501110477',
+            cover: 'https://m.media-amazon.com/images/I/51B7sQdLcmL._SY344_BO1,204,203,200_QL70_ML2_.jpg'
         },
         { 
             title: 'Trading Up', 
             year: '2022', 
             description: 'Competitividade global no século XXI',
-            purchaseLink: 'https://www.amazon.com.br/Trading-Up-Brasil-tornar-pot%C3%AAncia/dp/8501117420'
+            purchaseLink: 'https://www.amazon.com.br/Trading-Up-Brasil-tornar-pot%C3%AAncia/dp/8501117420',
+            cover: 'https://m.media-amazon.com/images/I/41XyH+JYZRL._SY344_BO1,204,203,200_.jpg'
         }
     ];
 
@@ -175,13 +193,18 @@ export default function Website() {
                         <Badge variant="outline" className="ml-2 text-xs border-[#B8860B] text-[#B8860B]">BETA</Badge>
                     </div>
                     <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setLang(lang === 'pt' ? 'en' : 'pt')}
-                            className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors text-sm font-medium"
+                        <select
+                            value={lang}
+                            onChange={(e) => {
+                                setLang(e.target.value);
+                                localStorage.setItem('troyjo_lang', e.target.value);
+                            }}
+                            className="px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors text-sm font-medium bg-white"
                         >
-                            <Globe className="w-4 h-4" />
-                            {lang === 'pt' ? 'EN' : 'PT'}
-                        </button>
+                            {supportedLangs.map(l => (
+                                <option key={l} value={l}>{langNames[l]}</option>
+                            ))}
+                        </select>
                         <Link to={createPageUrl('Home')}>
                             <Button className="bg-[#002D62] hover:bg-[#001d42]">
                                 {text.accessTwin}
@@ -418,7 +441,17 @@ export default function Website() {
                         </h2>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {books.map((book, idx) => (
-                                <Card key={idx} className="hover:shadow-lg hover:border-[#8B1538]/30 transition-all group">
+                                <Card key={idx} className="hover:shadow-lg hover:border-[#8B1538]/30 transition-all group overflow-hidden">
+                                    {book.cover && (
+                                        <div className="aspect-[3/4] overflow-hidden bg-gray-100">
+                                            <img
+                                                src={book.cover}
+                                                alt={book.title}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                onError={(e) => e.target.style.display = 'none'}
+                                            />
+                                        </div>
+                                    )}
                                     <CardHeader>
                                         <div className="flex items-start justify-between">
                                             <CardTitle className="text-lg text-[#002D62]">{book.title}</CardTitle>

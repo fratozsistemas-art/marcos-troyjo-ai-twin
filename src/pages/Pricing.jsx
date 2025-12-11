@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Zap, Crown, Building2, ArrowLeft } from 'lucide-react';
+import { Check, Zap, Crown, Building2, Users, GraduationCap, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEmailVerification } from '@/components/subscription/VerificationGate';
 import UpgradeRequestForm from '@/components/subscription/UpgradeRequestForm';
@@ -32,9 +32,31 @@ const PLANS = {
             }
         },
         {
+            id: 'student',
+            name: 'Estudante',
+            price: 'R$ 97',
+            period: '/mês',
+            description: 'Para estudantes e acadêmicos',
+            icon: GraduationCap,
+            badge: 'Desconto 75%',
+            features: [
+                '20 consultas/mês',
+                '10 artigos gerados/mês',
+                'Análise de documentos (50/mês)',
+                'Acesso a dashboards',
+                'Modo Professor otimizado',
+                'Suporte por email'
+            ],
+            limits: {
+                consultations_per_month: 20,
+                articles_per_month: 10,
+                documents_per_month: 50
+            }
+        },
+        {
             id: 'pro',
             name: 'Profissional',
-            price: 'R$ 497',
+            price: 'R$ 397',
             period: '/mês',
             description: 'Para profissionais e analistas',
             icon: Crown,
@@ -55,11 +77,34 @@ const PLANS = {
             }
         },
         {
+            id: 'teams',
+            name: 'Times',
+            price: 'R$ 1.497',
+            period: '/mês',
+            description: 'Para equipes (até 10 usuários)',
+            icon: Users,
+            features: [
+                '150 consultas/mês (compartilhadas)',
+                '60 artigos gerados/mês',
+                'Análise ilimitada de documentos',
+                'Workspace colaborativo',
+                'Gestão de usuários',
+                'Analytics de time',
+                'Suporte prioritário',
+                'Onboarding dedicado'
+            ],
+            limits: {
+                consultations_per_month: 150,
+                articles_per_month: 60,
+                documents_per_month: -1
+            }
+        },
+        {
             id: 'enterprise',
             name: 'Enterprise',
             price: 'Sob consulta',
             period: '',
-            description: 'Para organizações',
+            description: 'Para grandes organizações',
             icon: Building2,
             features: [
                 'Consultas ilimitadas',
@@ -99,9 +144,31 @@ const PLANS = {
             }
         },
         {
+            id: 'student',
+            name: 'Student',
+            price: '$19',
+            period: '/month',
+            description: 'For students and academics',
+            icon: GraduationCap,
+            badge: '75% off',
+            features: [
+                '20 consultations/month',
+                '10 articles generated/month',
+                'Document analysis (50/month)',
+                'Dashboard access',
+                'Optimized Professor mode',
+                'Email support'
+            ],
+            limits: {
+                consultations_per_month: 20,
+                articles_per_month: 10,
+                documents_per_month: 50
+            }
+        },
+        {
             id: 'pro',
             name: 'Professional',
-            price: '$97',
+            price: '$79',
             period: '/month',
             description: 'For professionals and analysts',
             icon: Crown,
@@ -122,11 +189,34 @@ const PLANS = {
             }
         },
         {
+            id: 'teams',
+            name: 'Teams',
+            price: '$299',
+            period: '/month',
+            description: 'For teams (up to 10 users)',
+            icon: Users,
+            features: [
+                '150 consultations/month (shared)',
+                '60 articles generated/month',
+                'Unlimited document analysis',
+                'Collaborative workspace',
+                'User management',
+                'Team analytics',
+                'Priority support',
+                'Dedicated onboarding'
+            ],
+            limits: {
+                consultations_per_month: 150,
+                articles_per_month: 60,
+                documents_per_month: -1
+            }
+        },
+        {
             id: 'enterprise',
             name: 'Enterprise',
             price: 'Custom',
             period: '',
-            description: 'For organizations',
+            description: 'For large organizations',
             icon: Building2,
             features: [
                 'Unlimited consultations',
@@ -279,7 +369,7 @@ export default function Pricing() {
                     <p className="text-xl text-[#333F48]">{text.subtitle}</p>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-8">
+                <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
                     {plans.map((plan) => {
                         const Icon = plan.icon;
                         const isCurrent = currentPlan === plan.id;
@@ -296,11 +386,11 @@ export default function Pricing() {
                                 <CardHeader>
                                     <div className="flex items-center gap-3 mb-2">
                                         <Icon className="w-8 h-8 text-[#002D62]" />
-                                        <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                                        <CardTitle className="text-xl">{plan.name}</CardTitle>
                                     </div>
                                     <CardDescription>{plan.description}</CardDescription>
                                     <div className="mt-4">
-                                        <span className="text-4xl font-bold text-[#002D62]">{plan.price}</span>
+                                        <span className="text-3xl font-bold text-[#002D62]">{plan.price}</span>
                                         <span className="text-[#333F48]/60">{plan.period}</span>
                                     </div>
                                 </CardHeader>
@@ -309,7 +399,7 @@ export default function Pricing() {
                                         {plan.features.map((feature, idx) => (
                                             <li key={idx} className="flex items-start gap-2">
                                                 <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                                                <span className="text-sm text-[#333F48]">{feature}</span>
+                                                <span className="text-xs text-[#333F48]">{feature}</span>
                                             </li>
                                         ))}
                                     </ul>
@@ -326,17 +416,17 @@ export default function Pricing() {
                                         >
                                             {text.startTrial}
                                         </Button>
-                                    ) : plan.id === 'enterprise' ? (
+                                    ) : (plan.id === 'enterprise' || plan.id === 'teams') ? (
                                         <Button 
                                             className="w-full bg-[#B8860B] hover:bg-[#9a7209]"
-                                            onClick={() => handleUpgradeRequest('enterprise')}
+                                            onClick={() => handleUpgradeRequest(plan.id)}
                                         >
                                             {text.contact}
                                         </Button>
                                     ) : (
                                         <Button 
                                             className="w-full bg-[#002D62] hover:bg-[#001d42]"
-                                            onClick={() => handleUpgradeRequest('pro')}
+                                            onClick={() => handleUpgradeRequest(plan.id)}
                                         >
                                             {text.upgrade}
                                         </Button>

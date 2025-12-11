@@ -391,7 +391,7 @@ export default function Dashboard() {
                     </motion.div>
                 </div>
 
-                {/* Fourth Row - Documents & Chat */}
+                {/* Fourth Row - Documents Side by Side */}
                 <div className="grid lg:grid-cols-2 gap-6">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.09 }} className="h-full">
                         <DocumentManager lang={lang} />

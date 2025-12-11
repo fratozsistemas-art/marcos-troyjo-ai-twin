@@ -166,9 +166,15 @@ export default function GeopoliticalRiskMonitor({ lang = 'pt' }) {
     const loadRisks = async () => {
         setLoading(true);
         try {
-            const data = await base44.entities.GeopoliticalRisk.filter({
+            const allRisks = await base44.entities.GeopoliticalRisk.filter({
                 active: true
-            }, '-severity', 10);
+            });
+            
+            // Sort by severity: critical > high > medium > low
+            const severityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
+            const data = allRisks
+                .sort((a, b) => (severityOrder[b.severity] || 0) - (severityOrder[a.severity] || 0))
+                .slice(0, 10);
             setRisks(data);
         } catch (error) {
             console.error('Error loading risks:', error);

@@ -14,10 +14,19 @@ export default function Welcome() {
     const [step, setStep] = useState(1);
     const [selectedInterests, setSelectedInterests] = useState([]);
     const [lang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
+    const [randomFeatures, setRandomFeatures] = useState([]);
+    const [skipOnboarding, setSkipOnboarding] = useState(false);
 
     useEffect(() => {
         checkIfAlreadyOnboarded();
+        selectRandomFeatures();
     }, []);
+
+    const selectRandomFeatures = () => {
+        const allFeats = t.allFeatures;
+        const shuffled = [...allFeats].sort(() => Math.random() - 0.5);
+        setRandomFeatures(shuffled.slice(0, 3));
+    };
 
     const checkIfAlreadyOnboarded = async () => {
         try {
@@ -37,17 +46,20 @@ export default function Welcome() {
             welcome: "Bem-vindo ao Troyjo Digital Twin",
             step1Title: "Vamos personalizar sua experiência",
             step1Desc: "Selecione suas áreas de interesse para receber análises mais relevantes",
-            step2Title: "Como funciona",
-            step2Desc: "Entenda os recursos principais do Digital Twin",
+            step2Title: "Conheça os Recursos",
+            step2Desc: "Explore as funcionalidades principais do Digital Twin",
             continue: "Continuar",
             finish: "Começar",
+            skipOnboarding: "Não mostrar novamente",
+            saveProfile: "Salvar Perfil",
+            profileSaved: "Perfil salvo! Você não verá esta tela novamente",
             interests: {
                 title: "Escolha seus interesses",
                 industries: "Indústrias",
                 regions: "Regiões",
                 topics: "Tópicos"
             },
-            features: [
+            allFeatures: [
                 {
                     icon: Sparkles,
                     title: "Adaptação de Persona",
@@ -62,6 +74,21 @@ export default function Welcome() {
                     icon: TrendingUp,
                     title: "Sugestões Inteligentes",
                     desc: "Receba recomendações proativas baseadas nos seus tópicos frequentes"
+                },
+                {
+                    icon: Globe,
+                    title: "Análise de Documentos",
+                    desc: "Upload e chat com documentos PDF, DOCX e TXT para análise contextualizada"
+                },
+                {
+                    icon: BarChart3,
+                    title: "Monitor de Riscos",
+                    desc: "Alertas geopolíticos personalizados por região e setor de interesse"
+                },
+                {
+                    icon: FileText,
+                    title: "Geração de Artigos",
+                    desc: "Crie policy papers e análises com a voz autêntica de Troyjo"
                 }
             ]
         },
@@ -69,17 +96,20 @@ export default function Welcome() {
             welcome: "Welcome to Troyjo Digital Twin",
             step1Title: "Let's personalize your experience",
             step1Desc: "Select your areas of interest to receive more relevant analyses",
-            step2Title: "How it works",
-            step2Desc: "Understand the main features of the Digital Twin",
+            step2Title: "Discover Features",
+            step2Desc: "Explore the Digital Twin's main functionalities",
             continue: "Continue",
             finish: "Start",
+            skipOnboarding: "Don't show again",
+            saveProfile: "Save Profile",
+            profileSaved: "Profile saved! You won't see this screen again",
             interests: {
                 title: "Choose your interests",
                 industries: "Industries",
                 regions: "Regions",
                 topics: "Topics"
             },
-            features: [
+            allFeatures: [
                 {
                     icon: Sparkles,
                     title: "Persona Adaptation",
@@ -94,6 +124,21 @@ export default function Welcome() {
                     icon: TrendingUp,
                     title: "Smart Suggestions",
                     desc: "Receive proactive recommendations based on your frequent topics"
+                },
+                {
+                    icon: Globe,
+                    title: "Document Analysis",
+                    desc: "Upload and chat with PDF, DOCX and TXT documents for contextualized analysis"
+                },
+                {
+                    icon: BarChart3,
+                    title: "Risk Monitor",
+                    desc: "Personalized geopolitical alerts by region and sector of interest"
+                },
+                {
+                    icon: FileText,
+                    title: "Article Generation",
+                    desc: "Create policy papers and analyses with Troyjo's authentic voice"
                 }
             ]
         }
@@ -130,7 +175,8 @@ export default function Welcome() {
                     interests: interestData,
                     dashboard_preferences: {
                         ...profiles[0].dashboard_preferences,
-                        onboarding_completed: true
+                        onboarding_completed: true,
+                        skip_onboarding: skipOnboarding
                     }
                 });
             } else {
@@ -139,6 +185,7 @@ export default function Welcome() {
                     interests: interestData,
                     dashboard_preferences: {
                         onboarding_completed: true,
+                        skip_onboarding: skipOnboarding,
                         layout: 'comfortable',
                         theme: 'light',
                         language: lang
@@ -249,7 +296,7 @@ export default function Welcome() {
                                 </div>
 
                                 <div className="space-y-3">
-                                    {t.features.map((feature, idx) => {
+                                    {randomFeatures.map((feature, idx) => {
                                         const Icon = feature.icon;
                                         return (
                                             <div key={idx} className="flex gap-4 p-4 rounded-lg border border-gray-100 bg-gray-50">
@@ -265,6 +312,19 @@ export default function Welcome() {
                                             </div>
                                         );
                                     })}
+                                </div>
+
+                                <div className="flex items-center gap-2 mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                    <input
+                                        type="checkbox"
+                                        id="skip-onboarding"
+                                        checked={skipOnboarding}
+                                        onChange={(e) => setSkipOnboarding(e.target.checked)}
+                                        className="w-4 h-4"
+                                    />
+                                    <label htmlFor="skip-onboarding" className="text-sm text-gray-700 cursor-pointer">
+                                        {t.skipOnboarding}
+                                    </label>
                                 </div>
 
                                 <div className="flex justify-between pt-4">

@@ -33,6 +33,7 @@ import CustomPersonaTraits from '@/components/persona/CustomPersonaTraits';
 import GeopoliticalRiskMonitor from '@/components/dashboard/GeopoliticalRiskMonitor';
 import UsageMeter from '@/components/subscription/UsageMeter';
 import IntelligenceResources from '@/components/dashboard/IntelligenceResources';
+import InterviewTranscriptManager from '@/components/interviews/InterviewTranscriptManager';
 
 const translations = {
     pt: {
@@ -389,6 +390,11 @@ export default function Dashboard() {
                 {/* Intelligence Resources */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.27 }}>
                     <IntelligenceResources lang={lang} />
+                </motion.div>
+
+                {/* Interview Transcripts RAG */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.29 }}>
+                    <InterviewTranscriptManager lang={lang} />
                 </motion.div>
 
                 {/* Third Row - Knowledge Hub Full Width */}

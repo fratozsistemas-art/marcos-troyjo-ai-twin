@@ -19,13 +19,56 @@ export default function Welcome() {
 
     useEffect(() => {
         checkIfAlreadyOnboarded();
-        selectRandomFeatures();
+        selectPersonalizedFeatures();
     }, []);
 
-    const selectRandomFeatures = () => {
-        const allFeats = t.allFeatures;
-        const shuffled = [...allFeats].sort(() => Math.random() - 0.5);
-        setRandomFeatures(shuffled.slice(0, 3));
+    const selectPersonalizedFeatures = async () => {
+        try {
+            const user = await base44.auth.me();
+            const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+            const subs = await base44.entities.Subscription.filter({ user_email: user.email });
+            
+            let userContext = '';
+            if (profiles.length > 0) {
+                const profile = profiles[0];
+                userContext = `
+                Interesses: ${JSON.stringify(profile.interests)}
+                Uso recente: ${JSON.stringify(subs[0]?.features_used || {})}
+                `;
+            }
+
+            const result = await base44.integrations.Core.InvokeLLM({
+                prompt: `Com base no perfil do usuário, selecione 3 features (dos 6 disponíveis) que seriam MAIS ÚTEIS para ele mas que ele ainda NÃO explorou ou explorou POUCO.
+
+Contexto do usuário:
+${userContext}
+
+Features disponíveis:
+1. Adaptação de Persona - AI ajusta estilo de comunicação
+2. Base de Conhecimento - Pensamento público de Marcos Troyjo
+3. Sugestões Inteligentes - Recomendações baseadas em tópicos frequentes
+4. Análise de Documentos - Upload e chat com PDFs/DOCX
+5. Monitor de Riscos - Alertas geopolíticos personalizados
+6. Geração de Artigos - Policy papers com voz autêntica
+
+Retorne os ÍNDICES (0-5) das 3 features mais relevantes e ainda não exploradas.`,
+                response_json_schema: {
+                    type: 'object',
+                    properties: {
+                        feature_indices: { type: 'array', items: { type: 'integer' } }
+                    }
+                }
+            });
+
+            const indices = result.feature_indices || [0, 1, 2];
+            const selected = indices.slice(0, 3).map(i => t.allFeatures[i]);
+            setRandomFeatures(selected);
+        } catch (error) {
+            console.error('Error selecting features:', error);
+            const allFeats = t.allFeatures;
+            const shuffled = [...allFeats].sort(() => Math.random() - 0.5);
+            setRandomFeatures(shuffled.slice(0, 3));
+        }
     };
 
     const checkIfAlreadyOnboarded = async () => {

@@ -16,7 +16,8 @@ import {
     Database,
     Shield,
     CreditCard,
-    Activity
+    Activity,
+    BookOpen
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -67,6 +68,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
         { label: t.dashboard, path: 'Dashboard', icon: LayoutDashboard },
         { label: t.systemHealth, path: 'SystemHealth', icon: Activity },
         { label: t.consultation, path: 'Consultation', icon: MessageSquare },
+        { label: lang === 'pt' ? 'Base de Conhecimento' : 'Knowledge Base', path: 'KnowledgeBase', icon: Database },
         { label: t.knowledgeHub, path: 'KnowledgeHub', icon: Database },
         { label: t.personas, path: 'PersonaManagement', icon: UserCog },
         { label: t.roleManagement, path: 'RoleManagement', icon: Shield },

@@ -81,11 +81,26 @@ Deno.serve(async (req) => {
 
 async function semanticSearch(query, chunks, maxResults, base44) {
     try {
+        // Get feedback for chunks to boost/penalize scores
+        const feedbackData = await base44.asServiceRole.entities.TranscriptFeedback.filter({
+            user_query: query
+        });
+        
+        const feedbackMap = {};
+        feedbackData.forEach(fb => {
+            const key = `${fb.transcript_id}_${fb.chunk_id}`;
+            if (!feedbackMap[key]) {
+                feedbackMap[key] = [];
+            }
+            feedbackMap[key].push(fb);
+        });
+
         // Use LLM to rank chunks by relevance
         const chunksPreview = chunks.slice(0, 50).map((c, i) => ({
             index: i,
             text: c.text.substring(0, 500),
-            topic: c.topic
+            topic: c.topic,
+            historical_feedback: feedbackMap[`${c.transcript_id}_${c.chunk_id}`]?.length || 0
         }));
 
         const prompt = `Query: "${query}"
@@ -96,11 +111,12 @@ Considere:
 - Conceitos e frameworks Troyjo relacionados
 - Contexto geopolítico/econômico
 - Neologismos e termos técnicos
+- Feedback histórico (trechos com mais feedback positivo devem ter score mais alto)
 
 Trechos:
 ${JSON.stringify(chunksPreview, null, 2)}
 
-Retorne os ${maxResults} trechos mais relevantes com score 0-1.`;
+Retorne os ${maxResults} trechos mais relevantes com score 0-1 e frases exatas que correspondem à query.`;
 
         const result = await base44.integrations.Core.InvokeLLM({
             prompt,
@@ -114,7 +130,11 @@ Retorne os ${maxResults} trechos mais relevantes com score 0-1.`;
                             properties: {
                                 index: { type: "number" },
                                 relevance_score: { type: "number" },
-                                reason: { type: "string" }
+                                reason: { type: "string" },
+                                matching_phrases: {
+                                    type: "array",
+                                    items: { type: "string" }
+                                }
                             }
                         }
                     }
@@ -122,16 +142,25 @@ Retorne os ${maxResults} trechos mais relevantes com score 0-1.`;
             }
         });
 
-        // Map back to full chunks
-        return result.ranked_chunks.map(ranked => ({
-            ...chunks[ranked.index],
-            relevance_score: ranked.relevance_score,
-            relevance_reason: ranked.reason
-        }));
+        // Map back to full chunks with feedback boost
+        return result.ranked_chunks.map(ranked => {
+            const chunk = chunks[ranked.index];
+            const key = `${chunk.transcript_id}_${chunk.chunk_id}`;
+            const feedback = feedbackMap[key] || [];
+            const avgFeedback = feedback.length > 0 
+                ? feedback.reduce((sum, f) => sum + f.relevance_score, 0) / feedback.length / 5
+                : 0;
+            
+            return {
+                ...chunk,
+                relevance_score: Math.min(ranked.relevance_score + (avgFeedback * 0.1), 1),
+                relevance_reason: ranked.reason,
+                matching_phrases: ranked.matching_phrases || []
+            };
+        });
 
     } catch (error) {
         console.error('Error in semantic search:', error);
-        // Fallback to keyword matching
         return keywordFallback(query, chunks, maxResults);
     }
 }

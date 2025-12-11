@@ -147,7 +147,7 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
         }
     };
 
-    const analyzeInteraction = async (message) => {
+    const analyzeInteraction = async (message, conversationId) => {
         if (!message || message.role !== 'user') return;
 
         const newHistory = [...messageHistory, message].slice(-10);
@@ -157,6 +157,8 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
         
         // If manual mode is set, keep it; otherwise use auto-detection
         const detectedMode = MODE_MAP[analysis.level] || 'tecnico';
+        const previousMode = userProfile.mode;
+        const previousTechnicality = userProfile.technicality;
         
         const newProfile = {
             level: analysis.level,
@@ -173,12 +175,58 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
 
         setUserProfile(newProfile);
         
+        // Track interaction history if using custom profile
+        if (activeProfile && conversationId) {
+            await trackInteractionHistory(
+                activeProfile.id,
+                conversationId,
+                analysis,
+                previousMode,
+                previousTechnicality
+            );
+        }
+        
         // Save persona memory every 5 interactions
         if (newProfile.interactions % 5 === 0) {
             await savePersonaMemory(newProfile.mode, newProfile.technicality);
         }
 
         return newProfile;
+    };
+
+    const trackInteractionHistory = async (profileId, conversationId, analysis, previousMode, previousTechnicality) => {
+        try {
+            const adaptations = [];
+            if (userProfile.mode !== previousMode) {
+                adaptations.push({
+                    type: 'mode',
+                    from_value: previousMode,
+                    to_value: userProfile.mode
+                });
+            }
+            if (userProfile.technicality !== previousTechnicality) {
+                adaptations.push({
+                    type: 'technicality',
+                    from_value: String(previousTechnicality),
+                    to_value: String(userProfile.technicality)
+                });
+            }
+
+            await base44.entities.PersonaInteractionHistory.create({
+                persona_profile_id: profileId,
+                conversation_id: conversationId,
+                interaction_date: new Date().toISOString(),
+                topics_discussed: analysis.keywords || [],
+                adaptations_made: adaptations,
+                context_effectiveness: {
+                    technicality_match: analysis.confidence / 100,
+                    tone_match: 0.85,
+                    depth_match: analysis.complexity / 100
+                }
+            });
+        } catch (error) {
+            console.error('Error tracking interaction history:', error);
+        }
     };
 
     const getPersonaInstructions = () => {
@@ -281,12 +329,29 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
         }
     };
 
-    const getContextualPrompt = () => {
+    const getContextualPrompt = async (query) => {
         const persona = getPersonaInstructions();
         const { level, confidence, interactions, manualMode, activeProfileId } = userProfile;
 
         let modeSource;
         let profileInstructions = '';
+        
+        // Get geopolitical risk alerts
+        let riskAlerts = '';
+        try {
+            const riskResponse = await base44.functions.invoke('getRiskAlertsForQuery', {
+                query: query || '',
+                context: `Mode: ${userProfile.mode}, Level: ${level}`
+            });
+            
+            if (riskResponse.data.relevant_risks?.length > 0) {
+                riskAlerts = `\n\n⚠️ ALERTAS GEOPOLÍTICOS RELEVANTES:\n${riskResponse.data.relevant_risks.map(r => 
+                    `- ${r.title} (${r.severity.toUpperCase()}): ${r.summary}\n  Integração sugerida: ${r.suggested_integration}`
+                ).join('\n')}\n\nAjuste de contexto: ${riskResponse.data.context_adjustment}`;
+            }
+        } catch (error) {
+            console.error('Error fetching risk alerts:', error);
+        }
         
         if (activeProfile) {
             modeSource = `PERFIL PERSONALIZADO: ${activeProfile.name}`;
@@ -319,7 +384,6 @@ ${activeProfile.context_triggers?.length > 0 ? `GATILHOS DE CONTEXTO:\n${activeP
                 : `AUTO (detectado: ${level})`;
         }
 
-        // Build custom traits instruction
         const customTraitsText = customTraits.length > 0 
             ? `\nTRAÇOS PERSONALIZADOS DO USUÁRIO:\n${customTraits.map(t => `- ${t.name} (intensidade: ${t.intensity}/10)`).join('\n')}\n`
             : '';
@@ -338,6 +402,7 @@ Instruções contextuais:
 - Exemplos: ${persona.examples}
 `}
 ${customTraitsText}
+${riskAlerts}
 ${manualMode && !activeProfile ? `MODO MANUAL ATIVO: Usuário selecionou explicitamente modo ${manualMode.toUpperCase()}. Mantenha consistência rigorosa com este modo.` : ''}
 ${activeProfile ? `PERFIL PERSONALIZADO ATIVO: Siga rigorosamente as instruções e preferências definidas no perfil "${activeProfile.name}".` : ''}
 ${!manualMode && !activeProfile && confidence < 50 ? 'ATENÇÃO: Baixa confiança - mantenha flexibilidade e observe próximas interações.' : ''}

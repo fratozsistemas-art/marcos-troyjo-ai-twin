@@ -30,6 +30,7 @@ import PersonaAnalytics from '@/components/dashboard/PersonaAnalytics';
 import WelcomeFlow from '@/components/onboarding/WelcomeFlow';
 import TopicDeepDive from '@/components/topics/TopicDeepDive';
 import CustomPersonaTraits from '@/components/persona/CustomPersonaTraits';
+import PersonaHistoryViewer from '@/components/persona/PersonaHistoryViewer';
 import GeopoliticalRiskMonitor from '@/components/dashboard/GeopoliticalRiskMonitor';
 import UsageMeter from '@/components/subscription/UsageMeter';
 import IntelligenceResources from '@/components/dashboard/IntelligenceResources';
@@ -464,13 +465,16 @@ export default function Dashboard() {
                         <InsightsSection lang={lang} />
                         </motion.div>
 
-                {/* Eighth Row - Persona Settings & Custom Traits */}
-                <div className="grid lg:grid-cols-2 gap-6">
+                {/* Eighth Row - Persona Settings, Custom Traits & History */}
+                <div className="grid lg:grid-cols-3 gap-6">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.44 }} className="h-full">
                         <PersonaSettings lang={lang} />
                     </motion.div>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.46 }} className="h-full">
                         <CustomPersonaTraits lang={lang} />
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.48 }} className="h-full">
+                        <PersonaHistoryViewer lang={lang} />
                     </motion.div>
                 </div>
 

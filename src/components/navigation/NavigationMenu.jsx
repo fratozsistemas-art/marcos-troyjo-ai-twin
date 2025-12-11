@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { base44 } from '@/api/base44Client';
 import { 
     Home, 
     LayoutDashboard, 
@@ -23,6 +24,7 @@ import { cn } from '@/lib/utils';
 
 export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
     const location = useLocation();
+    const [userRole, setUserRole] = useState('external');
 
     const translations = {
         pt: {
@@ -63,24 +65,53 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
 
     const t = translations[lang];
 
-    const menuItems = [
-        { label: t.home, path: 'Website', icon: Home },
-        { label: t.dashboard, path: 'Dashboard', icon: LayoutDashboard },
-        { label: t.systemHealth, path: 'SystemHealth', icon: Activity },
-        { label: t.consultation, path: 'Consultation', icon: MessageSquare },
-        { label: lang === 'pt' ? 'Base de Conhecimento' : 'Knowledge Base', path: 'KnowledgeBase', icon: Database },
-        { label: t.knowledgeHub, path: 'KnowledgeHub', icon: Database },
-        { label: t.personas, path: 'PersonaManagement', icon: UserCog },
-        { label: t.roleManagement, path: 'RoleManagement', icon: Shield },
-        { label: t.pricing, path: 'Pricing', icon: CreditCard },
-        { label: t.agentUI, path: 'AgentUI', icon: Bot },
-        { label: t.assets, path: 'Assets', icon: FolderOpen },
-        { label: t.metaphors, path: 'MetaphorsGenerator', icon: Sparkles },
-        { label: t.interview, path: 'InterviewPrep', icon: MessageCircle },
-        { label: t.article, path: 'ArticleGenerator', icon: FileText },
-        { label: t.assessment, path: 'DocumentAssessment', icon: FileCheck },
-        { label: t.history, path: 'History', icon: History }
+    useEffect(() => {
+        checkUserRole();
+    }, []);
+
+    const checkUserRole = async () => {
+        try {
+            const isAuth = await base44.auth.isAuthenticated();
+            if (!isAuth) {
+                setUserRole('external');
+                return;
+            }
+
+            const user = await base44.auth.me();
+            const email = user.email.toLowerCase();
+            
+            // Internal users: caio.vision, fratoz, troyjo domains or admin role
+            const isInternal = email.includes('@caio') || 
+                              email.includes('@fratoz') || 
+                              email.includes('@troyjo') ||
+                              user.role === 'admin';
+            
+            setUserRole(isInternal ? 'internal' : 'external');
+        } catch (error) {
+            setUserRole('external');
+        }
+    };
+
+    const allMenuItems = [
+        { label: t.home, path: 'Website', icon: Home, roles: ['external', 'internal'] },
+        { label: t.dashboard, path: 'Dashboard', icon: LayoutDashboard, roles: ['external', 'internal'] },
+        { label: t.consultation, path: 'Consultation', icon: MessageSquare, roles: ['external', 'internal'] },
+        { label: lang === 'pt' ? 'Base de Conhecimento' : 'Knowledge Base', path: 'KnowledgeBase', icon: BookOpen, roles: ['external', 'internal'] },
+        { label: t.pricing, path: 'Pricing', icon: CreditCard, roles: ['external', 'internal'] },
+        { label: t.systemHealth, path: 'SystemHealth', icon: Activity, roles: ['internal'] },
+        { label: t.knowledgeHub, path: 'KnowledgeHub', icon: Database, roles: ['internal'] },
+        { label: t.personas, path: 'PersonaManagement', icon: UserCog, roles: ['internal'] },
+        { label: t.roleManagement, path: 'RoleManagement', icon: Shield, roles: ['internal'] },
+        { label: t.agentUI, path: 'AgentUI', icon: Bot, roles: ['internal'] },
+        { label: t.assets, path: 'Assets', icon: FolderOpen, roles: ['internal'] },
+        { label: t.metaphors, path: 'MetaphorsGenerator', icon: Sparkles, roles: ['internal'] },
+        { label: t.interview, path: 'InterviewPrep', icon: MessageCircle, roles: ['internal'] },
+        { label: t.article, path: 'ArticleGenerator', icon: FileText, roles: ['internal'] },
+        { label: t.assessment, path: 'DocumentAssessment', icon: FileCheck, roles: ['internal'] },
+        { label: t.history, path: 'History', icon: History, roles: ['internal'] }
     ];
+
+    const menuItems = allMenuItems.filter(item => item.roles.includes(userRole));
 
     const isActive = (path) => {
         const currentPath = location.pathname.split('/').pop();

@@ -33,6 +33,8 @@ import CustomPersonaTraits from '@/components/persona/CustomPersonaTraits';
 import PersonaHistoryViewer from '@/components/persona/PersonaHistoryViewer';
 import GeopoliticalAlertPanel from '@/components/alerts/GeopoliticalAlertPanel';
 import PersonaSuggestionPanel from '@/components/persona/PersonaSuggestionPanel';
+import PersonaTraining from '@/components/persona/PersonaTraining';
+import InterviewSimulation from '@/components/persona/InterviewSimulation';
 import MultiModalRAGInterface from '@/components/interviews/MultiModalRAGInterface';
 import GeopoliticalRiskMonitor from '@/components/dashboard/GeopoliticalRiskMonitor';
 import UsageMeter from '@/components/subscription/UsageMeter';
@@ -388,6 +390,16 @@ export default function Dashboard() {
                     </motion.div>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="h-full">
                         <PersonaSuggestionPanel lang={lang} />
+                    </motion.div>
+                </div>
+
+                {/* Persona Training & Interview Simulation */}
+                <div className="grid lg:grid-cols-2 gap-6">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="h-full">
+                        <PersonaTraining lang={lang} />
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.09 }} className="h-full">
+                        <InterviewSimulation lang={lang} />
                     </motion.div>
                 </div>
 

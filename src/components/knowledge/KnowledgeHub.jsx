@@ -5,6 +5,7 @@ import VocabularyManager from './VocabularyManager';
 import ConceptEvolutionTracker from './ConceptEvolutionTracker';
 import HUAValidator from './HUAValidator';
 import DocumentLibrary from './DocumentLibrary';
+import ArticleAnalyzer from './ArticleAnalyzer';
 
 export default function KnowledgeHub({ lang = 'pt' }) {
     const translations = {

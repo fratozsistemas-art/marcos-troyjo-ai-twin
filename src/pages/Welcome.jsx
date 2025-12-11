@@ -147,7 +147,7 @@ export default function Welcome() {
     const interestOptions = {
         industries: ['Agronegócio', 'Energia', 'Tecnologia', 'Finanças', 'Infraestrutura', 'Defesa'],
         regions: ['Brasil', 'China', 'Estados Unidos', 'União Europeia', 'América Latina', 'BRICS'],
-        topics: ['BRICS', 'Comércio Internacional', 'Competitividade', 'Diplomacia Econômica', 'IA Militar', 'Bioeconomia']
+        topics: ['BRICS', 'Comércio Internacional', 'Competitividade', 'Diplomacia Econômica', 'Inteligência Artificial', 'Bioeconomia']
     };
 
     const toggleInterest = (interest) => {

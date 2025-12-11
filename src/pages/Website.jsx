@@ -38,7 +38,7 @@ export default function Website() {
 
     const t = {
         pt: {
-            title: 'Líder Global de Pensamento 24/7',
+            title: 'Formador de Opinião Global 24/7',
             subtitle: 'De "desglobalização" (2015) a "Novo ESG" (2025): uma década de inovação conceitual',
             tagline: 'Marcos Troyjo · Economista · Ex-Presidente do Banco do BRICS',
             about: 'Expertise Geopolítica de Classe Mundial',
@@ -221,7 +221,7 @@ export default function Website() {
                                 </div>
                                 <h1 className="text-5xl md:text-6xl font-bold text-[#002D62] leading-tight mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                                     {lang === 'pt' ? (
-                                        <>Líder Global de Pensamento <span className="text-[#D4AF37]">24/7</span></>
+                                        <>Formador de Opinião Global <span className="text-[#D4AF37]">24/7</span></>
                                     ) : (
                                         <>Global Thought Leader <span className="text-[#D4AF37]">24/7</span></>
                                     )}

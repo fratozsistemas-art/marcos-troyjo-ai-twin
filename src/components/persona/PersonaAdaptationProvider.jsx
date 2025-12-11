@@ -37,12 +37,103 @@ export function PersonaAdaptationProvider({ children, conversationId }) {
     const [customTraits, setCustomTraits] = useState([]);
     const [customProfiles, setCustomProfiles] = useState([]);
     const [activeProfile, setActiveProfile] = useState(null);
+    const [riskBasedSuggestion, setRiskBasedSuggestion] = useState(null);
+    const [monitoringRisks, setMonitoringRisks] = useState(false);
 
     useEffect(() => {
         loadPersonaMemory();
         loadCustomTraits();
         loadCustomProfiles();
+        startRiskMonitoring();
     }, []);
+
+    const startRiskMonitoring = () => {
+        // Monitor risks every 5 minutes
+        const checkRisks = async () => {
+            if (monitoringRisks) return;
+            setMonitoringRisks(true);
+            
+            try {
+                const response = await base44.functions.invoke('monitorGeopoliticalRisks', {
+                    user_context: { 
+                        current_mode: userProfile.mode,
+                        technicality: userProfile.technicality,
+                        keywords: userProfile.keywords
+                    },
+                    persona_mode: userProfile.mode
+                });
+
+                if (response.data.has_alerts && response.data.persona_adjustment) {
+                    await analyzeSuggestions(response.data);
+                }
+            } catch (error) {
+                console.error('Error monitoring risks:', error);
+            } finally {
+                setMonitoringRisks(false);
+            }
+        };
+
+        checkRisks();
+        const interval = setInterval(checkRisks, 5 * 60 * 1000);
+        return () => clearInterval(interval);
+    };
+
+    const analyzeSuggestions = async (riskData) => {
+        try {
+            const prompt = `Analise se os seguintes alertas geopolíticos requerem adaptação de persona:
+
+ALERTAS: ${JSON.stringify(riskData.risks, null, 2)}
+SUGESTÃO DE AJUSTE: ${riskData.persona_adjustment}
+
+PERFIL ATUAL:
+- Modo: ${userProfile.mode}
+- Tecnicidade: ${userProfile.technicality}%
+- Contexto: ${userProfile.keywords?.join(', ')}
+
+DECISÃO:
+Recomende se é necessário criar uma persona temporária ou ajustar a existente.
+Considere: urgência dos riscos, divergência do contexto atual, necessidade de foco estratégico.`;
+
+            const analysis = await base44.integrations.Core.InvokeLLM({
+                prompt,
+                response_json_schema: {
+                    type: "object",
+                    properties: {
+                        needs_adjustment: { type: "boolean" },
+                        adjustment_type: { 
+                            type: "string",
+                            enum: ["temporary_profile", "mode_shift", "technicality_adjust", "none"]
+                        },
+                        suggested_persona: {
+                            type: "object",
+                            properties: {
+                                name: { type: "string" },
+                                description: { type: "string" },
+                                mode_adjustment: { type: "string" },
+                                technicality_adjustment: { type: "number" },
+                                focus_areas: {
+                                    type: "array",
+                                    items: { type: "string" }
+                                },
+                                duration: { type: "string" }
+                            }
+                        },
+                        reasoning: { type: "string" }
+                    }
+                }
+            });
+
+            if (analysis.needs_adjustment && analysis.adjustment_type !== "none") {
+                setRiskBasedSuggestion({
+                    ...analysis,
+                    risk_context: riskData.risks,
+                    timestamp: new Date().toISOString()
+                });
+            }
+        } catch (error) {
+            console.error('Error analyzing suggestions:', error);
+        }
+    };
 
     const loadPersonaMemory = async () => {
         try {

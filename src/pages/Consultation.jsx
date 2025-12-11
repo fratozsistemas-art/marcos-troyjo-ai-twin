@@ -13,6 +13,7 @@ import ConversationSidebar from '@/components/consultation/ConversationSidebar';
 import { PersonaAdaptationProvider, usePersonaAdaptation } from '@/components/persona/PersonaAdaptationProvider';
 import PersonaIndicator from '@/components/persona/PersonaIndicator';
 import PersonaSelector from '@/components/persona/PersonaSelector';
+import RiskBasedPersonaSuggestion from '@/components/persona/RiskBasedPersonaSuggestion';
 import ConversationExport from '@/components/consultation/ConversationExport';
 import { logTopics } from '@/components/intelligence/TopicTracker';
 import SubscriptionGate, { useSubscription } from '@/components/subscription/SubscriptionGate';
@@ -558,6 +559,9 @@ function ConsultationInner() {
                     open={personaSelectorOpen}
                     onOpenChange={setPersonaSelectorOpen}
                 />
+
+                {/* Risk-Based Persona Suggestion */}
+                <RiskBasedPersonaSuggestion />
                 </div>
                 </div>
                 );

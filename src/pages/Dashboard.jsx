@@ -31,6 +31,9 @@ import WelcomeFlow from '@/components/onboarding/WelcomeFlow';
 import TopicDeepDive from '@/components/topics/TopicDeepDive';
 import CustomPersonaTraits from '@/components/persona/CustomPersonaTraits';
 import PersonaHistoryViewer from '@/components/persona/PersonaHistoryViewer';
+import GeopoliticalAlertPanel from '@/components/alerts/GeopoliticalAlertPanel';
+import PersonaSuggestionPanel from '@/components/persona/PersonaSuggestionPanel';
+import MultiModalRAGInterface from '@/components/interviews/MultiModalRAGInterface';
 import GeopoliticalRiskMonitor from '@/components/dashboard/GeopoliticalRiskMonitor';
 import UsageMeter from '@/components/subscription/UsageMeter';
 import IntelligenceResources from '@/components/dashboard/IntelligenceResources';
@@ -368,6 +371,11 @@ export default function Dashboard() {
                     <UsageMeter lang={lang} />
                 </motion.div>
 
+                {/* Geopolitical Alerts */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+                    <GeopoliticalAlertPanel userContext={{}} personaMode="tecnico" />
+                </motion.div>
+
                 {/* First Row - Profile Settings Full Width */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                     <ProfileSettings lang={lang} />
@@ -396,6 +404,11 @@ export default function Dashboard() {
                 {/* Interview Transcripts RAG */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.29 }}>
                     <InterviewTranscriptManager lang={lang} />
+                </motion.div>
+
+                {/* Multi-Modal RAG Interface */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.31 }}>
+                    <MultiModalRAGInterface lang={lang} />
                 </motion.div>
 
                 {/* Third Row - Knowledge Hub Full Width */}
@@ -465,15 +478,21 @@ export default function Dashboard() {
                         <InsightsSection lang={lang} />
                         </motion.div>
 
-                {/* Eighth Row - Persona Settings, Custom Traits & History */}
-                <div className="grid lg:grid-cols-3 gap-6">
+                {/* Eighth Row - Persona Settings, Custom Traits, History & AI Suggestions */}
+                <div className="grid lg:grid-cols-2 gap-6">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.44 }} className="h-full">
                         <PersonaSettings lang={lang} />
                     </motion.div>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.46 }} className="h-full">
+                        <PersonaSuggestionPanel lang={lang} />
+                    </motion.div>
+                </div>
+
+                <div className="grid lg:grid-cols-2 gap-6">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.48 }} className="h-full">
                         <CustomPersonaTraits lang={lang} />
                     </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.48 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="h-full">
                         <PersonaHistoryViewer lang={lang} />
                     </motion.div>
                 </div>

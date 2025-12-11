@@ -381,12 +381,22 @@ export default function Dashboard() {
                     <ProfileSettings lang={lang} />
                 </motion.div>
 
-                {/* Second Row - Documents & Chat */}
+                {/* Second Row - Custom Traits & AI Suggestions */}
                 <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="h-full">
+                        <CustomPersonaTraits lang={lang} />
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="h-full">
+                        <PersonaSuggestionPanel lang={lang} />
+                    </motion.div>
+                </div>
+
+                {/* Fourth Row - Documents & Chat */}
+                <div className="grid lg:grid-cols-2 gap-6">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.09 }} className="h-full">
                         <DocumentManager lang={lang} />
                     </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.11 }} className="h-full">
                         <DocumentChat lang={lang} />
                     </motion.div>
                 </div>
@@ -478,21 +488,12 @@ export default function Dashboard() {
                         <InsightsSection lang={lang} />
                         </motion.div>
 
-                {/* Eighth Row - Persona Settings, Custom Traits, History & AI Suggestions */}
+                {/* Eighth Row - Persona Settings & History */}
                 <div className="grid lg:grid-cols-2 gap-6">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.44 }} className="h-full">
                         <PersonaSettings lang={lang} />
                     </motion.div>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.46 }} className="h-full">
-                        <PersonaSuggestionPanel lang={lang} />
-                    </motion.div>
-                </div>
-
-                <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.48 }} className="h-full">
-                        <CustomPersonaTraits lang={lang} />
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="h-full">
                         <PersonaHistoryViewer lang={lang} />
                     </motion.div>
                 </div>

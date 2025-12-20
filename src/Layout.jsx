@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Globe } from 'lucide-react';
 import NavigationMenu from '@/components/navigation/NavigationMenu';
@@ -9,8 +12,47 @@ import { Toaster } from 'sonner';
 import { toast } from 'sonner';
 
 export default function Layout({ children, currentPageName }) {
+    const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
+    const [checkingOnboarding, setCheckingOnboarding] = useState(true);
+
+    useEffect(() => {
+        checkOnboarding();
+    }, []);
+
+    const checkOnboarding = async () => {
+        // Skip check for public pages
+        const publicPages = ['Home', 'LandingPage', 'Welcome', 'PrivacyPolicy', 'TermsOfService'];
+        if (publicPages.includes(currentPageName)) {
+            setCheckingOnboarding(false);
+            return;
+        }
+
+        try {
+            const isAuth = await base44.auth.isAuthenticated();
+            if (!isAuth) {
+                setCheckingOnboarding(false);
+                return;
+            }
+
+            const user = await base44.auth.me();
+            const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+            
+            if (profiles.length === 0 || !profiles[0].dashboard_preferences?.onboarding_completed) {
+                navigate(createPageUrl('Welcome'));
+                return;
+            }
+        } catch (error) {
+            console.error('Error checking onboarding:', error);
+        } finally {
+            setCheckingOnboarding(false);
+        }
+    };
+
+    if (checkingOnboarding && !['Home', 'LandingPage', 'Welcome', 'PrivacyPolicy', 'TermsOfService'].includes(currentPageName)) {
+        return null;
+    }
 
     const toggleLanguage = () => {
         const newLang = lang === 'pt' ? 'en' : 'pt';

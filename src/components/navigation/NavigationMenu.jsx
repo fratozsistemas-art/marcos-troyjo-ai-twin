@@ -18,7 +18,8 @@ import {
     Shield,
     CreditCard,
     Activity,
-    BookOpen
+    BookOpen,
+    BarChart3
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -95,6 +96,7 @@ export default function NavigationMenu({ lang = 'pt', collapsed = false }) {
     const allMenuItems = [
         { label: t.home, path: 'Website', icon: Home, roles: ['external', 'internal'] },
         { label: t.dashboard, path: 'Dashboard', icon: LayoutDashboard, roles: ['external', 'internal'] },
+        { label: lang === 'pt' ? 'Analytics' : 'Analytics', path: 'AnalyticsDashboard', icon: BarChart3, roles: ['external', 'internal'] },
         { label: t.consultation, path: 'Consultation', icon: MessageSquare, roles: ['external', 'internal'] },
         { label: lang === 'pt' ? 'Base de Conhecimento' : 'Knowledge Base', path: 'KnowledgeBase', icon: BookOpen, roles: ['external', 'internal'] },
         { label: t.pricing, path: 'Pricing', icon: CreditCard, roles: ['external', 'internal'] },

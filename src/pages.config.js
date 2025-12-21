@@ -28,6 +28,7 @@ import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import KnowledgeArticle from './pages/KnowledgeArticle';
 import KnowledgeAdmin from './pages/KnowledgeAdmin';
 import MLAdmin from './pages/MLAdmin';
+import PublicWebsite from './pages/PublicWebsite';
 import __Layout from './Layout.jsx';
 
 
@@ -62,6 +63,7 @@ export const PAGES = {
     "KnowledgeArticle": KnowledgeArticle,
     "KnowledgeAdmin": KnowledgeAdmin,
     "MLAdmin": MLAdmin,
+    "PublicWebsite": PublicWebsite,
 }
 
 export const pagesConfig = {

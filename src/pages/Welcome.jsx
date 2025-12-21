@@ -19,9 +19,31 @@ export default function Welcome() {
     const [skipOnboarding, setSkipOnboarding] = useState(false);
 
     useEffect(() => {
-        checkIfAlreadyOnboarded();
-        selectPersonalizedFeatures();
+        checkAuthAndOnboarding();
     }, []);
+
+    const checkAuthAndOnboarding = async () => {
+        try {
+            const isAuth = await base44.auth.isAuthenticated();
+            if (!isAuth) {
+                navigate(createPageUrl('Home'));
+                return;
+            }
+
+            const user = await base44.auth.me();
+            const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+            
+            if (profiles.length > 0 && profiles[0].dashboard_preferences?.onboarding_completed) {
+                navigate(createPageUrl('Dashboard'));
+                return;
+            }
+
+            selectPersonalizedFeatures();
+        } catch (error) {
+            console.error('Error checking auth:', error);
+            navigate(createPageUrl('Home'));
+        }
+    };
 
     const selectPersonalizedFeatures = async () => {
         try {
@@ -72,18 +94,7 @@ Retorne um array de 6 ÍNDICES (0-5) ordenado da feature mais útil/relevante pa
         }
     };
 
-    const checkIfAlreadyOnboarded = async () => {
-        try {
-            const user = await base44.auth.me();
-            const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
-            
-            if (profiles.length > 0 && profiles[0].dashboard_preferences?.onboarding_completed) {
-                navigate(createPageUrl('Dashboard'));
-            }
-        } catch (error) {
-            console.error('Error checking onboarding:', error);
-        }
-    };
+
 
     const t = {
         pt: {
@@ -191,10 +202,10 @@ Retorne um array de 6 ÍNDICES (0-5) ordenado da feature mais útil/relevante pa
     }[lang];
 
     const interestOptions = {
-        industries: ['Agronegócio', 'Energia', 'Tecnologia', 'Finanças', 'Infraestrutura', 'Defesa', 'Manufatura', 'Serviços Financeiros', 'Mineração', 'Comércio', 'Turismo', 'Saúde'],
-        regions: ['Brasil', 'China', 'Estados Unidos', 'União Europeia', 'América Latina', 'BRICS', 'América do Norte', 'Europa', 'Ásia-Pacífico', 'Índia', 'África', 'Oriente Médio'],
-        economic_theories: ['Vantagens Comparativas', 'Competitividade Sistêmica', 'Cadeias Globais de Valor', 'Novo Desenvolvimentismo', 'Crescimento Endógeno', 'Comércio Internacional', 'Economia Institucional', 'Geopolítica Econômica'],
-        topics: ['BRICS', 'Comércio Internacional', 'Competitividade', 'Diplomacia Econômica', 'Inteligência Artificial', 'Bioeconomia']
+        industries: ['Agronegócio', 'Energia', 'Tecnologia', 'Finanças', 'Infraestrutura', 'Defesa', 'Manufatura', 'Mineração', 'Comércio', 'Saúde'],
+        regions: ['Brasil', 'China', 'Estados Unidos', 'Índia', 'Rússia', 'África do Sul', 'América Latina', 'União Europeia', 'Ásia-Pacífico', 'África', 'Oriente Médio', 'Oceania'],
+        economic_theories: ['Vantagens Comparativas', 'Competitividade Sistêmica', 'Cadeias Globais de Valor', 'Novo Desenvolvimentismo', 'Economia Institucional', 'Geopolítica Econômica'],
+        topics: ['BRICS', 'Comércio Internacional', 'Competitividade', 'Diplomacia Econômica', 'Inteligência Artificial', 'Bioeconomia', 'Crescimento Endógeno', 'Sustentabilidade', 'Inovação Tecnológica', 'Segurança Alimentar']
     };
 
     const toggleInterest = (interest) => {

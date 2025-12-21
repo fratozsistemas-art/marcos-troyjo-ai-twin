@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp, BarChart3, Globe, Loader2 } from 'lucide-react';
+import SSOTReportGenerator from '@/components/ssot/SSOTReportGenerator';
 
 const translations = {
     pt: {
@@ -123,14 +124,15 @@ export default function DataVisualizationDashboard({ lang = 'pt' }) {
     const DataComponent = chartType === 'line' ? Line : Bar;
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-[#002D62]">
-                    <BarChart3 className="w-5 h-5" />
-                    {t.title}
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
+        <div className="space-y-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-[#002D62]">
+                        <BarChart3 className="w-5 h-5" />
+                        {t.title}
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
                 <div className="space-y-4">
                     {/* Controls */}
                     <div className="grid md:grid-cols-3 gap-4">
@@ -232,7 +234,16 @@ export default function DataVisualizationDashboard({ lang = 'pt' }) {
                         </div>
                     )}
                 </div>
-            </CardContent>
-        </Card>
+                </CardContent>
+            </Card>
+
+            {selectedIndicator && selectedCountries.length > 0 && (
+                <SSOTReportGenerator
+                    selectedIndicator={selectedIndicator}
+                    selectedCountries={selectedCountries}
+                    lang={lang}
+                />
+            )}
+        </div>
     );
 }

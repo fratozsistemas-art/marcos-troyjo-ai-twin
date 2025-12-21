@@ -88,22 +88,31 @@ export default function InterviewSimulation({ lang = 'pt' }) {
 
             // If user is interviewee, persona starts with first question
             if (config.userRole === 'interviewee') {
-                const systemPrompt = `Você está conduzindo uma entrevista sobre ${config.topic}. ${config.context ? 'Contexto: ' + config.context : ''} Faça a primeira pergunta como entrevistador.`;
+                const systemPrompt = `Você está conduzindo uma entrevista sobre "${config.topic}". ${config.context ? 'Contexto adicional: ' + config.context : ''} Faça uma primeira pergunta relevante e específica como entrevistador experiente.`;
                 
-                await base44.agents.addMessage(conv, {
+                const initialMessage = {
                     role: 'user',
                     content: systemPrompt
-                });
+                };
+                
+                await base44.agents.addMessage(conv, initialMessage);
             } else {
                 // User is interviewer, add opening message
-                setMessages([{
+                const openingMessage = {
                     role: 'assistant',
-                    content: `Olá. Estou pronto para a entrevista sobre ${config.topic}. Pode começar suas perguntas.`
-                }]);
+                    content: config.context 
+                        ? `Olá. Estou pronto para a entrevista sobre "${config.topic}". ${config.context}. Pode começar suas perguntas.`
+                        : `Olá. Estou pronto para a entrevista sobre "${config.topic}". Pode começar suas perguntas.`
+                };
+                setMessages([openingMessage]);
             }
+
+            toast.success(lang === 'pt' ? 'Simulação iniciada!' : 'Simulation started!');
         } catch (error) {
             console.error('Error starting simulation:', error);
-            toast.error(lang === 'pt' ? 'Erro ao iniciar simulação' : 'Error starting simulation');
+            const errorMsg = error?.message || error?.toString() || 'Unknown error';
+            toast.error(`${lang === 'pt' ? 'Erro ao iniciar simulação' : 'Error starting simulation'}: ${errorMsg}`);
+            setSimulationActive(false);
         } finally {
             setLoading(false);
         }

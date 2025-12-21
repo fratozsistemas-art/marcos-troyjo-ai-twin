@@ -240,6 +240,63 @@ Cite documentos fornecidos quando aplicável.`;
             return Response.json({ error: 'Timeout generating analysis' }, { status: 500 });
         }
 
+        // Generate AI Insights and Recommendations based on report content and RAG
+        const insightsPrompt = `Com base no relatório abaixo e nos documentos RAG fornecidos, extraia:
+
+1. **KEY INSIGHTS** (3-5 pontos): Os achados mais críticos e estratégicos
+2. **ACTIONABLE RECOMMENDATIONS** (3-5 ações): Próximos passos concretos e acionáveis
+
+RELATÓRIO ANALISADO:
+${analysis}
+
+${ragContext}
+
+Formato de saída:
+## KEY INSIGHTS
+• [Insight 1 - máximo 2 linhas]
+• [Insight 2 - máximo 2 linhas]
+• [Insight 3 - máximo 2 linhas]
+
+## ACTIONABLE RECOMMENDATIONS
+• [Recomendação 1 - ação específica]
+• [Recomendação 2 - ação específica]
+• [Recomendação 3 - ação específica]
+
+Seja pragmático, direto e prescritivo.`;
+
+        const insightsConv = await base44.asServiceRole.agents.createConversation({
+            agent_name: "troyjo_twin",
+            metadata: {
+                purpose: 'report_insights',
+                user_email: user.email
+            }
+        });
+
+        await base44.asServiceRole.agents.addMessage(insightsConv, {
+            role: 'user',
+            content: insightsPrompt
+        });
+
+        // Wait for insights response
+        let insightsAttempts = 0;
+        let insights = '';
+        while (insightsAttempts < 30) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const insightsConvData = await base44.asServiceRole.agents.getConversation(insightsConv.id);
+            const lastMsg = insightsConvData.messages[insightsConvData.messages.length - 1];
+            
+            if (lastMsg?.role === 'assistant' && lastMsg?.content) {
+                insights = lastMsg.content;
+                break;
+            }
+            insightsAttempts++;
+        }
+
+        // Append insights to analysis
+        if (insights) {
+            analysis += '\n\n---\n\n' + insights;
+        }
+
         // Filter sections if requested
         if (sections.length > 0) {
             analysis = filterSections(analysis, sections);

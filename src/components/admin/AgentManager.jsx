@@ -8,13 +8,14 @@ import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Settings, Brain, FileText, Shield, BarChart, Loader2, Save, Database, ScrollText, TrendingUp, Users, Plus } from 'lucide-react';
+import { Settings, Brain, FileText, Shield, BarChart, Loader2, Save, Database, ScrollText, TrendingUp, Users, Plus, Download, FileSpreadsheet } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ReactMarkdown from 'react-markdown';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, BarChart as RechartsBarChart, Bar, PieChart, Pie, Cell, Legend, ComposedChart } from 'recharts';
+import { saveAs } from 'file-saver';
 
 const translations = {
     pt: {
@@ -456,6 +457,158 @@ export default function AgentManager({ lang = 'pt' }) {
         } catch (error) {
             console.error('Error creating persona:', error);
             toast.error(lang === 'pt' ? 'Erro ao criar' : 'Error creating');
+        }
+    };
+
+    const exportToCSV = async () => {
+        setIsExporting(true);
+        try {
+            const response = await base44.functions.invoke('exportAgentReport', {
+                agent_name: 'troyjo_twin',
+                date_filter: dateFilter,
+                format: 'json'
+            });
+
+            const data = response.data;
+            
+            const csvRows = [];
+            csvRows.push(['Agent Performance Report'].join(','));
+            csvRows.push(['Generated', new Date().toLocaleString()].join(','));
+            csvRows.push(['Period', dateFilter === 'all' ? 'All Time' : `Last ${dateFilter} days`].join(','));
+            csvRows.push([]);
+            
+            csvRows.push(['Summary Metrics'].join(','));
+            csvRows.push(['Total Interactions', data.summary.total_interactions].join(','));
+            csvRows.push(['Avg Response Time (ms)', data.summary.avg_response_time].join(','));
+            csvRows.push(['Avg Feedback Score', data.summary.avg_feedback].join(','));
+            csvRows.push(['RAG Usage', `${data.summary.rag_usage} (${data.summary.rag_percentage}%)`].join(','));
+            csvRows.push([]);
+            
+            csvRows.push(['Interactions by Persona'].join(','));
+            csvRows.push(['Persona', 'Count'].join(','));
+            Object.entries(data.by_persona).forEach(([persona, count]) => {
+                csvRows.push([persona, count].join(','));
+            });
+            csvRows.push([]);
+            
+            csvRows.push(['Feedback Distribution'].join(','));
+            csvRows.push(['Type', 'Count'].join(','));
+            csvRows.push(['Positive', data.feedback.positive].join(','));
+            csvRows.push(['Neutral', data.feedback.neutral].join(','));
+            csvRows.push(['Negative', data.feedback.negative].join(','));
+            csvRows.push([]);
+            
+            csvRows.push(['Interaction Logs'].join(','));
+            csvRows.push(['Date', 'Prompt', 'Persona', 'Feedback', 'Response Time', 'Used RAG'].join(','));
+            data.logs.forEach(log => {
+                csvRows.push([
+                    new Date(log.date).toLocaleString(),
+                    `"${(log.prompt || '').replace(/"/g, '""')}"`,
+                    log.persona || 'N/A',
+                    log.feedback || 'N/A',
+                    log.response_time || 'N/A',
+                    log.used_rag ? 'Yes' : 'No'
+                ].join(','));
+            });
+
+            const csvContent = csvRows.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            saveAs(blob, `agent-report-${Date.now()}.csv`);
+            
+            toast.success(t.exportSuccess);
+        } catch (error) {
+            console.error('Error exporting CSV:', error);
+            toast.error(lang === 'pt' ? 'Erro ao exportar CSV' : 'Error exporting CSV');
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
+    const exportToExcel = async () => {
+        setIsExporting(true);
+        try {
+            const response = await base44.functions.invoke('exportAgentReport', {
+                agent_name: 'troyjo_twin',
+                date_filter: dateFilter,
+                format: 'json'
+            });
+
+            const data = response.data;
+            
+            const csvRows = [];
+            csvRows.push(['Agent Performance Report']);
+            csvRows.push(['Generated', new Date().toLocaleString()]);
+            csvRows.push(['Period', dateFilter === 'all' ? 'All Time' : `Last ${dateFilter} days`]);
+            csvRows.push([]);
+            
+            csvRows.push(['Summary Metrics', '', '', '']);
+            csvRows.push(['Metric', 'Value', '', '']);
+            csvRows.push(['Total Interactions', data.summary.total_interactions, '', '']);
+            csvRows.push(['Avg Response Time (ms)', data.summary.avg_response_time, '', '']);
+            csvRows.push(['Avg Feedback Score', data.summary.avg_feedback, '', '']);
+            csvRows.push(['RAG Usage', data.summary.rag_usage, data.summary.rag_percentage + '%', '']);
+            csvRows.push([]);
+            
+            csvRows.push(['Interactions by Persona', '', '', '']);
+            csvRows.push(['Persona', 'Count', 'Percentage', '']);
+            const totalPersona = Object.values(data.by_persona).reduce((sum, count) => sum + count, 0);
+            Object.entries(data.by_persona).forEach(([persona, count]) => {
+                csvRows.push([persona, count, ((count / totalPersona) * 100).toFixed(1) + '%', '']);
+            });
+            csvRows.push([]);
+            
+            csvRows.push(['Feedback Distribution', '', '', '']);
+            csvRows.push(['Type', 'Count', 'Percentage', '']);
+            const totalFeedback = data.feedback.positive + data.feedback.neutral + data.feedback.negative;
+            csvRows.push(['Positive', data.feedback.positive, totalFeedback > 0 ? ((data.feedback.positive / totalFeedback) * 100).toFixed(1) + '%' : '0%', '']);
+            csvRows.push(['Neutral', data.feedback.neutral, totalFeedback > 0 ? ((data.feedback.neutral / totalFeedback) * 100).toFixed(1) + '%' : '0%', '']);
+            csvRows.push(['Negative', data.feedback.negative, totalFeedback > 0 ? ((data.feedback.negative / totalFeedback) * 100).toFixed(1) + '%' : '0%', '']);
+            csvRows.push([]);
+            
+            csvRows.push(['Interaction Logs', '', '', '', '', '']);
+            csvRows.push(['Date', 'Prompt', 'Persona', 'Feedback', 'Response Time', 'Used RAG']);
+            data.logs.forEach(log => {
+                csvRows.push([
+                    new Date(log.date).toLocaleString(),
+                    (log.prompt || '').replace(/"/g, '""'),
+                    log.persona || 'N/A',
+                    log.feedback || 'N/A',
+                    log.response_time || 'N/A',
+                    log.used_rag ? 'Yes' : 'No'
+                ]);
+            });
+
+            const csvContent = csvRows.map(row => row.map(cell => `"${cell}"`).join('\t')).join('\n');
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+            saveAs(blob, `agent-report-${Date.now()}.xls`);
+            
+            toast.success(t.exportSuccess);
+        } catch (error) {
+            console.error('Error exporting Excel:', error);
+            toast.error(lang === 'pt' ? 'Erro ao exportar Excel' : 'Error exporting Excel');
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
+    const exportToPDF = async () => {
+        setIsExporting(true);
+        try {
+            const response = await base44.functions.invoke('exportAgentReport', {
+                agent_name: 'troyjo_twin',
+                date_filter: dateFilter,
+                format: 'pdf'
+            });
+
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            saveAs(blob, `agent-report-${Date.now()}.pdf`);
+            
+            toast.success(t.exportSuccess);
+        } catch (error) {
+            console.error('Error exporting PDF:', error);
+            toast.error(lang === 'pt' ? 'Erro ao gerar PDF' : 'Error generating PDF');
+        } finally {
+            setIsExporting(false);
         }
     };
 

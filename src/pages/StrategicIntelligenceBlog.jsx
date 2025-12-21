@@ -4,6 +4,7 @@ import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, CheckCircle, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 
 export default function StrategicIntelligenceBlog() {
     const [lang] = React.useState(() => localStorage.getItem('troyjo_lang') || 'pt');
@@ -143,9 +144,16 @@ export default function StrategicIntelligenceBlog() {
                                 </h2>
                                 <div className="space-y-3">
                                     {section.content.map((item, idx) => (
-                                        <p key={idx} className="text-[#333F48] leading-relaxed">
-                                            {item}
-                                        </p>
+                                        <div key={idx} className="text-[#333F48] leading-relaxed">
+                                            <ReactMarkdown
+                                                components={{
+                                                    p: ({children}) => <p className="inline">{children}</p>,
+                                                    strong: ({children}) => <strong className="font-bold text-[#8B1538]">{children}</strong>
+                                                }}
+                                            >
+                                                {item}
+                                            </ReactMarkdown>
+                                        </div>
                                     ))}
                                 </div>
                             </div>

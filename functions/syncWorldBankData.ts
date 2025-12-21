@@ -4,173 +4,175 @@ Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
         
-        // Service role for admin operations
         const user = await base44.auth.me();
         if (!user) {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { indicators = [], countries = ['BRA', 'CHN', 'IND', 'RUS', 'ZAF'], force_update = false } = await req.json();
+        const { force_sync = false } = await req.json();
 
-        const syncLog = {
-            started_at: new Date().toISOString(),
-            indicators_processed: 0,
-            facts_created: 0,
-            facts_updated: 0,
-            facts_skipped: 0,
-            errors: []
-        };
+        // Check last sync timestamp
+        const sources = await base44.asServiceRole.entities.ExternalDataSource.filter({
+            source_type: 'world_bank'
+        });
 
-        // Default indicators if none provided
-        const defaultIndicators = [
-            'NY.GDP.MKTP.CD',        // GDP (current US$)
-            'NY.GDP.PCAP.CD',        // GDP per capita
-            'SP.POP.TOTL',           // Population, total
-            'NE.EXP.GNFS.ZS',        // Exports of goods and services (% of GDP)
-            'NE.IMP.GNFS.ZS',        // Imports of goods and services (% of GDP)
-            'FP.CPI.TOTL.ZG',        // Inflation, consumer prices (annual %)
-            'SL.UEM.TOTL.ZS',        // Unemployment, total (% of total labor force)
-            'BX.KLT.DINV.WD.GD.ZS',  // Foreign direct investment, net inflows (% of GDP)
-            'GC.DOD.TOTL.GD.ZS',     // Central government debt, total (% of GDP)
-            'BN.CAB.XOKA.GD.ZS'      // Current account balance (% of GDP)
+        let shouldSync = force_sync;
+
+        if (!force_sync && sources.length > 0) {
+            const lastSync = sources[0].last_sync;
+            if (lastSync) {
+                const hoursSinceSync = (Date.now() - new Date(lastSync).getTime()) / (1000 * 60 * 60);
+                shouldSync = hoursSinceSync >= 72;
+            } else {
+                shouldSync = true;
+            }
+        } else {
+            shouldSync = true;
+        }
+
+        if (!shouldSync) {
+            const lastSync = sources[0].last_sync;
+            const nextSync = new Date(new Date(lastSync).getTime() + 72 * 60 * 60 * 1000);
+            return Response.json({
+                success: true,
+                message: 'Dados já atualizados',
+                new_records: 0,
+                updated_records: 0,
+                next_sync: nextSync.toISOString()
+            });
+        }
+
+        // Fetch World Bank data
+        const indicators = [
+            'NY.GDP.MKTP.CD',
+            'NY.GDP.PCAP.CD',
+            'NE.TRD.GNFS.ZS',
+            'NE.EXP.GNFS.ZS',
+            'NE.IMP.GNFS.ZS',
+            'FP.CPI.TOTL.ZG',
+            'NE.GDI.TOTL.ZS',
+            'NY.GDP.MKTP.KD.ZG'
         ];
 
-        const indicatorsToSync = indicators.length > 0 ? indicators : defaultIndicators;
+        const countries = ['BRA', 'CHN', 'IND', 'RUS', 'ZAF', 'USA', 'WLD'];
+        const currentYear = new Date().getFullYear();
+        const startYear = currentYear - 5;
 
-        for (const indicator of indicatorsToSync) {
-            syncLog.indicators_processed++;
+        const facts = [];
+        let newRecords = 0;
+        let updatedRecords = 0;
 
+        for (const indicator of indicators) {
             for (const country of countries) {
                 try {
-                    // Fetch latest data from World Bank
-                    const wbUrl = `https://api.worldbank.org/v2/country/${country}/indicator/${indicator}?format=json&per_page=5&date=2018:2023`;
-                    const response = await fetch(wbUrl);
-
+                    const url = `https://api.worldbank.org/v2/country/${country}/indicator/${indicator}?date=${startYear}:${currentYear}&format=json&per_page=1000`;
+                    
+                    const response = await fetch(url);
+                    
                     if (!response.ok) {
-                        syncLog.errors.push(`Failed to fetch ${indicator} for ${country}`);
                         continue;
                     }
 
                     const data = await response.json();
-
-                    if (!data[1] || data[1].length === 0) {
-                        syncLog.facts_skipped++;
+                    
+                    if (!data || !Array.isArray(data) || data.length < 2) {
                         continue;
                     }
 
-                    // Get indicator metadata
-                    const metaUrl = `https://api.worldbank.org/v2/indicator/${indicator}?format=json`;
-                    const metaResponse = await fetch(metaUrl);
-                    let indicatorName = indicator;
-                    let sourceNote = '';
-
-                    if (metaResponse.ok) {
-                        const metaData = await metaResponse.json();
-                        if (metaData[1] && metaData[1][0]) {
-                            indicatorName = metaData[1][0].name;
-                            sourceNote = metaData[1][0].sourceNote || '';
-                        }
+                    const records = data[1];
+                    
+                    if (!records || records.length === 0) {
+                        continue;
                     }
 
-                    // Process each year's data
-                    for (const record of data[1]) {
-                        if (record.value === null) continue;
+                    for (const record of records) {
+                        if (record.value === null || record.value === undefined) {
+                            continue;
+                        }
 
-                        const year = parseInt(record.date);
-                        
-                        // Check if fact already exists
-                        const existing = await base44.asServiceRole.entities.CorporateFact.filter({
-                            indicator_name: indicatorName,
-                            country: record.country.value,
-                            year: year,
-                            source: 'world_bank'
-                        });
-
-                        const factData = {
+                        const fact = {
                             category: 'economic_indicator',
-                            indicator_name: indicatorName,
+                            indicator_name: record.indicator.value,
                             value: record.value.toString(),
                             numeric_value: record.value,
-                            unit: record.unit || '',
-                            year: year,
+                            unit: record.unit || 'N/A',
+                            year: parseInt(record.date),
                             country: record.country.value,
-                            region: getRegion(country),
+                            region: record.countryiso3code,
                             source: 'world_bank',
                             source_url: `https://data.worldbank.org/indicator/${indicator}?locations=${country}`,
-                            description: sourceNote,
+                            description: `${record.indicator.value} for ${record.country.value} in ${record.date}`,
                             verified: false,
-                            tags: ['auto-sync', indicator, country],
-                            confidence_score: 100,
+                            tags: ['world-bank', 'auto-sync', country.toLowerCase(), indicator],
+                            confidence_score: 95,
                             last_updated: new Date().toISOString()
                         };
 
-                        if (existing.length > 0) {
-                            // Update if value changed or force_update is true
-                            const existingFact = existing[0];
-                            if (force_update || existingFact.numeric_value !== record.value) {
-                                await base44.asServiceRole.entities.CorporateFact.update(
-                                    existingFact.id,
-                                    factData
-                                );
-                                syncLog.facts_updated++;
-                            } else {
-                                syncLog.facts_skipped++;
-                            }
-                        } else {
-                            // Create new fact
-                            await base44.asServiceRole.entities.CorporateFact.create(factData);
-                            syncLog.facts_created++;
-                        }
+                        facts.push(fact);
                     }
-
-                    // Small delay to avoid rate limiting
-                    await new Promise(resolve => setTimeout(resolve, 100));
-
                 } catch (error) {
-                    syncLog.errors.push(`Error processing ${indicator} for ${country}: ${error.message}`);
+                    console.error(`Error processing ${indicator} for ${country}:`, error.message);
                 }
             }
         }
 
-        syncLog.completed_at = new Date().toISOString();
-
-        // Log sync operation
-        await base44.asServiceRole.entities.CorporateFact.create({
-            category: 'institutional_fact',
-            indicator_name: 'World Bank Sync Log',
-            value: JSON.stringify(syncLog),
-            source: 'world_bank',
-            description: `Sync completed: ${syncLog.facts_created} created, ${syncLog.facts_updated} updated`,
-            verified: true,
-            tags: ['sync-log'],
-            year: new Date().getFullYear()
+        // Check for existing facts and update or create
+        const existing = await base44.asServiceRole.entities.CorporateFact.filter({
+            source: 'world_bank'
         });
+
+        const existingMap = new Map();
+        existing.forEach(e => {
+            const key = `${e.indicator_name}_${e.country}_${e.year}`;
+            existingMap.set(key, e);
+        });
+
+        for (const fact of facts) {
+            const key = `${fact.indicator_name}_${fact.country}_${fact.year}`;
+            const existingFact = existingMap.get(key);
+
+            if (existingFact) {
+                // Update if value changed
+                if (existingFact.numeric_value !== fact.numeric_value) {
+                    await base44.asServiceRole.entities.CorporateFact.update(existingFact.id, fact);
+                    updatedRecords++;
+                }
+            } else {
+                // Create new
+                await base44.asServiceRole.entities.CorporateFact.create(fact);
+                newRecords++;
+            }
+        }
+
+        // Update sync timestamp
+        if (sources.length > 0) {
+            await base44.asServiceRole.entities.ExternalDataSource.update(sources[0].id, {
+                last_sync: new Date().toISOString()
+            });
+        } else {
+            await base44.asServiceRole.entities.ExternalDataSource.create({
+                name: 'World Bank Data',
+                source_type: 'world_bank',
+                api_endpoint: 'https://api.worldbank.org/v2',
+                enabled: true,
+                sync_frequency: 'manual',
+                last_sync: new Date().toISOString()
+            });
+        }
 
         return Response.json({
             success: true,
-            sync_log: syncLog
+            new_records: newRecords,
+            updated_records: updatedRecords,
+            total_processed: facts.length,
+            message: `Sincronização completa: ${newRecords} novos, ${updatedRecords} atualizados`
         });
 
     } catch (error) {
-        console.error('Error syncing World Bank data:', error);
+        console.error('Error in syncWorldBankData:', error);
         return Response.json({ 
-            error: error.message 
+            error: error.message,
+            details: error.stack 
         }, { status: 500 });
     }
 });
-
-function getRegion(countryCode) {
-    const regions = {
-        'BRA': 'Latin America & Caribbean',
-        'CHN': 'East Asia & Pacific',
-        'IND': 'South Asia',
-        'RUS': 'Europe & Central Asia',
-        'ZAF': 'Sub-Saharan Africa',
-        'USA': 'North America',
-        'GBR': 'Europe & Central Asia',
-        'JPN': 'East Asia & Pacific',
-        'DEU': 'Europe & Central Asia',
-        'FRA': 'Europe & Central Asia'
-    };
-    return regions[countryCode] || 'Unknown';
-}

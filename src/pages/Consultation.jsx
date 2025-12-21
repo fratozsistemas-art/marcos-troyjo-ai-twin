@@ -408,6 +408,11 @@ function ConsultationInner() {
             {/* Chat Area */}
             <main className="flex-1 overflow-auto bg-gradient-to-b from-gray-50 to-white">
                 <div className="max-w-4xl mx-auto px-4 py-6">
+                    {/* AEGIS Protocol Indicator */}
+                    <div className="mb-4">
+                        <AegisIndicator lang={lang} compact={true} />
+                    </div>
+
                     {/* Persona Indicator with Selector */}
                     {messages.length > 0 && (
                         <div className="mb-4">

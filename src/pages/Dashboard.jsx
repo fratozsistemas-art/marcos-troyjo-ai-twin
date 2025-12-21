@@ -18,6 +18,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import PersonaSettings from '@/components/dashboard/PersonaSettings';
+import AegisIndicator from '@/components/security/AegisIndicator';
 import InsightsSection from '@/components/dashboard/InsightsSection';
 import KnowledgeHub from '@/components/knowledge/KnowledgeHub';
 import ProfileSettings from '@/components/profile/ProfileSettings';
@@ -381,6 +382,11 @@ export default function Dashboard() {
                             ))}
                         </div>
                     </div>
+                </motion.div>
+
+                {/* AEGIS Protocol Status */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                    <AegisIndicator lang={lang} />
                 </motion.div>
 
                 {/* Usage Meter */}

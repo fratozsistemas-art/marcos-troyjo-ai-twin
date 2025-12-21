@@ -162,7 +162,7 @@ export default function StrategicIntelligenceBlog() {
                         <div className="bg-gradient-to-br from-[#8B1538] to-[#6B0F2A] rounded-xl p-8 text-white">
                             <h3 className="text-2xl font-bold mb-4">{lang === 'pt' ? 'Conclusão' : 'Conclusion'}</h3>
                             <p className="leading-relaxed mb-6">{t.conclusion}</p>
-                            <div className="flex flex-wrap gap-4">
+                            <div className="flex flex-wrap gap-4 justify-center">
                                 <a
                                     href="https://caiovision.com.br"
                                     target="_blank"

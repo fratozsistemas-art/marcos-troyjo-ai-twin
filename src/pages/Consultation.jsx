@@ -488,6 +488,7 @@ function ConsultationInner() {
                                             lang={lang}
                                             conversationId={conversation?.id}
                                             messageIndex={index}
+                                            personaMode={personaMode}
                                         />
                                     </motion.div>
                                 ))}

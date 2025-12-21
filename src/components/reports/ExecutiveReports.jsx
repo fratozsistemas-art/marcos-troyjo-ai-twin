@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { FileText, Download, Loader2, FileCheck, Target, TrendingUp } from 'lucide-react';
+import { FileText, Download, Loader2, FileCheck, Target, TrendingUp, ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
+import InlineFeedback from '@/components/feedback/InlineFeedback';
 
 const translations = {
     pt: {
@@ -59,6 +60,7 @@ export default function ExecutiveReports({ lang = 'pt' }) {
     const [selectedDocs, setSelectedDocs] = useState([]);
     const [generating, setGenerating] = useState(false);
     const [result, setResult] = useState(null);
+    const [reportId, setReportId] = useState(null);
     const t = translations[lang];
 
     React.useEffect(() => {
@@ -108,6 +110,7 @@ export default function ExecutiveReports({ lang = 'pt' }) {
                 toast.success(lang === 'pt' ? 'Relatório gerado!' : 'Report generated!');
             } else {
                 setResult(response.data.content);
+                setReportId(`report_${Date.now()}`);
                 toast.success(lang === 'pt' ? 'Análise concluída!' : 'Analysis complete!');
             }
         } catch (error) {
@@ -253,7 +256,7 @@ export default function ExecutiveReports({ lang = 'pt' }) {
 
                 {/* Markdown Result */}
                 {result && format === 'markdown' && (
-                    <div className="mt-4 space-y-2">
+                    <div className="mt-4 space-y-3">
                         <div className="flex items-center justify-between">
                             <Label className="text-sm font-medium text-[#002D62]">
                                 {lang === 'pt' ? 'Resultado' : 'Result'}
@@ -267,6 +270,24 @@ export default function ExecutiveReports({ lang = 'pt' }) {
                                 {result}
                             </pre>
                         </div>
+                        
+                        {/* Report Feedback */}
+                        {reportId && (
+                            <div className="p-4 rounded-lg border border-gray-200 bg-white">
+                                <Label className="text-sm font-medium text-[#002D62] mb-3 block">
+                                    {lang === 'pt' ? 'Avaliar relatório' : 'Rate report'}
+                                </Label>
+                                <InlineFeedback
+                                    conversationId={reportId}
+                                    messageIndex={0}
+                                    messageContent={scenario}
+                                    personaMode={reportType}
+                                    usedRag={selectedDocs.length > 0}
+                                    documentIds={selectedDocs}
+                                    lang={lang}
+                                />
+                            </div>
+                        )}
                     </div>
                 )}
             </CardContent>

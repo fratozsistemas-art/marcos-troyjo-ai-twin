@@ -14,7 +14,8 @@ export default function Welcome() {
     const [step, setStep] = useState(1);
     const [selectedInterests, setSelectedInterests] = useState([]);
     const [lang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
-    const [randomFeatures, setRandomFeatures] = useState([]);
+    const [orderedFeatures, setOrderedFeatures] = useState([]);
+    const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
     const [skipOnboarding, setSkipOnboarding] = useState(false);
 
     useEffect(() => {
@@ -38,20 +39,20 @@ export default function Welcome() {
             }
 
             const result = await base44.integrations.Core.InvokeLLM({
-                prompt: `Com base no perfil do usuário, selecione 3 features (dos 6 disponíveis) que seriam MAIS ÚTEIS para ele mas que ele ainda NÃO explorou ou explorou POUCO.
+                prompt: `Com base no perfil do usuário, ranqueie TODAS as 6 features disponíveis da MAIS ÚTIL/RELEVANTE para a MENOS ÚTIL. Priorize features que o usuário ainda NÃO explorou ou explorou POUCO e que teriam maior impacto positivo para seu perfil.
 
 Contexto do usuário:
 ${userContext}
 
 Features disponíveis:
-1. Adaptação de Persona - AI ajusta estilo de comunicação
-2. Base de Conhecimento - Pensamento público de Marcos Troyjo
-3. Sugestões Inteligentes - Recomendações baseadas em tópicos frequentes
-4. Análise de Documentos - Upload e chat com PDFs/DOCX
-5. Monitor de Riscos - Alertas geopolíticos personalizados
-6. Geração de Artigos - Policy papers com voz autêntica
+0. Adaptação de Persona - AI ajusta estilo de comunicação
+1. Base de Conhecimento - Pensamento público de Marcos Troyjo
+2. Sugestões Inteligentes - Recomendações baseadas em tópicos frequentes
+3. Análise de Documentos - Upload e chat com PDFs/DOCX
+4. Monitor de Riscos - Alertas geopolíticos personalizados
+5. Geração de Artigos - Policy papers com voz autêntica
 
-Retorne os ÍNDICES (0-5) das 3 features mais relevantes e ainda não exploradas.`,
+Retorne um array de 6 ÍNDICES (0-5) ordenado da feature mais útil/relevante para a menos útil.`,
                 response_json_schema: {
                     type: 'object',
                     properties: {
@@ -60,14 +61,14 @@ Retorne os ÍNDICES (0-5) das 3 features mais relevantes e ainda não exploradas
                 }
             });
 
-            const indices = result.feature_indices || [0, 1, 2];
-            const selected = indices.slice(0, 3).map(i => t.allFeatures[i]);
-            setRandomFeatures(selected);
+            const indices = result.feature_indices || [0, 1, 2, 3, 4, 5];
+            const ordered = indices.map(i => t.allFeatures[i]);
+            setOrderedFeatures(ordered);
         } catch (error) {
             console.error('Error selecting features:', error);
             const allFeats = t.allFeatures;
             const shuffled = [...allFeats].sort(() => Math.random() - 0.5);
-            setRandomFeatures(shuffled.slice(0, 3));
+            setOrderedFeatures(shuffled);
         }
     };
 
@@ -342,23 +343,57 @@ Retorne os ÍNDICES (0-5) das 3 features mais relevantes e ainda não exploradas
                                     <p className="text-[#333F48]/70">{t.step2Desc}</p>
                                 </div>
 
-                                <div className="space-y-3">
-                                    {randomFeatures.map((feature, idx) => {
-                                        const Icon = feature.icon;
-                                        return (
-                                            <div key={idx} className="flex gap-4 p-4 rounded-lg border border-gray-100 bg-gray-50">
-                                                <div className="w-12 h-12 rounded-lg bg-white flex items-center justify-center flex-shrink-0">
-                                                    <Icon className="w-6 h-6 text-[#002D62]" />
+                                <div className="space-y-4">
+                                    {orderedFeatures.length > 0 && (
+                                        <motion.div
+                                            key={currentFeatureIndex}
+                                            initial={{ opacity: 0, x: 50 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: -50 }}
+                                            transition={{ duration: 0.3 }}
+                                        >
+                                            <div className="flex gap-4 p-6 rounded-lg border-2 border-[#002D62]/20 bg-gradient-to-br from-white to-gray-50">
+                                                <div className="w-14 h-14 rounded-lg bg-[#002D62] flex items-center justify-center flex-shrink-0">
+                                                    <orderedFeatures[currentFeatureIndex].icon className="w-7 h-7 text-white" />
                                                 </div>
-                                                <div>
-                                                    <h3 className="font-semibold text-[#333F48] mb-1">
-                                                        {feature.title}
+                                                <div className="flex-1">
+                                                    <h3 className="font-semibold text-[#333F48] mb-2 text-lg">
+                                                        {orderedFeatures[currentFeatureIndex].title}
                                                     </h3>
-                                                    <p className="text-sm text-gray-600">{feature.desc}</p>
+                                                    <p className="text-sm text-gray-600 leading-relaxed">
+                                                        {orderedFeatures[currentFeatureIndex].desc}
+                                                    </p>
                                                 </div>
                                             </div>
-                                        );
-                                    })}
+                                        </motion.div>
+                                    )}
+
+                                    <div className="flex items-center justify-between">
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setCurrentFeatureIndex(prev => Math.max(0, prev - 1))}
+                                            disabled={currentFeatureIndex === 0}
+                                        >
+                                            {lang === 'pt' ? '← Anterior' : '← Previous'}
+                                        </Button>
+                                        <div className="flex gap-1">
+                                            {orderedFeatures.map((_, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    className={`w-2 h-2 rounded-full transition-all ${
+                                                        idx === currentFeatureIndex ? 'bg-[#002D62] w-4' : 'bg-gray-300'
+                                                    }`}
+                                                />
+                                            ))}
+                                        </div>
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setCurrentFeatureIndex(prev => Math.min(orderedFeatures.length - 1, prev + 1))}
+                                            disabled={currentFeatureIndex === orderedFeatures.length - 1}
+                                        >
+                                            {lang === 'pt' ? 'Próximo →' : 'Next →'}
+                                        </Button>
+                                    </div>
                                 </div>
 
                                 <div className="flex items-center gap-2 mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
@@ -379,7 +414,7 @@ Retorne os ÍNDICES (0-5) das 3 features mais relevantes e ainda não exploradas
                                         {lang === 'pt' ? 'Voltar' : 'Back'}
                                     </Button>
                                     <Button onClick={handleFinish} className="bg-[#002D62]">
-                                        {t.finish}
+                                        {lang === 'pt' ? 'Começar' : 'Start'}
                                         <ArrowRight className="w-4 h-4 ml-2" />
                                     </Button>
                                 </div>

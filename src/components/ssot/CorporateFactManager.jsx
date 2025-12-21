@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import SyncMonitor from '@/components/ssot/SyncMonitor';
+import CorporateFactHistory from '@/components/ssot/CorporateFactHistory';
+import DataVisualizationDashboard from '@/components/ssot/DataVisualizationDashboard';
 
 const translations = {
     pt: {
@@ -23,6 +25,8 @@ const translations = {
         allFacts: 'Todos os Fatos',
         verified: 'Verificados',
         pending: 'Pendentes',
+        history: 'Histórico',
+        visualization: 'Visualização',
         source: 'Fonte',
         year: 'Ano',
         country: 'País',
@@ -42,6 +46,8 @@ const translations = {
         allFacts: 'All Facts',
         verified: 'Verified',
         pending: 'Pending',
+        history: 'History',
+        visualization: 'Visualization',
         source: 'Source',
         year: 'Year',
         country: 'Country',
@@ -67,6 +73,12 @@ export default function CorporateFactManager({ lang = 'pt' }) {
     const [importing, setImporting] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState('all');
+    const [selectedFact, setSelectedFact] = useState(null);
+    const [historyOpen, setHistoryOpen] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [sourceFilter, setSourceFilter] = useState('all');
+    const [categoryFilter, setCategoryFilter] = useState('all');
+    const itemsPerPage = 20;
     const t = translations[lang];
 
     useEffect(() => {
@@ -120,17 +132,32 @@ export default function CorporateFactManager({ lang = 'pt' }) {
     const handleVerifyFact = async (factId) => {
         try {
             const user = await base44.auth.me();
+            
+            // Log verification in history
+            await base44.entities.CorporateFactHistory.create({
+                fact_id: factId,
+                action_type: 'verify',
+                changed_by: user.email,
+                change_reason: 'Fact verified by user'
+            });
+
             await base44.entities.CorporateFact.update(factId, {
                 verified: true,
                 verified_by: user.email,
                 verification_date: new Date().toISOString()
             });
+            
             toast.success('Fato verificado!');
             loadFacts();
         } catch (error) {
             console.error('Error verifying fact:', error);
             toast.error('Erro ao verificar');
         }
+    };
+
+    const handleViewHistory = (fact) => {
+        setSelectedFact(fact);
+        setHistoryOpen(true);
     };
 
     const handleExportCSV = () => {
@@ -179,14 +206,29 @@ export default function CorporateFactManager({ lang = 'pt' }) {
             );
         }
 
+        if (sourceFilter !== 'all') {
+            filtered = filtered.filter(f => f.source === sourceFilter);
+        }
+
+        if (categoryFilter !== 'all') {
+            filtered = filtered.filter(f => f.category === categoryFilter);
+        }
+
         return filtered;
     };
 
     const filteredFacts = getFilteredFacts();
+    const totalPages = Math.ceil(filteredFacts.length / itemsPerPage);
+    const paginatedFacts = filteredFacts.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
 
     return (
         <div className="space-y-6">
             <SyncMonitor lang={lang} />
+            
+            <DataVisualizationDashboard lang={lang} />
             
             <Card>
             <CardHeader>
@@ -225,14 +267,44 @@ export default function CorporateFactManager({ lang = 'pt' }) {
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
-                    <Input
-                        placeholder={t.search}
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full"
-                    />
+                    <div className="grid md:grid-cols-3 gap-3">
+                        <Input
+                            placeholder={t.search}
+                            value={searchQuery}
+                            onChange={(e) => {
+                                setSearchQuery(e.target.value);
+                                setCurrentPage(1);
+                            }}
+                        />
+                        <Select value={sourceFilter} onValueChange={setSourceFilter}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Fonte" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Todas as fontes</SelectItem>
+                                <SelectItem value="world_bank">World Bank</SelectItem>
+                                <SelectItem value="imf">IMF</SelectItem>
+                                <SelectItem value="wto">WTO</SelectItem>
+                                <SelectItem value="ndb">NDB</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Categoria" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Todas as categorias</SelectItem>
+                                <SelectItem value="economic_indicator">Indicador Econômico</SelectItem>
+                                <SelectItem value="trade_data">Dados de Comércio</SelectItem>
+                                <SelectItem value="institutional_fact">Fato Institucional</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
 
-                    <Tabs value={activeTab} onValueChange={setActiveTab}>
+                    <Tabs value={activeTab} onValueChange={(val) => {
+                        setActiveTab(val);
+                        setCurrentPage(1);
+                    }}>
                         <TabsList>
                             <TabsTrigger value="all">{t.allFacts}</TabsTrigger>
                             <TabsTrigger value="verified">{t.verified}</TabsTrigger>
@@ -249,8 +321,9 @@ export default function CorporateFactManager({ lang = 'pt' }) {
                                     {t.noData}
                                 </div>
                             ) : (
-                                <div className="space-y-2 max-h-96 overflow-y-auto">
-                                    {filteredFacts.map((fact) => (
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        {paginatedFacts.map((fact) => (
                                         <div 
                                             key={fact.id}
                                             className="border rounded-lg p-3 hover:bg-gray-50 transition-colors"
@@ -291,6 +364,13 @@ export default function CorporateFactManager({ lang = 'pt' }) {
                                                     </div>
                                                 </div>
                                                 <div className="flex gap-2">
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        onClick={() => handleViewHistory(fact)}
+                                                    >
+                                                        {t.history}
+                                                    </Button>
                                                     {!fact.verified && (
                                                         <Button
                                                             size="sm"
@@ -312,14 +392,51 @@ export default function CorporateFactManager({ lang = 'pt' }) {
                                                 </div>
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
-                            )}
-                        </TabsContent>
-                    </Tabs>
-                    </div>
-                    </CardContent>
-                    </Card>
-                    </div>
-                    );
-                    }
+                                        ))}
+                                        </div>
+
+                                        {/* Pagination */}
+                                        {totalPages > 1 && (
+                                        <div className="flex items-center justify-between pt-4 border-t">
+                                            <div className="text-sm text-gray-600">
+                                                {lang === 'pt' 
+                                                    ? `Página ${currentPage} de ${totalPages} (${filteredFacts.length} itens)`
+                                                    : `Page ${currentPage} of ${totalPages} (${filteredFacts.length} items)`}
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                                    disabled={currentPage === 1}
+                                                >
+                                                    {lang === 'pt' ? 'Anterior' : 'Previous'}
+                                                </Button>
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                                    disabled={currentPage === totalPages}
+                                                >
+                                                    {lang === 'pt' ? 'Próxima' : 'Next'}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        )}
+                                        </div>
+                                        )}
+                                        </TabsContent>
+                                        </Tabs>
+                                        </div>
+                                        </CardContent>
+                                        </Card>
+
+                                        <CorporateFactHistory
+                                        fact={selectedFact}
+                                        isOpen={historyOpen}
+                                        onClose={() => setHistoryOpen(false)}
+                                        lang={lang}
+                                        />
+                                        </div>
+                                        );
+                                        }

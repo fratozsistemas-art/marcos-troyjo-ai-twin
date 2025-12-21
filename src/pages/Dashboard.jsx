@@ -32,6 +32,7 @@ import TopicDeepDive from '@/components/topics/TopicDeepDive';
 import CustomPersonaTraits from '@/components/persona/CustomPersonaTraits';
 import PersonaHistoryViewer from '@/components/persona/PersonaHistoryViewer';
 import GeopoliticalAlertPanel from '@/components/alerts/GeopoliticalAlertPanel';
+import AlertFeedManager from '@/components/alerts/AlertFeedManager';
 import PersonaSuggestionPanel from '@/components/persona/PersonaSuggestionPanel';
 import PersonaTraining from '@/components/persona/PersonaTraining';
 import InterviewSimulation from '@/components/persona/InterviewSimulation';
@@ -388,6 +389,11 @@ export default function Dashboard() {
                 {/* Conditional Content Based on Active Tab */}
                 {activeTab === 'todos' && (
                     <>
+                        {/* Alert Feed Manager */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
+                            <AlertFeedManager lang={lang} />
+                        </motion.div>
+
                         {/* Geopolitical Alerts */}
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
                             <GeopoliticalAlertPanel userContext={{}} personaMode="tecnico" lang={lang} />

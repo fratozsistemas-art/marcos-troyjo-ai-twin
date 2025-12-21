@@ -24,6 +24,7 @@ import StrategicIntelligenceBlog from './pages/StrategicIntelligenceBlog';
 import SystemHealth from './pages/SystemHealth';
 import KnowledgeBase from './pages/KnowledgeBase';
 import Homepage from './pages/Homepage';
+import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -54,6 +55,7 @@ export const PAGES = {
     "SystemHealth": SystemHealth,
     "KnowledgeBase": KnowledgeBase,
     "Homepage": Homepage,
+    "AnalyticsDashboard": AnalyticsDashboard,
 }
 
 export const pagesConfig = {

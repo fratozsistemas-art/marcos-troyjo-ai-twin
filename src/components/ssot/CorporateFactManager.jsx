@@ -317,9 +317,9 @@ export default function CorporateFactManager({ lang = 'pt' }) {
                             )}
                         </TabsContent>
                     </Tabs>
-                </div>
-            </CardContent>
-        </Card>
-        </div>
-    );
-}
+                    </div>
+                    </CardContent>
+                    </Card>
+                    </div>
+                    );
+                    }

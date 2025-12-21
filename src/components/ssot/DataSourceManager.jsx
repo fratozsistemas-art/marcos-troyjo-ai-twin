@@ -48,6 +48,14 @@ const PRESET_SOURCES = {
         api_key_required: false,
         auth_type: 'none',
         data_format: 'json'
+    },
+    maritaca: {
+        name: 'Maritaca AI (Brasil)',
+        api_endpoint: 'https://chat.maritaca.ai/api',
+        api_key_required: true,
+        auth_type: 'bearer',
+        auth_header: 'Authorization',
+        data_format: 'json'
     }
 };
 

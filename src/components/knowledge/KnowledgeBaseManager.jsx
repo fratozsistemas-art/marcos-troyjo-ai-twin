@@ -8,9 +8,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Search, Edit, Trash2, Save, X, Loader2, Calendar, Tag, ExternalLink, ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Save, X, Loader2, Calendar, Tag, ExternalLink, ThumbsUp, ThumbsDown, MessageSquare, CheckSquare, Square, Upload, FolderOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export default function KnowledgeBaseManager({ lang = 'pt' }) {
     const [entries, setEntries] = useState([]);
@@ -27,6 +28,11 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
     const [suggestionDialogOpen, setSuggestionDialogOpen] = useState(false);
     const [suggestionText, setSuggestionText] = useState('');
     const [feedbackMap, setFeedbackMap] = useState({});
+    const [selectedEntries, setSelectedEntries] = useState([]);
+    const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
+    const [bulkOperation, setBulkOperation] = useState('');
+    const [uploadingFiles, setUploadingFiles] = useState(false);
+    const fileInputRef = React.useRef(null);
     const [formData, setFormData] = useState({
         title: '',
         date: new Date().toISOString().split('T')[0],
@@ -78,6 +84,16 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
             suggestionSent: 'Sugestão enviada com sucesso!',
             helpful: 'Útil',
             notHelpful: 'Não útil',
+            selectAll: 'Selecionar todos',
+            selected: 'selecionado(s)',
+            bulkActions: 'Ações em Massa',
+            bulkDelete: 'Excluir Selecionados',
+            bulkAddTags: 'Adicionar Tags',
+            bulkChangeCategory: 'Mudar Categoria',
+            bulkChangeStatus: 'Mudar Status',
+            uploadFiles: 'Importar Arquivos',
+            uploadFilesDesc: 'Faça upload de PDFs, DOCX ou TXT para importar como conhecimento',
+            processing: 'Processando...',
             categories: {
                 discurso: 'Discurso',
                 artigo: 'Artigo',
@@ -124,6 +140,16 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
             suggestionSent: 'Suggestion sent successfully!',
             helpful: 'Helpful',
             notHelpful: 'Not helpful',
+            selectAll: 'Select all',
+            selected: 'selected',
+            bulkActions: 'Bulk Actions',
+            bulkDelete: 'Delete Selected',
+            bulkAddTags: 'Add Tags',
+            bulkChangeCategory: 'Change Category',
+            bulkChangeStatus: 'Change Status',
+            uploadFiles: 'Import Files',
+            uploadFilesDesc: 'Upload PDFs, DOCX or TXT to import as knowledge',
+            processing: 'Processing...',
             categories: {
                 discurso: 'Speech',
                 artigo: 'Article',
@@ -321,6 +347,99 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
         }
     };
 
+    const toggleSelectAll = () => {
+        if (selectedEntries.length === filteredEntries.length) {
+            setSelectedEntries([]);
+        } else {
+            setSelectedEntries(filteredEntries.map(e => e.id));
+        }
+    };
+
+    const toggleSelectEntry = (id) => {
+        setSelectedEntries(prev =>
+            prev.includes(id) ? prev.filter(eid => eid !== id) : [...prev, id]
+        );
+    };
+
+    const handleBulkDelete = async () => {
+        if (!confirm(lang === 'pt' 
+            ? `Excluir ${selectedEntries.length} entrada(s)?` 
+            : `Delete ${selectedEntries.length} entry(ies)?`)) return;
+
+        try {
+            const response = await base44.functions.invoke('bulkKnowledgeOperations', {
+                operation: 'bulk_delete',
+                entry_ids: selectedEntries
+            });
+
+            toast.success(
+                lang === 'pt'
+                    ? `${response.data.success} entrada(s) excluída(s)`
+                    : `${response.data.success} entry(ies) deleted`
+            );
+            setSelectedEntries([]);
+            loadEntries();
+        } catch (error) {
+            console.error('Error bulk deleting:', error);
+            toast.error(lang === 'pt' ? 'Erro ao excluir' : 'Error deleting');
+        }
+    };
+
+    const handleBulkOperation = async (operation, data) => {
+        try {
+            const response = await base44.functions.invoke('bulkKnowledgeOperations', {
+                operation,
+                entry_ids: selectedEntries,
+                data
+            });
+
+            toast.success(
+                lang === 'pt'
+                    ? `${response.data.success} entrada(s) atualizada(s)`
+                    : `${response.data.success} entry(ies) updated`
+            );
+            setSelectedEntries([]);
+            setBulkDialogOpen(false);
+            loadEntries();
+        } catch (error) {
+            console.error('Error in bulk operation:', error);
+            toast.error(lang === 'pt' ? 'Erro na operação' : 'Error in operation');
+        }
+    };
+
+    const handleFileUpload = async (event) => {
+        const files = Array.from(event.target.files);
+        if (files.length === 0) return;
+
+        setUploadingFiles(true);
+        try {
+            const fileUrls = [];
+            for (const file of files) {
+                const result = await base44.integrations.Core.UploadFile({ file });
+                if (result?.file_url) {
+                    fileUrls.push(result.file_url);
+                }
+            }
+
+            const response = await base44.functions.invoke('bulkKnowledgeOperations', {
+                operation: 'import_files',
+                files: fileUrls
+            });
+
+            toast.success(
+                lang === 'pt'
+                    ? `${response.data.success} arquivo(s) importado(s)`
+                    : `${response.data.success} file(s) imported`
+            );
+            loadEntries();
+        } catch (error) {
+            console.error('Error uploading files:', error);
+            toast.error(lang === 'pt' ? 'Erro ao importar' : 'Error importing');
+        } finally {
+            setUploadingFiles(false);
+        }
+    };
+
     return (
         <Card>
             <CardHeader>
@@ -330,6 +449,26 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                         <CardDescription>{t.desc}</CardDescription>
                     </div>
                     <div className="flex gap-2">
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            multiple
+                            accept=".pdf,.docx,.txt"
+                            className="hidden"
+                            onChange={handleFileUpload}
+                        />
+                        <Button 
+                            onClick={() => fileInputRef.current?.click()} 
+                            variant="outline"
+                            disabled={uploadingFiles}
+                        >
+                            {uploadingFiles ? (
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            ) : (
+                                <Upload className="w-4 h-4 mr-2" />
+                            )}
+                            {t.uploadFiles}
+                        </Button>
                         <Button onClick={() => setSuggestionDialogOpen(true)} variant="outline">
                             <MessageSquare className="w-4 h-4 mr-2" />
                             {t.suggestTopic}
@@ -340,6 +479,26 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                         </Button>
                     </div>
                 </div>
+                {selectedEntries.length > 0 && (
+                    <div className="flex items-center gap-2 mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <Badge variant="default">{selectedEntries.length} {t.selected}</Badge>
+                        <Button size="sm" variant="outline" onClick={handleBulkDelete}>
+                            <Trash2 className="w-4 h-4 mr-1" />
+                            {t.bulkDelete}
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => { setBulkOperation('add_tags'); setBulkDialogOpen(true); }}>
+                            <Tag className="w-4 h-4 mr-1" />
+                            {t.bulkAddTags}
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => { setBulkOperation('change_category'); setBulkDialogOpen(true); }}>
+                            <FolderOpen className="w-4 h-4 mr-1" />
+                            {t.bulkChangeCategory}
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => setSelectedEntries([])}>
+                            {t.cancel}
+                        </Button>
+                    </div>
+                )}
             </CardHeader>
             <CardContent className="space-y-4">
                 {/* Search and Filters */}
@@ -364,6 +523,16 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                             ))}
                         </SelectContent>
                     </Select>
+                    {filteredEntries.length > 0 && (
+                        <Button variant="outline" onClick={toggleSelectAll}>
+                            {selectedEntries.length === filteredEntries.length ? (
+                                <CheckSquare className="w-4 h-4 mr-2" />
+                            ) : (
+                                <Square className="w-4 h-4 mr-2" />
+                            )}
+                            {t.selectAll}
+                        </Button>
+                    )}
                 </div>
 
                 {/* Date Range Filter */}
@@ -415,7 +584,12 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                     <div className="space-y-3">
                         {filteredEntries.map(entry => (
                             <div key={entry.id} className="p-4 rounded-lg border border-gray-200 hover:border-[#002D62]/30 transition-colors">
-                                <div className="flex items-start justify-between">
+                                <div className="flex items-start gap-3">
+                                    <Checkbox
+                                        checked={selectedEntries.includes(entry.id)}
+                                        onCheckedChange={() => toggleSelectEntry(entry.id)}
+                                        className="mt-1"
+                                    />
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-2">
                                             <h3 className="font-semibold text-[#333F48]">{entry.title}</h3>
@@ -490,13 +664,76 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </CardContent>
+                                        </div>
+                                        </div>
+                                        </div>
+                                        ))}
+                                        </div>
+                                        )}
+                                        </CardContent>
+
+                                        {/* Bulk Operations Dialog */}
+                                        <Dialog open={bulkDialogOpen} onOpenChange={setBulkDialogOpen}>
+                                        <DialogContent>
+                                        <DialogHeader>
+                                        <DialogTitle>{t.bulkActions}</DialogTitle>
+                                        </DialogHeader>
+                                        <div className="space-y-4">
+                                        {bulkOperation === 'add_tags' && (
+                                        <div>
+                                        <Label>{t.tagsLabel}</Label>
+                                        <div className="flex gap-2">
+                                        <Input
+                                        value={newTag}
+                                        onChange={(e) => setNewTag(e.target.value)}
+                                        onKeyPress={(e) => e.key === 'Enter' && addTag()}
+                                        placeholder={t.addTag}
+                                        />
+                                        <Button onClick={() => {
+                                        const tags = newTag.split(',').map(t => t.trim()).filter(t => t);
+                                        handleBulkOperation('bulk_add_tags', { tags });
+                                        }}>
+                                        {t.save}
+                                        </Button>
+                                        </div>
+                                        </div>
+                                        )}
+
+                                        {bulkOperation === 'change_category' && (
+                                        <div>
+                                        <Label>{t.categoryLabel}</Label>
+                                        <Select onValueChange={(cat) => handleBulkOperation('bulk_change_category', { category: cat })}>
+                                        <SelectTrigger>
+                                        <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                        {Object.keys(t.categories).map(cat => (
+                                           <SelectItem key={cat} value={cat}>{t.categories[cat]}</SelectItem>
+                                        ))}
+                                        </SelectContent>
+                                        </Select>
+                                        </div>
+                                        )}
+
+                                        {bulkOperation === 'change_status' && (
+                                        <div>
+                                        <Label>Status</Label>
+                                        <Select onValueChange={(status) => handleBulkOperation('bulk_update_status', { status })}>
+                                        <SelectTrigger>
+                                        <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                        <SelectItem value="rascunho">Rascunho</SelectItem>
+                                        <SelectItem value="revisao">Revisão</SelectItem>
+                                        <SelectItem value="publicado">Publicado</SelectItem>
+                                        <SelectItem value="arquivado">Arquivado</SelectItem>
+                                        </SelectContent>
+                                        </Select>
+                                        </div>
+                                        )}
+                                        </div>
+                                        </DialogContent>
+                                        </Dialog>
 
             {/* Add/Edit Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

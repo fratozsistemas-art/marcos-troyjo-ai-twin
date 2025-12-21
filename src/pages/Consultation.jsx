@@ -18,6 +18,8 @@ import ConversationExport from '@/components/consultation/ConversationExport';
 import { logTopics } from '@/components/intelligence/TopicTracker';
 import SubscriptionGate, { useSubscription } from '@/components/subscription/SubscriptionGate';
 import VerificationGate from '@/components/subscription/VerificationGate';
+import AegisIndicator from '@/components/security/AegisIndicator';
+import { toast } from 'sonner';
 
 const translations = {
     pt: {

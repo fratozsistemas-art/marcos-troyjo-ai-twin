@@ -10,18 +10,18 @@ Deno.serve(async (req) => {
         }
 
         const { action, data } = await req.json();
-        const trackingUri = Deno.env.get('MLFLOW_TRACKING_URI');
+        const trackingUri = Deno.env.get('MLFLOW_TRACKING_URI') || 'https://gitlab.com/api/v4/projects/YOUR_PROJECT_ID/ml/mlflow';
         const token = Deno.env.get('GITLAB_TOKEN');
 
-        if (!trackingUri || !token) {
+        if (!token) {
             return Response.json({ 
-                error: 'MLflow configuration missing',
-                details: 'Configure MLFLOW_TRACKING_URI and GITLAB_TOKEN'
+                error: 'GitLab token missing',
+                details: 'Configure GITLAB_TOKEN in app secrets'
             }, { status: 500 });
         }
 
         const headers = {
-            'Authorization': `Bearer ${token}`,
+            'PRIVATE-TOKEN': token,
             'Content-Type': 'application/json'
         };
 

@@ -226,11 +226,24 @@ export default function MLflowExperiments({ lang = 'pt' }) {
                                     {runs.map((run) => (
                                         <div
                                             key={run.info.run_id}
-                                            onClick={() => setSelectedRun(run)}
-                                            className="border rounded-lg p-3 hover:bg-gray-50 cursor-pointer"
+                                            onClick={() => {
+                                                setSelectedRun(run);
+                                                if (run.data.metrics && Object.keys(run.data.metrics).length > 0) {
+                                                    const firstMetric = Object.keys(run.data.metrics)[0];
+                                                    loadMetricHistory(run.info.run_id, firstMetric);
+                                                }
+                                            }}
+                                            className={`border rounded-lg p-3 hover:bg-gray-50 cursor-pointer transition-colors ${
+                                                selectedRun?.info.run_id === run.info.run_id
+                                                    ? 'bg-blue-50 border-blue-300'
+                                                    : ''
+                                            }`}
                                         >
                                             <div className="flex items-center justify-between mb-2">
-                                                <Badge>{run.info.status}</Badge>
+                                                <Badge variant={
+                                                    run.info.status === 'FINISHED' ? 'default' :
+                                                    run.info.status === 'RUNNING' ? 'secondary' : 'destructive'
+                                                }>{run.info.status}</Badge>
                                                 <span className="text-xs text-gray-500">
                                                     {new Date(run.info.start_time).toLocaleString()}
                                                 </span>
@@ -238,9 +251,21 @@ export default function MLflowExperiments({ lang = 'pt' }) {
                                             {run.data.metrics && Object.keys(run.data.metrics).length > 0 && (
                                                 <div className="text-xs space-y-1">
                                                     <p className="font-semibold">{t.metrics}:</p>
-                                                    {Object.entries(run.data.metrics).map(([key, value]) => (
-                                                        <p key={key}>
-                                                            {key}: <strong>{value}</strong>
+                                                    {Object.entries(run.data.metrics).slice(0, 3).map(([key, value]) => (
+                                                        <p key={key} className="flex items-center justify-between">
+                                                            <span className="text-gray-600">{key}:</span>
+                                                            <strong className="text-[#002D62]">{Number(value).toFixed(4)}</strong>
+                                                        </p>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            {run.data.params && Object.keys(run.data.params).length > 0 && (
+                                                <div className="text-xs space-y-1 mt-2 pt-2 border-t">
+                                                    <p className="font-semibold">{t.parameters}:</p>
+                                                    {Object.entries(run.data.params).slice(0, 2).map(([key, value]) => (
+                                                        <p key={key} className="flex items-center justify-between">
+                                                            <span className="text-gray-600">{key}:</span>
+                                                            <span className="text-gray-900">{value}</span>
                                                         </p>
                                                     ))}
                                                 </div>

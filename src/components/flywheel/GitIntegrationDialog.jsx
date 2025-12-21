@@ -273,10 +273,19 @@ export default function GitIntegrationDialog({ open, onOpenChange, siteId, lang 
                                     <Label>{t.token}</Label>
                                     <Input
                                         type="password"
-                                        placeholder="ghp_xxxx..."
+                                        placeholder={
+                                            repoForm.provider === 'github' ? 'ghp_xxxx...' :
+                                            repoForm.provider === 'gitlab' ? 'glpat-xxxx...' :
+                                            'token...'
+                                        }
                                         value={repoForm.token}
                                         onChange={(e) => setRepoForm({ ...repoForm, token: e.target.value })}
                                     />
+                                    <p className="text-xs text-gray-500">
+                                        {repoForm.provider === 'github' && 'GitHub: Settings → Developer settings → Personal access tokens'}
+                                        {repoForm.provider === 'gitlab' && 'GitLab: Settings → Access Tokens → repo, api scopes'}
+                                        {repoForm.provider === 'bitbucket' && 'Bitbucket: Settings → App passwords'}
+                                    </p>
                                 </div>
 
                                 <Button onClick={handleConnectRepo} disabled={saving} className="w-full bg-[#002D62]">

@@ -6,6 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft } from 'lucide-react';
 import MLRoleManager from '@/components/admin/MLRoleManager';
 import MLAuditLogViewer from '@/components/admin/MLAuditLogViewer';
+import RetrainingConfigManager from '@/components/ml/RetrainingConfigManager';
+import RetrainingHistory from '@/components/ml/RetrainingHistory';
 
 export default function MLAdmin() {
     const [lang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
@@ -39,6 +41,9 @@ export default function MLAdmin() {
                         <TabsTrigger value="roles">
                             {lang === 'pt' ? 'Papéis & Permissões' : 'Roles & Permissions'}
                         </TabsTrigger>
+                        <TabsTrigger value="retraining">
+                            {lang === 'pt' ? 'Retreinamento Automático' : 'Auto-Retraining'}
+                        </TabsTrigger>
                         <TabsTrigger value="audit">
                             {lang === 'pt' ? 'Logs de Auditoria' : 'Audit Logs'}
                         </TabsTrigger>
@@ -46,6 +51,13 @@ export default function MLAdmin() {
 
                     <TabsContent value="roles">
                         <MLRoleManager lang={lang} />
+                    </TabsContent>
+
+                    <TabsContent value="retraining">
+                        <div className="space-y-6">
+                            <RetrainingConfigManager lang={lang} />
+                            <RetrainingHistory lang={lang} />
+                        </div>
                     </TabsContent>
 
                     <TabsContent value="audit">

@@ -315,6 +315,7 @@ export default function CorporateFactManager({ lang = 'pt' }) {
                     </Tabs>
                 </div>
             </CardContent>
-        </Card>
+            </Card>
+        </div>
     );
 }

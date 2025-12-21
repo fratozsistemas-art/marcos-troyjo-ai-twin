@@ -37,7 +37,7 @@ GUIA PARA GRÁFICOS CUSTOMIZADOS:
 
 Seja conciso, prático e focado em ajudar o usuário a usar o app efetivamente. Responda em português brasileiro.
 
-IMPORTANTE: Sempre que o usuário fizer uma pergunta sobre como usar o app, conceitos econômicos, tutoriais ou solução de problemas, BUSQUE PRIMEIRO na base de conhecimento antes de responder. Cite os artigos relevantes quando disponíveis.`;
+IMPORTANTE: Sempre que o usuário fizer uma pergunta sobre como usar o app, conceitos econômicos, tutoriais ou solução de problemas, BUSQUE PRIMEIRO na base de conhecimento usando busca semântica antes de responder. Cite os artigos relevantes quando disponíveis.`;
 
 Deno.serve(async (req) => {
     try {
@@ -60,26 +60,33 @@ Deno.serve(async (req) => {
         const lastUserMessage = messages.filter(m => m.role === 'user').pop();
         let knowledgeContext = '';
 
-        // Search knowledge base for relevant articles
+        // Search knowledge base using semantic search for relevant articles
         if (lastUserMessage?.content) {
             try {
                 const kbResults = await base44.functions.invoke('searchKnowledgeBase', {
                     query: lastUserMessage.content,
                     limit: 3,
-                    min_priority: 3
+                    min_priority: 3,
+                    use_semantic: true,
+                    min_similarity: 0.7
                 });
 
                 if (kbResults.data?.results?.length > 0) {
-                    knowledgeContext = '\n\nARTIGOS RELEVANTES DA BASE DE CONHECIMENTO:\n';
+                    knowledgeContext = '\n\n📚 ARTIGOS RELEVANTES DA BASE DE CONHECIMENTO:\n';
+                    knowledgeContext += `Tipo de busca: ${kbResults.data.search_type === 'semantic' ? 'Semântica (AI)' : 'Palavras-chave'}\n`;
+                    
                     kbResults.data.results.forEach((article, idx) => {
                         knowledgeContext += `\n${idx + 1}. "${article.title}" (${article.category})`;
+                        if (article.similarity_score) {
+                            knowledgeContext += ` [Relevância: ${(article.similarity_score * 100).toFixed(1)}%]`;
+                        }
                         if (article.summary) {
                             knowledgeContext += `\n   Resumo: ${article.summary}`;
                         }
-                        knowledgeContext += `\n   Conteúdo: ${article.body.substring(0, 500)}...`;
+                        knowledgeContext += `\n   Conteúdo: ${article.body.substring(0, 400)}...`;
                         knowledgeContext += `\n   Link: /knowledge-article?id=${article.id}\n`;
                     });
-                    knowledgeContext += '\n\nUSE estas informações da base de conhecimento para fundamentar sua resposta. Sempre cite os artigos relevantes.';
+                    knowledgeContext += '\n\n✅ USE estas informações da base de conhecimento para fundamentar sua resposta. Sempre cite os artigos relevantes com seus links.';
                 }
             } catch (error) {
                 console.error('Error searching knowledge base:', error);
@@ -90,11 +97,11 @@ Deno.serve(async (req) => {
         let contextualPrompt = SYSTEM_PROMPT + knowledgeContext;
         
         if (current_page) {
-            contextualPrompt += `\n\nUSUÁRIO ESTÁ ATUALMENTE EM: ${current_page}`;
+            contextualPrompt += `\n\n📍 USUÁRIO ESTÁ ATUALMENTE EM: ${current_page}`;
         }
         
         if (context) {
-            contextualPrompt += `\n\nCONTEXTO ADICIONAL: ${context}`;
+            contextualPrompt += `\n\n🔍 CONTEXTO ADICIONAL: ${context}`;
         }
 
         const completion = await openai.chat.completions.create({

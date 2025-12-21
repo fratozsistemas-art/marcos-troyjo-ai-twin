@@ -138,12 +138,39 @@ export default function KnowledgeAdmin() {
                 last_reviewed_date: new Date().toISOString()
             };
 
+            let entryId;
             if (editingEntry) {
                 await base44.entities.KnowledgeEntry.update(editingEntry.id, data);
+                entryId = editingEntry.id;
                 toast.success('Artigo atualizado!');
             } else {
-                await base44.entities.KnowledgeEntry.create(data);
+                const newEntry = await base44.entities.KnowledgeEntry.create(data);
+                entryId = newEntry.id;
                 toast.success('Artigo criado!');
+            }
+
+            // Generate embedding for the article
+            try {
+                toast.info('Gerando embedding semântico...');
+                await base44.functions.invoke('generateKnowledgeEmbeddings', {
+                    entry_id: entryId,
+                    force: true
+                });
+                
+                // Find and link related articles automatically
+                const relatedResponse = await base44.functions.invoke('findRelatedArticles', {
+                    entry_id: entryId,
+                    limit: 5,
+                    min_similarity: 0.75,
+                    auto_update: true
+                });
+                
+                if (relatedResponse.data.total > 0) {
+                    toast.success(`${relatedResponse.data.total} artigos relacionados encontrados!`);
+                }
+            } catch (embeddingError) {
+                console.error('Error generating embedding:', embeddingError);
+                toast.warning('Artigo salvo, mas erro ao gerar embedding');
             }
 
             setDialogOpen(false);

@@ -72,12 +72,24 @@ export default function SystemHealth() {
     const loadMetrics = async () => {
         setLoading(true);
         try {
-            const [articles, conversations, subscriptions, roles] = await Promise.all([
+            const user = await base44.auth.me();
+            
+            const [articles, subscriptions, users] = await Promise.all([
                 base44.entities.Article.list('-created_date', 500),
-                base44.asServiceRole.entities.AIHistory?.list?.('-created_date', 100) || [],
-                base44.asServiceRole.entities.Subscription?.list?.('-created_date', 100) || [],
-                base44.asServiceRole.entities.Role?.list?.('-created_date', 100) || []
+                base44.asServiceRole.entities.Subscription.list('-created_date', 100),
+                base44.asServiceRole.entities.User.list('-created_date', 100)
             ]);
+
+            // Get conversations count
+            let conversationsCount = 0;
+            try {
+                const conversations = await base44.agents.listConversations({
+                    agent_name: "troyjo_twin"
+                });
+                conversationsCount = conversations?.length || 0;
+            } catch (error) {
+                console.error('Error loading conversations:', error);
+            }
 
             const totalViews = articles.reduce((sum, a) => sum + (a.views || 0), 0);
             const publishedArticles = articles.filter(a => a.status === 'publicado');
@@ -94,11 +106,11 @@ export default function SystemHealth() {
             };
 
             setMetrics({
-                totalUsers: roles.length || 0,
+                totalUsers: users.length || 0,
                 activeToday: subscriptions.filter(s => s.status === 'active' || s.status === 'trial').length,
                 totalArticles: articles.length,
                 publishedArticles: publishedArticles.length,
-                totalConversations: conversations.length,
+                totalConversations: conversationsCount,
                 totalViews,
                 qualityCounts,
                 pendingReviews

@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
 
         if (method === 'news') {
             // Fetch geopolitical news
-            const newsPrompt = `Busque as 5 notícias mais relevantes sobre geopolítica das últimas 24 horas, focando em: ${regions.join(', ')}. Tópicos de interesse: ${topics.join(', ')}. 
+            const newsPrompt = `Busque as 5 notícias MAIS RECENTES (últimas 48 horas) sobre geopolítica, focando em: ${regions.join(', ')}. Tópicos de interesse: ${topics.join(', ')}. PRIORIZE notícias de hoje e ontem. 
             
             Para cada notícia, forneça:
             - title: título da notícia
@@ -148,7 +148,7 @@ Deno.serve(async (req) => {
             // Fetch all data sources in parallel
             const [newsData, economicData, sentimentData] = await Promise.all([
                 base44.integrations.Core.InvokeLLM({
-                    prompt: `Busque as 3 notícias geopolíticas mais relevantes das últimas 24 horas sobre: ${regions.join(', ')}`,
+                    prompt: `Busque as 3 notícias geopolíticas MAIS RECENTES (últimas 48 horas, priorizando hoje) sobre: ${regions.join(', ')}`,
                     add_context_from_internet: true,
                     response_json_schema: {
                         type: 'object',

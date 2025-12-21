@@ -122,7 +122,7 @@ Deno.serve(async (req) => {
         if (sources.includes('news')) {
             try {
                 const newsResponse = await base44.integrations.Core.InvokeLLM({
-                    prompt: `Search for recent news and data about: ${query}. Focus on: economic indicators, trade data, geopolitical developments, and financial market information. Return structured data.`,
+                    prompt: `Search for the MOST RECENT news (last 48 hours, prioritize today) about: ${query}. Focus on: economic indicators, trade data, geopolitical developments, and financial market information. ONLY return news from the last 2 days.`,
                     add_context_from_internet: true,
                     response_json_schema: {
                         type: "object",

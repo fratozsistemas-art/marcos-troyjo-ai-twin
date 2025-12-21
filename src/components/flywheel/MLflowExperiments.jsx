@@ -331,11 +331,14 @@ export default function MLflowExperiments({ lang = 'pt' }) {
                                                         </p>
                                                     ))}
                                                 </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            </ScrollArea>
+                                                )}
+                                                </div>
+                                                </div>
+                                                </div>
+                                                );
+                                                })}
+                                                </div>
+                                                </ScrollArea>
                         ) : (
                             <p className="text-center text-gray-500 py-8">
                                 Selecione um experimento
@@ -346,8 +349,7 @@ export default function MLflowExperiments({ lang = 'pt' }) {
                 )}
 
                 {/* Metric Chart */}
-                {!showComparison && (
-                {selectedRun && metricHistory.length > 0 && (
+                {!showComparison && selectedRun && metricHistory.length > 0 && (
                     <div className="mt-6 pt-6 border-t">
                         <h3 className="font-semibold mb-3 flex items-center gap-2">
                             <TrendingUp className="w-4 h-4" />
@@ -364,7 +366,6 @@ export default function MLflowExperiments({ lang = 'pt' }) {
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
-                )}
                 )}
             </CardContent>
         </Card>

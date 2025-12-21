@@ -47,6 +47,7 @@ import IntelligenceResources from '@/components/dashboard/IntelligenceResources'
 import InterviewTranscriptManager from '@/components/interviews/InterviewTranscriptManager';
 import ExternalDataFeeds from '@/components/dashboard/ExternalDataFeeds';
 import CorporateFactManager from '@/components/ssot/CorporateFactManager';
+import FlywheelManager from '@/components/flywheel/FlywheelManager';
 
 const translations = {
     pt: {
@@ -408,6 +409,11 @@ export default function Dashboard() {
                         {/* External Data Feeds - Full Width */}
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.01 }}>
                             <ExternalDataFeeds lang={lang} />
+                        </motion.div>
+
+                        {/* Flywheel Manager - Full Width */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.015 }}>
+                            <FlywheelManager lang={lang} />
                         </motion.div>
 
                         {/* Geopolitical Section - Side by Side */}

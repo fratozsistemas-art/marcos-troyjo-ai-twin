@@ -333,17 +333,10 @@ export default function ArticleGenerator() {
                                 {t.newArticle}
                             </Button>
                             <div className="flex gap-2 flex-wrap">
-                                <Select onValueChange={handleSummarize} disabled={summarizing}>
-                                    <SelectTrigger className="w-40">
-                                        <SelectValue placeholder={summarizing ? t.summarizing : t.summarize} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="lead_paragraph">Lead Paragraph</SelectItem>
-                                        <SelectItem value="social_media">Social Media</SelectItem>
-                                        <SelectItem value="executive_summary">Executive Summary</SelectItem>
-                                        <SelectItem value="key_insights">Key Insights</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <Button onClick={() => handleSummarize('executive_summary')} disabled={summarizing} variant="outline" className="gap-2">
+                                    {summarizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                                    <span className="hidden md:inline">{summarizing ? t.summarizing : t.summarize}</span>
+                                </Button>
                                 <Button onClick={() => setShareOpen(true)} variant="outline" className="gap-2">
                                     <Share2 className="w-4 h-4" />
                                     <span className="hidden md:inline">{t.share}</span>

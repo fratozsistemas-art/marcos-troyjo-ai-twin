@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+
+// Safety wrapper for createPageUrl
+const safeCreatePageUrl = (pageName) => {
+    if (!pageName) {
+        console.error('createPageUrl called with undefined/null pageName');
+        return '/';
+    }
+    return createPageUrl(pageName);
+};
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -324,7 +333,7 @@ export default function Dashboard() {
                 <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Link to={createPageUrl('Home')}>
+                        <Link to={safeCreatePageUrl('Home')}>
                             <Button variant="ghost" size="sm" className="text-[#333F48] gap-2">
                                 <ArrowLeft className="w-4 h-4" />
                                 <span className="hidden sm:inline">{t.back}</span>
@@ -345,7 +354,7 @@ export default function Dashboard() {
                                 </span>
                             </div>
                         )}
-                        <Link to={createPageUrl('Consultation')}>
+                        <Link to={safeCreatePageUrl('Consultation')}>
                             <Button 
                                 data-ai-id="btn_new_chat"
                                 data-ai-role="button"
@@ -588,7 +597,7 @@ export default function Dashboard() {
                                         <MessageSquare className="w-12 h-12 text-[#333F48]/20 mx-auto mb-3" />
                                         <p className="text-sm text-[#333F48]/60 mb-1">{t.noConversations}</p>
                                         <p className="text-xs text-[#333F48]/40">{t.startFirst}</p>
-                                        <Link to={createPageUrl('Consultation')}>
+                                        <Link to={safeCreatePageUrl('Consultation')}>
                                             <Button className="mt-4 bg-[#002D62] hover:bg-[#001d42]">
                                                 <Plus className="w-4 h-4 mr-2" />
                                                 {t.newChat}
@@ -653,7 +662,7 @@ export default function Dashboard() {
                                                                 )}
                                                             </Button>
                                                         )}
-                                                        <Link to={createPageUrl('Consultation') + `?conversationId=${conv.id}`}>
+                                                        <Link to={safeCreatePageUrl('Consultation') + `?conversationId=${conv.id}`}>
                                                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                                                                 <Eye className="w-4 h-4" />
                                                             </Button>

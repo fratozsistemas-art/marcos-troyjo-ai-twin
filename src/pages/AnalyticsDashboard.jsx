@@ -10,11 +10,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { 
     LayoutDashboard, Plus, Save, Share2, ArrowLeft, Trash2, 
-    Eye, Star, StarOff, Download, Grid3x3, Loader2, Copy, Check
+    Eye, Star, StarOff, Download, Grid3x3, Loader2, Copy, Check, Upload
 } from 'lucide-react';
 import { toast } from 'sonner';
 import DashboardWidget from '@/components/analytics/DashboardWidget';
 import WidgetSelector from '@/components/analytics/WidgetSelector';
+import GoogleDriveExport from '@/components/integrations/GoogleDriveExport';
 
 const translations = {
     pt: {
@@ -440,6 +441,23 @@ export default function AnalyticsDashboard() {
                             <Download className="w-4 h-4" />
                             {t.export}
                         </Button>
+                        <GoogleDriveExport
+                            data={{
+                                name: dashboardName,
+                                description: dashboardDescription,
+                                widgets: widgets,
+                                exported_at: new Date().toISOString()
+                            }}
+                            defaultFileName={`dashboard-${dashboardName.replace(/\s+/g, '-')}.json`}
+                            mimeType="application/json"
+                            lang={lang}
+                            trigger={
+                                <Button variant="outline" className="w-full gap-2">
+                                    <Upload className="w-4 h-4" />
+                                    {lang === 'pt' ? 'Salvar no Drive' : 'Save to Drive'}
+                                </Button>
+                            }
+                        />
                         {currentDashboard && (
                             <Button
                                 onClick={handleDeleteDashboard}

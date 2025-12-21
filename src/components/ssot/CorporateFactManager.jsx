@@ -19,6 +19,7 @@ import SSOTChatbot from '@/components/ssot/SSOTChatbot';
 import DataSourceManager from '@/components/ssot/DataSourceManager';
 import QuarterlyDataView from '@/components/ssot/QuarterlyDataView';
 import CustomChartBuilder from '@/components/ssot/CustomChartBuilder';
+import GoogleDriveExport from '@/components/integrations/GoogleDriveExport';
 
 const translations = {
     pt: {
@@ -252,6 +253,17 @@ export default function CorporateFactManager({ lang = 'pt' }) {
                             <Download className="w-4 h-4 mr-2" />
                             {t.export}
                         </Button>
+                        <GoogleDriveExport
+                            data={getFilteredFacts()}
+                            defaultFileName="corporate-facts.json"
+                            mimeType="application/json"
+                            lang={lang}
+                            trigger={
+                                <Button variant="outline" size="sm">
+                                    {lang === 'pt' ? 'Drive' : 'Drive'}
+                                </Button>
+                            }
+                        />
                         <div className="flex gap-2">
                             <Button 
                                 onClick={handleImportWorldBank}

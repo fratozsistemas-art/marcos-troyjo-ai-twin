@@ -41,6 +41,7 @@ import InterviewSimulation from '@/components/persona/InterviewSimulation';
 import MultiModalRAGInterface from '@/components/interviews/MultiModalRAGInterface';
 import GeopoliticalRiskMonitor from '@/components/dashboard/GeopoliticalRiskMonitor';
 import UsageMeter from '@/components/subscription/UsageMeter';
+import MultiModelChat from '@/components/ai/MultiModelChat';
 import IntelligenceResources from '@/components/dashboard/IntelligenceResources';
 import InterviewTranscriptManager from '@/components/interviews/InterviewTranscriptManager';
 import ExternalDataFeeds from '@/components/dashboard/ExternalDataFeeds';
@@ -471,6 +472,11 @@ export default function Dashboard() {
                 {/* Multi-Modal RAG Interface */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.31 }}>
                     <MultiModalRAGInterface lang={lang} />
+                </motion.div>
+
+                {/* Multi-Model AI Chat Comparison */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }}>
+                    <MultiModelChat lang={lang} />
                 </motion.div>
 
                 {/* Third Row - Knowledge Hub Full Width */}

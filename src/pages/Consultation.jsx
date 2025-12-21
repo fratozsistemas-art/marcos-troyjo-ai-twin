@@ -229,7 +229,8 @@ function ConsultationInner() {
 
             await base44.agents.addMessage(conversation, messageData);
 
-            if (messages.length === 0 || messages.length === 2) {
+            // Auto-rename conversation after first user message
+            if (messages.filter(m => m.role === 'user').length === 0) {
                 setTimeout(async () => {
                     try {
                         const response = await base44.functions.invoke('autoNameConversation', {
@@ -247,7 +248,7 @@ function ConsultationInner() {
                     } catch (error) {
                         console.error('Error auto-naming:', error);
                     }
-                }, 4000);
+                }, 3000);
             }
         } catch (error) {
             console.error('Error sending message:', error);

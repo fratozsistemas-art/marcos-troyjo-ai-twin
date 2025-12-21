@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ReactMarkdown from 'react-markdown';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, BarChart as RechartsBarChart, Bar } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, BarChart as RechartsBarChart, Bar, PieChart, Pie, Cell, Legend, ComposedChart } from 'recharts';
 
 const translations = {
     pt: {
@@ -56,7 +56,20 @@ const translations = {
         personaDesc: 'Descrição',
         systemPrompt: 'Prompt de Sistema',
         focusAreas: 'Áreas de Foco',
-        noPersonas: 'Nenhuma persona customizada'
+        noPersonas: 'Nenhuma persona customizada',
+        dateFilter: 'Filtrar por Data',
+        last7Days: 'Últimos 7 dias',
+        last30Days: 'Últimos 30 dias',
+        last90Days: 'Últimos 90 dias',
+        allTime: 'Todo período',
+        interactionsByPersona: 'Interações por Persona',
+        feedbackDistribution: 'Distribuição de Feedback',
+        timelineMetrics: 'Métricas ao Longo do Tempo',
+        positive: 'Positivo',
+        negative: 'Negativo',
+        neutral: 'Neutro',
+        interactions: 'Interações',
+        avgTime: 'Tempo Médio (ms)'
     },
     en: {
         title: 'Agent Management',
@@ -97,7 +110,20 @@ const translations = {
         personaDesc: 'Description',
         systemPrompt: 'System Prompt',
         focusAreas: 'Focus Areas',
-        noPersonas: 'No custom personas'
+        noPersonas: 'No custom personas',
+        dateFilter: 'Filter by Date',
+        last7Days: 'Last 7 days',
+        last30Days: 'Last 30 days',
+        last90Days: 'Last 90 days',
+        allTime: 'All time',
+        interactionsByPersona: 'Interactions by Persona',
+        feedbackDistribution: 'Feedback Distribution',
+        timelineMetrics: 'Metrics Over Time',
+        positive: 'Positive',
+        negative: 'Negative',
+        neutral: 'Neutral',
+        interactions: 'Interactions',
+        avgTime: 'Avg Time (ms)'
     }
 };
 
@@ -120,15 +146,25 @@ export default function AgentManager({ lang = 'pt' }) {
         temperature: 0.7,
         top_p: 0.9
     });
+    const [dateFilter, setDateFilter] = useState('30');
+    const [analyticsData, setAnalyticsData] = useState({
+        byPersona: [],
+        feedbackDist: [],
+        timeline: []
+    });
     const t = translations[lang];
 
     useEffect(() => {
         loadConfiguration();
         loadDocuments();
         loadLogs();
-        loadMetrics();
+        loadMetrics(parseInt(dateFilter));
         loadPersonas();
     }, []);
+
+    useEffect(() => {
+        loadMetrics(dateFilter === 'all' ? 'all' : parseInt(dateFilter));
+    }, [dateFilter]);
 
     const loadConfiguration = async () => {
         setLoading(true);
@@ -276,20 +312,27 @@ export default function AgentManager({ lang = 'pt' }) {
         }
     };
 
-    const loadMetrics = async () => {
+    const loadMetrics = async (filterDays = 30) => {
         try {
             const allLogs = await base44.entities.AgentInteractionLog.filter({
                 agent_name: 'troyjo_twin'
             });
+
+            // Apply date filter
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - filterDays);
+            const filteredLogs = filterDays === 'all' ? allLogs : allLogs.filter(log => 
+                new Date(log.created_date) >= cutoffDate
+            );
             
-            const totalInteractions = allLogs.length;
-            const avgResponseTime = allLogs.reduce((sum, log) => sum + (log.response_time_ms || 0), 0) / totalInteractions;
-            const logsWithFeedback = allLogs.filter(l => l.feedback_score);
+            const totalInteractions = filteredLogs.length;
+            const avgResponseTime = filteredLogs.reduce((sum, log) => sum + (log.response_time_ms || 0), 0) / totalInteractions;
+            const logsWithFeedback = filteredLogs.filter(l => l.feedback_score);
             const avgFeedback = logsWithFeedback.reduce((sum, log) => sum + log.feedback_score, 0) / logsWithFeedback.length;
             
             // Group by date for chart
             const byDate = {};
-            allLogs.forEach(log => {
+            filteredLogs.forEach(log => {
                 const date = new Date(log.created_date).toLocaleDateString();
                 byDate[date] = (byDate[date] || 0) + 1;
             });
@@ -302,6 +345,58 @@ export default function AgentManager({ lang = 'pt' }) {
                 avgFeedback: avgFeedback ? avgFeedback.toFixed(2) : 'N/A',
                 chartData
             });
+
+            // Analytics data for visualizations
+            
+            // 1. Interactions by Persona
+            const byPersona = {};
+            filteredLogs.forEach(log => {
+                const persona = log.persona_mode || 'não especificado';
+                byPersona[persona] = (byPersona[persona] || 0) + 1;
+            });
+            const personaData = Object.entries(byPersona).map(([name, value]) => ({ name, value }));
+
+            // 2. Feedback Distribution
+            const feedbackCounts = { positive: 0, negative: 0, neutral: 0 };
+            filteredLogs.forEach(log => {
+                if (log.feedback_score >= 4) feedbackCounts.positive++;
+                else if (log.feedback_score <= 2) feedbackCounts.negative++;
+                else if (log.feedback_score === 3) feedbackCounts.neutral++;
+            });
+            const feedbackData = [
+                { name: lang === 'pt' ? 'Positivo' : 'Positive', value: feedbackCounts.positive },
+                { name: lang === 'pt' ? 'Neutro' : 'Neutral', value: feedbackCounts.neutral },
+                { name: lang === 'pt' ? 'Negativo' : 'Negative', value: feedbackCounts.negative }
+            ];
+
+            // 3. Timeline with interactions and avg response time
+            const timelineMap = {};
+            filteredLogs.forEach(log => {
+                const date = new Date(log.created_date).toLocaleDateString();
+                if (!timelineMap[date]) {
+                    timelineMap[date] = { count: 0, totalTime: 0, numWithTime: 0 };
+                }
+                timelineMap[date].count++;
+                if (log.response_time_ms) {
+                    timelineMap[date].totalTime += log.response_time_ms;
+                    timelineMap[date].numWithTime++;
+                }
+            });
+            
+            const timelineData = Object.entries(timelineMap)
+                .map(([date, data]) => ({
+                    date,
+                    interactions: data.count,
+                    avgTime: data.numWithTime > 0 ? Math.round(data.totalTime / data.numWithTime) : 0
+                }))
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            setAnalyticsData({
+                byPersona: personaData,
+                feedbackDist: feedbackData,
+                timeline: timelineData
+            });
+            
         } catch (error) {
             console.error('Error loading metrics:', error);
         }
@@ -729,28 +824,140 @@ export default function AgentManager({ lang = 'pt' }) {
                         )}
                     </TabsContent>
 
-                    <TabsContent value="analytics" className="space-y-4 mt-6">
+                    <TabsContent value="analytics" className="space-y-6 mt-6">
+                        {/* Settings */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-sm">
+                                    {lang === 'pt' ? 'Configurações de Analytics' : 'Analytics Settings'}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-3">
+                                <div className="flex items-center gap-2">
+                                    <Switch
+                                        checked={config.analytics_settings?.track_interactions}
+                                        onCheckedChange={(checked) => updateAnalytics('track_interactions', checked)}
+                                    />
+                                    <Label>{t.trackInteractions}</Label>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Switch
+                                        checked={config.analytics_settings?.track_feedback}
+                                        onCheckedChange={(checked) => updateAnalytics('track_feedback', checked)}
+                                    />
+                                    <Label>{t.trackFeedback}</Label>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Switch
+                                        checked={config.analytics_settings?.aggregate_insights}
+                                        onCheckedChange={(checked) => updateAnalytics('aggregate_insights', checked)}
+                                    />
+                                    <Label>{t.aggregateInsights}</Label>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Date Filter */}
                         <div className="flex items-center gap-2">
-                            <Switch
-                                checked={config.analytics_settings?.track_interactions}
-                                onCheckedChange={(checked) => updateAnalytics('track_interactions', checked)}
-                            />
-                            <Label>{t.trackInteractions}</Label>
+                            <Label>{t.dateFilter}:</Label>
+                            <Select value={dateFilter} onValueChange={setDateFilter}>
+                                <SelectTrigger className="w-48">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="7">{t.last7Days}</SelectItem>
+                                    <SelectItem value="30">{t.last30Days}</SelectItem>
+                                    <SelectItem value="90">{t.last90Days}</SelectItem>
+                                    <SelectItem value="all">{t.allTime}</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <Switch
-                                checked={config.analytics_settings?.track_feedback}
-                                onCheckedChange={(checked) => updateAnalytics('track_feedback', checked)}
-                            />
-                            <Label>{t.trackFeedback}</Label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Switch
-                                checked={config.analytics_settings?.aggregate_insights}
-                                onCheckedChange={(checked) => updateAnalytics('aggregate_insights', checked)}
-                            />
-                            <Label>{t.aggregateInsights}</Label>
-                        </div>
+
+                        {/* Interactions by Persona - Bar Chart */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-sm">{t.interactionsByPersona}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {analyticsData.byPersona.length > 0 ? (
+                                    <ResponsiveContainer width="100%" height={250}>
+                                        <RechartsBarChart data={analyticsData.byPersona}>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                                            <YAxis tick={{ fontSize: 12 }} />
+                                            <Tooltip />
+                                            <Bar dataKey="value" fill="#002D62" />
+                                        </RechartsBarChart>
+                                    </ResponsiveContainer>
+                                ) : (
+                                    <p className="text-center text-gray-500 py-8">{t.noLogs}</p>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Feedback Distribution - Pie Chart */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-sm">{t.feedbackDistribution}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {analyticsData.feedbackDist.some(d => d.value > 0) ? (
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <PieChart>
+                                            <Pie
+                                                data={analyticsData.feedbackDist}
+                                                cx="50%"
+                                                cy="50%"
+                                                labelLine={false}
+                                                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                                outerRadius={80}
+                                                fill="#8884d8"
+                                                dataKey="value"
+                                            >
+                                                {analyticsData.feedbackDist.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={
+                                                        entry.name.includes('Positivo') || entry.name.includes('Positive') ? '#10b981' :
+                                                        entry.name.includes('Negativo') || entry.name.includes('Negative') ? '#ef4444' :
+                                                        '#6b7280'
+                                                    } />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip />
+                                            <Legend />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                ) : (
+                                    <p className="text-center text-gray-500 py-8">
+                                        {lang === 'pt' ? 'Nenhum feedback ainda' : 'No feedback yet'}
+                                    </p>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Timeline Metrics - Composed Chart */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-sm">{t.timelineMetrics}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {analyticsData.timeline.length > 0 ? (
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <ComposedChart data={analyticsData.timeline}>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                                            <YAxis yAxisId="left" tick={{ fontSize: 12 }} />
+                                            <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12 }} />
+                                            <Tooltip />
+                                            <Legend />
+                                            <Bar yAxisId="left" dataKey="interactions" fill="#002D62" name={t.interactions} />
+                                            <Line yAxisId="right" type="monotone" dataKey="avgTime" stroke="#D4AF37" strokeWidth={2} name={t.avgTime} />
+                                        </ComposedChart>
+                                    </ResponsiveContainer>
+                                ) : (
+                                    <p className="text-center text-gray-500 py-8">{t.noLogs}</p>
+                                )}
+                            </CardContent>
+                        </Card>
                     </TabsContent>
                 </Tabs>
 

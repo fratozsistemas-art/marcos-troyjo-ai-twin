@@ -1,421 +1,598 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+import { 
+    Check, ArrowRight, Sparkles, Crown, Users, Building2, 
+    Zap, Globe, Mail, Shield, Star, TrendingUp
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, Zap, Crown, Building2, Users, GraduationCap, ArrowLeft, Loader2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { useEmailVerification } from '@/components/subscription/VerificationGate';
-import UpgradeRequestForm from '@/components/subscription/UpgradeRequestForm';
 
-const PLANS = {
-    pt: [
-        {
-            id: 'free',
-            name: 'Gratuito',
-            price: 'R$ 0',
-            period: '/mês',
-            description: 'Para explorar a plataforma',
-            icon: Zap,
+const translations = {
+    pt: {
+        title: 'Planos de Assinatura',
+        subtitle: 'Escolha o plano ideal para suas necessidades',
+        monthly: 'Mensal',
+        annual: 'Anual',
+        save: 'Economize',
+        currentPlan: 'Plano Atual',
+        upgrade: 'Fazer Upgrade',
+        subscribe: 'Assinar',
+        contactUs: 'Falar com Vendas',
+        loading: 'Carregando...',
+        perMonth: '/mês',
+        perYear: '/ano',
+        billed: 'cobrado',
+        monthly_: 'mensalmente',
+        annually: 'anualmente',
+        popular: 'Mais Popular',
+        freemium: {
+            name: 'Freemium',
+            description: 'Para começar a explorar',
+            price: 'Grátis',
             features: [
-                '5 consultas/mês',
-                '2 artigos gerados/mês',
-                'Acesso ao Digital Twin básico',
-                'Suporte por email'
-            ],
-            limits: {
-                consultations_per_month: 5,
-                articles_per_month: 2,
-                documents_per_month: 5
-            }
+                '5 consultas por mês',
+                'Acesso básico ao Digital Twin',
+                'Respostas padrão',
+                'Suporte via email',
+                'Base de conhecimento'
+            ]
         },
-        {
-            id: 'student',
-            name: 'Estudante',
-            priceMonthly: 'R$ 97',
-            priceYearly: 'R$ 970',
-            period: '/mês',
-            description: 'Para estudantes e acadêmicos',
-            icon: GraduationCap,
-            badge: 'Desconto 75%',
+        plus: {
+            name: 'Plus',
+            description: 'Para usuários individuais',
             features: [
-                '20 consultas/mês',
-                '10 artigos gerados/mês',
-                'Análise de documentos (50/mês)',
-                'Acesso a dashboards',
-                'Modo Professor otimizado',
-                'Suporte por email'
-            ],
-            limits: {
-                consultations_per_month: 20,
-                articles_per_month: 10,
-                documents_per_month: 50
-            },
-            stripeEnabled: true
+                '50 consultas por mês',
+                'Adaptação de persona',
+                'Análise de documentos (3/mês)',
+                'Exportação em PDF',
+                'Histórico de conversas',
+                'Suporte prioritário'
+            ]
         },
-        {
-            id: 'pro',
-            name: 'Profissional',
-            priceMonthly: 'R$ 397',
-            priceYearly: 'R$ 1.497',
-            period: '/mês',
-            description: 'Para profissionais e analistas',
-            icon: Crown,
-            badge: 'Mais Popular',
+        pro: {
+            name: 'Pro',
+            description: 'Para profissionais sérios',
             features: [
-                '50 consultas/mês',
-                '20 artigos gerados/mês',
-                'Análise de documentos ilimitada',
-                'Acesso a todos os dashboards',
-                'Exportação de dados',
-                'Suporte prioritário',
-                'Histórico completo'
-            ],
-            limits: {
-                consultations_per_month: 50,
-                articles_per_month: 20,
-                documents_per_month: -1
-            },
-            stripeEnabled: true
-        },
-        {
-            id: 'teams',
-            name: 'Times',
-            price: 'R$ 1.497',
-            period: '/mês',
-            description: 'Para equipes (até 10 usuários)',
-            icon: Users,
-            features: [
-                '150 consultas/mês (compartilhadas)',
-                '60 artigos gerados/mês',
+                '200 consultas por mês',
+                'Todas as features Plus',
                 'Análise ilimitada de documentos',
-                'Workspace colaborativo',
-                'Gestão de usuários',
-                'Analytics de time',
-                'Suporte prioritário',
-                'Onboarding dedicado'
-            ],
-            limits: {
-                consultations_per_month: 150,
-                articles_per_month: 60,
-                documents_per_month: -1
-            }
+                'Alertas geopolíticos personalizados',
+                'Geração de relatórios',
+                'API access',
+                'Suporte 24/7'
+            ]
         },
-        {
-            id: 'enterprise',
+        teams: {
+            name: 'Teams',
+            description: 'Para equipes e organizações',
+            features: [
+                '1000 consultas por mês (compartilhadas)',
+                'Todas as features Pro',
+                'Até 10 usuários',
+                'Dashboard colaborativo',
+                'SSO (Single Sign-On)',
+                'Treinamento de equipe',
+                'Gerente de conta dedicado'
+            ]
+        },
+        enterprise: {
             name: 'Enterprise',
-            price: 'Sob consulta',
-            period: '',
             description: 'Para grandes organizações',
-            icon: Building2,
+            price: 'Personalizado',
             features: [
                 'Consultas ilimitadas',
-                'Artigos ilimitados',
-                'API dedicada',
-                'Treinamento customizado',
+                'Usuários ilimitados',
+                'Todas as features Teams',
+                'Modelo customizado',
+                'Integração API completa',
                 'SLA garantido',
-                'Suporte 24/7',
-                'Integração customizada',
-                'Revisão Troyjo prioritária'
-            ],
-            limits: {
-                consultations_per_month: -1,
-                articles_per_month: -1,
-                documents_per_month: -1
-            }
+                'Suporte white-glove',
+                'Treinamento on-site'
+            ]
         }
-    ]
+    },
+    en: {
+        title: 'Subscription Plans',
+        subtitle: 'Choose the perfect plan for your needs',
+        monthly: 'Monthly',
+        annual: 'Annual',
+        save: 'Save',
+        currentPlan: 'Current Plan',
+        upgrade: 'Upgrade',
+        subscribe: 'Subscribe',
+        contactUs: 'Contact Sales',
+        loading: 'Loading...',
+        perMonth: '/mo',
+        perYear: '/yr',
+        billed: 'billed',
+        monthly_: 'monthly',
+        annually: 'annually',
+        popular: 'Most Popular',
+        freemium: {
+            name: 'Freemium',
+            description: 'To start exploring',
+            price: 'Free',
+            features: [
+                '5 consultations per month',
+                'Basic Digital Twin access',
+                'Standard responses',
+                'Email support',
+                'Knowledge base'
+            ]
+        },
+        plus: {
+            name: 'Plus',
+            description: 'For individual users',
+            features: [
+                '50 consultations per month',
+                'Persona adaptation',
+                'Document analysis (3/month)',
+                'PDF export',
+                'Conversation history',
+                'Priority support'
+            ]
+        },
+        pro: {
+            name: 'Pro',
+            description: 'For serious professionals',
+            features: [
+                '200 consultations per month',
+                'All Plus features',
+                'Unlimited document analysis',
+                'Custom geopolitical alerts',
+                'Report generation',
+                'API access',
+                '24/7 support'
+            ]
+        },
+        teams: {
+            name: 'Teams',
+            description: 'For teams and organizations',
+            features: [
+                '1000 shared consultations/month',
+                'All Pro features',
+                'Up to 10 users',
+                'Collaborative dashboard',
+                'SSO (Single Sign-On)',
+                'Team training',
+                'Dedicated account manager'
+            ]
+        },
+        enterprise: {
+            name: 'Enterprise',
+            description: 'For large organizations',
+            price: 'Custom',
+            features: [
+                'Unlimited consultations',
+                'Unlimited users',
+                'All Teams features',
+                'Custom model',
+                'Full API integration',
+                'Guaranteed SLA',
+                'White-glove support',
+                'On-site training'
+            ]
+        }
+    }
 };
 
 export default function Pricing() {
-    const [lang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
-    const [loading, setLoading] = useState(false);
-    const [currentPlan, setCurrentPlan] = useState(null);
-    const [billingInterval, setBillingInterval] = useState('monthly');
-    const { isVerified } = useEmailVerification();
-    const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
-    const [selectedPlan, setSelectedPlan] = useState(null);
+    const navigate = useNavigate();
+    const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
+    const [billing, setBilling] = useState('monthly');
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [currentSubscription, setCurrentSubscription] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [subscribing, setSubscribing] = useState(null);
 
-    const t = {
-        pt: {
-            title: 'Escolha seu Plano',
-            subtitle: 'Comece com 7 dias de teste gratuito no plano Pro',
-            trial: '7 dias grátis',
-            startTrial: 'Iniciar Teste Grátis',
-            subscribe: 'Assinar',
-            upgrade: 'Fazer Upgrade',
-            current: 'Plano Atual',
-            contact: 'Falar com Vendas',
-            back: 'Voltar',
-            monthly: 'Mensal',
-            yearly: 'Anual',
-            save: 'Economize 17%'
-        }
-    };
-
-    const text = t[lang];
-    const plans = PLANS[lang];
+    const t = translations[lang];
 
     useEffect(() => {
-        loadSubscription();
-        checkPaymentStatus();
+        checkAuthAndSubscription();
     }, []);
 
-    const checkPaymentStatus = () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const payment = urlParams.get('payment');
-        
-        if (payment === 'success') {
-            toast.success('Pagamento realizado com sucesso! Sua assinatura está ativa.');
-            window.history.replaceState({}, '', createPageUrl('Pricing'));
-            loadSubscription();
-        } else if (payment === 'cancelled') {
-            toast.error('Pagamento cancelado.');
-            window.history.replaceState({}, '', createPageUrl('Pricing'));
-        }
-    };
-
-    const loadSubscription = async () => {
-        try {
-            const user = await base44.auth.me();
-            const subs = await base44.entities.Subscription.filter({
-                user_email: user.email
-            });
-            if (subs.length > 0) {
-                setCurrentPlan(subs[0].plan);
-            }
-        } catch (error) {
-            console.error('Error loading subscription:', error);
-        }
-    };
-
-    const handleStartTrial = async () => {
-        if (!isVerified) {
-            toast.error('Verifique seu email primeiro');
-            return;
-        }
-
+    const checkAuthAndSubscription = async () => {
         setLoading(true);
         try {
-            const user = await base44.auth.me();
-            const trialStart = new Date();
-            const trialEnd = new Date();
-            trialEnd.setDate(trialEnd.getDate() + 7);
+            const auth = await base44.auth.isAuthenticated();
+            setIsAuthenticated(auth);
 
-            const existing = await base44.entities.Subscription.filter({
-                user_email: user.email
-            });
-
-            if (existing.length > 0) {
-                await base44.entities.Subscription.update(existing[0].id, {
-                    plan: 'trial',
-                    status: 'trial',
-                    trial_start_date: trialStart.toISOString(),
-                    trial_end_date: trialEnd.toISOString(),
-                    limits: plans.find(p => p.id === 'pro').limits,
-                    features_used: {
-                        consultations: 0,
-                        articles_generated: 0,
-                        documents_analyzed: 0
-                    }
-                });
-            } else {
-                await base44.entities.Subscription.create({
+            if (auth) {
+                const user = await base44.auth.me();
+                const subscriptions = await base44.entities.Subscription.filter({ 
                     user_email: user.email,
-                    plan: 'trial',
-                    status: 'trial',
-                    trial_start_date: trialStart.toISOString(),
-                    trial_end_date: trialEnd.toISOString(),
-                    limits: plans.find(p => p.id === 'pro').limits,
-                    features_used: {
-                        consultations: 0,
-                        articles_generated: 0,
-                        documents_analyzed: 0
-                    }
+                    status: 'active'
                 });
+                
+                if (subscriptions.length > 0) {
+                    setCurrentSubscription(subscriptions[0]);
+                }
             }
-
-            toast.success('Trial iniciado com sucesso!');
-            window.location.href = createPageUrl('Dashboard');
         } catch (error) {
-            console.error('Error starting trial:', error);
-            toast.error('Erro ao iniciar trial');
+            console.error('Error checking subscription:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleStripeCheckout = async (planId) => {
-        if (!isVerified) {
-            toast.error('Verifique seu email primeiro');
+    const handleSubscribe = async (priceId, planName) => {
+        if (!isAuthenticated) {
+            toast.info(lang === 'pt' ? 'Faça login para assinar' : 'Please login to subscribe');
+            base44.auth.redirectToLogin(createPageUrl('Pricing'));
             return;
         }
 
-        setLoading(true);
+        setSubscribing(planName);
         try {
             const response = await base44.functions.invoke('createStripeCheckout', {
-                plan: planId,
-                interval: billingInterval
+                priceId,
+                mode: 'subscription',
+                successUrl: window.location.origin + createPageUrl('Dashboard') + '?payment=success',
+                cancelUrl: window.location.origin + createPageUrl('Pricing') + '?payment=cancelled'
             });
 
-            if (response.data.checkout_url) {
-                window.location.href = response.data.checkout_url;
+            if (response.data.url) {
+                window.location.href = response.data.url;
             } else {
-                throw new Error('No checkout URL returned');
+                toast.error(lang === 'pt' ? 'Erro ao criar checkout' : 'Error creating checkout');
             }
         } catch (error) {
             console.error('Error creating checkout:', error);
-            toast.error('Erro ao processar pagamento');
+            toast.error(lang === 'pt' ? 'Erro ao processar assinatura' : 'Error processing subscription');
         } finally {
-            setLoading(false);
+            setSubscribing(null);
         }
     };
 
-    const handleUpgradeRequest = (plan) => {
-        setSelectedPlan(plan);
-        setUpgradeDialogOpen(true);
+    const handleContactSales = () => {
+        window.location.href = 'mailto:contact@troyjo.digital?subject=Enterprise Plan Inquiry';
+    };
+
+    const plans = [
+        {
+            id: 'freemium',
+            name: t.freemium.name,
+            description: t.freemium.description,
+            icon: Sparkles,
+            color: 'from-gray-500 to-gray-600',
+            priceMonthly: 0,
+            priceAnnual: 0,
+            stripePriceIdMonthly: 'price_1SgmdtRo0dVPpa4WLPzbGynZ',
+            stripePriceIdAnnual: 'price_1SgmdtRo0dVPpa4WLPzbGynZ',
+            features: t.freemium.features,
+            popular: false,
+            cta: t.subscribe
+        },
+        {
+            id: 'plus',
+            name: t.plus.name,
+            description: t.plus.description,
+            icon: Zap,
+            color: 'from-blue-500 to-blue-600',
+            priceMonthly: 97,
+            priceAnnual: 970,
+            stripePriceIdMonthly: 'price_1SgmeqRo0dVPpa4WwvshBsl0',
+            stripePriceIdAnnual: 'price_1SgmffRo0dVPpa4WzECFaiEL',
+            features: t.plus.features,
+            popular: false,
+            cta: t.subscribe
+        },
+        {
+            id: 'pro',
+            name: t.pro.name,
+            description: t.pro.description,
+            icon: Crown,
+            color: 'from-[#D4AF37] to-[#B8860B]',
+            priceMonthly: 397,
+            priceAnnual: 3970,
+            stripePriceIdMonthly: 'price_1SgmgTRo0dVPpa4WvKYlYGeZ',
+            stripePriceIdAnnual: 'price_1SgmgnRo0dVPpa4WDwZwIari',
+            features: t.pro.features,
+            popular: true,
+            cta: t.subscribe
+        },
+        {
+            id: 'teams',
+            name: t.teams.name,
+            description: t.teams.description,
+            icon: Users,
+            color: 'from-purple-500 to-purple-600',
+            priceMonthly: 1497,
+            priceAnnual: 14970,
+            stripePriceIdMonthly: 'price_1SgmhJRo0dVPpa4W3H4jN37E',
+            stripePriceIdAnnual: 'price_1SgmhvRo0dVPpa4WWMA34UFU',
+            features: t.teams.features,
+            popular: false,
+            cta: t.subscribe
+        },
+        {
+            id: 'enterprise',
+            name: t.enterprise.name,
+            description: t.enterprise.description,
+            icon: Building2,
+            color: 'from-[#002D62] to-[#001d42]',
+            priceMonthly: null,
+            priceAnnual: null,
+            stripePriceIdMonthly: null,
+            stripePriceIdAnnual: null,
+            features: t.enterprise.features,
+            popular: false,
+            cta: t.contactUs
+        }
+    ];
+
+    const getPriceDisplay = (plan) => {
+        if (plan.id === 'freemium') {
+            return t.freemium.price;
+        }
+        if (plan.id === 'enterprise') {
+            return t.enterprise.price;
+        }
+
+        const price = billing === 'monthly' ? plan.priceMonthly : plan.priceAnnual;
+        const period = billing === 'monthly' ? t.perMonth : t.perYear;
+        
+        return `R$ ${price.toLocaleString('pt-BR')}${period}`;
+    };
+
+    const getSavings = (plan) => {
+        if (!plan.priceMonthly || !plan.priceAnnual) return null;
+        const monthlyYearly = plan.priceMonthly * 12;
+        const savings = Math.round(((monthlyYearly - plan.priceAnnual) / monthlyYearly) * 100);
+        return savings;
+    };
+
+    const isCurrentPlan = (planId) => {
+        if (!currentSubscription) return planId === 'freemium';
+        
+        const priceId = currentSubscription.stripe_price_id;
+        const plan = plans.find(p => 
+            p.stripePriceIdMonthly === priceId || 
+            p.stripePriceIdAnnual === priceId
+        );
+        
+        return plan?.id === planId;
     };
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-            <header className="bg-white border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 md:px-6 py-4">
-                    <Link to={createPageUrl('Dashboard')}>
-                        <Button variant="ghost" size="sm" className="gap-2">
-                            <ArrowLeft className="w-4 h-4" />
-                            {text.back}
-                        </Button>
+            {/* Header */}
+            <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
+                <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
+                    <Link to={createPageUrl('Home')}>
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#002D62] to-[#00654A] flex items-center justify-center">
+                                <span className="text-white font-bold text-sm">MT</span>
+                            </div>
+                            <span className="font-bold text-[#002D62]">Troyjo Digital Twin</span>
+                        </div>
                     </Link>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setLang(lang === 'pt' ? 'en' : 'pt')}
+                            className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors text-sm"
+                        >
+                            <Globe className="w-4 h-4" />
+                            {lang === 'pt' ? 'EN' : 'PT'}
+                        </button>
+                        <Link to={createPageUrl('Dashboard')}>
+                            <Button variant="ghost" size="sm">
+                                Dashboard
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
             </header>
 
-            <main className="max-w-7xl mx-auto px-4 md:px-6 py-12">
-                <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-[#002D62] mb-4">{text.title}</h1>
-                    <p className="text-xl text-[#333F48] mb-6">{text.subtitle}</p>
-                    
+            <main className="max-w-7xl mx-auto px-4 md:px-6 py-16">
+                {/* Hero */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-center mb-12"
+                >
+                    <h1 className="text-4xl md:text-5xl font-bold text-[#002D62] mb-4">
+                        {t.title}
+                    </h1>
+                    <p className="text-xl text-gray-600 mb-8">
+                        {t.subtitle}
+                    </p>
+
                     {/* Billing Toggle */}
-                    <div className="flex items-center justify-center gap-4">
+                    <div className="flex items-center justify-center gap-4 mb-8">
+                        <span className={`text-sm font-medium ${billing === 'monthly' ? 'text-[#002D62]' : 'text-gray-500'}`}>
+                            {t.monthly}
+                        </span>
                         <button
-                            onClick={() => setBillingInterval('monthly')}
-                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                billingInterval === 'monthly'
-                                    ? 'bg-[#002D62] text-white'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            onClick={() => setBilling(billing === 'monthly' ? 'annual' : 'monthly')}
+                            className={`relative w-14 h-7 rounded-full transition-colors ${
+                                billing === 'annual' ? 'bg-[#002D62]' : 'bg-gray-300'
                             }`}
                         >
-                            {text.monthly}
+                            <span
+                                className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
+                                    billing === 'annual' ? 'translate-x-7' : ''
+                                }`}
+                            />
                         </button>
-                        <button
-                            onClick={() => setBillingInterval('yearly')}
-                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                billingInterval === 'yearly'
-                                    ? 'bg-[#002D62] text-white'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                            }`}
-                        >
-                            {text.yearly}
-                            <span className="ml-2 text-xs bg-green-500 text-white px-2 py-0.5 rounded">
-                                {text.save}
-                            </span>
-                        </button>
+                        <span className={`text-sm font-medium ${billing === 'annual' ? 'text-[#002D62]' : 'text-gray-500'}`}>
+                            {t.annual}
+                        </span>
+                        {billing === 'annual' && (
+                            <Badge className="bg-green-100 text-green-800">
+                                {t.save} 15-20%
+                            </Badge>
+                        )}
                     </div>
-                </div>
+                </motion.div>
 
+                {/* Plans Grid */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
-                    {plans.map((plan) => {
+                    {plans.map((plan, index) => {
                         const Icon = plan.icon;
-                        const isCurrent = currentPlan === plan.id;
-                        const displayPrice = billingInterval === 'yearly' && plan.priceYearly 
-                            ? plan.priceYearly 
-                            : plan.priceMonthly || plan.price;
-                        
-                        return (
-                            <Card key={plan.id} className={`relative flex flex-col ${plan.badge ? 'border-[#B8860B] border-2' : ''}`}>
-                                {plan.badge && (
-                                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                                        <Badge className="bg-[#B8860B] text-white">
-                                            {plan.badge}
-                                        </Badge>
-                                    </div>
-                                )}
-                                <CardHeader>
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <Icon className="w-8 h-8 text-[#002D62]" />
-                                        <CardTitle className="text-xl">{plan.name}</CardTitle>
-                                    </div>
-                                    <CardDescription>{plan.description}</CardDescription>
-                                    <div className="mt-4">
-                                        <span className="text-3xl font-bold text-[#002D62]">{displayPrice}</span>
-                                        <span className="text-[#333F48]/60">
-                                            {billingInterval === 'yearly' && plan.priceYearly ? '/ano' : plan.period}
-                                        </span>
-                                    </div>
-                                </CardHeader>
-                                <CardContent className="space-y-4 flex-1 flex flex-col">
-                                    <ul className="space-y-2 flex-1">
-                                        {plan.features.map((feature, idx) => (
-                                            <li key={idx} className="flex items-start gap-2">
-                                                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                                                <span className="text-xs text-[#333F48]">{feature}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
+                        const isActive = isCurrentPlan(plan.id);
+                        const savings = billing === 'annual' ? getSavings(plan) : null;
 
-                                    {isCurrent ? (
-                                        <Button disabled className="w-full">
-                                            {text.current}
-                                        </Button>
-                                    ) : plan.id === 'free' ? (
-                                        <Button disabled className="w-full">
-                                            {text.current}
-                                        </Button>
-                                    ) : plan.id === 'pro' && !currentPlan ? (
-                                        <Button 
-                                            className="w-full bg-[#002D62] hover:bg-[#001d42]"
-                                            onClick={handleStartTrial}
-                                            disabled={loading}
-                                        >
-                                            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : text.startTrial}
-                                        </Button>
-                                    ) : plan.stripeEnabled ? (
-                                        <Button 
-                                            className="w-full bg-[#002D62] hover:bg-[#001d42]"
-                                            onClick={() => handleStripeCheckout(plan.id)}
-                                            disabled={loading}
-                                        >
-                                            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : text.subscribe}
-                                        </Button>
-                                    ) : (plan.id === 'enterprise' || plan.id === 'teams') ? (
-                                        <Button 
-                                            className="w-full bg-[#B8860B] hover:bg-[#9a7209]"
-                                            onClick={() => handleUpgradeRequest(plan.id)}
-                                        >
-                                            {text.contact}
-                                        </Button>
-                                    ) : (
-                                        <Button 
-                                            className="w-full bg-[#002D62] hover:bg-[#001d42]"
-                                            onClick={() => handleUpgradeRequest(plan.id)}
-                                        >
-                                            {text.upgrade}
-                                        </Button>
+                        return (
+                            <motion.div
+                                key={plan.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                            >
+                                <Card className={`h-full flex flex-col relative ${
+                                    plan.popular ? 'border-[#D4AF37] border-2 shadow-lg' : ''
+                                } ${isActive ? 'ring-2 ring-[#002D62]' : ''}`}>
+                                    {plan.popular && (
+                                        <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                                            <Badge className="bg-[#D4AF37] text-white">
+                                                <Star className="w-3 h-3 mr-1" />
+                                                {t.popular}
+                                            </Badge>
+                                        </div>
                                     )}
-                                </CardContent>
-                            </Card>
+                                    {isActive && (
+                                        <div className="absolute -top-4 right-4">
+                                            <Badge className="bg-[#002D62] text-white">
+                                                <Check className="w-3 h-3 mr-1" />
+                                                {t.currentPlan}
+                                            </Badge>
+                                        </div>
+                                    )}
+
+                                    <CardHeader>
+                                        <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${plan.color} flex items-center justify-center mb-4`}>
+                                            <Icon className="w-6 h-6 text-white" />
+                                        </div>
+                                        <CardTitle className="text-2xl text-[#002D62]">
+                                            {plan.name}
+                                        </CardTitle>
+                                        <CardDescription>
+                                            {plan.description}
+                                        </CardDescription>
+                                    </CardHeader>
+
+                                    <CardContent className="flex-1">
+                                        <div className="mb-6">
+                                            <div className="text-3xl font-bold text-[#002D62]">
+                                                {getPriceDisplay(plan)}
+                                            </div>
+                                            {plan.id !== 'freemium' && plan.id !== 'enterprise' && (
+                                                <div className="text-sm text-gray-500 mt-1">
+                                                    {t.billed} {billing === 'monthly' ? t.monthly_ : t.annually}
+                                                </div>
+                                            )}
+                                            {savings && (
+                                                <Badge variant="outline" className="mt-2 border-green-500 text-green-700">
+                                                    {t.save} {savings}%
+                                                </Badge>
+                                            )}
+                                        </div>
+
+                                        <ul className="space-y-3">
+                                            {plan.features.map((feature, idx) => (
+                                                <li key={idx} className="flex items-start gap-2 text-sm">
+                                                    <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                                                    <span className="text-gray-700">{feature}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </CardContent>
+
+                                    <CardFooter>
+                                        {plan.id === 'enterprise' ? (
+                                            <Button
+                                                onClick={handleContactSales}
+                                                className={`w-full bg-gradient-to-r ${plan.color} text-white`}
+                                            >
+                                                <Mail className="w-4 h-4 mr-2" />
+                                                {plan.cta}
+                                            </Button>
+                                        ) : isActive ? (
+                                            <Button
+                                                disabled
+                                                variant="outline"
+                                                className="w-full"
+                                            >
+                                                <Check className="w-4 h-4 mr-2" />
+                                                {t.currentPlan}
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                onClick={() => {
+                                                    const priceId = billing === 'monthly' 
+                                                        ? plan.stripePriceIdMonthly 
+                                                        : plan.stripePriceIdAnnual;
+                                                    handleSubscribe(priceId, plan.id);
+                                                }}
+                                                disabled={subscribing === plan.id || loading}
+                                                className={`w-full ${
+                                                    plan.popular 
+                                                        ? `bg-gradient-to-r ${plan.color} text-white` 
+                                                        : ''
+                                                }`}
+                                            >
+                                                {subscribing === plan.id ? (
+                                                    <>
+                                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                                                        {t.loading}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {plan.cta}
+                                                        <ArrowRight className="w-4 h-4 ml-2" />
+                                                    </>
+                                                )}
+                                            </Button>
+                                        )}
+                                    </CardFooter>
+                                </Card>
+                            </motion.div>
                         );
                     })}
                 </div>
+
+                {/* FAQ Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="mt-20 text-center"
+                >
+                    <h2 className="text-3xl font-bold text-[#002D62] mb-4">
+                        {lang === 'pt' ? 'Perguntas Frequentes' : 'Frequently Asked Questions'}
+                    </h2>
+                    <p className="text-gray-600 mb-8">
+                        {lang === 'pt' 
+                            ? 'Tem dúvidas? Estamos aqui para ajudar.' 
+                            : 'Have questions? We\'re here to help.'}
+                    </p>
+                    <Link to={createPageUrl('KnowledgeBase')}>
+                        <Button variant="outline" className="gap-2">
+                            {lang === 'pt' ? 'Ver Base de Conhecimento' : 'View Knowledge Base'}
+                            <ArrowRight className="w-4 h-4" />
+                        </Button>
+                    </Link>
+                </motion.div>
             </main>
 
-            <UpgradeRequestForm 
-                open={upgradeDialogOpen}
-                onOpenChange={setUpgradeDialogOpen}
-                plan={selectedPlan}
-                lang={lang}
-            />
+            {/* Footer */}
+            <footer className="border-t bg-white py-8">
+                <div className="max-w-7xl mx-auto px-4 md:px-6 text-center text-sm text-gray-600">
+                    <p>© 2025 Marcos Troyjo Digital Twin</p>
+                    <p className="mt-2">
+                        {lang === 'pt' 
+                            ? 'Desenvolvido por Grupo Fratoz. Powered by CAIO.Vision.' 
+                            : 'Developed by Grupo Fratoz. Powered by CAIO.Vision.'}
+                    </p>
+                </div>
+            </footer>
         </div>
     );
 }

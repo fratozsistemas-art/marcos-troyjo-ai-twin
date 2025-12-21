@@ -25,6 +25,7 @@ import ProfileSettings from '@/components/profile/ProfileSettings';
 import TopicTracker from '@/components/profile/TopicTracker';
 import DocumentManager from '@/components/documents/DocumentManager';
 import DocumentChat from '@/components/chat/DocumentChat';
+import RAGDocumentManager from '@/components/documents/RAGDocumentManager';
 import ProactiveSuggestions from '@/components/suggestions/ProactiveSuggestions';
 import PublicationsSection from '@/components/dashboard/PublicationsSection';
 import VoiceCalibration from '@/components/voice-calibration/VoiceCalibration';
@@ -452,9 +453,14 @@ export default function Dashboard() {
                     </motion.div>
                 </div>
 
-                {/* Fourth Row - Documents Side by Side */}
+                {/* Fourth Row - RAG Document Manager Full Width */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.09 }}>
+                    <RAGDocumentManager lang={lang} />
+                </motion.div>
+
+                {/* Fifth Row - Documents Side by Side */}
                 <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.09 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.10 }} className="h-full">
                         <DocumentManager lang={lang} />
                     </motion.div>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.11 }} className="h-full">

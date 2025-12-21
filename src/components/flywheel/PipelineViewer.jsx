@@ -4,8 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, RefreshCw, PlayCircle, XCircle, CheckCircle2, Clock, GitCommit, FlaskConical, ExternalLink } from 'lucide-react';
+import { Loader2, RefreshCw, PlayCircle, XCircle, CheckCircle2, Clock, GitCommit, FlaskConical, ExternalLink, Rocket } from 'lucide-react';
 import { toast } from 'sonner';
+import PipelineAlerts from './PipelineAlerts';
 
 const translations = {
     pt: {
@@ -162,6 +163,75 @@ export default function PipelineViewer({ siteId, lang = 'pt' }) {
         }
     };
 
+    const handleManualDeploy = async (pipeline) => {
+        setActionLoading(`deploy-${pipeline.id}`);
+        try {
+            const response = await base44.functions.invoke('triggerManualDeploy', {
+                siteId,
+                source: 'manual_ui',
+                pipelineId: pipeline.id,
+                mlflowRunId: mlflowRuns[pipeline.id]?.info.run_id,
+                commitSha: pipeline.commit,
+                branch: pipeline.branch
+            });
+
+            if (response.data.success) {
+                toast.success('Deploy iniciado com sucesso!');
+                
+                // Dispatch alert event
+                window.dispatchEvent(new CustomEvent('pipeline-alert', {
+                    detail: {
+                        type: 'info',
+                        severity: 'low',
+                        message: 'Manual deploy started',
+                        details: `Pipeline #${pipeline.number}`,
+                        timestamp: new Date().toISOString()
+                    }
+                }));
+                
+                setTimeout(() => loadPipelines(), 3000);
+            } else {
+                toast.error(response.data.error);
+            }
+        } catch (error) {
+            console.error('Error triggering deploy:', error);
+            toast.error('Erro ao iniciar deploy');
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const checkPipelineAlerts = async (pipeline) => {
+        try {
+            const response = await base44.functions.invoke('monitorPipelineAlerts', {
+                action: 'checkPipelineStatus',
+                siteId,
+                pipelineId: pipeline.id,
+                thresholds: {
+                    maxDuration: 600
+                }
+            });
+
+            if (response.data.success && response.data.data.alerts.length > 0) {
+                response.data.data.alerts.forEach(alert => {
+                    window.dispatchEvent(new CustomEvent('pipeline-alert', { detail: alert }));
+                });
+            }
+        } catch (error) {
+            console.error('Error checking alerts:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (pipelines.length > 0) {
+            pipelines.forEach(pipeline => {
+                if (pipeline.status === 'failed' || pipeline.duration > 600) {
+                    checkPipelineAlerts(pipeline);
+                }
+            });
+        }
+    }, [pipelines]);
+
     const formatDuration = (seconds) => {
         if (!seconds) return '-';
         const mins = Math.floor(seconds / 60);
@@ -170,7 +240,10 @@ export default function PipelineViewer({ siteId, lang = 'pt' }) {
     };
 
     return (
-        <Card>
+        <>
+            <PipelineAlerts siteId={siteId} lang={lang} />
+            
+            <Card className="mt-4">
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div>
@@ -273,6 +346,19 @@ export default function PipelineViewer({ siteId, lang = 'pt' }) {
                                             </div>
 
                                             <div className="flex gap-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handleManualDeploy(pipeline)}
+                                                    disabled={actionLoading === `deploy-${pipeline.id}`}
+                                                    title="Trigger manual deploy"
+                                                >
+                                                    {actionLoading === `deploy-${pipeline.id}` ? (
+                                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                                    ) : (
+                                                        <Rocket className="w-4 h-4" />
+                                                    )}
+                                                </Button>
                                                 {(pipeline.status === 'failed' || pipeline.status === 'cancelled') && (
                                                     <Button
                                                         variant="outline"
@@ -311,5 +397,6 @@ export default function PipelineViewer({ siteId, lang = 'pt' }) {
                 )}
             </CardContent>
         </Card>
+        </>
     );
 }

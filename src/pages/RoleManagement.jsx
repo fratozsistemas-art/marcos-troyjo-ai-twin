@@ -4,6 +4,8 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import SecurityDashboard from '@/components/admin/SecurityDashboard';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -176,7 +178,14 @@ export default function RoleManagement() {
             </header>
 
             <main className="max-w-7xl mx-auto px-4 md:px-6 py-8">
-                <Card className="mb-6">
+                <Tabs defaultValue="roles" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 mb-6">
+                        <TabsTrigger value="roles">{lang === 'pt' ? 'Gerenciamento de Papéis' : 'Role Management'}</TabsTrigger>
+                        <TabsTrigger value="security">{lang === 'pt' ? 'Segurança AEGIS' : 'AEGIS Security'}</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="roles">
+                        <Card className="mb-6">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Users className="w-5 h-5" />
@@ -266,7 +275,13 @@ export default function RoleManagement() {
                             </CardContent>
                         </Card>
                     ))}
-                </div>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="security">
+                        <SecurityDashboard lang={lang} />
+                    </TabsContent>
+                </Tabs>
             </main>
         </div>
     );

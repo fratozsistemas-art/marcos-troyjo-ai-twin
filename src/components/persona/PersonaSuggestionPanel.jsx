@@ -96,16 +96,36 @@ export default function PersonaSuggestionPanel({ lang = 'pt' }) {
                 id: improvement.profile_id
             });
 
-            if (profiles.length === 0) return;
+            if (profiles.length === 0) {
+                toast.error('Perfil não encontrado');
+                return;
+            }
 
             const current = profiles[0];
-            const updated = {
-                ...current,
-                ...improvement.suggested_changes,
-                tags: [...(current.tags || []), 'ai-improved']
-            };
+            
+            // Only update the fields that are present in suggested_changes
+            const updateData = {};
+            
+            if (improvement.suggested_changes.instructions) {
+                updateData.instructions = improvement.suggested_changes.instructions;
+            }
+            if (improvement.suggested_changes.stylistic_preferences) {
+                updateData.stylistic_preferences = {
+                    ...current.stylistic_preferences,
+                    ...improvement.suggested_changes.stylistic_preferences
+                };
+            }
+            if (improvement.suggested_changes.core_values) {
+                updateData.core_values = improvement.suggested_changes.core_values;
+            }
+            if (improvement.suggested_changes.context_triggers) {
+                updateData.context_triggers = improvement.suggested_changes.context_triggers;
+            }
+            
+            // Add tag
+            updateData.tags = [...(current.tags || []), 'ai-improved'];
 
-            await base44.entities.PersonaProfile.update(improvement.profile_id, updated);
+            await base44.entities.PersonaProfile.update(improvement.profile_id, updateData);
             
             toast.success(`Perfil "${improvement.profile_name}" atualizado!`);
             setSuggestions(prev => ({
@@ -116,7 +136,7 @@ export default function PersonaSuggestionPanel({ lang = 'pt' }) {
             }));
         } catch (error) {
             console.error('Error applying improvement:', error);
-            toast.error('Erro ao aplicar melhoria');
+            toast.error('Erro ao aplicar melhoria: ' + (error?.message || 'Erro desconhecido'));
         }
     };
 

@@ -10,6 +10,7 @@ import {
     TrendingUp, Globe, CheckCircle, AlertCircle, Loader2 
 } from 'lucide-react';
 import { toast } from 'sonner';
+import SyncMonitor from '@/components/ssot/SyncMonitor';
 
 const translations = {
     pt: {
@@ -184,7 +185,10 @@ export default function CorporateFactManager({ lang = 'pt' }) {
     const filteredFacts = getFilteredFacts();
 
     return (
-        <Card>
+        <div className="space-y-6">
+            <SyncMonitor lang={lang} />
+            
+            <Card>
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div>
@@ -315,7 +319,7 @@ export default function CorporateFactManager({ lang = 'pt' }) {
                     </Tabs>
                 </div>
             </CardContent>
-            </Card>
+        </Card>
         </div>
     );
 }

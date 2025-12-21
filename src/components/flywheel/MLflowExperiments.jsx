@@ -7,11 +7,12 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Loader2, Plus, FlaskConical, TrendingUp, Activity } from 'lucide-react';
+import { Loader2, Plus, FlaskConical, TrendingUp, Activity, GitCompare } from 'lucide-react';
 import { toast } from 'sonner';
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
+import MLflowRunComparison from './MLflowRunComparison';
 
 const translations = {
     pt: {
@@ -51,6 +52,8 @@ export default function MLflowExperiments({ lang = 'pt' }) {
     const [loading, setLoading] = useState(true);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [newExpName, setNewExpName] = useState('');
+    const [selectedForComparison, setSelectedForComparison] = useState([]);
+    const [showComparison, setShowComparison] = useState(false);
     const t = translations[lang];
 
     useEffect(() => {
@@ -137,7 +140,29 @@ export default function MLflowExperiments({ lang = 'pt' }) {
 
     const handleSelectExperiment = (exp) => {
         setSelectedExp(exp);
+        setSelectedForComparison([]);
+        setShowComparison(false);
         loadRuns(exp.experiment_id);
+    };
+
+    const toggleRunSelection = (run) => {
+        setSelectedForComparison(prev => {
+            const isSelected = prev.some(r => r.info.run_id === run.info.run_id);
+            if (isSelected) {
+                return prev.filter(r => r.info.run_id !== run.info.run_id);
+            } else {
+                return [...prev, run];
+            }
+        });
+    };
+
+    const removeRunFromComparison = (runId) => {
+        setSelectedForComparison(prev => prev.filter(r => r.info.run_id !== runId));
+    };
+
+    const clearComparison = () => {
+        setSelectedForComparison([]);
+        setShowComparison(false);
     };
 
     return (
@@ -185,6 +210,27 @@ export default function MLflowExperiments({ lang = 'pt' }) {
                 </div>
             </CardHeader>
             <CardContent>
+                {selectedForComparison.length > 0 && (
+                    <div className="mb-4">
+                        <Button
+                            onClick={() => setShowComparison(!showComparison)}
+                            variant={showComparison ? "default" : "outline"}
+                            className="w-full"
+                        >
+                            <GitCompare className="w-4 h-4 mr-2" />
+                            {showComparison ? 'Hide' : 'Show'} Comparison ({selectedForComparison.length} runs)
+                        </Button>
+                    </div>
+                )}
+
+                {showComparison && selectedForComparison.length > 0 ? (
+                    <MLflowRunComparison
+                        selectedRuns={selectedForComparison}
+                        onRemoveRun={removeRunFromComparison}
+                        onClearAll={clearComparison}
+                        lang={lang}
+                    />
+                ) : (
                 <div className="grid lg:grid-cols-2 gap-4">
                     {/* Experiments List */}
                     <div>

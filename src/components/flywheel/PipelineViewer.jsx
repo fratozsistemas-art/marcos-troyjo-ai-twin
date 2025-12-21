@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, RefreshCw, PlayCircle, XCircle, CheckCircle2, Clock, GitCommit } from 'lucide-react';
+import { Loader2, RefreshCw, PlayCircle, XCircle, CheckCircle2, Clock, GitCommit, FlaskConical, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 
 const translations = {
@@ -48,6 +48,7 @@ export default function PipelineViewer({ siteId, lang = 'pt' }) {
     const [pipelines, setPipelines] = useState([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(null);
+    const [mlflowRuns, setMlflowRuns] = useState({});
     const t = translations[lang];
 
     useEffect(() => {
@@ -68,12 +69,50 @@ export default function PipelineViewer({ siteId, lang = 'pt' }) {
             });
 
             if (response.data.success) {
-                setPipelines(response.data.data.pipelines || []);
+                const pipelineData = response.data.data.pipelines || [];
+                setPipelines(pipelineData);
+                
+                // Load MLflow runs for each pipeline
+                loadMLflowRuns(pipelineData);
             }
         } catch (error) {
             console.error('Error loading pipelines:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const loadMLflowRuns = async (pipelineData) => {
+        try {
+            const runsMap = {};
+            
+            for (const pipeline of pipelineData.slice(0, 5)) {
+                try {
+                    const response = await base44.functions.invoke('mlflowManager', {
+                        action: 'listRuns',
+                        data: { experimentId: 'default', limit: 100 }
+                    });
+
+                    if (response.data.success) {
+                        const runs = response.data.data.runs || [];
+                        const matchingRun = runs.find(run => 
+                            run.data.tags?.some(tag => 
+                                tag.key === 'pipeline_id' && tag.value === String(pipeline.id)
+                            )
+                        );
+                        
+                        if (matchingRun) {
+                            runsMap[pipeline.id] = matchingRun;
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error loading MLflow run for pipeline:', pipeline.id, err);
+                }
+            }
+            
+            setMlflowRuns(runsMap);
+        } catch (error) {
+            console.error('Error loading MLflow runs:', error);
         }
     };
 
@@ -166,6 +205,7 @@ export default function PipelineViewer({ siteId, lang = 'pt' }) {
                             {pipelines.map((pipeline) => {
                                 const status = statusConfig[pipeline.status] || statusConfig.pending;
                                 const StatusIcon = status.icon;
+                                const mlflowRun = mlflowRuns[pipeline.id];
 
                                 return (
                                     <div
@@ -182,6 +222,12 @@ export default function PipelineViewer({ siteId, lang = 'pt' }) {
                                                     <span className="text-sm font-medium text-[#002D62]">
                                                         #{pipeline.number}
                                                     </span>
+                                                    {mlflowRun && (
+                                                        <Badge variant="outline" className="gap-1">
+                                                            <FlaskConical className="w-3 h-3" />
+                                                            MLflow
+                                                        </Badge>
+                                                    )}
                                                 </div>
 
                                                 <div className="text-xs text-gray-600 space-y-1">
@@ -207,6 +253,23 @@ export default function PipelineViewer({ siteId, lang = 'pt' }) {
                                                         {new Date(pipeline.created_at).toLocaleString()}
                                                     </p>
                                                 </div>
+
+                                                {mlflowRun && mlflowRun.data.metrics && (
+                                                    <div className="pt-2 border-t mt-2">
+                                                        <p className="text-xs font-semibold text-[#002D62] mb-1 flex items-center gap-1">
+                                                            <FlaskConical className="w-3 h-3" />
+                                                            MLflow Metrics:
+                                                        </p>
+                                                        <div className="grid grid-cols-2 gap-2">
+                                                            {Object.entries(mlflowRun.data.metrics).slice(0, 4).map(([key, value]) => (
+                                                                <div key={key} className="text-xs">
+                                                                    <span className="text-gray-600">{key}:</span>
+                                                                    <span className="font-semibold ml-1">{Number(value).toFixed(4)}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
 
                                             <div className="flex gap-2">

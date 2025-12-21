@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, GitBranch, Unlink, Plus, Trash2 } from 'lucide-react';
+import { Loader2, GitBranch, Unlink, Plus, Trash2, FlaskConical } from 'lucide-react';
 import { toast } from 'sonner';
 
 const translations = {
@@ -76,7 +76,9 @@ export default function GitIntegrationDialog({ open, onOpenChange, siteId, lang 
     const [buildSettings, setBuildSettings] = useState({
         buildCommand: 'npm run build',
         outputDirectory: 'dist',
-        installCommand: 'npm install'
+        installCommand: 'npm install',
+        mlflowTracking: true,
+        mlflowExperimentName: ''
     });
     const t = translations[lang];
 
@@ -342,6 +344,38 @@ export default function GitIntegrationDialog({ open, onOpenChange, siteId, lang 
                                 value={buildSettings.installCommand}
                                 onChange={(e) => setBuildSettings({ ...buildSettings, installCommand: e.target.value })}
                             />
+                        </div>
+
+                        <div className="border-t pt-4 mt-4">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                    <FlaskConical className="w-4 h-4 text-[#002D62]" />
+                                    <Label className="mb-0">MLflow Auto-Tracking</Label>
+                                </div>
+                                <input
+                                    type="checkbox"
+                                    checked={buildSettings.mlflowTracking}
+                                    onChange={(e) => setBuildSettings({ ...buildSettings, mlflowTracking: e.target.checked })}
+                                    className="w-4 h-4"
+                                />
+                            </div>
+                            {buildSettings.mlflowTracking && (
+                                <div className="space-y-2">
+                                    <Label>
+                                        {lang === 'pt' ? 'Nome do Experimento (opcional)' : 'Experiment Name (optional)'}
+                                    </Label>
+                                    <Input
+                                        placeholder={lang === 'pt' ? 'site-name-main' : 'site-name-main'}
+                                        value={buildSettings.mlflowExperimentName}
+                                        onChange={(e) => setBuildSettings({ ...buildSettings, mlflowExperimentName: e.target.value })}
+                                    />
+                                    <p className="text-xs text-gray-500">
+                                        {lang === 'pt' 
+                                            ? 'Deixe vazio para usar o nome padrão (repo-branch)'
+                                            : 'Leave empty to use default name (repo-branch)'}
+                                    </p>
+                                </div>
+                            )}
                         </div>
 
                         <Button onClick={handleSaveBuildSettings} disabled={saving} className="w-full bg-[#002D62]">

@@ -50,6 +50,7 @@ import GeopoliticalRiskMonitor from '@/components/dashboard/GeopoliticalRiskMoni
 import UsageMeter from '@/components/subscription/UsageMeter';
 import IntelligenceResources from '@/components/dashboard/IntelligenceResources';
 import InterviewTranscriptManager from '@/components/interviews/InterviewTranscriptManager';
+import ExternalDataFeeds from '@/components/dashboard/ExternalDataFeeds';
 
 const translations = {
     pt: {
@@ -398,6 +399,11 @@ export default function Dashboard() {
                 {/* Conditional Content Based on Active Tab */}
                 {activeTab === 'todos' && (
                     <>
+                        {/* External Data Feeds - Full Width */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.01 }}>
+                            <ExternalDataFeeds lang={lang} />
+                        </motion.div>
+
                         {/* Geopolitical Section - Side by Side */}
                         <div className="grid lg:grid-cols-2 gap-6">
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }}>

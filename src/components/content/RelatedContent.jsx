@@ -91,10 +91,10 @@ export default function RelatedContent({ currentArticle, lang = 'pt' }) {
             </CardHeader>
             <CardContent className="space-y-3">
                 {related.map((item) => (
-                    <Link 
+                    <div
                         key={item.id}
-                        to={createPageUrl('ArticleView') + `?id=${item.id}`}
-                        className="block p-3 rounded-lg border border-gray-100 hover:border-[#002D62]/20 hover:bg-gray-50 transition-all"
+                        onClick={() => window.location.href = createPageUrl('ArticleView') + `?id=${item.id}`}
+                        className="block p-3 rounded-lg border border-gray-100 hover:border-[#002D62]/20 hover:bg-gray-50 transition-all cursor-pointer"
                     >
                         <div className="flex items-start justify-between gap-2">
                             <div className="flex-1">
@@ -116,7 +116,7 @@ export default function RelatedContent({ currentArticle, lang = 'pt' }) {
                             </div>
                             <ArrowRight className="w-4 h-4 text-gray-400 flex-shrink-0 mt-1" />
                         </div>
-                    </Link>
+                    </div>
                 ))}
             </CardContent>
         </Card>

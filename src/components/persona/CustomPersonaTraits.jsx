@@ -24,7 +24,9 @@ export default function CustomPersonaTraits({ lang = 'pt' }) {
             examples: "Exemplos: 'mais conciso', 'mais acadêmico', 'foco em dados', 'tom inspirador'",
             save: "Salvar Traços",
             saving: "Salvando...",
-            placeholder: "Ex: mais visual"
+            placeholder: "Ex: mais visual",
+            bucketTitle: "Selecione Traços Predefinidos",
+            bucketDesc: "Clique para adicionar traços comuns à sua persona"
         },
         en: {
             title: "Custom Persona Traits",
@@ -34,9 +36,55 @@ export default function CustomPersonaTraits({ lang = 'pt' }) {
             examples: "Examples: 'more concise', 'more academic', 'data-focused', 'inspiring tone'",
             save: "Save Traits",
             saving: "Saving...",
-            placeholder: "Ex: more visual"
+            placeholder: "Ex: more visual",
+            bucketTitle: "Select Predefined Traits",
+            bucketDesc: "Click to add common traits to your persona"
         }
     }[lang];
+
+    const traitBucketList = lang === 'pt' ? [
+        'Mais conciso',
+        'Mais detalhado',
+        'Tom acadêmico',
+        'Tom conversacional',
+        'Foco em dados',
+        'Foco em narrativa',
+        'Estilo didático',
+        'Estilo inspirador',
+        'Pragmático',
+        'Visionário',
+        'Analítico',
+        'Estratégico',
+        'Uso de metáforas',
+        'Uso de exemplos',
+        'Contextualização histórica',
+        'Foco no presente',
+        'Perspectiva global',
+        'Perspectiva regional',
+        'Otimista',
+        'Realista'
+    ] : [
+        'More concise',
+        'More detailed',
+        'Academic tone',
+        'Conversational tone',
+        'Data-focused',
+        'Narrative-focused',
+        'Didactic style',
+        'Inspiring style',
+        'Pragmatic',
+        'Visionary',
+        'Analytical',
+        'Strategic',
+        'Use of metaphors',
+        'Use of examples',
+        'Historical context',
+        'Present focus',
+        'Global perspective',
+        'Regional perspective',
+        'Optimistic',
+        'Realistic'
+    ];
 
     useEffect(() => {
         loadTraits();
@@ -65,11 +113,18 @@ export default function CustomPersonaTraits({ lang = 'pt' }) {
         }
     };
 
-    const addTrait = () => {
-        if (!newTrait.trim()) return;
+    const addTrait = (traitName = null) => {
+        const name = traitName || newTrait.trim();
+        if (!name) return;
+        
+        // Check if trait already exists
+        if (customTraits.some(t => t.name.toLowerCase() === name.toLowerCase())) {
+            toast.error(lang === 'pt' ? 'Traço já adicionado' : 'Trait already added');
+            return;
+        }
         
         const trait = {
-            name: newTrait.trim(),
+            name: name,
             intensity: 5
         };
         
@@ -141,19 +196,47 @@ export default function CustomPersonaTraits({ lang = 'pt' }) {
                 <CardDescription>{t.desc}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="flex gap-2">
-                    <Input
-                        value={newTrait}
-                        onChange={(e) => setNewTrait(e.target.value)}
-                        placeholder={t.placeholder}
-                        onKeyPress={(e) => e.key === 'Enter' && addTrait()}
-                    />
-                    <Button onClick={addTrait} size="sm" className="bg-[#002D62]">
-                        <Plus className="w-4 h-4" />
-                    </Button>
+                {/* Bucket List */}
+                <div className="space-y-2">
+                    <h4 className="text-sm font-semibold text-[#002D62]">{t.bucketTitle}</h4>
+                    <p className="text-xs text-gray-500">{t.bucketDesc}</p>
+                    <div className="flex flex-wrap gap-2">
+                        {traitBucketList.map((bucketTrait) => {
+                            const isAdded = customTraits.some(t => t.name.toLowerCase() === bucketTrait.toLowerCase());
+                            return (
+                                <Badge
+                                    key={bucketTrait}
+                                    variant={isAdded ? "default" : "outline"}
+                                    className={`cursor-pointer transition-colors ${
+                                        isAdded 
+                                            ? 'bg-[#002D62] text-white'
+                                            : 'hover:bg-gray-100'
+                                    }`}
+                                    onClick={() => !isAdded && addTrait(bucketTrait)}
+                                >
+                                    {bucketTrait}
+                                </Badge>
+                            );
+                        })}
+                    </div>
                 </div>
 
-                <p className="text-xs text-gray-500 italic">{t.examples}</p>
+                {/* Custom Trait Input */}
+                <div className="pt-4 border-t space-y-2">
+                    <h4 className="text-sm font-semibold text-[#002D62]">{t.addTrait}</h4>
+                    <div className="flex gap-2">
+                        <Input
+                            value={newTrait}
+                            onChange={(e) => setNewTrait(e.target.value)}
+                            placeholder={t.placeholder}
+                            onKeyPress={(e) => e.key === 'Enter' && addTrait()}
+                        />
+                        <Button onClick={() => addTrait()} size="sm" className="bg-[#002D62]">
+                            <Plus className="w-4 h-4" />
+                        </Button>
+                    </div>
+                    <p className="text-xs text-gray-500 italic">{t.examples}</p>
+                </div>
 
                 {customTraits.length > 0 ? (
                     <div className="space-y-4">

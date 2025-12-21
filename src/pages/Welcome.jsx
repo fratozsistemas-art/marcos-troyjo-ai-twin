@@ -100,6 +100,7 @@ Retorne os ÍNDICES (0-5) das 3 features mais relevantes e ainda não exploradas
                 title: "Escolha seus interesses",
                 industries: "Indústrias",
                 regions: "Regiões",
+                economic_theories: "Teorias Econômicas",
                 topics: "Tópicos"
             },
             allFeatures: [
@@ -150,6 +151,7 @@ Retorne os ÍNDICES (0-5) das 3 features mais relevantes e ainda não exploradas
                 title: "Choose your interests",
                 industries: "Industries",
                 regions: "Regions",
+                economic_theories: "Economic Theories",
                 topics: "Topics"
             },
             allFeatures: [
@@ -188,8 +190,9 @@ Retorne os ÍNDICES (0-5) das 3 features mais relevantes e ainda não exploradas
     }[lang];
 
     const interestOptions = {
-        industries: ['Agronegócio', 'Energia', 'Tecnologia', 'Finanças', 'Infraestrutura', 'Defesa'],
-        regions: ['Brasil', 'China', 'Estados Unidos', 'União Europeia', 'América Latina', 'BRICS'],
+        industries: ['Agronegócio', 'Energia', 'Tecnologia', 'Finanças', 'Infraestrutura', 'Defesa', 'Manufatura', 'Serviços Financeiros', 'Mineração', 'Comércio', 'Turismo', 'Saúde'],
+        regions: ['Brasil', 'China', 'Estados Unidos', 'União Europeia', 'América Latina', 'BRICS', 'América do Norte', 'Europa', 'Ásia-Pacífico', 'Índia', 'África', 'Oriente Médio'],
+        economic_theories: ['Vantagens Comparativas', 'Competitividade Sistêmica', 'Cadeias Globais de Valor', 'Novo Desenvolvimentismo', 'Crescimento Endógeno', 'Comércio Internacional', 'Economia Institucional', 'Geopolítica Econômica'],
         topics: ['BRICS', 'Comércio Internacional', 'Competitividade', 'Diplomacia Econômica', 'Inteligência Artificial', 'Bioeconomia']
     };
 
@@ -208,6 +211,7 @@ Retorne os ÍNDICES (0-5) das 3 features mais relevantes e ainda não exploradas
             const interestData = {
                 industries: selectedInterests.filter(i => interestOptions.industries.includes(i)),
                 regions: selectedInterests.filter(i => interestOptions.regions.includes(i)),
+                economic_theories: selectedInterests.filter(i => interestOptions.economic_theories.includes(i)),
                 topics: selectedInterests.filter(i => interestOptions.topics.includes(i))
             };
 

@@ -1,81 +1,99 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import SecurityDashboard from '@/components/admin/SecurityDashboard';
-import AegisAlertPanel from '@/components/security/AegisAlertPanel';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Shield, Users, Plus, Trash2, Save, Loader2 } from 'lucide-react';
+import { Shield, Users, Loader2, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { usePermissions } from '@/components/rbac/PermissionGate';
+import PermissionGate from '@/components/rbac/PermissionGate';
 
-const ROLE_TYPES = {
-    admin: { label: 'Admin', color: 'bg-red-100 text-red-800' },
-    executive: { label: 'Executive', color: 'bg-blue-100 text-blue-800' },
-    analyst: { label: 'Analyst', color: 'bg-green-100 text-green-800' },
-    guest: { label: 'Guest', color: 'bg-gray-100 text-gray-800' }
+const ROLE_PRESETS = {
+    admin: {
+        label: 'Admin',
+        color: 'bg-red-600',
+        permissions: {
+            ssot: { manage_sources: true, add_facts: true, edit_facts: true, delete_facts: true, verify_facts: true, view_facts: true, sync_data: true, export_data: true, access_chatbot: true },
+            articles: { create: true, read: true, update: true, delete: true, publish: true, revise: true },
+            alerts: { configure: true, view: true },
+            users: { invite: true, manage_roles: true, view_all: true },
+            analytics: { view_basic: true, view_detailed: true, export: true }
+        }
+    },
+    data_manager: {
+        label: 'Data Manager',
+        color: 'bg-blue-600',
+        permissions: {
+            ssot: { manage_sources: true, add_facts: true, edit_facts: true, delete_facts: false, verify_facts: true, view_facts: true, sync_data: true, export_data: true, access_chatbot: true },
+            articles: { create: false, read: true, update: false, delete: false, publish: false, revise: false },
+            alerts: { configure: true, view: true },
+            users: { invite: false, manage_roles: false, view_all: false },
+            analytics: { view_basic: true, view_detailed: true, export: true }
+        }
+    },
+    analyst: {
+        label: 'Analyst',
+        color: 'bg-purple-600',
+        permissions: {
+            ssot: { manage_sources: false, add_facts: false, edit_facts: false, delete_facts: false, verify_facts: false, view_facts: true, sync_data: false, export_data: true, access_chatbot: true },
+            articles: { create: false, read: true, update: false, delete: false, publish: false, revise: false },
+            alerts: { configure: true, view: true },
+            users: { invite: false, manage_roles: false, view_all: false },
+            analytics: { view_basic: true, view_detailed: true, export: true }
+        }
+    },
+    viewer: {
+        label: 'Viewer',
+        color: 'bg-gray-600',
+        permissions: {
+            ssot: { manage_sources: false, add_facts: false, edit_facts: false, delete_facts: false, verify_facts: false, view_facts: true, sync_data: false, export_data: false, access_chatbot: false },
+            articles: { create: false, read: true, update: false, delete: false, publish: false, revise: false },
+            alerts: { configure: false, view: true },
+            users: { invite: false, manage_roles: false, view_all: false },
+            analytics: { view_basic: true, view_detailed: false, export: false }
+        }
+    },
+    co_author: {
+        label: 'Co-Author',
+        color: 'bg-green-600',
+        permissions: {
+            ssot: { manage_sources: false, add_facts: true, edit_facts: true, delete_facts: false, verify_facts: false, view_facts: true, sync_data: false, export_data: true, access_chatbot: true },
+            articles: { create: true, read: true, update: true, delete: false, publish: false, revise: false },
+            alerts: { configure: true, view: true },
+            users: { invite: false, manage_roles: false, view_all: false },
+            analytics: { view_basic: true, view_detailed: false, export: false }
+        }
+    },
+    curator: {
+        label: 'Curator',
+        color: 'bg-yellow-600',
+        permissions: {
+            ssot: { manage_sources: false, add_facts: false, edit_facts: false, delete_facts: false, verify_facts: true, view_facts: true, sync_data: false, export_data: true, access_chatbot: true },
+            articles: { create: false, read: true, update: true, delete: false, publish: false, revise: true },
+            alerts: { configure: false, view: true },
+            users: { invite: false, manage_roles: false, view_all: false },
+            analytics: { view_basic: true, view_detailed: true, export: false }
+        }
+    }
 };
 
 export default function RoleManagement() {
-    const [lang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
     const [roles, setRoles] = useState([]);
-    const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [selectedRole, setSelectedRole] = useState(null);
     const [newUserEmail, setNewUserEmail] = useState('');
-    const { can, roleType } = usePermissions();
-
-    const t = {
-        pt: {
-            title: 'Gerenciamento de Papéis',
-            description: 'Controle de acesso e permissões',
-            back: 'Voltar',
-            users: 'Usuários',
-            addUser: 'Adicionar Usuário',
-            email: 'Email',
-            role: 'Papel',
-            permissions: 'Permissões',
-            specialPrivileges: 'Privilégios Especiais',
-            save: 'Salvar',
-            delete: 'Remover',
-            unauthorized: 'Você não tem permissão para acessar esta página',
-            loading: 'Carregando...'
-        },
-        en: {
-            title: 'Role Management',
-            description: 'Access control and permissions',
-            back: 'Back',
-            users: 'Users',
-            addUser: 'Add User',
-            email: 'Email',
-            role: 'Role',
-            permissions: 'Permissions',
-            specialPrivileges: 'Special Privileges',
-            save: 'Save',
-            delete: 'Delete',
-            unauthorized: 'You do not have permission to access this page',
-            loading: 'Loading...'
-        }
-    };
-
-    const text = t[lang];
+    const [selectedRole, setSelectedRole] = useState('viewer');
 
     useEffect(() => {
         loadRoles();
-        loadUsers();
     }, []);
 
     const loadRoles = async () => {
         setLoading(true);
         try {
-            const data = await base44.entities.Role.filter({});
+            const data = await base44.entities.Role.list();
             setRoles(data);
         } catch (error) {
             console.error('Error loading roles:', error);
@@ -84,209 +102,223 @@ export default function RoleManagement() {
         }
     };
 
-    const loadUsers = async () => {
-        try {
-            const data = await base44.entities.User.list();
-            setUsers(data);
-        } catch (error) {
-            console.error('Error loading users:', error);
+    const handleAddRole = async () => {
+        if (!newUserEmail.trim()) {
+            toast.error('Digite um email válido');
+            return;
         }
-    };
 
-    const createRole = async () => {
-        if (!newUserEmail) return;
-        
         try {
             await base44.entities.Role.create({
-                user_email: newUserEmail,
-                role_type: 'guest',
+                user_email: newUserEmail.trim(),
+                role_type: selectedRole,
+                permissions: ROLE_PRESETS[selectedRole].permissions,
                 is_active: true
             });
+
+            toast.success('Papel atribuído com sucesso!');
             setNewUserEmail('');
+            setSelectedRole('viewer');
             loadRoles();
-            toast.success(lang === 'pt' ? 'Papel criado com sucesso' : 'Role created successfully');
         } catch (error) {
-            console.error('Error creating role:', error);
-            toast.error(lang === 'pt' ? 'Erro ao criar papel' : 'Error creating role');
+            console.error('Error adding role:', error);
+            toast.error('Erro ao atribuir papel');
         }
     };
 
-    const updateRole = async (roleId, updates) => {
+    const handleUpdateRole = async (roleId, newRoleType) => {
         try {
-            await base44.entities.Role.update(roleId, updates);
+            await base44.entities.Role.update(roleId, {
+                role_type: newRoleType,
+                permissions: ROLE_PRESETS[newRoleType].permissions
+            });
+
+            toast.success('Papel atualizado!');
             loadRoles();
-            toast.success(lang === 'pt' ? 'Papel atualizado' : 'Role updated');
         } catch (error) {
             console.error('Error updating role:', error);
-            toast.error(lang === 'pt' ? 'Erro ao atualizar' : 'Error updating');
+            toast.error('Erro ao atualizar');
         }
     };
 
-    const deleteRole = async (roleId) => {
-        if (!confirm(lang === 'pt' ? 'Tem certeza?' : 'Are you sure?')) return;
-        
+    const handleDeleteRole = async (roleId) => {
+        if (!confirm('Confirmar remoção de papel?')) return;
+
         try {
             await base44.entities.Role.delete(roleId);
+            toast.success('Papel removido!');
             loadRoles();
-            toast.success(lang === 'pt' ? 'Papel removido' : 'Role deleted');
         } catch (error) {
             console.error('Error deleting role:', error);
-            toast.error(lang === 'pt' ? 'Erro ao remover' : 'Error deleting');
+            toast.error('Erro ao remover');
         }
     };
 
-    if (!can || !can('users', 'manage_roles')) {
-        return (
-            <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
-                <Card className="max-w-md">
-                    <CardContent className="pt-6 text-center">
-                        <Shield className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                        <p className="text-[#333F48]">{text.unauthorized}</p>
-                        <Link to={createPageUrl('Dashboard')}>
-                            <Button className="mt-4">{text.back}</Button>
-                        </Link>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-[#002D62]" />
-            </div>
-        );
-    }
-
     return (
-        <div className="min-h-screen bg-[#FAFAFA]">
-            <header className="bg-white border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Link to={createPageUrl('Dashboard')}>
-                            <Button variant="ghost" size="sm" className="gap-2">
-                                <ArrowLeft className="w-4 h-4" />
-                                {text.back}
-                            </Button>
-                        </Link>
-                        <div>
-                            <h1 className="font-bold text-[#002D62] text-lg">{text.title}</h1>
-                            <p className="text-xs text-[#333F48]/60">{text.description}</p>
-                        </div>
-                    </div>
+        <PermissionGate 
+            permission="users.manage_roles"
+            fallback={
+                <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+                    <Card className="max-w-md">
+                        <CardContent className="pt-6 text-center">
+                            <Shield className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                            <h2 className="text-xl font-bold text-gray-800 mb-2">Acesso Negado</h2>
+                            <p className="text-gray-600">Você não tem permissão para gerenciar papéis.</p>
+                        </CardContent>
+                    </Card>
                 </div>
-            </header>
-
-            <main className="max-w-7xl mx-auto px-4 md:px-6 py-8">
-                <Tabs defaultValue="roles" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 mb-6">
-                        <TabsTrigger value="roles">{lang === 'pt' ? 'Gerenciamento de Papéis' : 'Role Management'}</TabsTrigger>
-                        <TabsTrigger value="security">{lang === 'pt' ? 'Segurança AEGIS' : 'AEGIS Security'}</TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="roles">
-                        <Card className="mb-6">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Users className="w-5 h-5" />
-                            {text.addUser}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex gap-3">
-                            <Input
-                                placeholder={text.email}
-                                value={newUserEmail}
-                                onChange={(e) => setNewUserEmail(e.target.value)}
-                                className="flex-1"
-                            />
-                            <Button onClick={createRole}>
-                                <Plus className="w-4 h-4 mr-2" />
-                                {text.addUser}
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <div className="space-y-4">
-                    {roles.map((role) => (
-                        <Card key={role.id}>
-                            <CardHeader>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#002D62] to-[#00654A] flex items-center justify-center">
-                                            <span className="text-white text-xs font-semibold">
-                                                {role.user_email.substring(0, 2).toUpperCase()}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <p className="font-semibold text-[#333F48]">{role.user_email}</p>
-                                            <Badge className={ROLE_TYPES[role.role_type].color}>
-                                                {ROLE_TYPES[role.role_type].label}
-                                            </Badge>
-                                        </div>
+            }
+        >
+            <div className="min-h-screen bg-gray-50 p-6">
+                <div className="max-w-6xl mx-auto space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-[#002D62]">
+                                <Shield className="w-6 h-6" />
+                                Gerenciamento de Papéis & Permissões
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {/* Add New Role */}
+                            <div className="border rounded-lg p-4 bg-blue-50">
+                                <h3 className="font-semibold text-[#002D62] mb-4">Atribuir Novo Papel</h3>
+                                <div className="grid md:grid-cols-3 gap-4">
+                                    <div className="md:col-span-2">
+                                        <Label>Email do Usuário</Label>
+                                        <Input
+                                            type="email"
+                                            value={newUserEmail}
+                                            onChange={(e) => setNewUserEmail(e.target.value)}
+                                            placeholder="usuario@exemplo.com"
+                                        />
                                     </div>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => deleteRole(role.id)}
-                                    >
-                                        <Trash2 className="w-4 h-4 text-red-600" />
-                                    </Button>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
                                     <div>
-                                        <Label>{text.role}</Label>
-                                        <Select
-                                            value={role.role_type}
-                                            onValueChange={(value) => updateRole(role.id, { role_type: value })}
-                                        >
+                                        <Label>Papel</Label>
+                                        <Select value={selectedRole} onValueChange={setSelectedRole}>
                                             <SelectTrigger>
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {Object.keys(ROLE_TYPES).map(key => (
+                                                {Object.entries(ROLE_PRESETS).map(([key, value]) => (
                                                     <SelectItem key={key} value={key}>
-                                                        {ROLE_TYPES[key].label}
+                                                        {value.label}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                    <div>
-                                        <Label className="mb-2 block">{text.specialPrivileges}</Label>
-                                        <div className="flex items-center gap-3">
-                                            <Switch
-                                                checked={role.special_privileges?.includes('troyjo_revision')}
-                                                onCheckedChange={(checked) => {
-                                                    const privileges = role.special_privileges || [];
-                                                    const updated = checked
-                                                        ? [...privileges, 'troyjo_revision']
-                                                        : privileges.filter(p => p !== 'troyjo_revision');
-                                                    updateRole(role.id, { special_privileges: updated });
-                                                }}
-                                            />
-                                            <span className="text-sm">Troyjo Revision Authority</span>
-                                        </div>
-                                    </div>
                                 </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                        </div>
-                    </TabsContent>
+                                <Button onClick={handleAddRole} className="mt-4">
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    Adicionar
+                                </Button>
+                            </div>
 
-                    <TabsContent value="security">
-                        <div className="space-y-6">
-                            <AegisAlertPanel lang={lang} />
-                            <SecurityDashboard lang={lang} />
-                        </div>
-                    </TabsContent>
-                </Tabs>
-            </main>
-        </div>
+                            {/* Roles List */}
+                            {loading ? (
+                                <div className="flex justify-center py-8">
+                                    <Loader2 className="w-6 h-6 animate-spin text-[#002D62]" />
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {roles.map((role) => (
+                                        <div key={role.id} className="border rounded-lg p-4 bg-white">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-3 mb-2">
+                                                        <Users className="w-5 h-5 text-gray-600" />
+                                                        <span className="font-semibold text-gray-800">{role.user_email}</span>
+                                                        <Badge className={ROLE_PRESETS[role.role_type]?.color || 'bg-gray-600'}>
+                                                            {ROLE_PRESETS[role.role_type]?.label || role.role_type}
+                                                        </Badge>
+                                                    </div>
+                                                    <div className="flex flex-wrap gap-2 ml-8">
+                                                        {role.permissions?.ssot?.manage_sources && (
+                                                            <Badge variant="outline" className="text-xs">Gerenciar Fontes</Badge>
+                                                        )}
+                                                        {role.permissions?.ssot?.verify_facts && (
+                                                            <Badge variant="outline" className="text-xs">Verificar Fatos</Badge>
+                                                        )}
+                                                        {role.permissions?.articles?.publish && (
+                                                            <Badge variant="outline" className="text-xs">Publicar Artigos</Badge>
+                                                        )}
+                                                        {role.permissions?.users?.manage_roles && (
+                                                            <Badge variant="outline" className="text-xs">Gerenciar Usuários</Badge>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Select
+                                                        value={role.role_type}
+                                                        onValueChange={(val) => handleUpdateRole(role.id, val)}
+                                                    >
+                                                        <SelectTrigger className="w-40">
+                                                            <SelectValue />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {Object.entries(ROLE_PRESETS).map(([key, value]) => (
+                                                                <SelectItem key={key} value={key}>
+                                                                    {value.label}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        onClick={() => handleDeleteRole(role.id)}
+                                                    >
+                                                        <Trash2 className="w-4 h-4 text-red-600" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Permission Matrix */}
+                            <div className="border rounded-lg p-4 bg-gray-50">
+                                <h3 className="font-semibold text-[#002D62] mb-4">Matriz de Permissões</h3>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-sm">
+                                        <thead>
+                                            <tr className="border-b">
+                                                <th className="text-left py-2 px-2">Papel</th>
+                                                <th className="text-center py-2 px-2">Gerenciar Fontes</th>
+                                                <th className="text-center py-2 px-2">Verificar Fatos</th>
+                                                <th className="text-center py-2 px-2">Publicar Artigos</th>
+                                                <th className="text-center py-2 px-2">Chatbot SSOT</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {Object.entries(ROLE_PRESETS).map(([key, preset]) => (
+                                                <tr key={key} className="border-b">
+                                                    <td className="py-2 px-2">
+                                                        <Badge className={preset.color}>{preset.label}</Badge>
+                                                    </td>
+                                                    <td className="text-center py-2 px-2">
+                                                        {preset.permissions.ssot.manage_sources ? '✓' : '✗'}
+                                                    </td>
+                                                    <td className="text-center py-2 px-2">
+                                                        {preset.permissions.ssot.verify_facts ? '✓' : '✗'}
+                                                    </td>
+                                                    <td className="text-center py-2 px-2">
+                                                        {preset.permissions.articles.publish ? '✓' : '✗'}
+                                                    </td>
+                                                    <td className="text-center py-2 px-2">
+                                                        {preset.permissions.ssot.access_chatbot ? '✓' : '✗'}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        </PermissionGate>
     );
 }

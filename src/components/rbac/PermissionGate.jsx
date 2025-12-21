@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 
-export default function PermissionGate({ resource, action, children, fallback = null }) {
+export default function PermissionGate({ permission, children, fallback = null }) {
     const [hasPermission, setHasPermission] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         checkPermission();
-    }, [resource, action]);
+    }, [permission]);
 
     const checkPermission = async () => {
-        setLoading(true);
         try {
             const response = await base44.functions.invoke('checkPermissions', {
-                resource,
-                action
+                permission_key: permission
             });
-            setHasPermission(response.data.allowed);
+
+            setHasPermission(response.data.authorized);
         } catch (error) {
             console.error('Error checking permission:', error);
             setHasPermission(false);
@@ -25,15 +24,20 @@ export default function PermissionGate({ resource, action, children, fallback = 
         }
     };
 
-    if (loading) return null;
-    if (!hasPermission) return fallback;
-    return children;
+    if (loading) {
+        return null;
+    }
+
+    if (!hasPermission) {
+        return fallback;
+    }
+
+    return <>{children}</>;
 }
 
 export function usePermissions() {
     const [permissions, setPermissions] = useState(null);
-    const [roleType, setRoleType] = useState(null);
-    const [specialPrivileges, setSpecialPrivileges] = useState([]);
+    const [role, setRole] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -41,15 +45,17 @@ export function usePermissions() {
     }, []);
 
     const loadPermissions = async () => {
-        setLoading(true);
         try {
-            const response = await base44.functions.invoke('checkPermissions', {
-                resource: 'articles',
-                action: 'read'
+            const user = await base44.auth.me();
+            const roles = await base44.entities.Role.filter({
+                user_email: user.email,
+                is_active: true
             });
-            setPermissions(response.data.all_permissions);
-            setRoleType(response.data.role_type);
-            setSpecialPrivileges(response.data.special_privileges);
+
+            if (roles.length > 0) {
+                setRole(roles[0].role_type);
+                setPermissions(roles[0].permissions);
+            }
         } catch (error) {
             console.error('Error loading permissions:', error);
         } finally {
@@ -57,13 +63,11 @@ export function usePermissions() {
         }
     };
 
-    const can = (resource, action) => {
-        return permissions?.[resource]?.[action] === true;
+    const hasPermission = (permissionKey) => {
+        if (!permissions) return false;
+        const [module, perm] = permissionKey.split('.');
+        return permissions?.[module]?.[perm] === true;
     };
 
-    const hasPrivilege = (privilege) => {
-        return specialPrivileges.includes(privilege);
-    };
-
-    return { permissions, roleType, specialPrivileges, can, hasPrivilege, loading };
+    return { permissions, role, loading, hasPermission };
 }

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import PermissionGate from '@/components/rbac/PermissionGate';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -64,14 +65,24 @@ export default function SSOTChatbot({ lang = 'pt' }) {
     };
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-[#002D62]">
-                    <MessageSquare className="w-5 h-5" />
-                    {t.title}
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
+        <PermissionGate 
+            permission="ssot.access_chatbot"
+            fallback={
+                <Card>
+                    <CardContent className="py-8 text-center text-gray-500">
+                        {lang === 'pt' ? 'Sem permissão para acessar o chatbot' : 'No permission to access chatbot'}
+                    </CardContent>
+                </Card>
+            }
+        >
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-[#002D62]">
+                        <MessageSquare className="w-5 h-5" />
+                        {t.title}
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
                 <div className="space-y-4">
                     {/* Messages */}
                     <div className="h-96 overflow-y-auto space-y-3 p-3 bg-gray-50 rounded-lg">
@@ -159,7 +170,8 @@ export default function SSOTChatbot({ lang = 'pt' }) {
                         </Button>
                     </div>
                 </div>
-            </CardContent>
-        </Card>
+                </CardContent>
+            </Card>
+        </PermissionGate>
     );
 }

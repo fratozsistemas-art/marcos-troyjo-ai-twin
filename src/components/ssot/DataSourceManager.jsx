@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import PermissionGate from '@/components/rbac/PermissionGate';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -213,6 +214,7 @@ export default function DataSourceManager({ lang = 'pt' }) {
                         <Database className="w-5 h-5" />
                         {t.title}
                     </CardTitle>
+                    <PermissionGate permission="ssot.manage_sources">
                     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                         <DialogTrigger asChild>
                             <Button size="sm">
@@ -343,6 +345,7 @@ export default function DataSourceManager({ lang = 'pt' }) {
                             </div>
                         </DialogContent>
                     </Dialog>
+                    </PermissionGate>
                 </div>
             </CardHeader>
             <CardContent>
@@ -385,24 +388,28 @@ export default function DataSourceManager({ lang = 'pt' }) {
                                         </p>
                                     </div>
                                     <div className="flex gap-2">
-                                        <Button
-                                            size="sm"
-                                            onClick={() => handleSync(source)}
-                                            disabled={syncing === source.id || !source.enabled}
-                                        >
-                                            {syncing === source.id ? (
-                                                <Loader2 className="w-4 h-4 animate-spin" />
-                                            ) : (
-                                                <RefreshCw className="w-4 h-4" />
-                                            )}
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={() => handleDelete(source.id)}
-                                        >
-                                            <Trash2 className="w-4 h-4 text-red-600" />
-                                        </Button>
+                                        <PermissionGate permission="ssot.sync_data">
+                                            <Button
+                                                size="sm"
+                                                onClick={() => handleSync(source)}
+                                                disabled={syncing === source.id || !source.enabled}
+                                            >
+                                                {syncing === source.id ? (
+                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                ) : (
+                                                    <RefreshCw className="w-4 h-4" />
+                                                )}
+                                            </Button>
+                                        </PermissionGate>
+                                        <PermissionGate permission="ssot.manage_sources">
+                                            <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                onClick={() => handleDelete(source.id)}
+                                            >
+                                                <Trash2 className="w-4 h-4 text-red-600" />
+                                            </Button>
+                                        </PermissionGate>
                                     </div>
                                 </div>
                             </div>

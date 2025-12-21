@@ -69,7 +69,13 @@ const translations = {
         negative: 'Negativo',
         neutral: 'Neutro',
         interactions: 'Interações',
-        avgTime: 'Tempo Médio (ms)'
+        avgTime: 'Tempo Médio (ms)',
+        exportData: 'Exportar Dados',
+        exportCSV: 'Exportar CSV',
+        exportExcel: 'Exportar Excel',
+        exportPDF: 'Gerar Relatório PDF',
+        exporting: 'Exportando...',
+        exportSuccess: 'Exportação concluída!'
     },
     en: {
         title: 'Agent Management',
@@ -123,7 +129,13 @@ const translations = {
         negative: 'Negative',
         neutral: 'Neutral',
         interactions: 'Interactions',
-        avgTime: 'Avg Time (ms)'
+        avgTime: 'Avg Time (ms)',
+        exportData: 'Export Data',
+        exportCSV: 'Export CSV',
+        exportExcel: 'Export Excel',
+        exportPDF: 'Generate PDF Report',
+        exporting: 'Exporting...',
+        exportSuccess: 'Export completed!'
     }
 };
 
@@ -152,6 +164,7 @@ export default function AgentManager({ lang = 'pt' }) {
         feedbackDist: [],
         timeline: []
     });
+    const [isExporting, setIsExporting] = useState(false);
     const t = translations[lang];
 
     useEffect(() => {
@@ -857,20 +870,68 @@ export default function AgentManager({ lang = 'pt' }) {
                             </CardContent>
                         </Card>
 
-                        {/* Date Filter */}
-                        <div className="flex items-center gap-2">
-                            <Label>{t.dateFilter}:</Label>
-                            <Select value={dateFilter} onValueChange={setDateFilter}>
-                                <SelectTrigger className="w-48">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="7">{t.last7Days}</SelectItem>
-                                    <SelectItem value="30">{t.last30Days}</SelectItem>
-                                    <SelectItem value="90">{t.last90Days}</SelectItem>
-                                    <SelectItem value="all">{t.allTime}</SelectItem>
-                                </SelectContent>
-                            </Select>
+                        {/* Date Filter & Export */}
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Label>{t.dateFilter}:</Label>
+                                <Select value={dateFilter} onValueChange={setDateFilter}>
+                                    <SelectTrigger className="w-48">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="7">{t.last7Days}</SelectItem>
+                                        <SelectItem value="30">{t.last30Days}</SelectItem>
+                                        <SelectItem value="90">{t.last90Days}</SelectItem>
+                                        <SelectItem value="all">{t.allTime}</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={exportToCSV}
+                                    disabled={isExporting}
+                                >
+                                    {isExporting ? (
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    ) : (
+                                        <FileText className="w-4 h-4 mr-2" />
+                                    )}
+                                    {t.exportCSV}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={exportToExcel}
+                                    disabled={isExporting}
+                                >
+                                    {isExporting ? (
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    ) : (
+                                        <FileSpreadsheet className="w-4 h-4 mr-2" />
+                                    )}
+                                    {t.exportExcel}
+                                </Button>
+                                <Button
+                                    onClick={exportToPDF}
+                                    disabled={isExporting}
+                                    className="bg-[#002D62] hover:bg-[#001d42]"
+                                    size="sm"
+                                >
+                                    {isExporting ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                            {t.exporting}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Download className="w-4 h-4 mr-2" />
+                                            {t.exportPDF}
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
                         </div>
 
                         {/* Interactions by Persona - Bar Chart */}

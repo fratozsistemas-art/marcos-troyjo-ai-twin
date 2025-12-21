@@ -105,29 +105,19 @@ export default function CorporateFactManager({ lang = 'pt' }) {
     const handleImportWorldBank = async () => {
         setImporting(true);
         try {
-            const response = await base44.functions.invoke('fetchWorldBankData', {
-                indicators: [
-                    'NY.GDP.MKTP.CD',
-                    'NY.GDP.PCAP.CD',
-                    'NE.TRD.GNFS.ZS',
-                    'NE.EXP.GNFS.ZS',
-                    'NE.IMP.GNFS.ZS',
-                    'FP.CPI.TOTL.ZG'
-                ],
-                countries: ['BRA', 'CHN', 'IND', 'RUS', 'ZAF', 'USA', 'WLD'],
-                startYear: 2018,
-                endYear: 2023
+            const response = await base44.functions.invoke('syncWorldBankData', {
+                force_sync: true
             });
 
             if (response.data.success) {
-                toast.success(response.data.message);
+                toast.success(`${response.data.new_records} novos registros, ${response.data.updated_records} atualizados`);
                 loadFacts();
             } else {
                 toast.error(response.data.message);
             }
         } catch (error) {
             console.error('Error importing:', error);
-            toast.error('Erro ao importar dados');
+            toast.error('Erro ao sincronizar dados');
         } finally {
             setImporting(false);
         }
@@ -256,23 +246,25 @@ export default function CorporateFactManager({ lang = 'pt' }) {
                             <Download className="w-4 h-4 mr-2" />
                             {t.export}
                         </Button>
-                        <Button 
-                            onClick={handleImportWorldBank}
-                            disabled={importing}
-                            className="bg-[#002D62]"
-                        >
-                            {importing ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                    {t.importing}
-                                </>
-                            ) : (
-                                <>
-                                    <Upload className="w-4 h-4 mr-2" />
-                                    {t.import}
-                                </>
-                            )}
-                        </Button>
+                        <div className="flex gap-2">
+                            <Button 
+                                onClick={handleImportWorldBank}
+                                disabled={importing}
+                                className="bg-[#002D62]"
+                            >
+                                {importing ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        {t.importing}
+                                    </>
+                                ) : (
+                                    <>
+                                        <Upload className="w-4 h-4 mr-2" />
+                                        {lang === 'pt' ? 'Sincronizar Dados' : 'Sync Data'}
+                                    </>
+                                )}
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </CardHeader>

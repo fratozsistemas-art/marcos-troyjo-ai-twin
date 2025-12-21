@@ -13,6 +13,7 @@ import QualityBadge from '@/components/editorial/QualityBadge';
 import RelatedContent from '@/components/content/RelatedContent';
 import SEOHead from '@/components/seo/SEOHead';
 import { HelmetProvider } from 'react-helmet-async';
+import LinkedInIntegration from '@/components/social/LinkedInIntegration';
 
 export default function ArticleView() {
     const [article, setArticle] = useState(null);
@@ -247,6 +248,11 @@ export default function ArticleView() {
                         </div>
                     </div>
                 )}
+
+                {/* LinkedIn Integration */}
+                <div className="mt-8">
+                    <LinkedInIntegration article={article} lang={lang} />
+                </div>
 
                 {/* Related Content */}
                 <div className="mt-8">

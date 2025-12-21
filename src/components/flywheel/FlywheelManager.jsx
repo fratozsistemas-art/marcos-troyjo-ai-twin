@@ -6,12 +6,14 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { 
     Server, Loader2, RefreshCw, Play, Trash2, 
-    Plus, Settings, Database, Activity, FileText
+    Plus, Settings, Database, Activity, FileText, GitBranch, TrendingUp
 } from 'lucide-react';
 import { toast } from 'sonner';
 import CreateSiteDialog from './CreateSiteDialog';
 import DeploymentLogsDialog from './DeploymentLogsDialog';
 import SiteConfigDialog from './SiteConfigDialog';
+import GitIntegrationDialog from './GitIntegrationDialog';
+import PipelineViewer from './PipelineViewer';
 
 const translations = {
     pt: {
@@ -53,7 +55,9 @@ export default function FlywheelManager({ lang = 'pt' }) {
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [logsDialogOpen, setLogsDialogOpen] = useState(false);
     const [configDialogOpen, setConfigDialogOpen] = useState(false);
+    const [gitDialogOpen, setGitDialogOpen] = useState(false);
     const [selectedSite, setSelectedSite] = useState(null);
+    const [showPipelines, setShowPipelines] = useState(false);
     const t = translations[lang];
 
     useEffect(() => {
@@ -136,6 +140,21 @@ export default function FlywheelManager({ lang = 'pt' }) {
     const openConfig = (site) => {
         setSelectedSite(site);
         setConfigDialogOpen(true);
+    };
+
+    const openGitIntegration = (site) => {
+        setSelectedSite(site);
+        setGitDialogOpen(true);
+    };
+
+    const togglePipelines = (site) => {
+        if (selectedSite?.id === site.id && showPipelines) {
+            setShowPipelines(false);
+            setSelectedSite(null);
+        } else {
+            setSelectedSite(site);
+            setShowPipelines(true);
+        }
     };
 
     const getStatusColor = (status) => {
@@ -231,6 +250,22 @@ export default function FlywheelManager({ lang = 'pt' }) {
                                         <Button
                                             variant="outline"
                                             size="sm"
+                                            onClick={() => openGitIntegration(site)}
+                                            title="Git/CI/CD"
+                                        >
+                                            <GitBranch className="w-4 h-4" />
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => togglePipelines(site)}
+                                            title="Pipelines"
+                                        >
+                                            <TrendingUp className="w-4 h-4" />
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
                                             onClick={() => openConfig(site)}
                                             title={lang === 'pt' ? 'Configurações' : 'Settings'}
                                         >
@@ -307,6 +342,13 @@ export default function FlywheelManager({ lang = 'pt' }) {
             <SiteConfigDialog
                 open={configDialogOpen}
                 onOpenChange={setConfigDialogOpen}
+                siteId={selectedSite?.id}
+                lang={lang}
+            />
+
+            <GitIntegrationDialog
+                open={gitDialogOpen}
+                onOpenChange={setGitDialogOpen}
                 siteId={selectedSite?.id}
                 lang={lang}
             />

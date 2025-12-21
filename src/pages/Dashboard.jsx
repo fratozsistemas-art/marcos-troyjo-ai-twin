@@ -347,16 +347,16 @@ export default function Dashboard() {
                                 </span>
                             </div>
                         )}
-                        <Link to={safeCreatePageUrl('Consultation')}>
-                            <Button 
-                                data-ai-id="btn_new_chat"
-                                data-ai-role="button"
-                                className="bg-[#002D62] hover:bg-[#001d42] text-white gap-2"
-                            >
-                                <MessageSquare className="w-4 h-4" />
-                                <span className="hidden sm:inline">{t.newChat}</span>
-                            </Button>
-                        </Link>
+                        <Link to={createPageUrl('Consultation')}>
+                                <Button 
+                                    data-ai-id="btn_new_chat"
+                                    data-ai-role="button"
+                                    className="bg-[#002D62] hover:bg-[#001d42] text-white gap-2"
+                                >
+                                    <MessageSquare className="w-4 h-4" />
+                                    <span className="hidden sm:inline">{t.newChat}</span>
+                                </Button>
+                            </Link>
                     </div>
                 </div>
             </header>
@@ -595,7 +595,7 @@ export default function Dashboard() {
                                         <MessageSquare className="w-12 h-12 text-[#333F48]/20 mx-auto mb-3" />
                                         <p className="text-sm text-[#333F48]/60 mb-1">{t.noConversations}</p>
                                         <p className="text-xs text-[#333F48]/40">{t.startFirst}</p>
-                                        <Link to={safeCreatePageUrl('Consultation')}>
+                                        <Link to={createPageUrl('Consultation')}>
                                             <Button className="mt-4 bg-[#002D62] hover:bg-[#001d42]">
                                                 <Plus className="w-4 h-4 mr-2" />
                                                 {t.newChat}

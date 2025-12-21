@@ -51,6 +51,8 @@ import InterviewTranscriptManager from '@/components/interviews/InterviewTranscr
 import ExternalDataFeeds from '@/components/dashboard/ExternalDataFeeds';
 import CorporateFactManager from '@/components/ssot/CorporateFactManager';
 import FlywheelManager from '@/components/flywheel/FlywheelManager';
+import ReportScheduler from '@/components/automation/ReportScheduler';
+import AgentManager from '@/components/admin/AgentManager';
 
 const translations = {
     pt: {
@@ -417,6 +419,15 @@ export default function Dashboard() {
                         {/* External Data Feeds - Full Width */}
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.01 }}>
                             <ExternalDataFeeds lang={lang} />
+                        </motion.div>
+
+                        {/* Automation & Agent Management */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.015 }}>
+                            <ReportScheduler lang={lang} />
+                        </motion.div>
+
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.018 }}>
+                            <AgentManager lang={lang} />
                         </motion.div>
 
                         {/* Geopolitical Section - Side by Side */}

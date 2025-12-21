@@ -389,15 +389,15 @@ export default function Dashboard() {
                 {/* Conditional Content Based on Active Tab */}
                 {activeTab === 'todos' && (
                     <>
-                        {/* Alert Feed Manager */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
-                            <AlertFeedManager lang={lang} />
-                        </motion.div>
-
-                        {/* Geopolitical Alerts */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-                            <GeopoliticalAlertPanel userContext={{}} personaMode="tecnico" lang={lang} />
-                        </motion.div>
+                        {/* Geopolitical Section - Side by Side */}
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }}>
+                                <AlertFeedManager lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
+                                <GeopoliticalAlertPanel userContext={{}} personaMode="tecnico" lang={lang} />
+                            </motion.div>
+                        </div>
 
                         {/* First Row - Profile Settings Full Width */}
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>

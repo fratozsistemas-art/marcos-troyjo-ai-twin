@@ -269,22 +269,38 @@ export default function MLflowExperiments({ lang = 'pt' }) {
                         {selectedExp ? (
                             <ScrollArea className="h-[400px]">
                                 <div className="space-y-2">
-                                    {runs.map((run) => (
+                                    {runs.map((run) => {
+                                        const isSelected = selectedForComparison.some(r => r.info.run_id === run.info.run_id);
+                                        
+                                        return (
                                         <div
                                             key={run.info.run_id}
-                                            onClick={() => {
-                                                setSelectedRun(run);
-                                                if (run.data.metrics && Object.keys(run.data.metrics).length > 0) {
-                                                    const firstMetric = Object.keys(run.data.metrics)[0];
-                                                    loadMetricHistory(run.info.run_id, firstMetric);
-                                                }
-                                            }}
                                             className={`border rounded-lg p-3 hover:bg-gray-50 cursor-pointer transition-colors ${
                                                 selectedRun?.info.run_id === run.info.run_id
                                                     ? 'bg-blue-50 border-blue-300'
                                                     : ''
-                                            }`}
+                                            } ${isSelected ? 'ring-2 ring-[#002D62]' : ''}`}
                                         >
+                                            <div className="flex items-start gap-2">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isSelected}
+                                                    onChange={(e) => {
+                                                        e.stopPropagation();
+                                                        toggleRunSelection(run);
+                                                    }}
+                                                    className="mt-1"
+                                                />
+                                                <div 
+                                                    className="flex-1"
+                                                    onClick={() => {
+                                                        setSelectedRun(run);
+                                                        if (run.data.metrics && Object.keys(run.data.metrics).length > 0) {
+                                                            const firstMetric = Object.keys(run.data.metrics)[0];
+                                                            loadMetricHistory(run.info.run_id, firstMetric);
+                                                        }
+                                                    }}
+                                                >
                                             <div className="flex items-center justify-between mb-2">
                                                 <Badge variant={
                                                     run.info.status === 'FINISHED' ? 'default' :
@@ -327,8 +343,10 @@ export default function MLflowExperiments({ lang = 'pt' }) {
                         )}
                     </div>
                 </div>
+                )}
 
                 {/* Metric Chart */}
+                {!showComparison && (
                 {selectedRun && metricHistory.length > 0 && (
                     <div className="mt-6 pt-6 border-t">
                         <h3 className="font-semibold mb-3 flex items-center gap-2">
@@ -346,6 +364,7 @@ export default function MLflowExperiments({ lang = 'pt' }) {
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
+                )}
                 )}
             </CardContent>
         </Card>

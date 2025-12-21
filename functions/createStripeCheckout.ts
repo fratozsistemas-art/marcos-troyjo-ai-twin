@@ -5,10 +5,12 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
 
 // Real Stripe Price IDs from your catalog
 const PRICE_IDS = {
-    student_monthly: 'price_1Sgkl9Ro0dVPpa4Wmxif6IFT',  // R$ 97/mês
-    student_yearly: 'price_1Sgkl9Ro0dVPpa4WajzQvb8F',   // R$ 970/ano
-    pro_monthly: 'price_1SgkaSRo0dVPpa4WYDKbrZ7K',      // R$ 397/mês
-    pro_yearly: 'price_1SgkaSRo0dVPpa4Wg8L9624a'        // R$ 1497/ano
+    student_monthly: 'price_1SgmeqRo0dVPpa4WwvshBsl0',  // R$ 97/mês (entry_month)
+    student_yearly: 'price_1SgmffRo0dVPpa4WzECFaiEL',   // R$ 970/ano (entry_annual)
+    pro_monthly: 'price_1SgmgTRo0dVPpa4WvKYlYGeZ',      // R$ 397/mês (basic_month)
+    pro_yearly: 'price_1SgmgnRo0dVPpa4WDwZwIari',       // R$ 3970/ano (basic_annual)
+    teams_monthly: 'price_1SgmhJRo0dVPpa4W3H4jN37E',    // R$ 1497/mês (teams_monthly)
+    teams_quarterly: 'price_1SgmhvRo0dVPpa4WWMA34UFU'   // R$ 14970/trimestre (teams_annual)
 };
 
 Deno.serve(async (req) => {

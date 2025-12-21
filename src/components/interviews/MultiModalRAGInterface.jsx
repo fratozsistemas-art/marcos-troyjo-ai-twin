@@ -1,72 +1,106 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { FileText, Link as LinkIcon, Upload, Search, Loader2, X, CheckCircle } from 'lucide-react';
-import TranscriptResultCard from '@/components/interviews/TranscriptResultCard';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Search, Plus, FileText, Globe, Loader2, X, Database, Newspaper, Sparkles, Link as LinkIcon, Upload, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { Textarea } from '@/components/ui/textarea';
+
+const translations = {
+    pt: {
+        title: 'RAG Multi-Modal Avançado',
+        description: 'Busca integrada: Entrevistas + SSOT + World Bank + Notícias',
+        query: 'Sua pergunta',
+        search: 'Buscar',
+        searching: 'Buscando...',
+        addSource: 'Adicionar Fonte Externa',
+        sourceUrl: 'URL do documento',
+        uploadFile: 'Upload de arquivo',
+        results: 'Resultados',
+        transcripts: 'Entrevistas',
+        external: 'Fontes Externas',
+        crossRef: 'Referências Cruzadas',
+        noResults: 'Nenhum resultado encontrado',
+        sources: 'Fontes de Dados',
+        corporateFacts: 'Dados Corporativos (SSOT)',
+        worldBank: 'World Bank',
+        news: 'Notícias Financeiras',
+        synthesis: 'Síntese Inteligente'
+    },
+    en: {
+        title: 'Advanced Multi-Modal RAG',
+        description: 'Integrated search: Interviews + SSOT + World Bank + News',
+        query: 'Your question',
+        search: 'Search',
+        searching: 'Searching...',
+        addSource: 'Add External Source',
+        sourceUrl: 'Document URL',
+        uploadFile: 'Upload file',
+        results: 'Results',
+        transcripts: 'Interviews',
+        external: 'External Sources',
+        crossRef: 'Cross References',
+        noResults: 'No results found',
+        sources: 'Data Sources',
+        corporateFacts: 'Corporate Data (SSOT)',
+        worldBank: 'World Bank',
+        news: 'Financial News',
+        synthesis: 'Intelligent Synthesis'
+    }
+};
 
 export default function MultiModalRAGInterface({ lang = 'pt' }) {
     const [query, setQuery] = useState('');
+    const [externalSources, setExternalSources] = useState([]);
     const [results, setResults] = useState(null);
-    const [searching, setSearching] = useState(false);
-    const [externalDocs, setExternalDocs] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [sourceDialogOpen, setSourceDialogOpen] = useState(false);
+    const [newSourceUrl, setNewSourceUrl] = useState('');
+    const [selectedSources, setSelectedSources] = useState(['transcripts', 'corporate_facts', 'world_bank', 'news']);
     const [uploadingDoc, setUploadingDoc] = useState(false);
-    const [urlInput, setUrlInput] = useState('');
+    const t = translations[lang];
 
-    const t = {
-        pt: {
-            title: 'Busca Multi-Modal RAG',
-            query: 'Sua pergunta',
-            search: 'Buscar',
-            addUrl: 'Adicionar URL',
-            uploadFile: 'Upload Arquivo',
-            externalSources: 'Fontes Externas',
-            results: 'Resultados',
-            crossRef: 'Correlações',
-            corroborating: 'Pontos Corroborantes',
-            conflicting: 'Pontos Conflitantes',
-            complementary: 'Insights Complementares'
-        },
-        en: {
-            title: 'Multi-Modal RAG Search',
-            query: 'Your question',
-            search: 'Search',
-            addUrl: 'Add URL',
-            uploadFile: 'Upload File',
-            externalSources: 'External Sources',
-            results: 'Results',
-            crossRef: 'Cross-References',
-            corroborating: 'Corroborating Points',
-            conflicting: 'Conflicting Points',
-            complementary: 'Complementary Insights'
+    const handleSearch = async () => {
+        if (!query.trim()) return;
+
+        setLoading(true);
+        try {
+            const response = await base44.functions.invoke('enhancedRAGQuery', {
+                query: query,
+                sources: selectedSources
+            });
+
+            setResults(response.data);
+        } catch (error) {
+            console.error('Error searching:', error);
+            toast.error(lang === 'pt' ? 'Erro na busca' : 'Search error');
+        } finally {
+            setLoading(false);
         }
     };
 
-    const text = t[lang];
-
     const handleAddUrl = async () => {
-        if (!urlInput.trim()) return;
+        if (!newSourceUrl.trim()) return;
 
         setUploadingDoc(true);
         try {
             const response = await base44.functions.invoke('analyzeExternalDocument', {
-                document_url: urlInput
+                document_url: newSourceUrl
             });
 
             if (response.data.success) {
-                setExternalDocs([...externalDocs, {
+                setExternalSources([...externalSources, {
                     type: 'url',
-                    url: urlInput,
-                    title: urlInput,
-                    ...response.data
+                    url: newSourceUrl,
+                    title: newSourceUrl
                 }]);
-                setUrlInput('');
-                toast.success('URL adicionado');
+                setNewSourceUrl('');
+                setSourceDialogOpen(false);
+                toast.success('URL adicionada');
             }
         } catch (error) {
             console.error('Error adding URL:', error);
@@ -82,21 +116,19 @@ export default function MultiModalRAGInterface({ lang = 'pt' }) {
 
         setUploadingDoc(true);
         try {
-            // Upload file
             const uploadResult = await base44.integrations.Core.UploadFile({ file });
             
-            // Analyze
             const response = await base44.functions.invoke('analyzeExternalDocument', {
                 file_url: uploadResult.file_url
             });
 
             if (response.data.success) {
-                setExternalDocs([...externalDocs, {
+                setExternalSources([...externalSources, {
                     type: 'file',
                     title: file.name,
-                    url: uploadResult.file_url,
-                    ...response.data
+                    url: uploadResult.file_url
                 }]);
+                setSourceDialogOpen(false);
                 toast.success('Arquivo processado');
             }
         } catch (error) {
@@ -107,222 +139,220 @@ export default function MultiModalRAGInterface({ lang = 'pt' }) {
         }
     };
 
-    const handleSearch = async () => {
-        if (!query.trim()) return;
-
-        setSearching(true);
-        try {
-            const response = await base44.functions.invoke('semanticSearchTranscripts', {
-                query,
-                max_results: 5,
-                external_documents: externalDocs,
-                include_external: externalDocs.length > 0
-            });
-
-            setResults(response.data);
-        } catch (error) {
-            console.error('Error searching:', error);
-            toast.error('Erro na busca');
-        } finally {
-            setSearching(false);
-        }
-    };
-
-    const removeDoc = (index) => {
-        setExternalDocs(externalDocs.filter((_, i) => i !== index));
-    };
-
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-[#002D62]">
-                    <Search className="w-5 h-5" />
-                    {text.title}
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {/* External Sources */}
-                <div className="space-y-2">
-                    <h4 className="text-sm font-semibold">{text.externalSources}:</h4>
-                    <div className="flex gap-2">
-                        <div className="flex-1 flex gap-2">
-                            <Input
-                                placeholder="https://exemplo.com/artigo"
-                                value={urlInput}
-                                onChange={(e) => setUrlInput(e.target.value)}
-                                onKeyDown={(e) => e.key === 'Enter' && handleAddUrl()}
-                            />
-                            <Button
-                                onClick={handleAddUrl}
-                                disabled={uploadingDoc || !urlInput.trim()}
-                                size="sm"
-                            >
-                                <LinkIcon className="w-4 h-4" />
-                            </Button>
-                        </div>
-                        <input
-                            type="file"
-                            accept=".pdf,.docx,.txt"
-                            onChange={handleFileUpload}
-                            className="hidden"
-                            id="doc-upload"
-                        />
-                        <Button
-                            onClick={() => document.getElementById('doc-upload')?.click()}
-                            disabled={uploadingDoc}
-                            size="sm"
-                            variant="outline"
-                        >
-                            {uploadingDoc ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                                <Upload className="w-4 h-4" />
-                            )}
-                        </Button>
-                    </div>
-
-                    {externalDocs.length > 0 && (
-                        <div className="space-y-1">
-                            {externalDocs.map((doc, idx) => (
-                                <div key={idx} className="flex items-center gap-2 bg-gray-50 rounded p-2 text-sm">
-                                    <FileText className="w-4 h-4 text-gray-500" />
-                                    <span className="flex-1 truncate">{doc.title}</span>
-                                    <CheckCircle className="w-4 h-4 text-green-500" />
-                                    <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={() => removeDoc(idx)}
-                                        className="h-6 w-6 p-0"
-                                    >
-                                        <X className="w-3 h-3" />
-                                    </Button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                {/* Search */}
-                <div className="space-y-2">
-                    <Textarea
-                        placeholder={text.query}
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        rows={2}
-                    />
-                    <Button
-                        onClick={handleSearch}
-                        disabled={searching || !query.trim()}
-                        className="w-full"
-                    >
-                        {searching ? (
-                            <>
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Buscando...
-                            </>
-                        ) : (
-                            <>
-                                <Search className="w-4 h-4 mr-2" />
-                                {text.search}
-                            </>
-                        )}
-                    </Button>
-                </div>
-
-                {/* Results */}
-                {results && (
+        <>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-[#002D62]">
+                        <Search className="w-5 h-5" />
+                        {t.title}
+                    </CardTitle>
+                    <CardDescription>{t.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-semibold">{text.results}</h4>
-                            {results.sources_used && (
-                                <div className="flex gap-2">
-                                    <Badge variant="secondary">
-                                        {results.sources_used.transcripts} entrevistas
+                        <div>
+                            <Label className="text-xs mb-2 block">{t.sources}:</Label>
+                            <div className="flex flex-wrap gap-2 mb-3">
+                                {[
+                                    { id: 'transcripts', label: t.transcripts, icon: FileText },
+                                    { id: 'corporate_facts', label: t.corporateFacts, icon: Database },
+                                    { id: 'world_bank', label: t.worldBank, icon: Globe },
+                                    { id: 'news', label: t.news, icon: Newspaper }
+                                ].map(source => (
+                                    <Badge
+                                        key={source.id}
+                                        variant={selectedSources.includes(source.id) ? "default" : "outline"}
+                                        className="cursor-pointer"
+                                        onClick={() => {
+                                            setSelectedSources(prev =>
+                                                prev.includes(source.id)
+                                                    ? prev.filter(s => s !== source.id)
+                                                    : [...prev, source.id]
+                                            );
+                                        }}
+                                    >
+                                        <source.icon className="w-3 h-3 mr-1" />
+                                        {source.label}
                                     </Badge>
-                                    {results.sources_used.external > 0 && (
-                                        <Badge variant="secondary">
-                                            {results.sources_used.external} externos
-                                        </Badge>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-
-                        <ScrollArea className="h-[400px]">
-                            <div className="space-y-3">
-                                {results.results?.map((result, idx) => (
-                                    <TranscriptResultCard
-                                        key={idx}
-                                        result={result}
-                                        query={query}
-                                    />
                                 ))}
                             </div>
-                        </ScrollArea>
+                        </div>
 
-                        {/* Cross References */}
-                        {results.cross_references && (
-                            <Card className="bg-blue-50 border-blue-200">
-                                <CardHeader>
-                                    <CardTitle className="text-sm">{text.crossRef}</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-3 text-sm">
-                                    {results.cross_references.corroborating_points?.length > 0 && (
-                                        <div>
-                                            <h5 className="font-semibold text-green-700 mb-1">
-                                                {text.corroborating}:
-                                            </h5>
-                                            <ul className="space-y-1">
-                                                {results.cross_references.corroborating_points.map((p, i) => (
-                                                    <li key={i} className="text-gray-700">
-                                                        • <strong>{p.topic}:</strong> {p.agreement}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
+                        <div className="flex gap-2">
+                            <Textarea
+                                placeholder={t.query}
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSearch()}
+                                rows={2}
+                                className="flex-1"
+                            />
+                            <Button onClick={handleSearch} disabled={loading || selectedSources.length === 0}>
+                                {loading ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    <Search className="w-4 h-4" />
+                                )}
+                            </Button>
+                        </div>
 
-                                    {results.cross_references.conflicting_points?.length > 0 && (
-                                        <div>
-                                            <h5 className="font-semibold text-orange-700 mb-1">
-                                                {text.conflicting}:
-                                            </h5>
-                                            <ul className="space-y-1">
-                                                {results.cross_references.conflicting_points.map((p, i) => (
-                                                    <li key={i} className="text-gray-700">
-                                                        • <strong>{p.topic}:</strong>
-                                                        <br />
-                                                        <span className="ml-4 text-xs">
-                                                            Troyjo: {p.troyjo_position}
-                                                        </span>
-                                                        <br />
-                                                        <span className="ml-4 text-xs">
-                                                            Externo: {p.external_position}
-                                                        </span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
+                        {results && (
+                            <div className="space-y-4">
+                                {/* Synthesis */}
+                                {results.synthesis && (
+                                    <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+                                        <CardContent className="p-4">
+                                            <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                                <Sparkles className="w-4 h-4 text-blue-600" />
+                                                {t.synthesis}
+                                            </h4>
+                                            <p className="text-sm text-gray-800 whitespace-pre-wrap">{results.synthesis}</p>
+                                        </CardContent>
+                                    </Card>
+                                )}
 
-                                    {results.cross_references.complementary_insights?.length > 0 && (
-                                        <div>
-                                            <h5 className="font-semibold text-blue-700 mb-1">
-                                                {text.complementary}:
-                                            </h5>
-                                            <ul className="space-y-1">
-                                                {results.cross_references.complementary_insights.map((insight, i) => (
-                                                    <li key={i} className="text-gray-700">• {insight}</li>
-                                                ))}
-                                            </ul>
+                                {/* Transcript Results */}
+                                {results.data?.transcripts?.results && results.data.transcripts.results.length > 0 && (
+                                    <div>
+                                        <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                            <FileText className="w-4 h-4" />
+                                            {t.transcripts} ({results.data.transcripts.count})
+                                        </h4>
+                                        <div className="space-y-2">
+                                            {results.data.transcripts.results.map((result, idx) => (
+                                                <Card key={idx} className="bg-blue-50/50">
+                                                    <CardContent className="p-3">
+                                                        <p className="text-xs font-semibold text-blue-900 mb-1">
+                                                            {result.transcript_title} ({result.date})
+                                                        </p>
+                                                        {result.chunks.slice(0, 2).map((chunk, ci) => (
+                                                            <p key={ci} className="text-xs text-blue-800 mb-1">{chunk.text}</p>
+                                                        ))}
+                                                    </CardContent>
+                                                </Card>
+                                            ))}
                                         </div>
-                                    )}
-                                </CardContent>
-                            </Card>
+                                    </div>
+                                )}
+
+                                {/* Corporate Facts */}
+                                {results.data?.corporate_facts?.results && results.data.corporate_facts.results.length > 0 && (
+                                    <div>
+                                        <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                            <Database className="w-4 h-4" />
+                                            {t.corporateFacts} ({results.data.corporate_facts.count})
+                                        </h4>
+                                        <div className="grid gap-2">
+                                            {results.data.corporate_facts.results.slice(0, 5).map((fact, idx) => (
+                                                <Card key={idx} className="bg-green-50/50">
+                                                    <CardContent className="p-3">
+                                                        <div className="flex items-start justify-between mb-1">
+                                                            <p className="text-xs font-semibold text-green-900">{fact.indicator}</p>
+                                                            <Badge variant="outline" className="text-xs">{fact.category}</Badge>
+                                                        </div>
+                                                        <p className="text-sm font-bold text-green-800">{fact.value} {fact.unit}</p>
+                                                        <p className="text-xs text-green-700 mt-1">{fact.country} • {fact.year} • {fact.source}</p>
+                                                        {fact.verified && <Badge className="mt-1 text-xs bg-green-600">Verified</Badge>}
+                                                    </CardContent>
+                                                </Card>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* World Bank */}
+                                {results.data?.world_bank?.results && results.data.world_bank.results.length > 0 && (
+                                    <div>
+                                        <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                            <Globe className="w-4 h-4" />
+                                            {t.worldBank} ({results.data.world_bank.count})
+                                        </h4>
+                                        <div className="space-y-2">
+                                            {results.data.world_bank.results.slice(0, 3).map((indicator, idx) => (
+                                                <Card key={idx} className="bg-amber-50/50">
+                                                    <CardContent className="p-3">
+                                                        <p className="text-xs font-semibold text-amber-900 mb-1">{indicator.name}</p>
+                                                        <p className="text-xs text-amber-800">{indicator.description?.substring(0, 150)}...</p>
+                                                        <Badge variant="secondary" className="mt-1 text-xs">{indicator.source}</Badge>
+                                                    </CardContent>
+                                                </Card>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* News */}
+                                {results.data?.news?.results && results.data.news.results.length > 0 && (
+                                    <div>
+                                        <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                            <Newspaper className="w-4 h-4" />
+                                            {t.news} ({results.data.news.count})
+                                        </h4>
+                                        <div className="space-y-2">
+                                            {results.data.news.results.map((article, idx) => (
+                                                <Card key={idx} className="bg-purple-50/50">
+                                                    <CardContent className="p-3">
+                                                        <p className="text-xs font-semibold text-purple-900 mb-1">{article.title}</p>
+                                                        <p className="text-xs text-purple-800 mb-1">{article.summary}</p>
+                                                        <p className="text-xs text-purple-700">{article.source} • {article.date}</p>
+                                                    </CardContent>
+                                                </Card>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         )}
                     </div>
-                )}
-            </CardContent>
-        </Card>
+                </CardContent>
+            </Card>
+
+            <Dialog open={sourceDialogOpen} onOpenChange={setSourceDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{t.addSource}</DialogTitle>
+                        <DialogDescription>{t.external}</DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        <div>
+                            <Label>{t.sourceUrl}</Label>
+                            <Input
+                                placeholder="https://exemplo.com/artigo"
+                                value={newSourceUrl}
+                                onChange={(e) => setNewSourceUrl(e.target.value)}
+                            />
+                            <Button onClick={handleAddUrl} disabled={uploadingDoc} className="mt-2 w-full">
+                                <LinkIcon className="w-4 h-4 mr-2" />
+                                Adicionar URL
+                            </Button>
+                        </div>
+                        <div className="text-center text-sm text-gray-500">ou</div>
+                        <div>
+                            <input
+                                type="file"
+                                accept=".pdf,.docx,.txt"
+                                onChange={handleFileUpload}
+                                className="hidden"
+                                id="doc-upload"
+                            />
+                            <Button
+                                onClick={() => document.getElementById('doc-upload')?.click()}
+                                disabled={uploadingDoc}
+                                variant="outline"
+                                className="w-full"
+                            >
+                                {uploadingDoc ? (
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                ) : (
+                                    <Upload className="w-4 h-4 mr-2" />
+                                )}
+                                {t.uploadFile}
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }

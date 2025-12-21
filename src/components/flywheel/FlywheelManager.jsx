@@ -14,6 +14,7 @@ import DeploymentLogsDialog from './DeploymentLogsDialog';
 import SiteConfigDialog from './SiteConfigDialog';
 import GitIntegrationDialog from './GitIntegrationDialog';
 import PipelineViewer from './PipelineViewer';
+import MLflowExperiments from './MLflowExperiments';
 
 const translations = {
     pt: {
@@ -323,6 +324,10 @@ export default function FlywheelManager({ lang = 'pt' }) {
                     </div>
                 )}
             </CardContent>
+
+            <div className="mt-6">
+                <MLflowExperiments lang={lang} />
+            </div>
 
             <CreateSiteDialog
                 open={createDialogOpen}

@@ -10,6 +10,8 @@ import TrialBanner from '@/components/subscription/TrialBanner';
 import Breadcrumbs from '@/components/navigation/Breadcrumbs';
 import KeyboardShortcuts from '@/components/navigation/KeyboardShortcuts';
 import AppAssistant from '@/components/assistant/AppAssistant';
+import NotificationCenter from '@/components/notifications/NotificationCenter';
+import WorkflowGuide from '@/components/workflow/WorkflowGuide';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Toaster } from 'sonner';
 import { toast } from 'sonner';
@@ -103,14 +105,17 @@ export default function Layout({ children, currentPageName }) {
                     >
                         <Menu className="w-5 h-5" />
                     </Button>
-                    
-                    <button
-                        onClick={toggleLanguage}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors text-sm font-medium text-[#333F48]"
-                    >
-                        <Globe className="w-4 h-4" />
-                        {lang === 'pt' ? 'EN' : 'PT'}
-                    </button>
+
+                    <div className="flex items-center gap-2">
+                        <NotificationCenter lang={lang} />
+                        <button
+                            onClick={toggleLanguage}
+                            className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors text-sm font-medium text-[#333F48]"
+                        >
+                            <Globe className="w-4 h-4" />
+                            {lang === 'pt' ? 'EN' : 'PT'}
+                        </button>
+                    </div>
                 </header>
 
                 {/* Beta Watermark */}
@@ -140,6 +145,7 @@ export default function Layout({ children, currentPageName }) {
             </div>
             <KeyboardShortcuts lang={lang} />
             <AppAssistant lang={lang} />
+            <WorkflowGuide lang={lang} />
             <Toaster position="top-right" richColors />
             </div>
     );

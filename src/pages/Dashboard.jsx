@@ -29,6 +29,7 @@ import ProactiveSuggestions from '@/components/suggestions/ProactiveSuggestions'
 import PublicationsSection from '@/components/dashboard/PublicationsSection';
 import VoiceCalibration from '@/components/voice-calibration/VoiceCalibration';
 import PersonaAnalytics from '@/components/dashboard/PersonaAnalytics';
+import CustomizableDashboard from '@/components/dashboard/CustomizableDashboard';
 
 import TopicDeepDive from '@/components/topics/TopicDeepDive';
 import CustomPersonaTraits from '@/components/persona/CustomPersonaTraits';
@@ -401,6 +402,11 @@ export default function Dashboard() {
                 {/* Conditional Content Based on Active Tab */}
                 {activeTab === 'todos' && (
                     <>
+                        {/* Customizable Dashboard */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                            <CustomizableDashboard lang={lang} />
+                        </motion.div>
+
                         {/* SSOT - Corporate Facts Manager */}
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.005 }}>
                             <CorporateFactManager lang={lang} />

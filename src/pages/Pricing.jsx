@@ -375,7 +375,7 @@ export default function Pricing() {
                         const isCurrent = currentPlan === plan.id;
                         
                         return (
-                            <Card key={plan.id} className={`relative ${plan.badge ? 'border-[#B8860B] border-2' : ''}`}>
+                            <Card key={plan.id} className={`relative flex flex-col ${plan.badge ? 'border-[#B8860B] border-2' : ''}`}>
                                 {plan.badge && (
                                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                                         <Badge className="bg-[#B8860B] text-white">
@@ -394,8 +394,8 @@ export default function Pricing() {
                                         <span className="text-[#333F48]/60">{plan.period}</span>
                                     </div>
                                 </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <ul className="space-y-2">
+                                <CardContent className="space-y-4 flex-1 flex flex-col">
+                                    <ul className="space-y-2 flex-1">
                                         {plan.features.map((feature, idx) => (
                                             <li key={idx} className="flex items-start gap-2">
                                                 <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />

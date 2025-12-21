@@ -137,9 +137,16 @@ export default function ArticleView() {
                 )}
 
                 <div className="mb-8">
-                    <Badge className="mb-4">
-                        {article.type}
-                    </Badge>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                        <Badge>
+                            {article.type}
+                        </Badge>
+                        {article.tags?.map((tag, idx) => (
+                            <Badge key={idx} variant="outline" className={tag === 'to be approved' ? 'border-amber-500 text-amber-700 bg-amber-50' : ''}>
+                                {tag}
+                            </Badge>
+                        ))}
+                    </div>
                     <h1 className="text-4xl md:text-5xl font-bold text-[#002D62] mb-4">
                         {article.title}
                     </h1>
@@ -205,8 +212,27 @@ export default function ArticleView() {
                     </div>
                 </div>
 
-                <div className="prose prose-lg prose-slate max-w-none prose-headings:text-[#002D62] prose-a:text-[#8B1538] prose-strong:text-[#002D62] prose-p:text-[#2D2D2D] prose-p:leading-relaxed">
-                    <ReactMarkdown>{article.body}</ReactMarkdown>
+                <div className="prose prose-lg prose-slate max-w-none prose-headings:text-[#002D62] prose-a:text-[#8B1538] prose-strong:text-[#002D62] prose-p:text-[#2D2D2D] prose-p:leading-relaxed prose-h2:border-b prose-h2:pb-2 prose-h2:mt-8 prose-h3:mt-6 prose-blockquote:border-l-4 prose-blockquote:border-[#8B1538] prose-blockquote:bg-gray-50 prose-blockquote:py-1 prose-table:border-collapse prose-table:w-full prose-th:bg-[#002D62] prose-th:text-white prose-th:p-3 prose-td:border prose-td:border-gray-300 prose-td:p-3">
+                    <ReactMarkdown
+                        components={{
+                            table: ({node, ...props}) => (
+                                <div className="overflow-x-auto my-6">
+                                    <table className="min-w-full border border-gray-300 shadow-sm rounded-lg" {...props} />
+                                </div>
+                            ),
+                            blockquote: ({node, ...props}) => (
+                                <blockquote className="border-l-4 border-[#8B1538] bg-gray-50 p-4 my-6 italic" {...props} />
+                            ),
+                            h2: ({node, ...props}) => (
+                                <h2 className="text-2xl font-bold text-[#002D62] border-b-2 border-gray-200 pb-2 mt-8 mb-4" {...props} />
+                            ),
+                            h3: ({node, ...props}) => (
+                                <h3 className="text-xl font-semibold text-[#002D62] mt-6 mb-3" {...props} />
+                            )
+                        }}
+                    >
+                        {article.body}
+                    </ReactMarkdown>
                 </div>
 
                 {article.persona_target && article.persona_target.length > 0 && (

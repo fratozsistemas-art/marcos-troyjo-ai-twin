@@ -38,8 +38,12 @@ export default function Layout({ children, currentPageName }) {
 
             const user = await base44.auth.me();
             const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
-            
-            if (profiles.length === 0 || !profiles[0].dashboard_preferences?.onboarding_completed) {
+
+            const shouldShowOnboarding = profiles.length === 0 || 
+                (!profiles[0].dashboard_preferences?.onboarding_completed && 
+                 !profiles[0].dashboard_preferences?.skip_onboarding);
+
+            if (shouldShowOnboarding) {
                 navigate(createPageUrl('Welcome'));
                 return;
             }

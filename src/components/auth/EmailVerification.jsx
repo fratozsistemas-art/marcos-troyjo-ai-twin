@@ -35,6 +35,7 @@ export function useEmailVerification() {
 }
 
 export default function EmailVerification({ onVerified }) {
+    const [email, setEmail] = useState('');
     const [code, setCode] = useState('');
     const [sending, setSending] = useState(false);
     const [verifying, setVerifying] = useState(false);
@@ -46,6 +47,8 @@ export default function EmailVerification({ onVerified }) {
         pt: {
             title: 'Verificar Email',
             description: 'Para iniciar seu trial de 7 dias, precisamos verificar seu email',
+            emailLabel: 'Seu email',
+            emailPlaceholder: 'Digite seu email',
             sendCode: 'Enviar Código',
             codeSent: 'Código enviado! Verifique seu email.',
             enterCode: 'Digite o código de 6 dígitos',
@@ -60,6 +63,8 @@ export default function EmailVerification({ onVerified }) {
         en: {
             title: 'Verify Email',
             description: 'To start your 7-day trial, we need to verify your email',
+            emailLabel: 'Your email',
+            emailPlaceholder: 'Enter your email',
             sendCode: 'Send Code',
             codeSent: 'Code sent! Check your email.',
             enterCode: 'Enter 6-digit code',
@@ -76,9 +81,14 @@ export default function EmailVerification({ onVerified }) {
     const text = t[lang];
 
     const handleSendCode = async () => {
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            toast.error(lang === 'pt' ? 'Email inválido' : 'Invalid email');
+            return;
+        }
+        
         setSending(true);
         try {
-            await base44.functions.invoke('sendVerificationCode', {});
+            await base44.functions.invoke('sendVerificationCode', { email });
             setCodeSent(true);
             setAttemptsLeft(5);
             toast.success(text.codeSent);
@@ -139,18 +149,32 @@ export default function EmailVerification({ onVerified }) {
             </CardHeader>
             <CardContent className="space-y-4">
                 {!codeSent ? (
-                    <Button 
-                        onClick={handleSendCode} 
-                        disabled={sending}
-                        className="w-full bg-[#002D62] hover:bg-[#001d42]"
-                    >
-                        {sending ? (
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        ) : (
-                            <Mail className="w-4 h-4 mr-2" />
-                        )}
-                        {text.sendCode}
-                    </Button>
+                    <>
+                        <div>
+                            <label className="text-sm font-medium text-gray-700 mb-2 block">
+                                {text.emailLabel}
+                            </label>
+                            <Input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder={text.emailPlaceholder}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSendCode()}
+                            />
+                        </div>
+                        <Button 
+                            onClick={handleSendCode} 
+                            disabled={sending || !email}
+                            className="w-full bg-[#002D62] hover:bg-[#001d42]"
+                        >
+                            {sending ? (
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            ) : (
+                                <Mail className="w-4 h-4 mr-2" />
+                            )}
+                            {text.sendCode}
+                        </Button>
+                    </>
                 ) : (
                     <>
                         <div className="flex items-center gap-2 p-3 rounded-lg bg-green-50 border border-green-200">

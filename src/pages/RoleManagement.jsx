@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import SecurityDashboard from '@/components/admin/SecurityDashboard';
+import AegisAlertPanel from '@/components/security/AegisAlertPanel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -279,7 +280,10 @@ export default function RoleManagement() {
                     </TabsContent>
 
                     <TabsContent value="security">
-                        <SecurityDashboard lang={lang} />
+                        <div className="space-y-6">
+                            <AegisAlertPanel lang={lang} />
+                            <SecurityDashboard lang={lang} />
+                        </div>
                     </TabsContent>
                 </Tabs>
             </main>

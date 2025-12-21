@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { cn } from "@/lib/utils";
-import { User, ThumbsUp, ThumbsDown } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
-import { toast } from 'sonner';
+import { User } from 'lucide-react';
+import InlineFeedback from '@/components/feedback/InlineFeedback';
 import DeepDiveSuggestions from './DeepDiveSuggestions';
-import FeedbackWidget from './FeedbackWidget';
 
-export default function MessageBubble({ message, onSuggestionSelect, lang = 'pt', conversationId, messageIndex }) {
+export default function MessageBubble({ message, onSuggestionSelect, lang = 'pt', conversationId, messageIndex, personaMode }) {
     const isUser = message.role === 'user';
+    const usedRag = message.metadata?.used_rag || false;
+    const documentIds = message.metadata?.document_ids || [];
     const isLoading = message.role === 'assistant' && !message.content && message.tool_calls?.some(tc => tc.status === 'running' || tc.status === 'in_progress');
     
     return (
@@ -40,61 +40,69 @@ export default function MessageBubble({ message, onSuggestionSelect, lang = 'pt'
                         {isUser ? (
                             <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.content}</p>
                         ) : (
-                            <ReactMarkdown 
-                                className={cn(
-                                    "text-[15px] prose prose-sm max-w-none leading-relaxed",
-                                    "prose-headings:text-[#002D62] prose-headings:font-bold prose-headings:mb-4 prose-headings:mt-6 first:prose-headings:mt-0",
-                                    "prose-h1:text-xl prose-h2:text-lg prose-h3:text-base",
-                                    "prose-p:text-[#333F48] prose-p:leading-[1.8] prose-p:my-4",
-                                    "prose-strong:text-[#002D62] prose-strong:font-bold",
-                                    "prose-em:text-[#00654A] prose-em:not-italic prose-em:font-medium",
-                                    "prose-ul:my-4 prose-ul:ml-6 prose-ul:space-y-2 prose-li:text-[#333F48] prose-li:leading-relaxed",
-                                    "prose-ol:my-4 prose-ol:ml-6 prose-ol:space-y-2",
-                                    "prose-blockquote:border-l-4 prose-blockquote:border-[#B8860B] prose-blockquote:bg-amber-50/50 prose-blockquote:text-[#333F48] prose-blockquote:italic prose-blockquote:pl-6 prose-blockquote:py-3 prose-blockquote:my-5 prose-blockquote:rounded-r-lg",
-                                    "prose-code:text-[#00654A] prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono",
-                                    "[&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
-                                    "[&_p:last-child]:bg-gradient-to-r [&_p:last-child]:from-[#002D62]/5 [&_p:last-child]:to-transparent [&_p:last-child]:border-l-2 [&_p:last-child]:border-[#B8860B] [&_p:last-child]:pl-4 [&_p:last-child]:py-2 [&_p:last-child]:rounded-r-md [&_p:last-child]:text-[#002D62] [&_p:last-child]:italic"
+                            <>
+                                <ReactMarkdown 
+                                    className={cn(
+                                        "text-[15px] prose prose-sm max-w-none leading-relaxed",
+                                        "prose-headings:text-[#002D62] prose-headings:font-bold prose-headings:mb-4 prose-headings:mt-6 first:prose-headings:mt-0",
+                                        "prose-h1:text-xl prose-h2:text-lg prose-h3:text-base",
+                                        "prose-p:text-[#333F48] prose-p:leading-[1.8] prose-p:my-4",
+                                        "prose-strong:text-[#002D62] prose-strong:font-bold",
+                                        "prose-em:text-[#00654A] prose-em:not-italic prose-em:font-medium",
+                                        "prose-ul:my-4 prose-ul:ml-6 prose-ul:space-y-2 prose-li:text-[#333F48] prose-li:leading-relaxed",
+                                        "prose-ol:my-4 prose-ol:ml-6 prose-ol:space-y-2",
+                                        "prose-blockquote:border-l-4 prose-blockquote:border-[#B8860B] prose-blockquote:bg-amber-50/50 prose-blockquote:text-[#333F48] prose-blockquote:italic prose-blockquote:pl-6 prose-blockquote:py-3 prose-blockquote:my-5 prose-blockquote:rounded-r-lg",
+                                        "prose-code:text-[#00654A] prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono",
+                                        "[&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+                                        "[&_p:last-child]:bg-gradient-to-r [&_p:last-child]:from-[#002D62]/5 [&_p:last-child]:to-transparent [&_p:last-child]:border-l-2 [&_p:last-child]:border-[#B8860B] [&_p:last-child]:pl-4 [&_p:last-child]:py-2 [&_p:last-child]:rounded-r-md [&_p:last-child]:text-[#002D62] [&_p:last-child]:italic"
+                                    )}
+                                    components={{
+                                        h1: ({ children }) => <h1 className="text-xl font-bold">{children}</h1>,
+                                        h2: ({ children }) => <h2 className="text-lg font-semibold">{children}</h2>,
+                                        h3: ({ children }) => <h3 className="text-base font-semibold">{children}</h3>,
+                                        a: ({ children, ...props }) => (
+                                            <a {...props} className="text-[#00654A] underline hover:text-[#002D62] transition-colors" target="_blank" rel="noopener noreferrer">
+                                                {children}
+                                            </a>
+                                        ),
+                                    }}
+                                >
+                                    {message.content}
+                                </ReactMarkdown>
+
+                                {/* Inline Feedback */}
+                                {conversationId && messageIndex !== undefined && (
+                                    <div className="mt-4 pt-4 border-t border-gray-100">
+                                        <InlineFeedback
+                                            conversationId={conversationId}
+                                            messageIndex={messageIndex}
+                                            messageContent={message.content}
+                                            personaMode={personaMode}
+                                            usedRag={usedRag}
+                                            documentIds={documentIds}
+                                            lang={lang}
+                                        />
+                                    </div>
                                 )}
-                                components={{
-                                    h1: ({ children }) => <h1 className="text-xl font-bold">{children}</h1>,
-                                    h2: ({ children }) => <h2 className="text-lg font-semibold">{children}</h2>,
-                                    h3: ({ children }) => <h3 className="text-base font-semibold">{children}</h3>,
-                                    a: ({ children, ...props }) => (
-                                        <a {...props} className="text-[#00654A] underline hover:text-[#002D62] transition-colors" target="_blank" rel="noopener noreferrer">
-                                            {children}
-                                        </a>
-                                    ),
-                                }}
-                            >
-                                {message.content}
-                            </ReactMarkdown>
+                            </>
                         )}
-                        </div>
-                        ) : null}
+                    </div>
+                ) : null}
 
-                        {!isUser && message.suggestions && message.suggestions.length > 0 && (
-                            <DeepDiveSuggestions 
-                                suggestions={message.suggestions}
-                                onSelect={onSuggestionSelect}
-                                lang={lang}
-                            />
-                        )}
+                {!isUser && message.suggestions && message.suggestions.length > 0 && (
+                    <DeepDiveSuggestions 
+                        suggestions={message.suggestions}
+                        onSelect={onSuggestionSelect}
+                        lang={lang}
+                    />
+                )}
+            </div>
 
-                        {!isUser && !isLoading && message.content && conversationId && (
-                            <FeedbackWidget
-                                message={message}
-                                conversationId={conversationId}
-                                messageIndex={messageIndex}
-                                lang={lang}
-                            />
-                        )}
-                        </div>
-
-                        {isUser && (
-                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                        <User className="w-5 h-5 text-[#333F48]" />
-                        </div>
-                        )}
-                        </div>
-                        );
-                        }
+            {isUser && (
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                    <User className="w-5 h-5 text-[#333F48]" />
+                </div>
+            )}
+        </div>
+    );
+}

@@ -15,6 +15,7 @@ import CorporateFactHistory from '@/components/ssot/CorporateFactHistory';
 import DataVisualizationDashboard from '@/components/ssot/DataVisualizationDashboard';
 import SSOTDocumentAnalyzer from '@/components/ssot/SSOTDocumentAnalyzer';
 import SSOTChatbot from '@/components/ssot/SSOTChatbot';
+import DataSourceManager from '@/components/ssot/DataSourceManager';
 
 const translations = {
     pt: {
@@ -229,6 +230,8 @@ export default function CorporateFactManager({ lang = 'pt' }) {
     return (
         <div className="space-y-6">
             <SyncMonitor lang={lang} />
+
+            <DataSourceManager lang={lang} />
 
             <div className="grid lg:grid-cols-2 gap-6">
                 <SSOTDocumentAnalyzer onFactsExtracted={loadFacts} lang={lang} />

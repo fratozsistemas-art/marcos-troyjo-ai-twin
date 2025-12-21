@@ -16,13 +16,17 @@ const translations = {
         title: 'Relatórios Executivos',
         description: 'Gerar análises estratégicas formatadas com o Modelo Mental v2.4',
         scenario: 'Cenário ou Pergunta Estratégica',
+        scenarioB: 'Cenário B (para comparação)',
         scenarioPlaceholder: 'Ex: Impacto das tarifas da UE sobre exportações brasileiras de aço verde em 2026',
+        scenarioBPlaceholder: 'Ex: Cenário alternativo sem tarifas da UE',
         reportType: 'Tipo de Relatório',
         template: 'Template',
         format: 'Formato',
         sections: 'Seções a Incluir',
+        focusSection: 'Seção de Foco (Deep Dive)',
         selectAll: 'Selecionar todas',
-        selectDocuments: 'Documentos Base (opcional)',
+        selectDocuments: 'Documentos Prioritários (RAG)',
+        selectDocsDesc: 'Documentos selecionados serão a fonte principal da análise',
         generate: 'Gerar Relatório',
         generating: 'Gerando...',
         types: {
@@ -31,8 +35,16 @@ const translations = {
             general: 'Análise Geral'
         },
         templates: {
-            executive_summary: 'Sumário Executivo (conciso)',
-            complete: 'Análise Completa'
+            executive_summary: 'Sumário Executivo',
+            complete: 'Análise Completa',
+            deep_dive: 'Deep Dive',
+            comparative: 'Análise Comparativa'
+        },
+        templateDesc: {
+            executive_summary: 'Síntese concisa (500 palavras)',
+            complete: 'Análise estruturada completa',
+            deep_dive: 'Aprofundamento em seção específica',
+            comparative: 'Comparação entre dois cenários'
         },
         formats: {
             pdf: 'PDF',
@@ -60,13 +72,17 @@ const translations = {
         title: 'Executive Reports',
         description: 'Generate formatted strategic analyses with Mental Model v2.4',
         scenario: 'Scenario or Strategic Question',
+        scenarioB: 'Scenario B (for comparison)',
         scenarioPlaceholder: 'e.g., Impact of EU tariffs on Brazilian green steel exports in 2026',
+        scenarioBPlaceholder: 'e.g., Alternative scenario without EU tariffs',
         reportType: 'Report Type',
         template: 'Template',
         format: 'Format',
         sections: 'Sections to Include',
+        focusSection: 'Focus Section (Deep Dive)',
         selectAll: 'Select all',
-        selectDocuments: 'Base Documents (optional)',
+        selectDocuments: 'Priority Documents (RAG)',
+        selectDocsDesc: 'Selected documents will be the primary source',
         generate: 'Generate Report',
         generating: 'Generating...',
         types: {
@@ -75,8 +91,16 @@ const translations = {
             general: 'General Analysis'
         },
         templates: {
-            executive_summary: 'Executive Summary (concise)',
-            complete: 'Complete Analysis'
+            executive_summary: 'Executive Summary',
+            complete: 'Complete Analysis',
+            deep_dive: 'Deep Dive',
+            comparative: 'Comparative Analysis'
+        },
+        templateDesc: {
+            executive_summary: 'Concise synthesis (500 words)',
+            complete: 'Full structured analysis',
+            deep_dive: 'In-depth section focus',
+            comparative: 'Comparison between two scenarios'
         },
         formats: {
             pdf: 'PDF',
@@ -104,8 +128,10 @@ const translations = {
 
 export default function ExecutiveReports({ lang = 'pt' }) {
     const [scenario, setScenario] = useState('');
+    const [scenarioB, setScenarioB] = useState('');
     const [reportType, setReportType] = useState('risk_opportunity');
     const [template, setTemplate] = useState('complete');
+    const [focusSection, setFocusSection] = useState('');
     const [format, setFormat] = useState('pdf');
     const [selectedSections, setSelectedSections] = useState([]);
     const [documents, setDocuments] = useState([]);
@@ -153,9 +179,11 @@ export default function ExecutiveReports({ lang = 'pt' }) {
         try {
             const response = await base44.functions.invoke('generateExecutiveReport', {
                 scenario,
+                scenario_b: template === 'comparative' ? scenarioB : null,
                 report_type: reportType,
                 template,
                 sections: template === 'complete' ? selectedSections : [],
+                focus_section: template === 'deep_dive' ? focusSection : null,
                 document_ids: selectedDocs,
                 format
             });
@@ -381,6 +409,27 @@ export default function ExecutiveReports({ lang = 'pt' }) {
                 <CardDescription>{t.description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+                {/* Template Selection */}
+                <div>
+                    <Label className="text-sm font-medium text-[#333F48] mb-2 block">
+                        {t.template}
+                    </Label>
+                    <div className="grid grid-cols-2 gap-2">
+                        {['executive_summary', 'complete', 'deep_dive', 'comparative'].map((tpl) => (
+                            <Button
+                                key={tpl}
+                                variant={template === tpl ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setTemplate(tpl)}
+                                className={`flex flex-col items-start h-auto py-3 ${template === tpl ? "bg-[#002D62]" : ""}`}
+                            >
+                                <span className="font-semibold text-sm">{t.templates[tpl]}</span>
+                                <span className="text-xs opacity-80 mt-1">{t.templateDesc[tpl]}</span>
+                            </Button>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Scenario Input */}
                 <div>
                     <Label className="text-sm font-medium text-[#333F48] mb-2 block">
@@ -395,8 +444,24 @@ export default function ExecutiveReports({ lang = 'pt' }) {
                     />
                 </div>
 
-                {/* Report Type & Template */}
-                <div className="grid md:grid-cols-2 gap-4">
+                {/* Scenario B - Only for Comparative */}
+                {template === 'comparative' && (
+                    <div>
+                        <Label className="text-sm font-medium text-[#333F48] mb-2 block">
+                            {t.scenarioB}
+                        </Label>
+                        <Textarea
+                            placeholder={t.scenarioBPlaceholder}
+                            value={scenarioB}
+                            onChange={(e) => setScenarioB(e.target.value)}
+                            rows={3}
+                            className="resize-none"
+                        />
+                    </div>
+                )}
+
+                {/* Report Type - Only for non-comparative templates */}
+                {template !== 'comparative' && template !== 'deep_dive' && (
                     <div>
                         <Label className="text-sm font-medium text-[#333F48] mb-2 block">
                             {t.reportType}
@@ -427,32 +492,28 @@ export default function ExecutiveReports({ lang = 'pt' }) {
                             </SelectContent>
                         </Select>
                     </div>
+                )}
 
+                {/* Focus Section - Only for Deep Dive */}
+                {template === 'deep_dive' && availableSections.length > 0 && (
                     <div>
                         <Label className="text-sm font-medium text-[#333F48] mb-2 block">
-                            {t.template}
+                            {t.focusSection}
                         </Label>
-                        <Select value={template} onValueChange={setTemplate}>
+                        <Select value={focusSection} onValueChange={setFocusSection}>
                             <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder={lang === 'pt' ? 'Selecione a seção' : 'Select section'} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="executive_summary">
-                                    <div className="flex items-center gap-2">
-                                        <FileText className="w-4 h-4" />
-                                        {t.templates.executive_summary}
-                                    </div>
-                                </SelectItem>
-                                <SelectItem value="complete">
-                                    <div className="flex items-center gap-2">
-                                        <Layers className="w-4 h-4" />
-                                        {t.templates.complete}
-                                    </div>
-                                </SelectItem>
+                                {availableSections.map((section) => (
+                                    <SelectItem key={section} value={section}>
+                                        {section}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </div>
-                </div>
+                )}
 
                 {/* Sections Selection - Only for Complete template */}
                 {template === 'complete' && availableSections.length > 0 && (
@@ -508,17 +569,24 @@ export default function ExecutiveReports({ lang = 'pt' }) {
                     </div>
                 </div>
 
-                {/* Document Selection */}
+                {/* Document Selection with Priority Indicator */}
                 {documents.length > 0 && (
                     <div>
-                        <Label className="text-sm font-medium text-[#333F48] mb-2 block">
-                            {t.selectDocuments}
-                        </Label>
-                        <div className="space-y-2 max-h-40 overflow-y-auto">
+                        <div className="mb-2">
+                            <Label className="text-sm font-medium text-[#333F48] block">
+                                {t.selectDocuments}
+                            </Label>
+                            <p className="text-xs text-gray-500 mt-1">{t.selectDocsDesc}</p>
+                        </div>
+                        <div className="space-y-2 max-h-40 overflow-y-auto p-3 bg-amber-50/30 border border-amber-200/50 rounded-lg">
                             {documents.map((doc) => (
                                 <label
                                     key={doc.id}
-                                    className="flex items-center gap-2 p-2 rounded border border-gray-200 hover:bg-gray-50 cursor-pointer"
+                                    className={`flex items-center gap-2 p-2 rounded border transition-all cursor-pointer ${
+                                        selectedDocs.includes(doc.id)
+                                            ? 'border-[#002D62] bg-[#002D62]/5'
+                                            : 'border-gray-200 hover:bg-white'
+                                    }`}
                                 >
                                     <Checkbox
                                         checked={selectedDocs.includes(doc.id)}
@@ -538,13 +606,24 @@ export default function ExecutiveReports({ lang = 'pt' }) {
                                 </label>
                             ))}
                         </div>
+                        {selectedDocs.length > 0 && (
+                            <p className="text-xs text-[#002D62] font-medium mt-2">
+                                ✓ {selectedDocs.length} {lang === 'pt' ? 'documento(s) selecionado(s) como fonte prioritária' : 'document(s) selected as priority source'}
+                            </p>
+                        )}
                     </div>
                 )}
 
                 {/* Generate Button */}
                 <Button
                     onClick={handleGenerate}
-                    disabled={generating || !scenario.trim() || (template === 'complete' && selectedSections.length === 0)}
+                    disabled={
+                        generating || 
+                        !scenario.trim() || 
+                        (template === 'complete' && selectedSections.length === 0) ||
+                        (template === 'comparative' && !scenarioB.trim()) ||
+                        (template === 'deep_dive' && !focusSection)
+                    }
                     className="w-full bg-[#002D62] hover:bg-[#001d42]"
                 >
                     {generating ? (

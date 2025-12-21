@@ -13,9 +13,11 @@ Deno.serve(async (req) => {
 
         const { 
             scenario, 
+            scenario_b = null,
             report_type, 
             template = 'complete',
             sections = [],
+            focus_section = null,
             document_ids = [], 
             format = 'pdf' 
         } = await req.json();
@@ -28,12 +30,31 @@ Deno.serve(async (req) => {
         let ragContext = '';
         let ragSources = [];
         if (document_ids.length > 0) {
-            const ragResponse = await base44.functions.invoke('retrieveRAGContext', {
-                query: scenario,
-                max_tokens: 2000
+            const searchQuery = scenario_b ? `${scenario} ${scenario_b}` : scenario;
+            const ragResponse = await base44.functions.invoke('searchDocumentsRAG', {
+                query: searchQuery,
+                top_k: 10,
+                document_ids
             });
-            ragContext = ragResponse.data.context || '';
-            ragSources = ragResponse.data.sources || [];
+            
+            if (ragResponse.data.results && ragResponse.data.results.length > 0) {
+                ragContext = '=== DOCUMENTOS SELECIONADOS PELO USUÁRIO (FONTE PRIORITÁRIA) ===\n\n';
+                ragSources = ragResponse.data.results.map(r => ({
+                    document_name: r.document_name,
+                    citation: r.citation,
+                    similarity: r.similarity_score
+                }));
+                
+                ragResponse.data.results.forEach((result) => {
+                    ragContext += `Fonte: ${result.citation}\n`;
+                    ragContext += `Relevância: ${(result.similarity_score * 100).toFixed(1)}%\n`;
+                    ragContext += `Conteúdo:\n${result.content}\n\n---\n\n`;
+                });
+                
+                ragContext += '=== FIM DOS DOCUMENTOS ===\n\n';
+                ragContext += 'PRIORIDADE MÁXIMA: Use EXCLUSIVAMENTE as informações acima quando disponíveis.\n';
+                ragContext += 'SEMPRE cite as fontes no formato [Nome do Documento, chunk X].\n\n';
+            }
         }
 
         // Build prompt based on template and sections
@@ -51,7 +72,60 @@ Estrutura:
 • Implicações-chave para o Brasil
 • 3 recomendações estratégicas prioritárias
 
-Tom: direto, prescritivo, densidade máxima.`;
+Tom: direto, prescritivo, densidade máxima.
+${ragContext ? 'BASEIE-SE EXCLUSIVAMENTE nos documentos fornecidos acima.' : ''}`;
+        } else if (template === 'deep_dive') {
+            const focusArea = focus_section || 'IMPLICAÇÕES BRASIL';
+            analysisPrompt = `Como Marcos Prado Troyjo, forneça uma ANÁLISE APROFUNDADA focada especificamente em: ${focusArea}
+
+CENÁRIO: ${scenario}
+
+${ragContext}
+
+Estrutura do Deep Dive:
+1. Contexto macro necessário (breve)
+2. Análise profunda e detalhada de: ${focusArea}
+3. Dados quantitativos e qualitativos
+4. Casos comparativos relevantes
+5. Recomendações específicas e acionáveis
+
+Extensão: 800-1200 palavras
+Tom: técnico-analítico, densidade máxima, prescritivo
+${ragContext ? 'PRIORIZE informações dos documentos fornecidos.' : ''}`;
+        } else if (template === 'comparative') {
+            if (!scenario_b) {
+                return Response.json({ error: 'scenario_b required for comparative analysis' }, { status: 400 });
+            }
+            
+            analysisPrompt = `Como Marcos Prado Troyjo, forneça uma ANÁLISE COMPARATIVA aplicando o Modelo Mental v2.4:
+
+CENÁRIO A: ${scenario}
+
+CENÁRIO B: ${scenario_b}
+
+${ragContext}
+
+Estruture a análise comparativa:
+
+# ANÁLISE COMPARATIVA
+
+## 1. CONTEXTUALIZAÇÃO
+[Apresentação dos dois cenários e sua relevância geopolítica]
+
+## 2. ANÁLISE DO CENÁRIO A
+[Riscos, oportunidades e implicações]
+
+## 3. ANÁLISE DO CENÁRIO B
+[Riscos, oportunidades e implicações]
+
+## 4. COMPARAÇÃO DIRETA
+[Similaridades, diferenças, trade-offs estratégicos]
+
+## 5. RECOMENDAÇÃO ESTRATÉGICA
+[Qual cenário é preferível? Sob quais condições? Como navegar entre ambos?]
+
+Use Novo ESG (Economia + Segurança + Geopolítica) como framework comparativo.
+${ragContext ? 'Baseie comparações em dados dos documentos fornecidos.' : ''}`;
         } else if (template === 'complete') {
             // Build custom sections if provided
             const sectionInstructions = sections.length > 0 ? 

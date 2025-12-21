@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Zap, Crown, Building2, Users, GraduationCap, ArrowLeft } from 'lucide-react';
+import { Check, Zap, Crown, Building2, Users, GraduationCap, ArrowLeft, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEmailVerification } from '@/components/subscription/VerificationGate';
 import UpgradeRequestForm from '@/components/subscription/UpgradeRequestForm';
@@ -34,7 +34,8 @@ const PLANS = {
         {
             id: 'student',
             name: 'Estudante',
-            price: 'R$ 97',
+            priceMonthly: 'R$ 97',
+            priceYearly: 'R$ 970',
             period: '/mês',
             description: 'Para estudantes e acadêmicos',
             icon: GraduationCap,
@@ -51,12 +52,14 @@ const PLANS = {
                 consultations_per_month: 20,
                 articles_per_month: 10,
                 documents_per_month: 50
-            }
+            },
+            stripeEnabled: true
         },
         {
             id: 'pro',
             name: 'Profissional',
-            price: 'R$ 397',
+            priceMonthly: 'R$ 397',
+            priceYearly: 'R$ 1.497',
             period: '/mês',
             description: 'Para profissionais e analistas',
             icon: Crown,
@@ -74,7 +77,8 @@ const PLANS = {
                 consultations_per_month: 50,
                 articles_per_month: 20,
                 documents_per_month: -1
-            }
+            },
+            stripeEnabled: true
         },
         {
             id: 'teams',
@@ -122,118 +126,6 @@ const PLANS = {
                 documents_per_month: -1
             }
         }
-    ],
-    en: [
-        {
-            id: 'free',
-            name: 'Free',
-            price: '$0',
-            period: '/month',
-            description: 'To explore the platform',
-            icon: Zap,
-            features: [
-                '5 consultations/month',
-                '2 articles generated/month',
-                'Basic Digital Twin access',
-                'Email support'
-            ],
-            limits: {
-                consultations_per_month: 5,
-                articles_per_month: 2,
-                documents_per_month: 5
-            }
-        },
-        {
-            id: 'student',
-            name: 'Student',
-            price: '$19',
-            period: '/month',
-            description: 'For students and academics',
-            icon: GraduationCap,
-            badge: '75% off',
-            features: [
-                '20 consultations/month',
-                '10 articles generated/month',
-                'Document analysis (50/month)',
-                'Dashboard access',
-                'Optimized Professor mode',
-                'Email support'
-            ],
-            limits: {
-                consultations_per_month: 20,
-                articles_per_month: 10,
-                documents_per_month: 50
-            }
-        },
-        {
-            id: 'pro',
-            name: 'Professional',
-            price: '$79',
-            period: '/month',
-            description: 'For professionals and analysts',
-            icon: Crown,
-            badge: 'Most Popular',
-            features: [
-                '50 consultations/month',
-                '20 articles generated/month',
-                'Unlimited document analysis',
-                'Access to all dashboards',
-                'Data export',
-                'Priority support',
-                'Complete history'
-            ],
-            limits: {
-                consultations_per_month: 50,
-                articles_per_month: 20,
-                documents_per_month: -1
-            }
-        },
-        {
-            id: 'teams',
-            name: 'Teams',
-            price: '$299',
-            period: '/month',
-            description: 'For teams (up to 10 users)',
-            icon: Users,
-            features: [
-                '150 consultations/month (shared)',
-                '60 articles generated/month',
-                'Unlimited document analysis',
-                'Collaborative workspace',
-                'User management',
-                'Team analytics',
-                'Priority support',
-                'Dedicated onboarding'
-            ],
-            limits: {
-                consultations_per_month: 150,
-                articles_per_month: 60,
-                documents_per_month: -1
-            }
-        },
-        {
-            id: 'enterprise',
-            name: 'Enterprise',
-            price: 'Custom',
-            period: '',
-            description: 'For large organizations',
-            icon: Building2,
-            features: [
-                'Unlimited consultations',
-                'Unlimited articles',
-                'Dedicated API',
-                'Custom training',
-                'Guaranteed SLA',
-                '24/7 support',
-                'Custom integration',
-                'Priority Troyjo review'
-            ],
-            limits: {
-                consultations_per_month: -1,
-                articles_per_month: -1,
-                documents_per_month: -1
-            }
-        }
     ]
 };
 
@@ -241,6 +133,7 @@ export default function Pricing() {
     const [lang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
     const [loading, setLoading] = useState(false);
     const [currentPlan, setCurrentPlan] = useState(null);
+    const [billingInterval, setBillingInterval] = useState('monthly');
     const { isVerified } = useEmailVerification();
     const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
     const [selectedPlan, setSelectedPlan] = useState(null);
@@ -251,20 +144,14 @@ export default function Pricing() {
             subtitle: 'Comece com 7 dias de teste gratuito no plano Pro',
             trial: '7 dias grátis',
             startTrial: 'Iniciar Teste Grátis',
+            subscribe: 'Assinar',
             upgrade: 'Fazer Upgrade',
             current: 'Plano Atual',
             contact: 'Falar com Vendas',
-            back: 'Voltar'
-        },
-        en: {
-            title: 'Choose Your Plan',
-            subtitle: 'Start with 7 days free trial on Pro plan',
-            trial: '7 days free',
-            startTrial: 'Start Free Trial',
-            upgrade: 'Upgrade',
-            current: 'Current Plan',
-            contact: 'Contact Sales',
-            back: 'Back'
+            back: 'Voltar',
+            monthly: 'Mensal',
+            yearly: 'Anual',
+            save: 'Economize 17%'
         }
     };
 
@@ -273,7 +160,22 @@ export default function Pricing() {
 
     useEffect(() => {
         loadSubscription();
+        checkPaymentStatus();
     }, []);
+
+    const checkPaymentStatus = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const payment = urlParams.get('payment');
+        
+        if (payment === 'success') {
+            toast.success('Pagamento realizado com sucesso! Sua assinatura está ativa.');
+            window.history.replaceState({}, '', createPageUrl('Pricing'));
+            loadSubscription();
+        } else if (payment === 'cancelled') {
+            toast.error('Pagamento cancelado.');
+            window.history.replaceState({}, '', createPageUrl('Pricing'));
+        }
+    };
 
     const loadSubscription = async () => {
         try {
@@ -291,7 +193,7 @@ export default function Pricing() {
 
     const handleStartTrial = async () => {
         if (!isVerified) {
-            toast.error(lang === 'pt' ? 'Verifique seu email primeiro' : 'Verify your email first');
+            toast.error('Verifique seu email primeiro');
             return;
         }
 
@@ -335,11 +237,37 @@ export default function Pricing() {
                 });
             }
 
-            toast.success(lang === 'pt' ? 'Trial iniciado com sucesso!' : 'Trial started successfully!');
+            toast.success('Trial iniciado com sucesso!');
             window.location.href = createPageUrl('Dashboard');
         } catch (error) {
             console.error('Error starting trial:', error);
-            toast.error('Error');
+            toast.error('Erro ao iniciar trial');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleStripeCheckout = async (planId) => {
+        if (!isVerified) {
+            toast.error('Verifique seu email primeiro');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const response = await base44.functions.invoke('createStripeCheckout', {
+                plan: planId,
+                interval: billingInterval
+            });
+
+            if (response.data.checkout_url) {
+                window.location.href = response.data.checkout_url;
+            } else {
+                throw new Error('No checkout URL returned');
+            }
+        } catch (error) {
+            console.error('Error creating checkout:', error);
+            toast.error('Erro ao processar pagamento');
         } finally {
             setLoading(false);
         }
@@ -364,15 +292,45 @@ export default function Pricing() {
             </header>
 
             <main className="max-w-7xl mx-auto px-4 md:px-6 py-12">
-                <div className="text-center mb-12">
+                <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-[#002D62] mb-4">{text.title}</h1>
-                    <p className="text-xl text-[#333F48]">{text.subtitle}</p>
+                    <p className="text-xl text-[#333F48] mb-6">{text.subtitle}</p>
+                    
+                    {/* Billing Toggle */}
+                    <div className="flex items-center justify-center gap-4">
+                        <button
+                            onClick={() => setBillingInterval('monthly')}
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                billingInterval === 'monthly'
+                                    ? 'bg-[#002D62] text-white'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                        >
+                            {text.monthly}
+                        </button>
+                        <button
+                            onClick={() => setBillingInterval('yearly')}
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                billingInterval === 'yearly'
+                                    ? 'bg-[#002D62] text-white'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                        >
+                            {text.yearly}
+                            <span className="ml-2 text-xs bg-green-500 text-white px-2 py-0.5 rounded">
+                                {text.save}
+                            </span>
+                        </button>
+                    </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
                     {plans.map((plan) => {
                         const Icon = plan.icon;
                         const isCurrent = currentPlan === plan.id;
+                        const displayPrice = billingInterval === 'yearly' && plan.priceYearly 
+                            ? plan.priceYearly 
+                            : plan.priceMonthly || plan.price;
                         
                         return (
                             <Card key={plan.id} className={`relative flex flex-col ${plan.badge ? 'border-[#B8860B] border-2' : ''}`}>
@@ -390,8 +348,10 @@ export default function Pricing() {
                                     </div>
                                     <CardDescription>{plan.description}</CardDescription>
                                     <div className="mt-4">
-                                        <span className="text-3xl font-bold text-[#002D62]">{plan.price}</span>
-                                        <span className="text-[#333F48]/60">{plan.period}</span>
+                                        <span className="text-3xl font-bold text-[#002D62]">{displayPrice}</span>
+                                        <span className="text-[#333F48]/60">
+                                            {billingInterval === 'yearly' && plan.priceYearly ? '/ano' : plan.period}
+                                        </span>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="space-y-4 flex-1 flex flex-col">
@@ -408,13 +368,25 @@ export default function Pricing() {
                                         <Button disabled className="w-full">
                                             {text.current}
                                         </Button>
+                                    ) : plan.id === 'free' ? (
+                                        <Button disabled className="w-full">
+                                            {text.current}
+                                        </Button>
                                     ) : plan.id === 'pro' && !currentPlan ? (
                                         <Button 
                                             className="w-full bg-[#002D62] hover:bg-[#001d42]"
                                             onClick={handleStartTrial}
                                             disabled={loading}
                                         >
-                                            {text.startTrial}
+                                            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : text.startTrial}
+                                        </Button>
+                                    ) : plan.stripeEnabled ? (
+                                        <Button 
+                                            className="w-full bg-[#002D62] hover:bg-[#001d42]"
+                                            onClick={() => handleStripeCheckout(plan.id)}
+                                            disabled={loading}
+                                        >
+                                            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : text.subscribe}
                                         </Button>
                                     ) : (plan.id === 'enterprise' || plan.id === 'teams') ? (
                                         <Button 

@@ -3,18 +3,12 @@ import Stripe from 'npm:stripe@17.5.0';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
 
-// Product IDs mapping - configure these in Stripe Dashboard
+// Real Stripe Price IDs from your catalog
 const PRICE_IDS = {
-    pt: {
-        student: 'price_student_monthly_pt',
-        pro: 'price_pro_monthly_pt',
-        teams: 'price_teams_monthly_pt'
-    },
-    en: {
-        student: 'price_student_monthly_en',
-        pro: 'price_pro_monthly_en',
-        teams: 'price_teams_monthly_en'
-    }
+    student_monthly: 'price_1Sgkl9Ro0dVPpa4Wmxif6IFT',  // R$ 97/mês
+    student_yearly: 'price_1Sgkl9Ro0dVPpa4WajzQvb8F',   // R$ 970/ano
+    pro_monthly: 'price_1SgkaSRo0dVPpa4WYDKbrZ7K',      // R$ 397/mês
+    pro_yearly: 'price_1SgkaSRo0dVPpa4Wg8L9624a'        // R$ 1497/ano
 };
 
 Deno.serve(async (req) => {
@@ -26,13 +20,20 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { plan, lang = 'pt' } = await req.json();
+        const { plan, interval = 'monthly' } = await req.json();
 
-        // Get price ID
-        const priceId = PRICE_IDS[lang]?.[plan];
+        // Build price ID key
+        const priceKey = `${plan}_${interval}`;
+        const priceId = PRICE_IDS[priceKey];
+
         if (!priceId) {
-            return Response.json({ error: 'Invalid plan' }, { status: 400 });
+            return Response.json({ 
+                error: 'Invalid plan or interval',
+                available: Object.keys(PRICE_IDS)
+            }, { status: 400 });
         }
+
+        const origin = req.headers.get('origin') || 'https://troyjo.base44.app';
 
         // Create checkout session
         const session = await stripe.checkout.sessions.create({
@@ -44,12 +45,18 @@ Deno.serve(async (req) => {
                 },
             ],
             mode: 'subscription',
-            success_url: `${req.headers.get('origin')}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${req.headers.get('origin')}/pricing`,
+            success_url: `${origin}/dashboard?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${origin}/pricing?payment=cancelled`,
             metadata: {
                 user_email: user.email,
                 plan: plan,
-                lang: lang
+                interval: interval
+            },
+            subscription_data: {
+                metadata: {
+                    user_email: user.email,
+                    plan: plan
+                }
             }
         });
 

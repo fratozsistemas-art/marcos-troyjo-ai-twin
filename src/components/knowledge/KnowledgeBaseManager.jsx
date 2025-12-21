@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Search, Edit, Trash2, Save, X, Loader2, Calendar, Tag, ExternalLink, ThumbsUp, ThumbsDown, MessageSquare, CheckSquare, Square, Upload, FolderOpen } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Save, X, Loader2, Calendar, Tag, ExternalLink, ThumbsUp, ThumbsDown, MessageSquare, CheckSquare, Square, Upload, FolderOpen, Sparkles, Wand2, RefreshCw, Lightbulb } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -33,6 +33,12 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
     const [bulkOperation, setBulkOperation] = useState('');
     const [uploadingFiles, setUploadingFiles] = useState(false);
     const fileInputRef = React.useRef(null);
+    const [aiAssistOpen, setAiAssistOpen] = useState(false);
+    const [aiLoading, setAiLoading] = useState(false);
+    const [aiTopic, setAiTopic] = useState('');
+    const [aiLength, setAiLength] = useState('medium');
+    const [suggestedTitles, setSuggestedTitles] = useState([]);
+    const [generatedDraft, setGeneratedDraft] = useState(null);
     const [formData, setFormData] = useState({
         title: '',
         date: new Date().toISOString().split('T')[0],
@@ -94,6 +100,20 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
             uploadFiles: 'Importar Arquivos',
             uploadFilesDesc: 'Faça upload de PDFs, DOCX ou TXT para importar como conhecimento',
             processing: 'Processando...',
+            aiAssist: 'Assistente IA',
+            generateDraft: 'Gerar Rascunho',
+            suggestTitle: 'Sugerir Título',
+            generateSummary: 'Gerar Resumo',
+            autoTags: 'Auto Tags/Keywords',
+            enhanceContent: 'Aprimorar Conteúdo',
+            topicPlaceholder: 'Digite o tema do artigo...',
+            generating: 'Gerando...',
+            selectLength: 'Extensão',
+            short: 'Curto (400-600)',
+            medium: 'Médio (800-1000)',
+            long: 'Longo (1200-1600)',
+            applyDraft: 'Aplicar Rascunho',
+            selectTitle: 'Selecionar',
             categories: {
                 discurso: 'Discurso',
                 artigo: 'Artigo',
@@ -150,6 +170,20 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
             uploadFiles: 'Import Files',
             uploadFilesDesc: 'Upload PDFs, DOCX or TXT to import as knowledge',
             processing: 'Processing...',
+            aiAssist: 'AI Assistant',
+            generateDraft: 'Generate Draft',
+            suggestTitle: 'Suggest Title',
+            generateSummary: 'Generate Summary',
+            autoTags: 'Auto Tags/Keywords',
+            enhanceContent: 'Enhance Content',
+            topicPlaceholder: 'Enter article topic...',
+            generating: 'Generating...',
+            selectLength: 'Length',
+            short: 'Short (400-600)',
+            medium: 'Medium (800-1000)',
+            long: 'Long (1200-1600)',
+            applyDraft: 'Apply Draft',
+            selectTitle: 'Select',
             categories: {
                 discurso: 'Speech',
                 artigo: 'Article',
@@ -438,6 +472,102 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
         } finally {
             setUploadingFiles(false);
         }
+    };
+
+    const handleAIGenerate = async (action) => {
+        setAiLoading(true);
+        try {
+            if (action === 'generate_draft') {
+                if (!aiTopic.trim()) {
+                    toast.error(lang === 'pt' ? 'Digite um tema' : 'Enter a topic');
+                    setAiLoading(false);
+                    return;
+                }
+
+                const response = await base44.functions.invoke('aiContentAssistant', {
+                    action: 'complete_article',
+                    topic: aiTopic,
+                    category: formData.category,
+                    target_length: aiLength
+                });
+
+                setGeneratedDraft(response.data);
+                setFormData({
+                    ...formData,
+                    title: response.data.title || '',
+                    summary: response.data.summary || '',
+                    body: response.data.body || '',
+                    tags: response.data.tags || [],
+                    keywords: response.data.keywords || [],
+                    author: response.data.author || ''
+                });
+
+                toast.success(lang === 'pt' ? 'Rascunho gerado!' : 'Draft generated!');
+                setAiAssistOpen(false);
+                
+            } else if (action === 'suggest_titles') {
+                const response = await base44.functions.invoke('aiContentAssistant', {
+                    action: 'suggest_title',
+                    topic: aiTopic || formData.title,
+                    existing_content: formData
+                });
+
+                setSuggestedTitles(response.data.titles || []);
+                toast.success(lang === 'pt' ? 'Títulos sugeridos!' : 'Titles suggested!');
+
+            } else if (action === 'generate_summary') {
+                const response = await base44.functions.invoke('aiContentAssistant', {
+                    action: 'generate_summary',
+                    existing_content: formData
+                });
+
+                setFormData({
+                    ...formData,
+                    summary: response.data.summary || ''
+                });
+
+                toast.success(lang === 'pt' ? 'Resumo gerado!' : 'Summary generated!');
+
+            } else if (action === 'auto_tags') {
+                const response = await base44.functions.invoke('aiContentAssistant', {
+                    action: 'generate_tags_keywords',
+                    topic: aiTopic,
+                    existing_content: formData
+                });
+
+                setFormData({
+                    ...formData,
+                    tags: [...new Set([...formData.tags, ...(response.data.tags || [])])],
+                    keywords: [...new Set([...formData.keywords, ...(response.data.keywords || [])])]
+                });
+
+                toast.success(lang === 'pt' ? 'Tags e keywords geradas!' : 'Tags and keywords generated!');
+
+            } else if (action === 'enhance') {
+                const response = await base44.functions.invoke('aiContentAssistant', {
+                    action: 'enhance_content',
+                    topic: aiTopic || formData.title,
+                    existing_content: formData
+                });
+
+                setFormData({
+                    ...formData,
+                    body: response.data.enhanced_body || formData.body
+                });
+
+                toast.success(lang === 'pt' ? 'Conteúdo aprimorado!' : 'Content enhanced!');
+            }
+        } catch (error) {
+            console.error('Error in AI assist:', error);
+            toast.error(lang === 'pt' ? 'Erro ao gerar conteúdo' : 'Error generating content');
+        } finally {
+            setAiLoading(false);
+        }
+    };
+
+    const applyTitle = (title) => {
+        setFormData({ ...formData, title });
+        setSuggestedTitles([]);
     };
 
     return (
@@ -739,15 +869,48 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>{editingEntry ? t.editEntry : t.addEntry}</DialogTitle>
+                        <div className="flex items-center justify-between">
+                            <DialogTitle>{editingEntry ? t.editEntry : t.addEntry}</DialogTitle>
+                            <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => setAiAssistOpen(true)}
+                            >
+                                <Sparkles className="w-4 h-4 mr-1" />
+                                {t.aiAssist}
+                            </Button>
+                        </div>
                     </DialogHeader>
                     <div className="space-y-4">
                         <div>
-                            <Label>{t.titleLabel}</Label>
+                            <div className="flex items-center justify-between mb-2">
+                                <Label>{t.titleLabel}</Label>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleAIGenerate('suggest_titles')}
+                                    disabled={aiLoading}
+                                >
+                                    <Wand2 className="w-3 h-3 mr-1" />
+                                    {t.suggestTitle}
+                                </Button>
+                            </div>
                             <Input
                                 value={formData.title}
                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                             />
+                            {suggestedTitles.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                    {suggestedTitles.map((title, idx) => (
+                                        <div key={idx} className="flex items-center justify-between p-2 bg-blue-50 rounded text-sm">
+                                            <span className="flex-1">{title}</span>
+                                            <Button size="sm" variant="ghost" onClick={() => applyTitle(title)}>
+                                                {t.selectTitle}
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                         <div className="grid md:grid-cols-2 gap-4">
                             <div>
@@ -773,7 +936,18 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                             </div>
                         </div>
                         <div>
-                            <Label>{t.summaryLabel}</Label>
+                            <div className="flex items-center justify-between mb-2">
+                                <Label>{t.summaryLabel}</Label>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleAIGenerate('generate_summary')}
+                                    disabled={aiLoading || !formData.body}
+                                >
+                                    <Sparkles className="w-3 h-3 mr-1" />
+                                    {t.generateSummary}
+                                </Button>
+                            </div>
                             <Textarea
                                 value={formData.summary}
                                 onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
@@ -781,7 +955,18 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                             />
                         </div>
                         <div>
-                            <Label>{t.bodyLabel}</Label>
+                            <div className="flex items-center justify-between mb-2">
+                                <Label>{t.bodyLabel}</Label>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleAIGenerate('enhance')}
+                                    disabled={aiLoading || !formData.body}
+                                >
+                                    <RefreshCw className="w-3 h-3 mr-1" />
+                                    {t.enhanceContent}
+                                </Button>
+                            </div>
                             <Textarea
                                 value={formData.body}
                                 onChange={(e) => setFormData({ ...formData, body: e.target.value })}
@@ -805,7 +990,18 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                             </div>
                         </div>
                         <div>
-                            <Label>{t.tagsLabel}</Label>
+                            <div className="flex items-center justify-between mb-2">
+                                <Label>{t.tagsLabel}</Label>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleAIGenerate('auto_tags')}
+                                    disabled={aiLoading || (!formData.body && !formData.summary)}
+                                >
+                                    <Lightbulb className="w-3 h-3 mr-1" />
+                                    {t.autoTags}
+                                </Button>
+                            </div>
                             <div className="flex gap-2 mb-2">
                                 <Input
                                     value={newTag}

@@ -130,26 +130,20 @@ export default function EmailVerification({ onVerified }) {
         }
     };
 
-    const handleOAuthGoogle = () => {
-        window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + 
-            new URLSearchParams({
-                client_id: 'YOUR_GOOGLE_CLIENT_ID',
-                redirect_uri: window.location.origin + '/auth/callback',
-                response_type: 'code',
-                scope: 'openid email profile',
-                access_type: 'offline',
-                prompt: 'consent'
-            });
+    const handleOAuthGoogle = async () => {
+        try {
+            await base44.auth.redirectToLogin(window.location.pathname);
+        } catch (error) {
+            toast.error('Erro ao redirecionar para login');
+        }
     };
 
-    const handleOAuthLinkedIn = () => {
-        window.location.href = 'https://www.linkedin.com/oauth/v2/authorization?' +
-            new URLSearchParams({
-                response_type: 'code',
-                client_id: 'YOUR_LINKEDIN_CLIENT_ID',
-                redirect_uri: window.location.origin + '/auth/callback',
-                scope: 'openid profile email'
-            });
+    const handleOAuthLinkedIn = async () => {
+        try {
+            await base44.auth.redirectToLogin(window.location.pathname);
+        } catch (error) {
+            toast.error('Erro ao redirecionar para login');
+        }
     };
 
     return (

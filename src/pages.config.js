@@ -26,6 +26,7 @@ import KnowledgeBase from './pages/KnowledgeBase';
 import Homepage from './pages/Homepage';
 import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import KnowledgeArticle from './pages/KnowledgeArticle';
+import KnowledgeAdmin from './pages/KnowledgeAdmin';
 import __Layout from './Layout.jsx';
 
 
@@ -58,6 +59,7 @@ export const PAGES = {
     "Homepage": Homepage,
     "AnalyticsDashboard": AnalyticsDashboard,
     "KnowledgeArticle": KnowledgeArticle,
+    "KnowledgeAdmin": KnowledgeAdmin,
 }
 
 export const pagesConfig = {

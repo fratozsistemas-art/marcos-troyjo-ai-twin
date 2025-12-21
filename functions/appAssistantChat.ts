@@ -13,7 +13,7 @@ FUNCIONALIDADES DO APP:
 3. **Consultation**: Chat com o Digital Twin do Marcos Troyjo para consultas sobre economia global
 4. **SSOT (Single Source of Truth)**: Gerenciamento de fatos corporativos, dados do World Bank, visualizações
 5. **Custom Chart Builder**: Criação de gráficos customizados (linha, barra, área, pizza) com filtros por país e ano
-6. **Knowledge Base**: Artigos, entrevistas transcritas, base de conhecimento
+6. **Knowledge Base**: Base de conhecimento com tutoriais, FAQs, artigos, guias e referências técnicas
 7. **Atalhos de Teclado**: g+h (home), g+d (dashboard), g+a (analytics), g+c (consulta), ? (ajuda)
 8. **Export para Google Drive**: Salvar dashboards e dados no Google Drive
 
@@ -35,7 +35,9 @@ GUIA PARA GRÁFICOS CUSTOMIZADOS:
 4. Aplique filtros de anos se necessário
 5. Exporte para CSV ou Google Drive
 
-Seja conciso, prático e focado em ajudar o usuário a usar o app efetivamente. Responda em português brasileiro.`;
+Seja conciso, prático e focado em ajudar o usuário a usar o app efetivamente. Responda em português brasileiro.
+
+IMPORTANTE: Sempre que o usuário fizer uma pergunta sobre como usar o app, conceitos econômicos, tutoriais ou solução de problemas, BUSQUE PRIMEIRO na base de conhecimento antes de responder. Cite os artigos relevantes quando disponíveis.`;
 
 Deno.serve(async (req) => {
     try {
@@ -54,8 +56,38 @@ Deno.serve(async (req) => {
             }, { status: 400 });
         }
 
+        // Get last user message for knowledge base search
+        const lastUserMessage = messages.filter(m => m.role === 'user').pop();
+        let knowledgeContext = '';
+
+        // Search knowledge base for relevant articles
+        if (lastUserMessage?.content) {
+            try {
+                const kbResults = await base44.functions.invoke('searchKnowledgeBase', {
+                    query: lastUserMessage.content,
+                    limit: 3,
+                    min_priority: 3
+                });
+
+                if (kbResults.data?.results?.length > 0) {
+                    knowledgeContext = '\n\nARTIGOS RELEVANTES DA BASE DE CONHECIMENTO:\n';
+                    kbResults.data.results.forEach((article, idx) => {
+                        knowledgeContext += `\n${idx + 1}. "${article.title}" (${article.category})`;
+                        if (article.summary) {
+                            knowledgeContext += `\n   Resumo: ${article.summary}`;
+                        }
+                        knowledgeContext += `\n   Conteúdo: ${article.body.substring(0, 500)}...`;
+                        knowledgeContext += `\n   Link: /knowledge-article?id=${article.id}\n`;
+                    });
+                    knowledgeContext += '\n\nUSE estas informações da base de conhecimento para fundamentar sua resposta. Sempre cite os artigos relevantes.';
+                }
+            } catch (error) {
+                console.error('Error searching knowledge base:', error);
+            }
+        }
+
         // Build context-aware system prompt
-        let contextualPrompt = SYSTEM_PROMPT;
+        let contextualPrompt = SYSTEM_PROMPT + knowledgeContext;
         
         if (current_page) {
             contextualPrompt += `\n\nUSUÁRIO ESTÁ ATUALMENTE EM: ${current_page}`;
@@ -72,7 +104,7 @@ Deno.serve(async (req) => {
                 ...messages
             ],
             temperature: 0.7,
-            max_tokens: 500
+            max_tokens: 800
         });
 
         const assistantMessage = completion.choices[0].message.content;

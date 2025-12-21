@@ -6,9 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { 
     Server, Loader2, RefreshCw, Play, Trash2, 
-    Plus, Settings, Database, Activity
+    Plus, Settings, Database, Activity, FileText
 } from 'lucide-react';
 import { toast } from 'sonner';
+import CreateSiteDialog from './CreateSiteDialog';
+import DeploymentLogsDialog from './DeploymentLogsDialog';
+import SiteConfigDialog from './SiteConfigDialog';
 
 const translations = {
     pt: {
@@ -47,6 +50,10 @@ export default function FlywheelManager({ lang = 'pt' }) {
     const [sites, setSites] = useState([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(null);
+    const [createDialogOpen, setCreateDialogOpen] = useState(false);
+    const [logsDialogOpen, setLogsDialogOpen] = useState(false);
+    const [configDialogOpen, setConfigDialogOpen] = useState(false);
+    const [selectedSite, setSelectedSite] = useState(null);
     const t = translations[lang];
 
     useEffect(() => {
@@ -73,6 +80,29 @@ export default function FlywheelManager({ lang = 'pt' }) {
         }
     };
 
+    const handleCreateSite = async (siteData) => {
+        setActionLoading('create');
+        try {
+            const response = await base44.functions.invoke('flywheelManager', {
+                action: 'createSite',
+                data: siteData
+            });
+
+            if (response.data.success) {
+                toast.success('Site criado com sucesso!');
+                setCreateDialogOpen(false);
+                loadSites();
+            } else {
+                toast.error(response.data.error || 'Erro ao criar site');
+            }
+        } catch (error) {
+            console.error('Error creating site:', error);
+            toast.error('Erro ao criar site');
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
     const handleAction = async (action, siteId, data = null) => {
         setActionLoading(`${action}-${siteId}`);
         try {
@@ -96,6 +126,16 @@ export default function FlywheelManager({ lang = 'pt' }) {
         } finally {
             setActionLoading(null);
         }
+    };
+
+    const openLogs = (site) => {
+        setSelectedSite(site);
+        setLogsDialogOpen(true);
+    };
+
+    const openConfig = (site) => {
+        setSelectedSite(site);
+        setConfigDialogOpen(true);
     };
 
     const getStatusColor = (status) => {
@@ -134,7 +174,11 @@ export default function FlywheelManager({ lang = 'pt' }) {
                             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                             {t.refresh}
                         </Button>
-                        <Button size="sm" className="bg-[#002D62]">
+                        <Button 
+                            size="sm" 
+                            className="bg-[#002D62]"
+                            onClick={() => setCreateDialogOpen(true)}
+                        >
                             <Plus className="w-4 h-4 mr-2" />
                             {t.addSite}
                         </Button>
@@ -187,16 +231,29 @@ export default function FlywheelManager({ lang = 'pt' }) {
                                         <Button
                                             variant="outline"
                                             size="sm"
+                                            onClick={() => openConfig(site)}
+                                            title={lang === 'pt' ? 'Configurações' : 'Settings'}
+                                        >
+                                            <Settings className="w-4 h-4" />
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => openLogs(site)}
+                                            title={t.logs}
+                                        >
+                                            <FileText className="w-4 h-4" />
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
                                             onClick={() => handleAction('triggerDeploy', site.id)}
                                             disabled={actionLoading === `triggerDeploy-${site.id}`}
                                         >
                                             {actionLoading === `triggerDeploy-${site.id}` ? (
                                                 <Loader2 className="w-4 h-4 animate-spin" />
                                             ) : (
-                                                <>
-                                                    <Play className="w-4 h-4 mr-1" />
-                                                    {t.deploy}
-                                                </>
+                                                <Play className="w-4 h-4" />
                                             )}
                                         </Button>
                                         <Button
@@ -208,10 +265,7 @@ export default function FlywheelManager({ lang = 'pt' }) {
                                             {actionLoading === `backupSite-${site.id}` ? (
                                                 <Loader2 className="w-4 h-4 animate-spin" />
                                             ) : (
-                                                <>
-                                                    <Database className="w-4 h-4 mr-1" />
-                                                    {t.backup}
-                                                </>
+                                                <Database className="w-4 h-4" />
                                             )}
                                         </Button>
                                         <Button
@@ -234,6 +288,28 @@ export default function FlywheelManager({ lang = 'pt' }) {
                     </div>
                 )}
             </CardContent>
+
+            <CreateSiteDialog
+                open={createDialogOpen}
+                onOpenChange={setCreateDialogOpen}
+                onCreateSite={handleCreateSite}
+                loading={actionLoading === 'create'}
+                lang={lang}
+            />
+
+            <DeploymentLogsDialog
+                open={logsDialogOpen}
+                onOpenChange={setLogsDialogOpen}
+                siteId={selectedSite?.id}
+                lang={lang}
+            />
+
+            <SiteConfigDialog
+                open={configDialogOpen}
+                onOpenChange={setConfigDialogOpen}
+                siteId={selectedSite?.id}
+                lang={lang}
+            />
         </Card>
     );
 }

@@ -105,6 +105,80 @@ Deno.serve(async (req) => {
                 });
                 break;
 
+            case 'getBackups':
+                if (!siteId) {
+                    return Response.json({ error: 'siteId required' }, { status: 400 });
+                }
+                response = await fetch(`${FLYWHEEL_API_URL}/sites/${siteId}/backups`, { headers });
+                break;
+
+            case 'restoreBackup':
+                if (!siteId || !data?.backupId) {
+                    return Response.json({ error: 'siteId and backupId required' }, { status: 400 });
+                }
+                response = await fetch(`${FLYWHEEL_API_URL}/sites/${siteId}/backups/${data.backupId}/restore`, {
+                    method: 'POST',
+                    headers
+                });
+                break;
+
+            case 'updateEnvVars':
+                if (!siteId || !data?.variables) {
+                    return Response.json({ error: 'siteId and variables required' }, { status: 400 });
+                }
+                response = await fetch(`${FLYWHEEL_API_URL}/sites/${siteId}/env`, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify(data.variables)
+                });
+                break;
+
+            case 'getEnvVars':
+                if (!siteId) {
+                    return Response.json({ error: 'siteId required' }, { status: 400 });
+                }
+                response = await fetch(`${FLYWHEEL_API_URL}/sites/${siteId}/env`, { headers });
+                break;
+
+            case 'updateSSL':
+                if (!siteId || !data?.sslConfig) {
+                    return Response.json({ error: 'siteId and sslConfig required' }, { status: 400 });
+                }
+                response = await fetch(`${FLYWHEEL_API_URL}/sites/${siteId}/ssl`, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify(data.sslConfig)
+                });
+                break;
+
+            case 'updatePHPVersion':
+                if (!siteId || !data?.version) {
+                    return Response.json({ error: 'siteId and version required' }, { status: 400 });
+                }
+                response = await fetch(`${FLYWHEEL_API_URL}/sites/${siteId}/php`, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify({ version: data.version })
+                });
+                break;
+
+            case 'getSiteConfig':
+                if (!siteId) {
+                    return Response.json({ error: 'siteId required' }, { status: 400 });
+                }
+                response = await fetch(`${FLYWHEEL_API_URL}/sites/${siteId}/config`, { headers });
+                break;
+
+            case 'getDeploymentLogs':
+                if (!siteId) {
+                    return Response.json({ error: 'siteId required' }, { status: 400 });
+                }
+                const logsUrl = data?.deploymentId 
+                    ? `${FLYWHEEL_API_URL}/sites/${siteId}/deployments/${data.deploymentId}/logs`
+                    : `${FLYWHEEL_API_URL}/sites/${siteId}/deployments/latest/logs`;
+                response = await fetch(logsUrl, { headers });
+                break;
+
             default:
                 return Response.json({ error: 'Invalid action' }, { status: 400 });
         }

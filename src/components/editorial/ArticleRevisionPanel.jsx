@@ -63,6 +63,28 @@ export default function ArticleRevisionPanel({ article, onRevisionComplete }) {
         setLoading(true);
         try {
             const user = await base44.auth.me();
+            
+            // Check if user is co-author
+            const isCoAuthor = article.co_authors?.includes(user.email);
+            const coAuthorsApproved = article.co_authors_approved || [];
+            
+            if (isCoAuthor && !coAuthorsApproved.includes(user.email)) {
+                // Co-author approval
+                const updatedApprovals = [...coAuthorsApproved, user.email];
+                const allApproved = article.co_authors?.every(ca => updatedApprovals.includes(ca));
+                
+                await base44.entities.Article.update(article.id, {
+                    co_authors_approved: updatedApprovals,
+                    status: allApproved ? 'publicado' : 'em_revisao',
+                    approval_status: allApproved ? 'aprovado' : 'human_verified'
+                });
+                
+                toast.success(allApproved ? text.approved : lang === 'pt' ? 'Aprovação registrada' : 'Approval registered');
+                if (onRevisionComplete) onRevisionComplete();
+                setLoading(false);
+                return;
+            }
+            
             const newVersion = {
                 version: (article.version_history?.length || 0) + 1,
                 edited_by: user.email,
@@ -165,6 +187,28 @@ export default function ArticleRevisionPanel({ article, onRevisionComplete }) {
                                 {new Date(article.revision_date).toLocaleDateString()}
                             </p>
                         )}
+                    </div>
+                )}
+
+                {article.co_authors && article.co_authors.length > 0 && (
+                    <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
+                        <p className="text-xs text-blue-700 mb-2">{lang === 'pt' ? 'Co-Autores' : 'Co-Authors'}</p>
+                        <div className="space-y-1">
+                            {article.co_authors.map((email) => {
+                                const approved = article.co_authors_approved?.includes(email);
+                                return (
+                                    <div key={email} className="flex items-center justify-between text-sm">
+                                        <span className="text-blue-900">{email}</span>
+                                        {approved && (
+                                            <Badge className="bg-green-600 text-white text-xs">
+                                                <CheckCircle className="w-3 h-3 mr-1" />
+                                                {lang === 'pt' ? 'Aprovado' : 'Approved'}
+                                            </Badge>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 )}
 

@@ -65,13 +65,14 @@ export default function ArticleRevisionPanel({ article, onRevisionComplete }) {
             const user = await base44.auth.me();
             
             // Check if user is co-author
-            const isCoAuthor = article.co_authors?.includes(user.email);
+            const coAuthorEmails = article.co_authors?.map(ca => typeof ca === 'string' ? ca : ca.email) || [];
+            const isCoAuthor = coAuthorEmails.includes(user.email);
             const coAuthorsApproved = article.co_authors_approved || [];
             
             if (isCoAuthor && !coAuthorsApproved.includes(user.email)) {
                 // Co-author approval
                 const updatedApprovals = [...coAuthorsApproved, user.email];
-                const allApproved = article.co_authors?.every(ca => updatedApprovals.includes(ca));
+                const allApproved = coAuthorEmails.every(email => updatedApprovals.includes(email));
                 
                 await base44.entities.Article.update(article.id, {
                     co_authors_approved: updatedApprovals,
@@ -193,12 +194,17 @@ export default function ArticleRevisionPanel({ article, onRevisionComplete }) {
                 {article.co_authors && article.co_authors.length > 0 && (
                     <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
                         <p className="text-xs text-blue-700 mb-2">{lang === 'pt' ? 'Co-Autores' : 'Co-Authors'}</p>
-                        <div className="space-y-1">
-                            {article.co_authors.map((email) => {
+                        <div className="space-y-2">
+                            {article.co_authors.map((coAuthor) => {
+                                const email = typeof coAuthor === 'string' ? coAuthor : coAuthor.email;
+                                const name = typeof coAuthor === 'string' ? coAuthor : coAuthor.name;
                                 const approved = article.co_authors_approved?.includes(email);
                                 return (
                                     <div key={email} className="flex items-center justify-between text-sm">
-                                        <span className="text-blue-900">{email}</span>
+                                        <div className="flex flex-col">
+                                            <span className="text-blue-900 font-semibold">{name}</span>
+                                            <span className="text-blue-700 text-xs">{email}</span>
+                                        </div>
                                         {approved && (
                                             <Badge className="bg-green-600 text-white text-xs">
                                                 <CheckCircle className="w-3 h-3 mr-1" />

@@ -13,7 +13,8 @@ import QualityBadge from './QualityBadge';
 export default function AdminReviewPanel({ article, onReviewComplete }) {
     const [verificationNotes, setVerificationNotes] = useState('');
     const [coAuthors, setCoAuthors] = useState(article.co_authors || []);
-    const [newCoAuthor, setNewCoAuthor] = useState('');
+    const [newCoAuthorEmail, setNewCoAuthorEmail] = useState('');
+    const [newCoAuthorName, setNewCoAuthorName] = useState('');
     const [loading, setLoading] = useState(false);
     const { can, roleType } = usePermissions();
     const lang = localStorage.getItem('troyjo_lang') || 'pt';
@@ -28,6 +29,7 @@ export default function AdminReviewPanel({ article, onReviewComplete }) {
             coAuthors: 'Co-Autores',
             addCoAuthor: 'Adicionar Co-Autor',
             coAuthorEmail: 'Email do co-autor',
+            coAuthorName: 'Nome para publicação',
             verificationNotes: 'Notas de Verificação',
             approve: 'Aprovar como Human-Verified',
             reject: 'Rejeitar',
@@ -44,6 +46,7 @@ export default function AdminReviewPanel({ article, onReviewComplete }) {
             coAuthors: 'Co-Authors',
             addCoAuthor: 'Add Co-Author',
             coAuthorEmail: 'Co-author email',
+            coAuthorName: 'Publication name',
             verificationNotes: 'Verification Notes',
             approve: 'Approve as Human-Verified',
             reject: 'Reject',
@@ -58,14 +61,15 @@ export default function AdminReviewPanel({ article, onReviewComplete }) {
     const text = t[lang];
 
     const addCoAuthor = () => {
-        if (newCoAuthor && !coAuthors.includes(newCoAuthor)) {
-            setCoAuthors([...coAuthors, newCoAuthor]);
-            setNewCoAuthor('');
+        if (newCoAuthorEmail && newCoAuthorName && !coAuthors.some(ca => ca.email === newCoAuthorEmail)) {
+            setCoAuthors([...coAuthors, { email: newCoAuthorEmail, name: newCoAuthorName }]);
+            setNewCoAuthorEmail('');
+            setNewCoAuthorName('');
         }
     };
 
     const removeCoAuthor = (email) => {
-        setCoAuthors(coAuthors.filter(ca => ca !== email));
+        setCoAuthors(coAuthors.filter(ca => ca.email !== email));
     };
 
     const handleApprove = async () => {
@@ -80,6 +84,8 @@ export default function AdminReviewPanel({ article, onReviewComplete }) {
                 tier_change: 'ai_generated → curator_approved'
             };
 
+            const coAuthorEmails = coAuthors.map(ca => ca.email);
+            
             await base44.entities.Article.update(article.id, {
                 quality_tier: 'curator_approved',
                 approval_status: 'human_verified',
@@ -153,25 +159,36 @@ export default function AdminReviewPanel({ article, onReviewComplete }) {
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
                         {text.coAuthors}
                     </label>
-                    <div className="flex gap-2 mb-2">
+                    <div className="space-y-2 mb-3">
                         <Input
-                            type="email"
-                            value={newCoAuthor}
-                            onChange={(e) => setNewCoAuthor(e.target.value)}
-                            placeholder={text.coAuthorEmail}
-                            onKeyDown={(e) => e.key === 'Enter' && addCoAuthor()}
+                            type="text"
+                            value={newCoAuthorName}
+                            onChange={(e) => setNewCoAuthorName(e.target.value)}
+                            placeholder={text.coAuthorName}
                         />
-                        <Button onClick={addCoAuthor} variant="outline" size="sm">
-                            <UserPlus className="w-4 h-4" />
-                        </Button>
+                        <div className="flex gap-2">
+                            <Input
+                                type="email"
+                                value={newCoAuthorEmail}
+                                onChange={(e) => setNewCoAuthorEmail(e.target.value)}
+                                placeholder={text.coAuthorEmail}
+                                onKeyDown={(e) => e.key === 'Enter' && addCoAuthor()}
+                            />
+                            <Button onClick={addCoAuthor} variant="outline" size="sm" disabled={!newCoAuthorEmail || !newCoAuthorName}>
+                                <UserPlus className="w-4 h-4" />
+                            </Button>
+                        </div>
                     </div>
                     {coAuthors.length > 0 && (
                         <>
                             <div className="flex flex-wrap gap-2 mb-2">
-                                {coAuthors.map((email) => (
-                                    <Badge key={email} variant="secondary" className="flex items-center gap-1">
-                                        {email}
-                                        <button onClick={() => removeCoAuthor(email)} className="ml-1 hover:text-red-600">
+                                {coAuthors.map((coAuthor) => (
+                                    <Badge key={coAuthor.email} variant="secondary" className="flex items-center gap-1 py-2">
+                                        <div className="flex flex-col items-start">
+                                            <span className="font-semibold">{coAuthor.name}</span>
+                                            <span className="text-xs opacity-70">{coAuthor.email}</span>
+                                        </div>
+                                        <button onClick={() => removeCoAuthor(coAuthor.email)} className="ml-2 hover:text-red-600">
                                             <X className="w-3 h-3" />
                                         </button>
                                     </Badge>

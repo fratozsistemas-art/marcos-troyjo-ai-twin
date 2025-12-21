@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,7 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight, CheckCircle, Circle, Sparkles, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 const workflows = {
@@ -168,7 +167,6 @@ export default function WorkflowGuide({ lang = 'pt', onComplete }) {
     const [currentWorkflow, setCurrentWorkflow] = useState(null);
     const [currentStep, setCurrentStep] = useState(0);
     const [completedSteps, setCompletedSteps] = useState(new Set());
-    const navigate = useNavigate();
 
     useEffect(() => {
         const hasSeenGuide = localStorage.getItem('workflow_guide_seen');
@@ -204,11 +202,7 @@ export default function WorkflowGuide({ lang = 'pt', onComplete }) {
     };
 
     const handleAction = () => {
-        const step = workflow.steps[currentStep];
-        if (step.url) {
-            navigate(createPageUrl(step.url));
-            setOpen(false);
-        }
+        setOpen(false);
     };
 
     const progress = ((currentStep + 1) / workflow?.steps.length) * 100;
@@ -308,12 +302,14 @@ export default function WorkflowGuide({ lang = 'pt', onComplete }) {
                                             {lang === 'pt' ? 'Voltar' : 'Back'}
                                         </Button>
                                         <div className="flex gap-2">
-                                            <Button
-                                                variant="outline"
-                                                onClick={handleAction}
-                                            >
-                                                {workflow.steps[currentStep].action}
-                                            </Button>
+                                            <Link to={createPageUrl(workflow.steps[currentStep].url)}>
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => setOpen(false)}
+                                                >
+                                                    {workflow.steps[currentStep].action}
+                                                </Button>
+                                            </Link>
                                             <Button
                                                 onClick={handleNext}
                                                 className="bg-[#002D62]"

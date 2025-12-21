@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Bell, Check, Info, AlertTriangle, Lightbulb, TrendingUp, X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 const iconMap = {
@@ -32,7 +32,6 @@ export default function NotificationCenter({ lang = 'pt' }) {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
     const [open, setOpen] = useState(false);
-    const navigate = useNavigate();
 
     useEffect(() => {
         loadNotifications();
@@ -99,10 +98,6 @@ export default function NotificationCenter({ lang = 'pt' }) {
     const handleNotificationClick = (notification) => {
         if (!notification.read) {
             markAsRead(notification.id);
-        }
-        if (notification.action_url) {
-            navigate(notification.action_url);
-            setOpen(false);
         }
     };
 
@@ -186,10 +181,9 @@ export default function NotificationCenter({ lang = 'pt' }) {
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, x: -100 }}
-                                                className={`border-b last:border-0 p-4 hover:bg-gray-50 transition-colors cursor-pointer ${
+                                                className={`border-b last:border-0 p-4 hover:bg-gray-50 transition-colors ${
                                                     !notification.read ? 'bg-blue-50/50' : ''
                                                 }`}
-                                                onClick={() => handleNotificationClick(notification)}
                                             >
                                                 <div className="flex gap-3">
                                                     <div className="flex-shrink-0 mt-1">
@@ -197,9 +191,20 @@ export default function NotificationCenter({ lang = 'pt' }) {
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-start justify-between gap-2 mb-1">
-                                                            <h4 className={`font-semibold text-sm ${!notification.read ? 'text-[#002D62]' : 'text-gray-700'}`}>
-                                                                {notification.title}
-                                                            </h4>
+                                                            {notification.action_url ? (
+                                                                <Link to={notification.action_url} onClick={() => {
+                                                                    handleNotificationClick(notification);
+                                                                    setOpen(false);
+                                                                }}>
+                                                                    <h4 className={`font-semibold text-sm hover:underline cursor-pointer ${!notification.read ? 'text-[#002D62]' : 'text-gray-700'}`}>
+                                                                        {notification.title}
+                                                                    </h4>
+                                                                </Link>
+                                                            ) : (
+                                                                <h4 className={`font-semibold text-sm ${!notification.read ? 'text-[#002D62]' : 'text-gray-700'}`} onClick={() => handleNotificationClick(notification)}>
+                                                                    {notification.title}
+                                                                </h4>
+                                                            )}
                                                             <Button
                                                                 variant="ghost"
                                                                 size="sm"

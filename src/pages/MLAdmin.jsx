@@ -8,6 +8,8 @@ import MLRoleManager from '@/components/admin/MLRoleManager';
 import MLAuditLogViewer from '@/components/admin/MLAuditLogViewer';
 import RetrainingConfigManager from '@/components/ml/RetrainingConfigManager';
 import RetrainingHistory from '@/components/ml/RetrainingHistory';
+import PipelineBuilder from '@/components/ml/PipelineBuilder';
+import PipelineRunsViewer from '@/components/ml/PipelineRunsViewer';
 
 export default function MLAdmin() {
     const [lang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
@@ -41,6 +43,9 @@ export default function MLAdmin() {
                         <TabsTrigger value="roles">
                             {lang === 'pt' ? 'Papéis & Permissões' : 'Roles & Permissions'}
                         </TabsTrigger>
+                        <TabsTrigger value="cicd">
+                            {lang === 'pt' ? 'CI/CD Pipelines' : 'CI/CD Pipelines'}
+                        </TabsTrigger>
                         <TabsTrigger value="retraining">
                             {lang === 'pt' ? 'Retreinamento Automático' : 'Auto-Retraining'}
                         </TabsTrigger>
@@ -51,6 +56,13 @@ export default function MLAdmin() {
 
                     <TabsContent value="roles">
                         <MLRoleManager lang={lang} />
+                    </TabsContent>
+
+                    <TabsContent value="cicd">
+                        <div className="space-y-6">
+                            <PipelineBuilder lang={lang} />
+                            <PipelineRunsViewer lang={lang} />
+                        </div>
                     </TabsContent>
 
                     <TabsContent value="retraining">

@@ -133,6 +133,24 @@ Deno.serve(async (req) => {
             });
         }
 
+        // Trigger CI/CD pipeline if configured
+        const pipelines = await base44.asServiceRole.entities.MLPipeline.filter({
+            model_name: config.model_name,
+            trigger_on_retraining: true,
+            enabled: true
+        });
+
+        for (const pipeline of pipelines) {
+            await base44.functions.invoke('executePipeline', {
+                pipeline_id: pipeline.id,
+                trigger_data: {
+                    trigger_type: 'retraining',
+                    retraining_job_id: job_id,
+                    mlflow_run_id: runId
+                }
+            });
+        }
+
         // Send notification emails
         if (config.notification_emails?.length > 0) {
             for (const email of config.notification_emails) {

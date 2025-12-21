@@ -131,11 +131,25 @@ export default function EmailVerification({ onVerified }) {
     };
 
     const handleOAuthGoogle = () => {
-        toast.info(lang === 'pt' ? 'Google OAuth em breve' : 'Google OAuth coming soon');
+        window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + 
+            new URLSearchParams({
+                client_id: 'YOUR_GOOGLE_CLIENT_ID',
+                redirect_uri: window.location.origin + '/auth/callback',
+                response_type: 'code',
+                scope: 'openid email profile',
+                access_type: 'offline',
+                prompt: 'consent'
+            });
     };
 
     const handleOAuthLinkedIn = () => {
-        toast.info(lang === 'pt' ? 'LinkedIn OAuth em breve' : 'LinkedIn OAuth coming soon');
+        window.location.href = 'https://www.linkedin.com/oauth/v2/authorization?' +
+            new URLSearchParams({
+                response_type: 'code',
+                client_id: 'YOUR_LINKEDIN_CLIENT_ID',
+                redirect_uri: window.location.origin + '/auth/callback',
+                scope: 'openid profile email'
+            });
     };
 
     return (

@@ -7,13 +7,13 @@ function generateCode() {
 Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
-        const user = await base44.auth.me();
+        const { email } = await req.json();
         
-        if (!user || !user.email) {
-            return Response.json({ error: 'Unauthorized or email not found' }, { status: 401 });
+        if (!email) {
+            return Response.json({ error: 'Email required' }, { status: 400 });
         }
 
-        const userEmail = user.email;
+        const userEmail = email;
         const code = generateCode();
         const expiresAt = new Date();
         expiresAt.setMinutes(expiresAt.getMinutes() + 15);

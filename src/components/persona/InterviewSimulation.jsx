@@ -70,6 +70,7 @@ export default function InterviewSimulation({ lang = 'pt' }) {
             return;
         }
 
+        setLoading(true);
         try {
             const conv = await base44.agents.createConversation({
                 agent_name: 'troyjo_twin',
@@ -87,15 +88,12 @@ export default function InterviewSimulation({ lang = 'pt' }) {
 
             // If user is interviewee, persona starts with first question
             if (config.userRole === 'interviewee') {
-                setLoading(true);
                 const systemPrompt = `Você está conduzindo uma entrevista sobre ${config.topic}. ${config.context ? 'Contexto: ' + config.context : ''} Faça a primeira pergunta como entrevistador.`;
                 
                 await base44.agents.addMessage(conv, {
                     role: 'user',
                     content: systemPrompt
                 });
-
-                setLoading(false);
             } else {
                 // User is interviewer, add opening message
                 setMessages([{
@@ -105,7 +103,9 @@ export default function InterviewSimulation({ lang = 'pt' }) {
             }
         } catch (error) {
             console.error('Error starting simulation:', error);
-            toast.error('Error');
+            toast.error(lang === 'pt' ? 'Erro ao iniciar simulação' : 'Error starting simulation');
+        } finally {
+            setLoading(false);
         }
     };
 

@@ -25,6 +25,7 @@ import SystemHealth from './pages/SystemHealth';
 import KnowledgeBase from './pages/KnowledgeBase';
 import Homepage from './pages/Homepage';
 import AnalyticsDashboard from './pages/AnalyticsDashboard';
+import KnowledgeArticle from './pages/KnowledgeArticle';
 import __Layout from './Layout.jsx';
 
 
@@ -56,6 +57,7 @@ export const PAGES = {
     "KnowledgeBase": KnowledgeBase,
     "Homepage": Homepage,
     "AnalyticsDashboard": AnalyticsDashboard,
+    "KnowledgeArticle": KnowledgeArticle,
 }
 
 export const pagesConfig = {

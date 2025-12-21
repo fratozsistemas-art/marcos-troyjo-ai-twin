@@ -19,6 +19,7 @@ import { logTopics } from '@/components/intelligence/TopicTracker';
 import SubscriptionGate, { useSubscription } from '@/components/subscription/SubscriptionGate';
 import VerificationGate from '@/components/subscription/VerificationGate';
 import AegisIndicator from '@/components/security/AegisIndicator';
+import PersonaModeSelector from '@/components/persona/PersonaModeSelector';
 import { toast } from 'sonner';
 
 const translations = {
@@ -61,6 +62,7 @@ function ConsultationInner() {
     const [personaSelectorOpen, setPersonaSelectorOpen] = useState(false);
     const [attachedFiles, setAttachedFiles] = useState([]);
     const [uploadingFiles, setUploadingFiles] = useState(false);
+    const [personaMode, setPersonaMode] = useState('tecnico');
     const messagesEndRef = useRef(null);
     const textareaRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -118,7 +120,8 @@ function ConsultationInner() {
                 agent_name: "troyjo_twin",
                 metadata: {
                     name: `Consultation ${new Date().toLocaleDateString()}`,
-                    language: lang
+                    language: lang,
+                    persona_mode: personaMode
                 }
             });
             setConversation(newConversation);
@@ -217,10 +220,14 @@ function ConsultationInner() {
         try {
             await incrementUsage('consultations');
 
-            // Add message with file URLs
+            // Add message with file URLs and persona mode
             const messageData = {
                 role: 'user',
-                content: messageText || (lang === 'pt' ? 'Arquivo(s) anexado(s)' : 'File(s) attached')
+                content: messageText || (lang === 'pt' ? 'Arquivo(s) anexado(s)' : 'File(s) attached'),
+                metadata: {
+                    persona_mode: personaMode,
+                    language: lang
+                }
             };
 
             if (filesToSend.length > 0) {
@@ -414,6 +421,16 @@ function ConsultationInner() {
                     {/* AEGIS Protocol Indicator */}
                     <div className="mb-4">
                         <AegisIndicator lang={lang} compact={true} />
+                    </div>
+
+                    {/* Persona Mode Selector */}
+                    <div className="mb-4">
+                        <PersonaModeSelector
+                            selectedMode={personaMode}
+                            onModeChange={setPersonaMode}
+                            lang={lang}
+                            compact={true}
+                        />
                     </div>
 
                     {/* Persona Indicator with Selector */}

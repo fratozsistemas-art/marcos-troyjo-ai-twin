@@ -344,29 +344,32 @@ Retorne um array de 6 ÍNDICES (0-5) ordenado da feature mais útil/relevante pa
                                 </div>
 
                                 <div className="space-y-4">
-                                    {orderedFeatures.length > 0 && (
-                                        <motion.div
-                                            key={currentFeatureIndex}
-                                            initial={{ opacity: 0, x: 50 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, x: -50 }}
-                                            transition={{ duration: 0.3 }}
-                                        >
-                                            <div className="flex gap-4 p-6 rounded-lg border-2 border-[#002D62]/20 bg-gradient-to-br from-white to-gray-50">
-                                                <div className="w-14 h-14 rounded-lg bg-[#002D62] flex items-center justify-center flex-shrink-0">
-                                                    <orderedFeatures[currentFeatureIndex].icon className="w-7 h-7 text-white" />
+                                    {orderedFeatures.length > 0 && (() => {
+                                        const CurrentIcon = orderedFeatures[currentFeatureIndex].icon;
+                                        return (
+                                            <motion.div
+                                                key={currentFeatureIndex}
+                                                initial={{ opacity: 0, x: 50 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                exit={{ opacity: 0, x: -50 }}
+                                                transition={{ duration: 0.3 }}
+                                            >
+                                                <div className="flex gap-4 p-6 rounded-lg border-2 border-[#002D62]/20 bg-gradient-to-br from-white to-gray-50">
+                                                    <div className="w-14 h-14 rounded-lg bg-[#002D62] flex items-center justify-center flex-shrink-0">
+                                                        <CurrentIcon className="w-7 h-7 text-white" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h3 className="font-semibold text-[#333F48] mb-2 text-lg">
+                                                            {orderedFeatures[currentFeatureIndex].title}
+                                                        </h3>
+                                                        <p className="text-sm text-gray-600 leading-relaxed">
+                                                            {orderedFeatures[currentFeatureIndex].desc}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                                <div className="flex-1">
-                                                    <h3 className="font-semibold text-[#333F48] mb-2 text-lg">
-                                                        {orderedFeatures[currentFeatureIndex].title}
-                                                    </h3>
-                                                    <p className="text-sm text-gray-600 leading-relaxed">
-                                                        {orderedFeatures[currentFeatureIndex].desc}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </motion.div>
-                                    )}
+                                            </motion.div>
+                                        );
+                                    })()}
 
                                     <div className="flex items-center justify-between">
                                         <Button

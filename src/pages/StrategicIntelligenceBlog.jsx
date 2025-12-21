@@ -167,13 +167,13 @@ export default function StrategicIntelligenceBlog() {
                                     href="https://caiovision.com.br"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 px-6 py-3 bg-[#D4AF37] hover:bg-[#C49F27] text-[#8B1538] rounded-lg font-semibold transition-colors"
+                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#D4AF37] hover:bg-[#C49F27] text-[#1a1a1a] rounded-lg font-semibold transition-colors min-w-[200px]"
                                 >
                                     {t.caioLink}
                                     <ExternalLink className="w-4 h-4" />
                                 </a>
                                 <Link to={createPageUrl('Home')}>
-                                    <Button variant="outline" className="border-white text-white hover:bg-white/10">
+                                    <Button className="bg-white hover:bg-gray-100 text-[#8B1538] font-semibold min-w-[200px] h-[48px] px-6">
                                         {t.cta}
                                     </Button>
                                 </Link>

@@ -7,6 +7,8 @@ import { Menu, X, Globe } from 'lucide-react';
 import NavigationMenu from '@/components/navigation/NavigationMenu';
 import TroyjoLogo from '@/components/branding/TroyjoLogo';
 import TrialBanner from '@/components/subscription/TrialBanner';
+import Breadcrumbs from '@/components/navigation/Breadcrumbs';
+import KeyboardShortcuts from '@/components/navigation/KeyboardShortcuts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Toaster } from 'sonner';
 import { toast } from 'sonner';
@@ -128,10 +130,14 @@ export default function Layout({ children, currentPageName }) {
 
                                 {/* Page Content */}
                                 <main className="flex-1">
+                                    <div className="max-w-7xl mx-auto px-4 md:px-6 py-4">
+                                        <Breadcrumbs lang={lang} />
+                                    </div>
                                     {children}
                                 </main>
             </div>
             </div>
+            <KeyboardShortcuts lang={lang} />
             <Toaster position="top-right" richColors />
             </div>
     );

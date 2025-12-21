@@ -50,6 +50,7 @@ export default function MLflowExperiments({ lang = 'pt' }) {
     const [selectedRun, setSelectedRun] = useState(null);
     const [metricHistory, setMetricHistory] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [newExpName, setNewExpName] = useState('');
     const [selectedForComparison, setSelectedForComparison] = useState([]);
@@ -62,6 +63,7 @@ export default function MLflowExperiments({ lang = 'pt' }) {
 
     const loadExperiments = async () => {
         setLoading(true);
+        setError(null);
         try {
             const response = await base44.functions.invoke('mlflowManager', {
                 action: 'listExperiments'
@@ -70,11 +72,13 @@ export default function MLflowExperiments({ lang = 'pt' }) {
             if (response.data.success) {
                 setExperiments(response.data.data.experiments || []);
             } else {
-                toast.error(response.data.error);
+                const errorMsg = response.data.error || 'Erro ao carregar experimentos';
+                setError(errorMsg);
             }
         } catch (error) {
             console.error('Error loading experiments:', error);
-            toast.error('Erro ao carregar experimentos');
+            const errorMsg = 'MLflow não configurado ou indisponível';
+            setError(errorMsg);
         } finally {
             setLoading(false);
         }
@@ -238,6 +242,18 @@ export default function MLflowExperiments({ lang = 'pt' }) {
                         {loading ? (
                             <div className="flex justify-center py-8">
                                 <Loader2 className="w-6 h-6 animate-spin text-[#002D62]" />
+                            </div>
+                        ) : error ? (
+                            <div className="text-center py-8">
+                                <FlaskConical className="w-12 h-12 text-amber-300 mx-auto mb-3" />
+                                <p className="text-amber-700 text-sm font-medium mb-2">{error}</p>
+                                <p className="text-xs text-gray-500 mb-4">
+                                    {lang === 'pt' ? 'Configure GITLAB_TOKEN nas configurações' : 'Configure GITLAB_TOKEN in settings'}
+                                </p>
+                                <Button variant="outline" size="sm" onClick={loadExperiments}>
+                                    <Activity className="w-4 h-4 mr-2" />
+                                    {lang === 'pt' ? 'Tentar Novamente' : 'Try Again'}
+                                </Button>
                             </div>
                         ) : experiments.length === 0 ? (
                             <p className="text-center text-gray-500 py-8">{t.noExperiments}</p>

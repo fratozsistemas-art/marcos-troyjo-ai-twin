@@ -52,6 +52,7 @@ const translations = {
 export default function FlywheelManager({ lang = 'pt' }) {
     const [sites, setSites] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [actionLoading, setActionLoading] = useState(null);
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [logsDialogOpen, setLogsDialogOpen] = useState(false);
@@ -67,6 +68,7 @@ export default function FlywheelManager({ lang = 'pt' }) {
 
     const loadSites = async () => {
         setLoading(true);
+        setError(null);
         try {
             const response = await base44.functions.invoke('flywheelManager', {
                 action: 'listSites'
@@ -75,11 +77,13 @@ export default function FlywheelManager({ lang = 'pt' }) {
             if (response.data.success) {
                 setSites(response.data.data.sites || []);
             } else {
-                toast.error(response.data.error || 'Erro ao carregar sites');
+                const errorMsg = response.data.error || 'Erro ao carregar sites';
+                setError(errorMsg);
             }
         } catch (error) {
             console.error('Error loading sites:', error);
-            toast.error('Erro ao conectar com Flywheel');
+            const errorMsg = 'Flywheel não configurado ou indisponível';
+            setError(errorMsg);
         } finally {
             setLoading(false);
         }
@@ -211,6 +215,18 @@ export default function FlywheelManager({ lang = 'pt' }) {
                         <Loader2 className="w-6 h-6 animate-spin text-[#002D62]" />
                         <span className="ml-2 text-sm text-gray-600">{t.loading}</span>
                     </div>
+                ) : error ? (
+                    <div className="text-center py-8">
+                        <Server className="w-12 h-12 text-amber-300 mx-auto mb-3" />
+                        <p className="text-amber-700 font-medium mb-2">{error}</p>
+                        <p className="text-sm text-gray-500 mb-4">
+                            {lang === 'pt' ? 'Configure FLYWHEEL_API_KEY nas configurações' : 'Configure FLYWHEEL_API_KEY in settings'}
+                        </p>
+                        <Button variant="outline" size="sm" onClick={loadSites}>
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                            {lang === 'pt' ? 'Tentar Novamente' : 'Try Again'}
+                        </Button>
+                    </div>
                 ) : sites.length === 0 ? (
                     <div className="text-center py-8">
                         <Server className="w-12 h-12 text-gray-300 mx-auto mb-3" />
@@ -325,9 +341,11 @@ export default function FlywheelManager({ lang = 'pt' }) {
                 )}
             </CardContent>
 
-            <div className="mt-6">
-                <MLflowExperiments lang={lang} />
-            </div>
+            {!error && (
+                <div className="mt-6">
+                    <MLflowExperiments lang={lang} />
+                </div>
+            )}
 
             <CreateSiteDialog
                 open={createDialogOpen}

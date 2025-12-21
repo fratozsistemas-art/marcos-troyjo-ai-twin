@@ -283,7 +283,7 @@ export default function AlertConfigurationPanel({ lang = 'pt' }) {
                                     <Badge
                                         key={type.value}
                                         variant={config?.risk_types?.includes(type.value) ? "default" : "outline"}
-                                        className="cursor-pointer bg-[#8B1538]"
+                                        className="cursor-pointer"
                                         onClick={() => setConfig({
                                             ...config,
                                             risk_types: toggleArrayItem(config.risk_types || [], type.value)

@@ -176,6 +176,7 @@ export default function Dashboard() {
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
     const [conversations, setConversations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('todos');
 
     const [searchQuery, setSearchQuery] = useState('');
     const [summariesEnabled, setSummariesEnabled] = useState(false);
@@ -183,6 +184,18 @@ export default function Dashboard() {
     const [conversationSummaries, setConversationSummaries] = useState({});
     const [pendingReviews, setPendingReviews] = useState({ twin: 0, human: 0 });
     const t = translations[lang];
+
+    const tabs = [
+        { id: 'todos', label: lang === 'pt' ? 'Todos' : 'All' },
+        { id: 'discursos', label: lang === 'pt' ? 'Discursos' : 'Speeches' },
+        { id: 'livros', label: lang === 'pt' ? 'Livros' : 'Books' },
+        { id: 'artigos', label: lang === 'pt' ? 'Artigos' : 'Articles' },
+        { id: 'pesquisas', label: lang === 'pt' ? 'Pesquisas' : 'Research' },
+        { id: 'entrevistas', label: lang === 'pt' ? 'Entrevistas' : 'Interviews' },
+        { id: 'relatorios', label: lang === 'pt' ? 'Relatórios' : 'Reports' },
+        { id: 'documentos', label: lang === 'pt' ? 'Documentos Políticos' : 'Policy Documents' },
+        { id: 'outros', label: lang === 'pt' ? 'Outros' : 'Others' }
+    ];
 
     useEffect(() => {
         localStorage.setItem('troyjo_lang', lang);
@@ -346,20 +359,44 @@ export default function Dashboard() {
             </header>
 
             <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 space-y-8">
+                {/* Tab Navigation */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                    <div className="bg-white rounded-lg border border-gray-200 p-2">
+                        <div className="flex flex-wrap gap-2">
+                            {tabs.map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                                        activeTab === tab.id
+                                            ? 'bg-[#002D62] text-white'
+                                            : 'text-[#333F48] hover:bg-gray-100'
+                                    }`}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </motion.div>
+
                 {/* Usage Meter */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                     <UsageMeter lang={lang} />
                 </motion.div>
 
-                {/* Geopolitical Alerts */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-                    <GeopoliticalAlertPanel userContext={{}} personaMode="tecnico" />
-                </motion.div>
+                {/* Conditional Content Based on Active Tab */}
+                {activeTab === 'todos' && (
+                    <>
+                        {/* Geopolitical Alerts */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+                            <GeopoliticalAlertPanel userContext={{}} personaMode="tecnico" />
+                        </motion.div>
 
-                {/* First Row - Profile Settings Full Width */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                    <ProfileSettings lang={lang} />
-                </motion.div>
+                        {/* First Row - Profile Settings Full Width */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                            <ProfileSettings lang={lang} />
+                        </motion.div>
 
                 {/* Second Row - Custom Traits & AI Suggestions */}
                 <div className="grid lg:grid-cols-2 gap-6">
@@ -720,6 +757,176 @@ export default function Dashboard() {
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.56 }}>
                     <VoiceCalibration lang={lang} />
                 </motion.div>
+                </>
+                )}
+
+                {/* Discursos Tab */}
+                {activeTab === 'discursos' && (
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-[#002D62]">
+                                    {lang === 'pt' ? 'Discursos Públicos' : 'Public Speeches'}
+                                </CardTitle>
+                                <CardDescription>
+                                    {lang === 'pt' 
+                                        ? 'Palestras, conferências e apresentações oficiais de Marcos Troyjo'
+                                        : 'Lectures, conferences and official presentations by Marcos Troyjo'}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-[#333F48]/60 text-center py-8">
+                                    {lang === 'pt' ? 'Conteúdo em desenvolvimento' : 'Content in development'}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                )}
+
+                {/* Livros Tab */}
+                {activeTab === 'livros' && (
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-[#002D62]">
+                                    {lang === 'pt' ? 'Livros Publicados' : 'Published Books'}
+                                </CardTitle>
+                                <CardDescription>
+                                    {lang === 'pt' 
+                                        ? 'Obras acadêmicas e análises econômicas'
+                                        : 'Academic works and economic analyses'}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-[#333F48]/60 text-center py-8">
+                                    {lang === 'pt' ? 'Conteúdo em desenvolvimento' : 'Content in development'}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                )}
+
+                {/* Artigos Tab */}
+                {activeTab === 'artigos' && (
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-[#002D62]">
+                                    {lang === 'pt' ? 'Artigos & Ensaios' : 'Articles & Essays'}
+                                </CardTitle>
+                                <CardDescription>
+                                    {lang === 'pt' 
+                                        ? 'Publicações em periódicos especializados'
+                                        : 'Publications in specialized journals'}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-[#333F48]/60 text-center py-8">
+                                    {lang === 'pt' ? 'Conteúdo em desenvolvimento' : 'Content in development'}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                )}
+
+                {/* Pesquisas Tab */}
+                {activeTab === 'pesquisas' && (
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-[#002D62]">
+                                    {lang === 'pt' ? 'Pesquisas Acadêmicas' : 'Academic Research'}
+                                </CardTitle>
+                                <CardDescription>
+                                    {lang === 'pt' 
+                                        ? 'Trabalhos de pesquisa e estudos acadêmicos'
+                                        : 'Research papers and academic studies'}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-[#333F48]/60 text-center py-8">
+                                    {lang === 'pt' ? 'Conteúdo em desenvolvimento' : 'Content in development'}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                )}
+
+                {/* Entrevistas Tab */}
+                {activeTab === 'entrevistas' && (
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <InterviewTranscriptManager lang={lang} />
+                    </motion.div>
+                )}
+
+                {/* Relatórios Tab */}
+                {activeTab === 'relatorios' && (
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-[#002D62]">
+                                    {lang === 'pt' ? 'Relatórios Institucionais' : 'Institutional Reports'}
+                                </CardTitle>
+                                <CardDescription>
+                                    {lang === 'pt' 
+                                        ? 'Relatórios do NDB e análises de política comercial'
+                                        : 'NDB reports and trade policy analyses'}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-[#333F48]/60 text-center py-8">
+                                    {lang === 'pt' ? 'Conteúdo em desenvolvimento' : 'Content in development'}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                )}
+
+                {/* Documentos Tab */}
+                {activeTab === 'documentos' && (
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-[#002D62]">
+                                    {lang === 'pt' ? 'Documentos Políticos' : 'Policy Documents'}
+                                </CardTitle>
+                                <CardDescription>
+                                    {lang === 'pt' 
+                                        ? 'Policy papers e documentos estratégicos'
+                                        : 'Policy papers and strategic documents'}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-[#333F48]/60 text-center py-8">
+                                    {lang === 'pt' ? 'Conteúdo em desenvolvimento' : 'Content in development'}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                )}
+
+                {/* Outros Tab */}
+                {activeTab === 'outros' && (
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-[#002D62]">
+                                    {lang === 'pt' ? 'Outros Conteúdos' : 'Other Content'}
+                                </CardTitle>
+                                <CardDescription>
+                                    {lang === 'pt' 
+                                        ? 'Materiais diversos e conteúdo adicional'
+                                        : 'Miscellaneous materials and additional content'}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-[#333F48]/60 text-center py-8">
+                                    {lang === 'pt' ? 'Conteúdo em desenvolvimento' : 'Content in development'}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                )}
                 </main>
 
 

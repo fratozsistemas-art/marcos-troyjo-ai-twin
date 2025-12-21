@@ -1118,6 +1118,77 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                 </DialogContent>
             </Dialog>
 
+            {/* AI Assistant Dialog */}
+            <Dialog open={aiAssistOpen} onOpenChange={setAiAssistOpen}>
+                <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Sparkles className="w-5 h-5 text-purple-600" />
+                            {t.aiAssist}
+                        </DialogTitle>
+                        <DialogDescription>
+                            {lang === 'pt' 
+                                ? 'Gere conteúdo completo automaticamente com IA'
+                                : 'Generate complete content automatically with AI'}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        <div>
+                            <Label>
+                                {lang === 'pt' ? 'Tema do Artigo' : 'Article Topic'}
+                            </Label>
+                            <Input
+                                value={aiTopic}
+                                onChange={(e) => setAiTopic(e.target.value)}
+                                placeholder={t.topicPlaceholder}
+                            />
+                        </div>
+                        <div>
+                            <Label>{t.selectLength}</Label>
+                            <Select value={aiLength} onValueChange={setAiLength}>
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="short">{t.short}</SelectItem>
+                                    <SelectItem value="medium">{t.medium}</SelectItem>
+                                    <SelectItem value="long">{t.long}</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                            <p className="text-xs text-blue-900">
+                                {lang === 'pt'
+                                    ? '🤖 A IA gerará automaticamente: título, resumo, conteúdo completo, tags e keywords no estilo Troyjo'
+                                    : '🤖 AI will automatically generate: title, summary, full content, tags and keywords in Troyjo style'}
+                            </p>
+                        </div>
+                        <div className="flex justify-end gap-2">
+                            <Button variant="outline" onClick={() => setAiAssistOpen(false)}>
+                                {t.cancel}
+                            </Button>
+                            <Button 
+                                onClick={() => handleAIGenerate('generate_draft')}
+                                disabled={aiLoading || !aiTopic.trim()}
+                                className="bg-purple-600 hover:bg-purple-700"
+                            >
+                                {aiLoading ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        {t.generating}
+                                    </>
+                                ) : (
+                                    <>
+                                        <Sparkles className="w-4 h-4 mr-2" />
+                                        {t.generateDraft}
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
             {/* Suggestion Dialog */}
             <Dialog open={suggestionDialogOpen} onOpenChange={setSuggestionDialogOpen}>
                 <DialogContent>

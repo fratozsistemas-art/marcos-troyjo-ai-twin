@@ -2,14 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
-// Safety wrapper for createPageUrl
-const safeCreatePageUrl = (pageName) => {
-    if (!pageName) {
-        console.error('createPageUrl called with undefined/null pageName');
-        return '/';
-    }
-    return createPageUrl(pageName);
-};
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -334,7 +326,7 @@ export default function Dashboard() {
                 <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Link to={safeCreatePageUrl('Home')}>
+                        <Link to={createPageUrl('Home')}>
                             <Button variant="ghost" size="sm" className="text-[#333F48] gap-2">
                                 <ArrowLeft className="w-4 h-4" />
                                 <span className="hidden sm:inline">{t.back}</span>
@@ -668,7 +660,7 @@ export default function Dashboard() {
                                                                 )}
                                                             </Button>
                                                         )}
-                                                        <Link to={safeCreatePageUrl('Consultation') + `?conversationId=${conv.id}`}>
+                                                        <Link to={createPageUrl('Consultation') + `?conversationId=${conv.id}`}>
                                                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                                                                 <Eye className="w-4 h-4" />
                                                             </Button>

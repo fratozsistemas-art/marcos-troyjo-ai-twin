@@ -18,6 +18,7 @@ import SSOTDocumentAnalyzer from '@/components/ssot/SSOTDocumentAnalyzer';
 import SSOTChatbot from '@/components/ssot/SSOTChatbot';
 import DataSourceManager from '@/components/ssot/DataSourceManager';
 import QuarterlyDataView from '@/components/ssot/QuarterlyDataView';
+import CustomChartBuilder from '@/components/ssot/CustomChartBuilder';
 
 const translations = {
     pt: {
@@ -224,6 +225,8 @@ export default function CorporateFactManager({ lang = 'pt' }) {
             <SyncMonitor lang={lang} />
 
             <QuarterlyDataView lang={lang} />
+
+            <CustomChartBuilder lang={lang} />
 
             <DataSourceManager lang={lang} />
 

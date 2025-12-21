@@ -53,6 +53,7 @@ import CorporateFactManager from '@/components/ssot/CorporateFactManager';
 import FlywheelManager from '@/components/flywheel/FlywheelManager';
 import ReportScheduler from '@/components/automation/ReportScheduler';
 import AgentManager from '@/components/admin/AgentManager';
+import BulkArticleGenerator from '@/components/content/BulkArticleGenerator';
 
 const translations = {
     pt: {
@@ -419,6 +420,11 @@ export default function Dashboard() {
                         {/* External Data Feeds - Full Width */}
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.01 }}>
                             <ExternalDataFeeds lang={lang} />
+                        </motion.div>
+
+                        {/* Bulk Article Generation */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.012 }}>
+                            <BulkArticleGenerator lang={lang} />
                         </motion.div>
 
                         {/* Automation & Agent Management */}

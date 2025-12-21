@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Search, Edit, Trash2, Save, X, Loader2, Calendar, Tag, ExternalLink } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Save, X, Loader2, Calendar, Tag, ExternalLink, ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 
@@ -18,10 +18,15 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedTags, setSelectedTags] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('all');
+    const [dateFrom, setDateFrom] = useState('');
+    const [dateTo, setDateTo] = useState('');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingEntry, setEditingEntry] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
     const [viewingEntry, setViewingEntry] = useState(null);
+    const [suggestionDialogOpen, setSuggestionDialogOpen] = useState(false);
+    const [suggestionText, setSuggestionText] = useState('');
+    const [feedbackMap, setFeedbackMap] = useState({});
     const [formData, setFormData] = useState({
         title: '',
         date: new Date().toISOString().split('T')[0],
@@ -64,6 +69,15 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
             view: 'Visualizar',
             edit: 'Editar',
             deleteConfirm: 'Tem certeza que deseja excluir esta entrada?',
+            dateFrom: 'Data inicial',
+            dateTo: 'Data final',
+            suggestTopic: 'Sugerir Tema',
+            suggestTopicTitle: 'Sugira um novo artigo ou tema',
+            suggestionPlaceholder: 'Descreva o tema ou artigo que gostaria de ver...',
+            sendSuggestion: 'Enviar Sugestão',
+            suggestionSent: 'Sugestão enviada com sucesso!',
+            helpful: 'Útil',
+            notHelpful: 'Não útil',
             categories: {
                 discurso: 'Discurso',
                 artigo: 'Artigo',
@@ -101,6 +115,15 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
             view: 'View',
             edit: 'Edit',
             deleteConfirm: 'Are you sure you want to delete this entry?',
+            dateFrom: 'From date',
+            dateTo: 'To date',
+            suggestTopic: 'Suggest Topic',
+            suggestTopicTitle: 'Suggest a new article or theme',
+            suggestionPlaceholder: 'Describe the theme or article you would like to see...',
+            sendSuggestion: 'Send Suggestion',
+            suggestionSent: 'Suggestion sent successfully!',
+            helpful: 'Helpful',
+            notHelpful: 'Not helpful',
             categories: {
                 discurso: 'Speech',
                 artigo: 'Article',
@@ -141,7 +164,10 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
         const matchesTags = selectedTags.length === 0 || 
             selectedTags.every(tag => entry.tags?.includes(tag));
 
-        return matchesSearch && matchesCategory && matchesTags;
+        const matchesDateFrom = !dateFrom || !entry.date || new Date(entry.date) >= new Date(dateFrom);
+        const matchesDateTo = !dateTo || !entry.date || new Date(entry.date) <= new Date(dateTo);
+
+        return matchesSearch && matchesCategory && matchesTags && matchesDateFrom && matchesDateTo;
     });
 
     const allTags = [...new Set(entries.flatMap(e => e.tags || []))];
@@ -237,6 +263,64 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
         setFormData({ ...formData, keywords: formData.keywords.filter(k => k !== keyword) });
     };
 
+    const handleFeedback = async (entryId, isHelpful) => {
+        try {
+            const entry = entries.find(e => e.id === entryId);
+            if (!entry) return;
+
+            const currentFeedback = feedbackMap[entryId];
+            let helpful = entry.helpful_votes || 0;
+            let unhelpful = entry.unhelpful_votes || 0;
+
+            if (currentFeedback === isHelpful) {
+                // Remove feedback
+                isHelpful ? helpful-- : unhelpful--;
+                setFeedbackMap({ ...feedbackMap, [entryId]: null });
+            } else {
+                // Add or change feedback
+                if (currentFeedback !== null && currentFeedback !== undefined) {
+                    currentFeedback ? helpful-- : unhelpful--;
+                }
+                isHelpful ? helpful++ : unhelpful++;
+                setFeedbackMap({ ...feedbackMap, [entryId]: isHelpful });
+            }
+
+            await base44.entities.KnowledgeEntry.update(entryId, {
+                helpful_votes: Math.max(0, helpful),
+                unhelpful_votes: Math.max(0, unhelpful)
+            });
+
+            loadEntries();
+        } catch (error) {
+            console.error('Error sending feedback:', error);
+            toast.error(lang === 'pt' ? 'Erro ao enviar feedback' : 'Error sending feedback');
+        }
+    };
+
+    const handleSuggestTopic = async () => {
+        if (!suggestionText.trim()) {
+            toast.error(lang === 'pt' ? 'Digite uma sugestão' : 'Enter a suggestion');
+            return;
+        }
+
+        try {
+            const user = await base44.auth.me();
+            await base44.entities.Feedback.create({
+                user_email: user.email,
+                type: 'knowledge_suggestion',
+                message: suggestionText,
+                metadata: { category: 'knowledge_base' }
+            });
+
+            toast.success(t.suggestionSent);
+            setSuggestionDialogOpen(false);
+            setSuggestionText('');
+        } catch (error) {
+            console.error('Error sending suggestion:', error);
+            toast.error(lang === 'pt' ? 'Erro ao enviar sugestão' : 'Error sending suggestion');
+        }
+    };
+
     return (
         <Card>
             <CardHeader>
@@ -245,16 +329,22 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                         <CardTitle className="text-[#002D62]">{t.title}</CardTitle>
                         <CardDescription>{t.desc}</CardDescription>
                     </div>
-                    <Button onClick={() => openDialog()} className="bg-[#002D62]">
-                        <Plus className="w-4 h-4 mr-2" />
-                        {t.addEntry}
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button onClick={() => setSuggestionDialogOpen(true)} variant="outline">
+                            <MessageSquare className="w-4 h-4 mr-2" />
+                            {t.suggestTopic}
+                        </Button>
+                        <Button onClick={() => openDialog()} className="bg-[#002D62]">
+                            <Plus className="w-4 h-4 mr-2" />
+                            {t.addEntry}
+                        </Button>
+                    </div>
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
                 {/* Search and Filters */}
-                <div className="grid md:grid-cols-2 gap-4">
-                    <div className="relative">
+                <div className="grid md:grid-cols-4 gap-4">
+                    <div className="relative md:col-span-2">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <Input
                             value={searchQuery}
@@ -274,6 +364,26 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                             ))}
                         </SelectContent>
                     </Select>
+                </div>
+
+                {/* Date Range Filter */}
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <Label className="text-xs text-gray-600">{t.dateFrom}</Label>
+                        <Input
+                            type="date"
+                            value={dateFrom}
+                            onChange={(e) => setDateFrom(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <Label className="text-xs text-gray-600">{t.dateTo}</Label>
+                        <Input
+                            type="date"
+                            value={dateTo}
+                            onChange={(e) => setDateTo(e.target.value)}
+                        />
+                    </div>
                 </div>
 
                 {/* Tag Filter */}
@@ -322,17 +432,42 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                                             {entry.author && <span>Por {entry.author}</span>}
                                         </div>
                                         {entry.tags?.length > 0 && (
-                                            <div className="flex flex-wrap gap-1 mt-2">
-                                                {entry.tags.map(tag => (
-                                                    <Badge key={tag} variant="outline" className="text-xs">
-                                                        <Tag className="w-3 h-3 mr-1" />
-                                                        {tag}
-                                                    </Badge>
-                                                ))}
-                                            </div>
+                                           <div className="flex flex-wrap gap-1 mt-2">
+                                               {entry.tags.map(tag => (
+                                                   <Badge key={tag} variant="outline" className="text-xs">
+                                                       <Tag className="w-3 h-3 mr-1" />
+                                                       {tag}
+                                                   </Badge>
+                                               ))}
+                                           </div>
                                         )}
-                                    </div>
-                                    <div className="flex gap-2">
+                                        {/* Feedback */}
+                                        <div className="flex items-center gap-3 mt-2 pt-2 border-t">
+                                           <button
+                                               onClick={() => handleFeedback(entry.id, true)}
+                                               className={`flex items-center gap-1 text-xs transition-colors ${
+                                                   feedbackMap[entry.id] === true
+                                                       ? 'text-green-600 font-semibold'
+                                                       : 'text-gray-500 hover:text-green-600'
+                                               }`}
+                                           >
+                                               <ThumbsUp className="w-4 h-4" />
+                                               <span>{entry.helpful_votes || 0}</span>
+                                           </button>
+                                           <button
+                                               onClick={() => handleFeedback(entry.id, false)}
+                                               className={`flex items-center gap-1 text-xs transition-colors ${
+                                                   feedbackMap[entry.id] === false
+                                                       ? 'text-red-600 font-semibold'
+                                                       : 'text-gray-500 hover:text-red-600'
+                                               }`}
+                                           >
+                                               <ThumbsDown className="w-4 h-4" />
+                                               <span>{entry.unhelpful_votes || 0}</span>
+                                           </button>
+                                        </div>
+                                        </div>
+                                        <div className="flex gap-2 flex-shrink-0">
                                         <Button
                                             variant="ghost"
                                             size="sm"
@@ -547,6 +682,32 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                             </div>
                         </>
                     )}
+                </DialogContent>
+            </Dialog>
+
+            {/* Suggestion Dialog */}
+            <Dialog open={suggestionDialogOpen} onOpenChange={setSuggestionDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{t.suggestTopicTitle}</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        <Textarea
+                            value={suggestionText}
+                            onChange={(e) => setSuggestionText(e.target.value)}
+                            placeholder={t.suggestionPlaceholder}
+                            rows={6}
+                        />
+                        <div className="flex justify-end gap-2">
+                            <Button variant="outline" onClick={() => setSuggestionDialogOpen(false)}>
+                                {t.cancel}
+                            </Button>
+                            <Button onClick={handleSuggestTopic} className="bg-[#002D62]">
+                                <MessageSquare className="w-4 h-4 mr-2" />
+                                {t.sendSuggestion}
+                            </Button>
+                        </div>
+                    </div>
                 </DialogContent>
             </Dialog>
         </Card>

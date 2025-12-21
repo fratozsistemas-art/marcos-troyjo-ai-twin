@@ -13,6 +13,7 @@ export default function Welcome() {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [selectedInterests, setSelectedInterests] = useState([]);
+    const [selectedPersona, setSelectedPersona] = useState('');
     const [lang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
     const [orderedFeatures, setOrderedFeatures] = useState([]);
     const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
@@ -100,9 +101,10 @@ Retorne um array de 6 ÍNDICES (0-5) ordenado da feature mais útil/relevante pa
         pt: {
             welcome: "Bem-vindo ao Troyjo Digital Twin",
             step1Title: "Vamos personalizar sua experiência",
-            step1Desc: "Selecione suas áreas de interesse para receber análises mais relevantes",
+            step1Desc: "Selecione suas áreas de interesse e persona preferida",
             step2Title: "Conheça os Recursos",
             step2Desc: "Explore as funcionalidades principais do Digital Twin",
+            personaTitle: "Escolha sua persona preferida",
             continue: "Continuar",
             finish: "Começar",
             skipOnboarding: "Não mostrar novamente",
@@ -151,9 +153,10 @@ Retorne um array de 6 ÍNDICES (0-5) ordenado da feature mais útil/relevante pa
         en: {
             welcome: "Welcome to Troyjo Digital Twin",
             step1Title: "Let's personalize your experience",
-            step1Desc: "Select your areas of interest to receive more relevant analyses",
+            step1Desc: "Select your areas of interest and preferred persona",
             step2Title: "Discover Features",
             step2Desc: "Explore the Digital Twin's main functionalities",
+            personaTitle: "Choose your preferred persona",
             continue: "Continue",
             finish: "Start",
             skipOnboarding: "Don't show again",
@@ -208,6 +211,13 @@ Retorne um array de 6 ÍNDICES (0-5) ordenado da feature mais útil/relevante pa
         topics: ['BRICS', 'Comércio Internacional', 'Competitividade', 'Diplomacia Econômica', 'Inteligência Artificial', 'Bioeconomia', 'Crescimento Endógeno', 'Sustentabilidade', 'Inovação Tecnológica', 'Segurança Alimentar']
     };
 
+    const personas = [
+        { id: 'diplomatico', label: lang === 'pt' ? 'Diplomático' : 'Diplomatic', desc: lang === 'pt' ? 'Formal e equilibrado' : 'Formal and balanced' },
+        { id: 'tecnico', label: lang === 'pt' ? 'Técnico' : 'Technical', desc: lang === 'pt' ? 'Detalhado e analítico' : 'Detailed and analytical' },
+        { id: 'executivo', label: lang === 'pt' ? 'Executivo' : 'Executive', desc: lang === 'pt' ? 'Direto e estratégico' : 'Direct and strategic' },
+        { id: 'educador', label: lang === 'pt' ? 'Educador' : 'Educator', desc: lang === 'pt' ? 'Didático e acessível' : 'Educational and accessible' }
+    ];
+
     const toggleInterest = (interest) => {
         setSelectedInterests(prev => 
             prev.includes(interest) 
@@ -232,6 +242,7 @@ Retorne um array de 6 ÍNDICES (0-5) ordenado da feature mais útil/relevante pa
             if (profiles.length > 0) {
                 await base44.entities.UserProfile.update(profiles[0].id, {
                     interests: interestData,
+                    preferred_persona: selectedPersona || 'diplomatico',
                     dashboard_preferences: {
                         ...profiles[0].dashboard_preferences,
                         onboarding_completed: true,
@@ -242,6 +253,7 @@ Retorne um array de 6 ÍNDICES (0-5) ordenado da feature mais útil/relevante pa
                 await base44.entities.UserProfile.create({
                     user_email: user.email,
                     interests: interestData,
+                    preferred_persona: selectedPersona || 'diplomatico',
                     dashboard_preferences: {
                         onboarding_completed: true,
                         skip_onboarding: skipOnboarding,
@@ -336,14 +348,41 @@ Retorne um array de 6 ÍNDICES (0-5) ordenado da feature mais útil/relevante pa
                                             ))}
                                         </div>
                                     </div>
-                                ))}
+                                    ))}
 
-                                <div className="flex justify-end pt-4">
+                                    {/* Persona Selection */}
+                                    <div className="pt-4 border-t">
+                                    <h3 className="text-sm font-medium text-[#333F48] mb-3">
+                                        {t.personaTitle}
+                                    </h3>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {personas.map((persona) => (
+                                            <div
+                                                key={persona.id}
+                                                onClick={() => setSelectedPersona(persona.id)}
+                                                className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                                                    selectedPersona === persona.id
+                                                        ? 'border-[#002D62] bg-[#002D62]/5'
+                                                        : 'border-gray-200 hover:border-[#002D62]/50'
+                                                }`}
+                                            >
+                                                <h4 className="font-semibold text-sm text-[#002D62]">
+                                                    {persona.label}
+                                                </h4>
+                                                <p className="text-xs text-gray-600 mt-1">
+                                                    {persona.desc}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    </div>
+
+                                    <div className="flex justify-end pt-4">
                                     <Button onClick={() => setStep(2)} className="bg-[#002D62]">
                                         {t.continue}
                                         <ArrowRight className="w-4 h-4 ml-2" />
                                     </Button>
-                                </div>
+                                    </div>
                             </div>
                         )}
 

@@ -18,45 +18,10 @@ export default function Layout({ children, currentPageName }) {
     const [checkingOnboarding, setCheckingOnboarding] = useState(true);
 
     useEffect(() => {
-        checkOnboarding();
+        setCheckingOnboarding(false);
     }, []);
 
-    const checkOnboarding = async () => {
-        // Skip check for public pages
-        const publicPages = ['Home', 'LandingPage', 'Welcome', 'PrivacyPolicy', 'TermsOfService'];
-        if (publicPages.includes(currentPageName)) {
-            setCheckingOnboarding(false);
-            return;
-        }
 
-        try {
-            const isAuth = await base44.auth.isAuthenticated();
-            if (!isAuth) {
-                setCheckingOnboarding(false);
-                return;
-            }
-
-            const user = await base44.auth.me();
-            const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
-
-            const shouldShowOnboarding = profiles.length === 0 || 
-                (!profiles[0].dashboard_preferences?.onboarding_completed && 
-                 !profiles[0].dashboard_preferences?.skip_onboarding);
-
-            if (shouldShowOnboarding) {
-                navigate(createPageUrl('Welcome'));
-                return;
-            }
-        } catch (error) {
-            console.error('Error checking onboarding:', error);
-        } finally {
-            setCheckingOnboarding(false);
-        }
-    };
-
-    if (checkingOnboarding && !['Home', 'LandingPage', 'Welcome', 'PrivacyPolicy', 'TermsOfService'].includes(currentPageName)) {
-        return null;
-    }
 
     const toggleLanguage = () => {
         const newLang = lang === 'pt' ? 'en' : 'pt';

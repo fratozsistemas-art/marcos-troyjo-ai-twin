@@ -23,6 +23,7 @@ import Website from './pages/Website';
 import StrategicIntelligenceBlog from './pages/StrategicIntelligenceBlog';
 import SystemHealth from './pages/SystemHealth';
 import KnowledgeBase from './pages/KnowledgeBase';
+import Homepage from './pages/Homepage';
 import __Layout from './Layout.jsx';
 
 
@@ -52,6 +53,7 @@ export const PAGES = {
     "StrategicIntelligenceBlog": StrategicIntelligenceBlog,
     "SystemHealth": SystemHealth,
     "KnowledgeBase": KnowledgeBase,
+    "Homepage": Homepage,
 }
 
 export const pagesConfig = {

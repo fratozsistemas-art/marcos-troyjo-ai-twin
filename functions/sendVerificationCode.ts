@@ -9,17 +9,18 @@ Deno.serve(async (req) => {
         const base44 = createClientFromRequest(req);
         const user = await base44.auth.me();
         
-        if (!user) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401 });
+        if (!user || !user.email) {
+            return Response.json({ error: 'Unauthorized or email not found' }, { status: 401 });
         }
 
+        const userEmail = user.email;
         const code = generateCode();
         const expiresAt = new Date();
         expiresAt.setMinutes(expiresAt.getMinutes() + 15);
 
         // Check existing verification
         const existing = await base44.asServiceRole.entities.EmailVerification.filter({
-            user_email: user.email
+            user_email: userEmail
         });
 
         if (existing.length > 0) {
@@ -31,7 +32,7 @@ Deno.serve(async (req) => {
             });
         } else {
             await base44.asServiceRole.entities.EmailVerification.create({
-                user_email: user.email,
+                user_email: userEmail,
                 verification_code: code,
                 expires_at: expiresAt.toISOString(),
                 verification_method: 'email_code'
@@ -40,7 +41,7 @@ Deno.serve(async (req) => {
 
         // Send email
         await base44.integrations.Core.SendEmail({
-            to: user.email,
+            to: userEmail,
             subject: 'Troyjo Digital Twin - Código de Verificação',
             body: `
                 <h2>Verificação de Email</h2>

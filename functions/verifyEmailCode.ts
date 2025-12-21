@@ -5,10 +5,11 @@ Deno.serve(async (req) => {
         const base44 = createClientFromRequest(req);
         const user = await base44.auth.me();
         
-        if (!user) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401 });
+        if (!user || !user.email) {
+            return Response.json({ error: 'Unauthorized or email not found' }, { status: 401 });
         }
 
+        const userEmail = user.email;
         const { code } = await req.json();
 
         if (!code) {
@@ -16,7 +17,7 @@ Deno.serve(async (req) => {
         }
 
         const verifications = await base44.asServiceRole.entities.EmailVerification.filter({
-            user_email: user.email
+            user_email: userEmail
         });
 
         if (verifications.length === 0) {

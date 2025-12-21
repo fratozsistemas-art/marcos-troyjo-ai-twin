@@ -17,6 +17,7 @@ import DataVisualizationDashboard from '@/components/ssot/DataVisualizationDashb
 import SSOTDocumentAnalyzer from '@/components/ssot/SSOTDocumentAnalyzer';
 import SSOTChatbot from '@/components/ssot/SSOTChatbot';
 import DataSourceManager from '@/components/ssot/DataSourceManager';
+import QuarterlyDataView from '@/components/ssot/QuarterlyDataView';
 
 const translations = {
     pt: {
@@ -221,6 +222,8 @@ export default function CorporateFactManager({ lang = 'pt' }) {
     return (
         <div className="space-y-6">
             <SyncMonitor lang={lang} />
+
+            <QuarterlyDataView lang={lang} />
 
             <DataSourceManager lang={lang} />
 

@@ -9,6 +9,7 @@ import TroyjoLogo from '@/components/branding/TroyjoLogo';
 import TrialBanner from '@/components/subscription/TrialBanner';
 import Breadcrumbs from '@/components/navigation/Breadcrumbs';
 import KeyboardShortcuts from '@/components/navigation/KeyboardShortcuts';
+import AppAssistant from '@/components/assistant/AppAssistant';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Toaster } from 'sonner';
 import { toast } from 'sonner';
@@ -138,6 +139,7 @@ export default function Layout({ children, currentPageName }) {
             </div>
             </div>
             <KeyboardShortcuts lang={lang} />
+            <AppAssistant lang={lang} />
             <Toaster position="top-right" richColors />
             </div>
     );

@@ -47,6 +47,7 @@ import UsageMeter from '@/components/subscription/UsageMeter';
 import MultiModelChat from '@/components/ai/MultiModelChat';
 import MultiModelWorkflow from '@/components/ai/MultiModelWorkflow';
 import EnhancedAIChat from '@/components/ai/EnhancedAIChat';
+import AgentPerformanceDashboard from '@/components/analytics/AgentPerformanceDashboard';
 import IntelligenceResources from '@/components/dashboard/IntelligenceResources';
 import InterviewTranscriptManager from '@/components/interviews/InterviewTranscriptManager';
 import ExternalDataFeeds from '@/components/dashboard/ExternalDataFeeds';
@@ -510,6 +511,11 @@ export default function Dashboard() {
                 {/* Multi-Modal RAG Interface */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.31 }}>
                     <MultiModalRAGInterface lang={lang} />
+                </motion.div>
+
+                {/* Agent Performance Dashboard */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.30 }}>
+                    <AgentPerformanceDashboard lang={lang} />
                 </motion.div>
 
                 {/* Enhanced AI Chat with History & Metrics */}

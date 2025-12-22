@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, Search, FileText, BookOpen, Mic, FileSpreadsheet, FileCheck, File, Trash2, Download, Edit2, Loader2, X, Plus, Calendar, User, Tag, Eye } from 'lucide-react';
+import { Upload, Search, FileText, BookOpen, Mic, FileSpreadsheet, FileCheck, File, Trash2, Download, Edit2, Loader2, X, Plus, Calendar, User, Tag, Eye, Sparkles, Folder, FolderPlus, Filter } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -29,7 +29,21 @@ export default function DocumentLibrary({ lang = 'pt' }) {
         description: '',
         publication_date: '',
         tags: '',
-        keywords: ''
+        keywords: '',
+        collection: ''
+    });
+    const [createMode, setCreateMode] = useState('upload');
+    const [aiDocTopic, setAiDocTopic] = useState('');
+    const [collections, setCollections] = useState([]);
+    const [selectedCollection, setSelectedCollection] = useState('all');
+    const [newCollection, setNewCollection] = useState('');
+    const [advancedSearchOpen, setAdvancedSearchOpen] = useState(false);
+    const [searchFilters, setSearchFilters] = useState({
+        query: '',
+        author: '',
+        dateFrom: '',
+        dateTo: '',
+        tags: []
     });
 
     const t = {
@@ -68,7 +82,22 @@ export default function DocumentLibrary({ lang = 'pt' }) {
             fileSize: 'Tamanho',
             uploadDate: 'Data de Upload',
             lastUsed: 'Último Uso',
-            usageCount: 'Vezes Usado'
+            usageCount: 'Vezes Usado',
+            createManual: 'Criar Manualmente',
+            createWithAI: 'Criar com IA',
+            aiTopic: 'Tema do Documento',
+            collections: 'Coleções',
+            addCollection: 'Nova Coleção',
+            collectionName: 'Nome da Coleção',
+            moveToCollection: 'Mover para Coleção',
+            advancedSearch: 'Busca Avançada',
+            searchInContent: 'Buscar no conteúdo RAG',
+            authorFilter: 'Autor',
+            dateRange: 'Período',
+            tagsFilter: 'Filtrar por Tags',
+            noResults: 'Nenhum resultado encontrado',
+            searching: 'Buscando...',
+            generateDoc: 'Gerar Documento'
         },
         en: {
             title: 'Document Library',
@@ -105,7 +134,22 @@ export default function DocumentLibrary({ lang = 'pt' }) {
             fileSize: 'File Size',
             uploadDate: 'Upload Date',
             lastUsed: 'Last Used',
-            usageCount: 'Times Used'
+            usageCount: 'Times Used',
+            createManual: 'Create Manually',
+            createWithAI: 'Create with AI',
+            aiTopic: 'Document Topic',
+            collections: 'Collections',
+            addCollection: 'New Collection',
+            collectionName: 'Collection Name',
+            moveToCollection: 'Move to Collection',
+            advancedSearch: 'Advanced Search',
+            searchInContent: 'Search in RAG content',
+            authorFilter: 'Author',
+            dateRange: 'Date Range',
+            tagsFilter: 'Filter by Tags',
+            noResults: 'No results found',
+            searching: 'Searching...',
+            generateDoc: 'Generate Document'
         }
     }[lang];
 
@@ -122,7 +166,20 @@ export default function DocumentLibrary({ lang = 'pt' }) {
 
     useEffect(() => {
         loadDocuments();
+        loadCollections();
     }, []);
+
+    const loadCollections = async () => {
+        try {
+            const docs = await base44.entities.Document.list();
+            const uniqueCollections = [...new Set(docs
+                .map(d => d.metadata?.collection)
+                .filter(c => c))];
+            setCollections(uniqueCollections);
+        } catch (error) {
+            console.error('Error loading collections:', error);
+        }
+    };
 
     const loadDocuments = async () => {
         setLoading(true);
@@ -138,6 +195,69 @@ export default function DocumentLibrary({ lang = 'pt' }) {
 
     const handleUpload = async (e) => {
         e.preventDefault();
+        
+        if (createMode === 'ai') {
+            if (!aiDocTopic.trim()) {
+                toast.error(lang === 'pt' ? 'Digite um tema' : 'Enter a topic');
+                return;
+            }
+            
+            setLoading(true);
+            try {
+                const response = await base44.functions.invoke('aiContentAssistant', {
+                    action: 'complete_article',
+                    topic: aiDocTopic,
+                    category: uploadData.category,
+                    target_length: 'long'
+                });
+
+                const content = response.data.body || '';
+                const blob = new Blob([content], { type: 'text/markdown' });
+                const file = new File([blob], `${response.data.title}.md`, { type: 'text/markdown' });
+                
+                const { file_url } = await base44.integrations.Core.UploadFile({ file });
+
+                await base44.entities.Document.create({
+                    title: response.data.title,
+                    author: response.data.author || uploadData.author,
+                    category: uploadData.category,
+                    description: response.data.summary,
+                    publication_date: new Date().toISOString().split('T')[0],
+                    tags: response.data.tags || [],
+                    keywords: response.data.keywords || [],
+                    file_url,
+                    file_type: 'md',
+                    file_size: blob.size,
+                    metadata: {
+                        ai_generated: true,
+                        collection: uploadData.collection || null
+                    }
+                });
+
+                setUploadOpen(false);
+                setAiDocTopic('');
+                setUploadData({
+                    title: '',
+                    author: '',
+                    category: 'other',
+                    description: '',
+                    publication_date: '',
+                    tags: '',
+                    keywords: '',
+                    collection: ''
+                });
+                await loadDocuments();
+                await loadCollections();
+                toast.success(t.uploadSuccess);
+            } catch (error) {
+                console.error('Error creating AI doc:', error);
+                toast.error('Error creating document');
+            } finally {
+                setLoading(false);
+            }
+            return;
+        }
+
         const fileInput = document.getElementById('doc-file-input');
         const file = fileInput?.files?.[0];
 
@@ -163,7 +283,10 @@ export default function DocumentLibrary({ lang = 'pt' }) {
                 keywords,
                 file_url,
                 file_type: file.name.split('.').pop().toLowerCase(),
-                file_size: file.size
+                file_size: file.size,
+                metadata: {
+                    collection: uploadData.collection || null
+                }
             });
 
             setUploadOpen(false);
@@ -174,13 +297,55 @@ export default function DocumentLibrary({ lang = 'pt' }) {
                 description: '',
                 publication_date: '',
                 tags: '',
-                keywords: ''
+                keywords: '',
+                collection: ''
             });
             await loadDocuments();
+            await loadCollections();
             toast.success(t.uploadSuccess);
         } catch (error) {
             console.error('Error uploading:', error);
             toast.error('Error uploading document');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleAddCollection = () => {
+        if (newCollection.trim() && !collections.includes(newCollection.trim())) {
+            setCollections([...collections, newCollection.trim()]);
+            setUploadData({...uploadData, collection: newCollection.trim()});
+            setNewCollection('');
+            toast.success(lang === 'pt' ? 'Coleção criada!' : 'Collection created!');
+        }
+    };
+
+    const handleAdvancedSearch = async () => {
+        if (!searchFilters.query.trim()) {
+            toast.error(lang === 'pt' ? 'Digite uma consulta' : 'Enter a query');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const response = await base44.functions.invoke('searchDocumentsRAG', {
+                query: searchFilters.query,
+                top_k: 10
+            });
+
+            if (response.data?.results) {
+                const docIds = [...new Set(response.data.results.map(r => r.document_id))];
+                const matchedDocs = documents.filter(d => docIds.includes(d.id));
+                
+                toast.success(
+                    lang === 'pt' 
+                        ? `${matchedDocs.length} documento(s) encontrado(s)` 
+                        : `${matchedDocs.length} document(s) found`
+                );
+            }
+        } catch (error) {
+            console.error('Error searching:', error);
+            toast.error(lang === 'pt' ? 'Erro na busca' : 'Search error');
         } finally {
             setLoading(false);
         }
@@ -205,7 +370,8 @@ export default function DocumentLibrary({ lang = 'pt' }) {
                 description: selectedDoc.description,
                 publication_date: selectedDoc.publication_date,
                 tags,
-                keywords
+                keywords,
+                metadata: selectedDoc.metadata
             });
 
             setEditOpen(false);
@@ -239,8 +405,12 @@ export default function DocumentLibrary({ lang = 'pt' }) {
             doc.keywords?.some(kw => kw.toLowerCase().includes(searchQuery.toLowerCase()));
 
         const matchesCategory = categoryFilter === 'all' || doc.category === categoryFilter;
+        
+        const matchesCollection = selectedCollection === 'all' || 
+            doc.metadata?.collection === selectedCollection ||
+            (!doc.metadata?.collection && selectedCollection === 'uncategorized');
 
-        return matchesSearch && matchesCategory;
+        return matchesSearch && matchesCategory && matchesCollection;
     });
 
     const formatFileSize = (bytes) => {
@@ -251,7 +421,7 @@ export default function DocumentLibrary({ lang = 'pt' }) {
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
                 <div className="flex-1 max-w-md relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
@@ -261,10 +431,42 @@ export default function DocumentLibrary({ lang = 'pt' }) {
                         className="pl-10"
                     />
                 </div>
-                <Button onClick={() => setUploadOpen(true)} className="bg-[#002D62] gap-2">
-                    <Upload className="w-4 h-4" />
-                    {t.upload}
-                </Button>
+                <div className="flex gap-2">
+                    <Button 
+                        variant="outline" 
+                        onClick={() => setAdvancedSearchOpen(true)}
+                    >
+                        <Filter className="w-4 h-4 mr-2" />
+                        {t.advancedSearch}
+                    </Button>
+                    <Button onClick={() => setUploadOpen(true)} className="bg-[#002D62] gap-2">
+                        <Plus className="w-4 h-4" />
+                        {lang === 'pt' ? 'Criar Documento' : 'Create Document'}
+                    </Button>
+                </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+                <Label>{t.collections}:</Label>
+                <Select value={selectedCollection} onValueChange={setSelectedCollection}>
+                    <SelectTrigger className="w-48">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">{t.all}</SelectItem>
+                        <SelectItem value="uncategorized">
+                            {lang === 'pt' ? 'Sem Coleção' : 'Uncategorized'}
+                        </SelectItem>
+                        {collections.map(col => (
+                            <SelectItem key={col} value={col}>
+                                <div className="flex items-center gap-2">
+                                    <Folder className="w-3 h-3" />
+                                    {col}
+                                </div>
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
 
             <Tabs value={categoryFilter} onValueChange={setCategoryFilter}>
@@ -323,6 +525,12 @@ export default function DocumentLibrary({ lang = 'pt' }) {
                                             </div>
                                         </CardHeader>
                                         <CardContent className="space-y-3">
+                                            {doc.metadata?.collection && (
+                                                <div className="flex items-center gap-2 text-xs text-purple-700">
+                                                    <Folder className="w-3 h-3" />
+                                                    <span className="truncate font-medium">{doc.metadata.collection}</span>
+                                                </div>
+                                            )}
                                             {doc.author && (
                                                 <div className="flex items-center gap-2 text-xs text-gray-600">
                                                     <User className="w-3 h-3" />
@@ -348,6 +556,12 @@ export default function DocumentLibrary({ lang = 'pt' }) {
                                                         </Badge>
                                                     ))}
                                                 </div>
+                                            )}
+                                            {doc.metadata?.ai_generated && (
+                                                <Badge className="bg-purple-100 text-purple-800 text-xs">
+                                                    <Sparkles className="w-3 h-3 mr-1" />
+                                                    IA
+                                                </Badge>
                                             )}
                                             <div className="flex gap-2 pt-2">
                                                 <Button
@@ -401,13 +615,124 @@ export default function DocumentLibrary({ lang = 'pt' }) {
                 </div>
             )}
 
-            {/* Upload Dialog */}
+            {/* Create/Upload Dialog */}
             <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>{t.upload}</DialogTitle>
+                        <DialogTitle>
+                            {lang === 'pt' ? 'Criar/Importar Documento' : 'Create/Import Document'}
+                        </DialogTitle>
                     </DialogHeader>
-                    <form onSubmit={handleUpload} className="space-y-4">
+                    
+                    <Tabs value={createMode} onValueChange={setCreateMode}>
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="upload">
+                                <Upload className="w-4 h-4 mr-2" />
+                                {t.createManual}
+                            </TabsTrigger>
+                            <TabsTrigger value="ai">
+                                <Sparkles className="w-4 h-4 mr-2" />
+                                {t.createWithAI}
+                            </TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent value="ai" className="space-y-4 mt-4">
+                            <div>
+                                <Label>{t.aiTopic}</Label>
+                                <Input
+                                    value={aiDocTopic}
+                                    onChange={(e) => setAiDocTopic(e.target.value)}
+                                    placeholder={lang === 'pt' ? 'Ex: Impacto da guerra comercial EUA-China' : 'Ex: Impact of US-China trade war'}
+                                />
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <Label>{t.categoryLabel}</Label>
+                                    <Select
+                                        value={uploadData.category}
+                                        onValueChange={(value) => setUploadData({...uploadData, category: value})}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {Object.keys(categoryIcons).map(cat => (
+                                                <SelectItem key={cat} value={cat}>{t[cat]}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div>
+                                    <Label>{t.authorLabel}</Label>
+                                    <Input
+                                        value={uploadData.author}
+                                        onChange={(e) => setUploadData({...uploadData, author: e.target.value})}
+                                        placeholder="Marcos Troyjo"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <Label>{t.moveToCollection}</Label>
+                                <div className="flex gap-2">
+                                    <Select
+                                        value={uploadData.collection}
+                                        onValueChange={(value) => setUploadData({...uploadData, collection: value})}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder={lang === 'pt' ? 'Selecione ou crie' : 'Select or create'} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value={null}>{lang === 'pt' ? 'Nenhuma' : 'None'}</SelectItem>
+                                            {collections.map(col => (
+                                                <SelectItem key={col} value={col}>{col}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                            const name = prompt(t.collectionName);
+                                            if (name?.trim()) {
+                                                setCollections([...collections, name.trim()]);
+                                                setUploadData({...uploadData, collection: name.trim()});
+                                            }
+                                        }}
+                                    >
+                                        <FolderPlus className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                <p className="text-xs text-blue-900">
+                                    {lang === 'pt'
+                                        ? '🤖 A IA criará um documento completo em Markdown com base no tema fornecido'
+                                        : '🤖 AI will create a complete Markdown document based on the provided topic'}
+                                </p>
+                            </div>
+                            <div className="flex gap-2 justify-end">
+                                <Button type="button" variant="outline" onClick={() => setUploadOpen(false)}>
+                                    {t.cancel}
+                                </Button>
+                                <Button 
+                                    type="button"
+                                    onClick={handleUpload} 
+                                    disabled={loading}
+                                    className="bg-purple-600 hover:bg-purple-700"
+                                >
+                                    {loading ? (
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    ) : (
+                                        <Sparkles className="w-4 h-4 mr-2" />
+                                    )}
+                                    {t.generateDoc}
+                                </Button>
+                            </div>
+                        </TabsContent>
+
+                        <TabsContent value="upload" className="space-y-4 mt-4">
+                            <form onSubmit={handleUpload} className="space-y-4">
                         <div className="grid md:grid-cols-2 gap-4">
                             <div>
                                 <Label>{t.titleLabel} *</Label>
@@ -477,24 +802,139 @@ export default function DocumentLibrary({ lang = 'pt' }) {
                                 />
                             </div>
                         </div>
+                                <div>
+                                    <Label>{t.moveToCollection}</Label>
+                                    <div className="flex gap-2">
+                                        <Select
+                                            value={uploadData.collection}
+                                            onValueChange={(value) => setUploadData({...uploadData, collection: value})}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder={lang === 'pt' ? 'Selecione ou crie' : 'Select or create'} />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value={null}>{lang === 'pt' ? 'Nenhuma' : 'None'}</SelectItem>
+                                                {collections.map(col => (
+                                                    <SelectItem key={col} value={col}>{col}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => {
+                                                const name = prompt(t.collectionName);
+                                                if (name?.trim()) {
+                                                    setCollections([...collections, name.trim()]);
+                                                    setUploadData({...uploadData, collection: name.trim()});
+                                                }
+                                            }}
+                                        >
+                                            <FolderPlus className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <Label>{t.selectFile} *</Label>
+                                    <Input
+                                        id="doc-file-input"
+                                        type="file"
+                                        required
+                                        accept=".pdf,.doc,.docx,.txt,.csv,.md"
+                                    />
+                                </div>
+                                <div className="flex gap-2 justify-end">
+                                    <Button type="button" variant="outline" onClick={() => setUploadOpen(false)}>
+                                        {t.cancel}
+                                    </Button>
+                                    <Button type="submit" disabled={loading} className="bg-[#002D62]">
+                                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t.uploadBtn}
+                                    </Button>
+                                </div>
+                            </form>
+                        </TabsContent>
+                    </Tabs>
+                </DialogContent>
+            </Dialog>
+
+            {/* Advanced Search Dialog */}
+            <Dialog open={advancedSearchOpen} onOpenChange={setAdvancedSearchOpen}>
+                <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle>{t.advancedSearch}</DialogTitle>
+                        <DialogDescription>{t.searchInContent}</DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
                         <div>
-                            <Label>{t.selectFile} *</Label>
-                            <Input
-                                id="doc-file-input"
-                                type="file"
-                                required
-                                accept=".pdf,.doc,.docx,.txt,.csv"
+                            <Label>{lang === 'pt' ? 'Consulta Semântica' : 'Semantic Query'}</Label>
+                            <Textarea
+                                value={searchFilters.query}
+                                onChange={(e) => setSearchFilters({...searchFilters, query: e.target.value})}
+                                placeholder={lang === 'pt' 
+                                    ? 'Ex: Qual a posição de Troyjo sobre desglobalização?'
+                                    : 'Ex: What is Troyjo\'s position on deglobalization?'}
+                                rows={3}
                             />
                         </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <Label>{t.authorFilter}</Label>
+                                <Input
+                                    value={searchFilters.author}
+                                    onChange={(e) => setSearchFilters({...searchFilters, author: e.target.value})}
+                                />
+                            </div>
+                            <div>
+                                <Label>{t.categoryLabel}</Label>
+                                <Select
+                                    value={categoryFilter}
+                                    onValueChange={setCategoryFilter}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">{t.all}</SelectItem>
+                                        {Object.keys(categoryIcons).map(cat => (
+                                            <SelectItem key={cat} value={cat}>{t[cat]}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <Label>{lang === 'pt' ? 'Data Inicial' : 'From Date'}</Label>
+                                <Input
+                                    type="date"
+                                    value={searchFilters.dateFrom}
+                                    onChange={(e) => setSearchFilters({...searchFilters, dateFrom: e.target.value})}
+                                />
+                            </div>
+                            <div>
+                                <Label>{lang === 'pt' ? 'Data Final' : 'To Date'}</Label>
+                                <Input
+                                    type="date"
+                                    value={searchFilters.dateTo}
+                                    onChange={(e) => setSearchFilters({...searchFilters, dateTo: e.target.value})}
+                                />
+                            </div>
+                        </div>
                         <div className="flex gap-2 justify-end">
-                            <Button type="button" variant="outline" onClick={() => setUploadOpen(false)}>
+                            <Button variant="outline" onClick={() => setAdvancedSearchOpen(false)}>
                                 {t.cancel}
                             </Button>
-                            <Button type="submit" disabled={loading} className="bg-[#002D62]">
-                                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t.uploadBtn}
+                            <Button onClick={handleAdvancedSearch} disabled={loading}>
+                                {loading ? (
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                ) : (
+                                    <Search className="w-4 h-4 mr-2" />
+                                )}
+                                {lang === 'pt' ? 'Buscar' : 'Search'}
                             </Button>
                         </div>
-                    </form>
+                    </div>
                 </DialogContent>
             </Dialog>
 
@@ -571,6 +1011,26 @@ export default function DocumentLibrary({ lang = 'pt' }) {
                                         onChange={(e) => setSelectedDoc({...selectedDoc, keywords: e.target.value})}
                                     />
                                 </div>
+                            </div>
+                            <div>
+                                <Label>{t.moveToCollection}</Label>
+                                <Select
+                                    value={selectedDoc.metadata?.collection || ''}
+                                    onValueChange={(value) => setSelectedDoc({
+                                        ...selectedDoc,
+                                        metadata: { ...selectedDoc.metadata, collection: value || null }
+                                    })}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value={null}>{lang === 'pt' ? 'Nenhuma' : 'None'}</SelectItem>
+                                        {collections.map(col => (
+                                            <SelectItem key={col} value={col}>{col}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
                             <div className="flex gap-2 justify-end">
                                 <Button variant="outline" onClick={() => setEditOpen(false)}>

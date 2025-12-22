@@ -45,7 +45,7 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
         summary: '',
         body: '',
         tags: [],
-        category: 'outro',
+        category: 'artigo',
         source_url: '',
         author: '',
         keywords: []
@@ -55,8 +55,8 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
 
     const t = {
         pt: {
-            title: 'Base de Conhecimento',
-            desc: 'Gerencie entradas da base de conhecimento',
+            title: 'Hub de Conhecimento Automatizado',
+            desc: 'Deliverables gerados por IA: artigos, discursos, entrevistas e análises sujeitas a revisão',
             addEntry: 'Adicionar Entrada',
             editEntry: 'Editar Entrada',
             search: 'Buscar por título, resumo ou palavras-chave...',
@@ -97,8 +97,11 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
             bulkAddTags: 'Adicionar Tags',
             bulkChangeCategory: 'Mudar Categoria',
             bulkChangeStatus: 'Mudar Status',
-            uploadFiles: 'Importar Arquivos',
-            uploadFilesDesc: 'Faça upload de PDFs, DOCX ou TXT para importar como conhecimento',
+            createArticle: 'Criar Deliverable',
+            aiGenerated: 'Gerado por IA',
+            humanVerified: 'Verificado por Humano',
+            statusLabel: 'Status',
+            statusDesc: 'Status de revisão do conteúdo',
             processing: 'Processando...',
             aiAssist: 'Assistente IA',
             generateDraft: 'Gerar Rascunho',
@@ -115,18 +118,21 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
             applyDraft: 'Aplicar Rascunho',
             selectTitle: 'Selecionar',
             categories: {
-                discurso: 'Discurso',
                 artigo: 'Artigo',
+                discurso: 'Discurso',
                 entrevista: 'Entrevista',
-                conceito: 'Conceito',
                 analise: 'Análise',
-                nota: 'Nota',
-                outro: 'Outro'
+                conceito: 'Conceito',
+                tutorial: 'Tutorial',
+                guia: 'Guia',
+                faq: 'FAQ',
+                referencia: 'Referência',
+                troubleshooting: 'Troubleshooting'
             }
         },
         en: {
-            title: 'Knowledge Base',
-            desc: 'Manage knowledge base entries',
+            title: 'Automated Knowledge Hub',
+            desc: 'AI-generated deliverables: articles, speeches, interviews and analyses subject to review',
             addEntry: 'Add Entry',
             editEntry: 'Edit Entry',
             search: 'Search by title, summary or keywords...',
@@ -167,8 +173,11 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
             bulkAddTags: 'Add Tags',
             bulkChangeCategory: 'Change Category',
             bulkChangeStatus: 'Change Status',
-            uploadFiles: 'Import Files',
-            uploadFilesDesc: 'Upload PDFs, DOCX or TXT to import as knowledge',
+            createArticle: 'Create Deliverable',
+            aiGenerated: 'AI Generated',
+            humanVerified: 'Human Verified',
+            statusLabel: 'Status',
+            statusDesc: 'Content review status',
             processing: 'Processing...',
             aiAssist: 'AI Assistant',
             generateDraft: 'Generate Draft',
@@ -185,13 +194,16 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
             applyDraft: 'Apply Draft',
             selectTitle: 'Select',
             categories: {
-                discurso: 'Speech',
                 artigo: 'Article',
+                discurso: 'Speech',
                 entrevista: 'Interview',
-                conceito: 'Concept',
                 analise: 'Analysis',
-                nota: 'Note',
-                outro: 'Other'
+                conceito: 'Concept',
+                tutorial: 'Tutorial',
+                guia: 'Guide',
+                faq: 'FAQ',
+                referencia: 'Reference',
+                troubleshooting: 'Troubleshooting'
             }
         }
     }[lang];
@@ -254,7 +266,7 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                 summary: '',
                 body: '',
                 tags: [],
-                category: 'outro',
+                category: 'artigo',
                 source_url: '',
                 author: '',
                 keywords: []
@@ -578,36 +590,10 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                         <CardTitle className="text-[#002D62]">{t.title}</CardTitle>
                         <CardDescription>{t.desc}</CardDescription>
                     </div>
-                    <div className="flex gap-2">
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            multiple
-                            accept=".pdf,.docx,.txt"
-                            className="hidden"
-                            onChange={handleFileUpload}
-                        />
-                        <Button 
-                            onClick={() => fileInputRef.current?.click()} 
-                            variant="outline"
-                            disabled={uploadingFiles}
-                        >
-                            {uploadingFiles ? (
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            ) : (
-                                <Upload className="w-4 h-4 mr-2" />
-                            )}
-                            {t.uploadFiles}
-                        </Button>
-                        <Button onClick={() => setSuggestionDialogOpen(true)} variant="outline">
-                            <MessageSquare className="w-4 h-4 mr-2" />
-                            {t.suggestTopic}
-                        </Button>
-                        <Button onClick={() => openDialog()} className="bg-[#002D62]">
-                            <Plus className="w-4 h-4 mr-2" />
-                            {t.addEntry}
-                        </Button>
-                    </div>
+                    <Button onClick={() => openDialog()} className="bg-[#002D62]">
+                        <Plus className="w-4 h-4 mr-2" />
+                        {t.createArticle}
+                    </Button>
                 </div>
                 {selectedEntries.length > 0 && (
                     <div className="flex items-center gap-2 mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -724,6 +710,15 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                                         <div className="flex items-center gap-2 mb-2">
                                             <h3 className="font-semibold text-[#333F48]">{entry.title}</h3>
                                             <Badge variant="secondary">{t.categories[entry.category]}</Badge>
+                                            {entry.status && (
+                                                <Badge className={
+                                                    entry.status === 'publicado' ? 'bg-green-100 text-green-800' :
+                                                    entry.status === 'revisao' ? 'bg-amber-100 text-amber-800' :
+                                                    'bg-gray-100 text-gray-800'
+                                                }>
+                                                    {entry.status}
+                                                </Badge>
+                                            )}
                                         </div>
                                         <p className="text-sm text-gray-600 mb-2">{entry.summary}</p>
                                         <div className="flex items-center gap-4 text-xs text-gray-500">
@@ -912,7 +907,7 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                                 </div>
                             )}
                         </div>
-                        <div className="grid md:grid-cols-2 gap-4">
+                        <div className="grid md:grid-cols-3 gap-4">
                             <div>
                                 <Label>{t.dateLabel}</Label>
                                 <Input
@@ -931,6 +926,31 @@ export default function KnowledgeBaseManager({ lang = 'pt' }) {
                                         {Object.keys(t.categories).map(cat => (
                                             <SelectItem key={cat} value={cat}>{t.categories[cat]}</SelectItem>
                                         ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div>
+                                <Label>{t.statusLabel}</Label>
+                                <Select 
+                                    value={formData.status || 'rascunho'} 
+                                    onValueChange={(val) => setFormData({ ...formData, status: val })}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="rascunho">
+                                            {lang === 'pt' ? 'Rascunho' : 'Draft'}
+                                        </SelectItem>
+                                        <SelectItem value="revisao">
+                                            {lang === 'pt' ? 'Em Revisão' : 'In Review'}
+                                        </SelectItem>
+                                        <SelectItem value="publicado">
+                                            {lang === 'pt' ? 'Publicado' : 'Published'}
+                                        </SelectItem>
+                                        <SelectItem value="arquivado">
+                                            {lang === 'pt' ? 'Arquivado' : 'Archived'}
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>

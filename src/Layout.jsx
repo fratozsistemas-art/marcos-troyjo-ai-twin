@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Globe } from 'lucide-react';
+import { Menu, X, Globe, Moon, Sun, Sparkles } from 'lucide-react';
 import NavigationMenu from '@/components/navigation/NavigationMenu';
 import TroyjoLogo from '@/components/branding/TroyjoLogo';
 import TrialBanner from '@/components/subscription/TrialBanner';
@@ -20,11 +20,22 @@ export default function Layout({ children, currentPageName }) {
     const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
+    const [darkMode, setDarkMode] = useState(() => localStorage.getItem('troyjo_theme') === 'dark');
     const [checkingOnboarding, setCheckingOnboarding] = useState(true);
 
     useEffect(() => {
         setCheckingOnboarding(false);
     }, []);
+
+    useEffect(() => {
+        if (darkMode) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('troyjo_theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('troyjo_theme', 'light');
+        }
+    }, [darkMode]);
 
 
 
@@ -36,7 +47,7 @@ export default function Layout({ children, currentPageName }) {
     };
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA] flex flex-col">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex flex-col transition-colors duration-300">
             <TrialBanner />
             <div className="flex flex-1">
             {/* Mobile Overlay */}
@@ -59,20 +70,25 @@ export default function Layout({ children, currentPageName }) {
                         initial={{ x: -280 }}
                         animate={{ x: 0 }}
                         exit={{ x: -280 }}
-                        transition={{ type: 'tween', duration: 0.2 }}
-                        className="fixed left-0 top-0 bottom-0 w-70 bg-white border-r border-gray-200 z-50 lg:hidden"
+                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                        className="fixed left-0 top-0 bottom-0 w-70 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 z-50 lg:hidden shadow-2xl"
                     >
-                        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#002D62] to-[#00654A] flex items-center justify-center">
-                                    <span className="text-white font-semibold text-xs">MT</span>
-                                </div>
-                                <span className="font-semibold text-[#002D62]">Troyjo Twin</span>
+                        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-[#002D62] to-[#00654A] dark:from-gray-800 dark:to-gray-900">
+                            <div className="flex items-center gap-3">
+                                <motion.div 
+                                    className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg"
+                                    whileHover={{ scale: 1.05, rotate: 5 }}
+                                    transition={{ type: 'spring', stiffness: 400 }}
+                                >
+                                    <Sparkles className="w-5 h-5 text-white" />
+                                </motion.div>
+                                <span className="font-bold text-white text-lg">Troyjo Twin</span>
                             </div>
                             <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => setSidebarOpen(false)}
+                                className="text-white hover:bg-white/20"
                             >
                                 <X className="w-5 h-5" />
                             </Button>
@@ -83,12 +99,23 @@ export default function Layout({ children, currentPageName }) {
             </AnimatePresence>
 
             {/* Desktop Sidebar */}
-            <aside className="hidden lg:block w-70 bg-white border-r border-gray-200 flex-shrink-0">
+            <aside className="hidden lg:block w-70 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex-shrink-0 shadow-lg">
                 <div className="sticky top-0">
-                    <div className="flex items-center gap-2 p-4 border-b border-gray-200">
-                        <TroyjoLogo size={32} />
-                        <span className="font-semibold text-[#002D62]">Troyjo Twin</span>
-                    </div>
+                    <motion.div 
+                        className="flex items-center gap-3 p-5 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-[#002D62] to-[#00654A] dark:from-gray-800 dark:to-gray-900"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <motion.div 
+                            className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg"
+                            whileHover={{ scale: 1.1, rotate: 5 }}
+                            transition={{ type: 'spring', stiffness: 400 }}
+                        >
+                            <Sparkles className="w-5 h-5 text-white" />
+                        </motion.div>
+                        <span className="font-bold text-white text-lg">Troyjo Twin</span>
+                    </motion.div>
                     <NavigationMenu lang={lang} />
                 </div>
             </aside>
@@ -96,50 +123,135 @@ export default function Layout({ children, currentPageName }) {
             {/* Main Content */}
             <div className="flex-1 flex flex-col min-w-0">
                 {/* Top Bar */}
-                <header className="sticky top-0 z-30 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between lg:justify-end">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setSidebarOpen(true)}
-                        className="lg:hidden"
-                    >
-                        <Menu className="w-5 h-5" />
-                    </Button>
-
-                    <div className="flex items-center gap-2">
-                        <NotificationCenter lang={lang} />
-                        <button
-                            onClick={toggleLanguage}
-                            className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors text-sm font-medium text-[#333F48]"
+                <motion.header 
+                    className="sticky top-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 shadow-sm"
+                    initial={{ y: -100 }}
+                    animate={{ y: 0 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                >
+                    <div className="px-6 py-4 flex items-center justify-between lg:justify-end">
+                        <motion.div
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                         >
-                            <Globe className="w-4 h-4" />
-                            {lang === 'pt' ? 'EN' : 'PT'}
-                        </button>
-                    </div>
-                </header>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setSidebarOpen(true)}
+                                className="lg:hidden hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl"
+                            >
+                                <Menu className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                            </Button>
+                        </motion.div>
 
-                {/* Beta Watermark */}
-                                <div className="fixed top-20 right-4 z-50 pointer-events-none">
+                        <div className="flex items-center gap-3">
+                            <NotificationCenter lang={lang} />
+
+                            <motion.button
+                                onClick={() => setDarkMode(!darkMode)}
+                                className="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                <AnimatePresence mode="wait">
+                                    {darkMode ? (
+                                        <motion.div
+                                            key="sun"
+                                            initial={{ rotate: -90, opacity: 0 }}
+                                            animate={{ rotate: 0, opacity: 1 }}
+                                            exit={{ rotate: 90, opacity: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                        >
+                                            <Sun className="w-5 h-5 text-amber-500" />
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div
+                                            key="moon"
+                                            initial={{ rotate: 90, opacity: 0 }}
+                                            animate={{ rotate: 0, opacity: 1 }}
+                                            exit={{ rotate: -90, opacity: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                        >
+                                            <Moon className="w-5 h-5 text-indigo-600" />
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </motion.button>
+
+                            <motion.button
+                                onClick={toggleLanguage}
+                                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                <Globe className="w-4 h-4" />
+                                {lang === 'pt' ? 'EN' : 'PT'}
+                            </motion.button>
+                        </div>
+                    </div>
+                </motion.header>
+
+                {/* Beta Badge */}
+                                <motion.div 
+                                    className="fixed top-24 right-6 z-50 pointer-events-none"
+                                    initial={{ opacity: 0, scale: 0.8, x: 50 }}
+                                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                                    transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
+                                >
                                     <div className="relative">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-lg blur-sm opacity-75"></div>
-                                        <div className="relative bg-white rounded-lg px-3 py-1.5 border-2 border-transparent" style={{
-                                            backgroundImage: 'linear-gradient(white, white), linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)',
+                                        <motion.div 
+                                            className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-2xl blur-md opacity-75"
+                                            animate={{ 
+                                                scale: [1, 1.1, 1],
+                                                opacity: [0.75, 0.9, 0.75]
+                                            }}
+                                            transition={{ 
+                                                duration: 3,
+                                                repeat: Infinity,
+                                                ease: "easeInOut"
+                                            }}
+                                        />
+                                        <div className="relative bg-white dark:bg-gray-900 rounded-2xl px-4 py-2 border-2 border-transparent shadow-xl" style={{
+                                            backgroundImage: darkMode 
+                                                ? 'linear-gradient(rgba(17, 24, 39, 1), rgba(17, 24, 39, 1)), linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)'
+                                                : 'linear-gradient(white, white), linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)',
                                             backgroundOrigin: 'border-box',
                                             backgroundClip: 'padding-box, border-box'
                                         }}>
-                                            <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-sm tracking-wider">
+                                            <motion.span 
+                                                className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-sm tracking-wider flex items-center gap-1"
+                                                animate={{ 
+                                                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                                                }}
+                                                transition={{ 
+                                                    duration: 5,
+                                                    repeat: Infinity
+                                                }}
+                                            >
+                                                <Sparkles className="w-3 h-3" />
                                                 BETA
-                                            </span>
+                                            </motion.span>
                                         </div>
                                     </div>
-                                </div>
+                                </motion.div>
 
                                 {/* Page Content */}
                                 <main className="flex-1">
-                                    <div className="max-w-7xl mx-auto px-4 md:px-6 py-4">
+                                    <motion.div 
+                                        className="max-w-7xl mx-auto px-4 md:px-6 py-4"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.5 }}
+                                    >
                                         <Breadcrumbs lang={lang} />
-                                    </div>
-                                    {children}
+                                    </motion.div>
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        {children}
+                                    </motion.div>
                                 </main>
             </div>
             </div>

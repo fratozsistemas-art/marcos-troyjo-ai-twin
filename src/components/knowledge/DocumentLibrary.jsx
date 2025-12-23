@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Upload, Search, FileText, BookOpen, Mic, FileSpreadsheet, FileCheck, File, Trash2, Download, Edit2, Loader2, X, Plus, Calendar, User, Tag, Eye, Sparkles, Folder, FolderPlus, Filter } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import DocumentAnalyzer from '@/components/documents/DocumentAnalyzer';
 
 export default function DocumentLibrary({ lang = 'pt' }) {
     const [documents, setDocuments] = useState([]);
@@ -564,6 +565,11 @@ export default function DocumentLibrary({ lang = 'pt' }) {
                                                 </Badge>
                                             )}
                                             <div className="flex gap-2 pt-2">
+                                                <DocumentAnalyzer 
+                                                    document={doc} 
+                                                    onAnalysisComplete={() => loadDocuments()}
+                                                    lang={lang}
+                                                />
                                                 <Button
                                                     variant="outline"
                                                     size="sm"

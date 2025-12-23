@@ -122,36 +122,36 @@ export default function Website() {
         { 
             title: 'Tecnologia e Diplomacia', 
             year: '2003', 
-            description: 'Análise sobre o papel da tecnologia nas relações internacionais',
-            purchaseLink: 'https://www.amazon.com.br/s?k=Tecnologia+Diplomacia+Marcos+Troyjo',
+            description: 'Desafios da cooperação internacional no campo científico-tecnológico',
+            purchaseLink: 'https://www.amazon.com.br/Tecnologia-Diplomacia-Marcos-Prado-Troyjo/dp/8571293864',
             cover: 'https://m.media-amazon.com/images/I/51MxQnB7qNL._SY344_BO1,204,203,200_.jpg'
         },
         { 
             title: 'Nação-Comerciante', 
             year: '2007', 
-            description: 'Estratégias de inserção internacional competitiva',
-            purchaseLink: 'https://www.amazon.com.br/Na%C3%A7%C3%A3o-Comerciante-Marcos-Troyjo/dp/8535220496',
+            description: 'Poder e Prosperidade no Século XXI - estratégias de inserção internacional competitiva',
+            purchaseLink: 'https://www.amazon.com.br/Nação-Comerciante-Marcos-Prado-Troyjo/dp/8587364642',
             cover: 'https://m.media-amazon.com/images/I/41YZwQXnCLL._SY344_BO1,204,203,200_.jpg'
         },
         { 
             title: 'Desglobalização', 
             year: '2016', 
-            description: 'Reflexões sobre o futuro da globalização',
-            purchaseLink: 'https://www.amazon.com.br/Desglobaliza%C3%A7%C3%A3o-Marcos-Troyjo/dp/8501109568',
+            description: 'Reflexões sobre o futuro da globalização e a desaceleração do comércio mundial',
+            purchaseLink: 'https://www.amazon.com.br/Desglobalização-Marcos-Troyjo/dp/8501109568',
             cover: 'https://m.media-amazon.com/images/I/51XQmB9VWZL._SY344_BO1,204,203,200_QL70_ML2_.jpg'
         },
         { 
             title: 'A Metamorfose dos BRICS', 
             year: '2016', 
-            description: 'Transformações nas economias emergentes',
-            purchaseLink: 'https://www.amazon.com.br/Metamorfose-dos-BRICS-Marcos-Troyjo/dp/8501110477',
+            description: 'Transformações nas economias emergentes e reconfiguração do poder global',
+            purchaseLink: 'https://www.estantevirtual.com.br/livros/marcos-troyjo',
             cover: 'https://m.media-amazon.com/images/I/51B7sQdLcmL._SY344_BO1,204,203,200_QL70_ML2_.jpg'
         },
         { 
             title: 'Trading Up', 
             year: '2022', 
-            description: 'Competitividade global no século XXI',
-            purchaseLink: 'https://www.amazon.com.br/Trading-Up-Brasil-tornar-pot%C3%AAncia/dp/8501117420',
+            description: 'Como o Brasil pode se tornar uma potência comercial no século XXI',
+            purchaseLink: 'https://www.amazon.com.br/Trading-Up-Brasil-tornar-potência/dp/8501117420',
             cover: 'https://m.media-amazon.com/images/I/41XyH+JYZRL._SY344_BO1,204,203,200_.jpg'
         }
     ];

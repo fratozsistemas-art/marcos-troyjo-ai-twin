@@ -1,69 +1,69 @@
-import Home from './pages/Home';
+import AgentUI from './pages/AgentUI';
+import AnalyticsDashboard from './pages/AnalyticsDashboard';
+import ArticleGenerator from './pages/ArticleGenerator';
+import ArticleView from './pages/ArticleView';
+import Assets from './pages/Assets';
 import Consultation from './pages/Consultation';
 import Dashboard from './pages/Dashboard';
-import MetaphorsGenerator from './pages/MetaphorsGenerator';
-import InterviewPrep from './pages/InterviewPrep';
-import ArticleGenerator from './pages/ArticleGenerator';
 import DocumentAssessment from './pages/DocumentAssessment';
-import History from './pages/History';
 import DocumentChatPage from './pages/DocumentChatPage';
-import Assets from './pages/Assets';
-import AgentUI from './pages/AgentUI';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import TermsOfService from './pages/TermsOfService';
-import SecurityAdmin from './pages/SecurityAdmin';
-import PersonaManagement from './pages/PersonaManagement';
+import History from './pages/History';
+import Home from './pages/Home';
+import Homepage from './pages/Homepage';
+import InterviewPrep from './pages/InterviewPrep';
+import KnowledgeAdmin from './pages/KnowledgeAdmin';
+import KnowledgeArticle from './pages/KnowledgeArticle';
+import KnowledgeBase from './pages/KnowledgeBase';
 import KnowledgeHub from './pages/KnowledgeHub';
 import LandingPage from './pages/LandingPage';
-import ArticleView from './pages/ArticleView';
-import RoleManagement from './pages/RoleManagement';
+import MLAdmin from './pages/MLAdmin';
+import MetaphorsGenerator from './pages/MetaphorsGenerator';
+import PersonaManagement from './pages/PersonaManagement';
 import Pricing from './pages/Pricing';
-import Welcome from './pages/Welcome';
-import Website from './pages/Website';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import PublicWebsite from './pages/PublicWebsite';
+import RoleManagement from './pages/RoleManagement';
+import SecurityAdmin from './pages/SecurityAdmin';
 import StrategicIntelligenceBlog from './pages/StrategicIntelligenceBlog';
 import SystemHealth from './pages/SystemHealth';
-import KnowledgeBase from './pages/KnowledgeBase';
-import Homepage from './pages/Homepage';
-import AnalyticsDashboard from './pages/AnalyticsDashboard';
-import KnowledgeArticle from './pages/KnowledgeArticle';
-import KnowledgeAdmin from './pages/KnowledgeAdmin';
-import MLAdmin from './pages/MLAdmin';
-import PublicWebsite from './pages/PublicWebsite';
+import TermsOfService from './pages/TermsOfService';
+import Website from './pages/Website';
+import Welcome from './pages/Welcome';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Home": Home,
+    "AgentUI": AgentUI,
+    "AnalyticsDashboard": AnalyticsDashboard,
+    "ArticleGenerator": ArticleGenerator,
+    "ArticleView": ArticleView,
+    "Assets": Assets,
     "Consultation": Consultation,
     "Dashboard": Dashboard,
-    "MetaphorsGenerator": MetaphorsGenerator,
-    "InterviewPrep": InterviewPrep,
-    "ArticleGenerator": ArticleGenerator,
     "DocumentAssessment": DocumentAssessment,
-    "History": History,
     "DocumentChatPage": DocumentChatPage,
-    "Assets": Assets,
-    "AgentUI": AgentUI,
-    "PrivacyPolicy": PrivacyPolicy,
-    "TermsOfService": TermsOfService,
-    "SecurityAdmin": SecurityAdmin,
-    "PersonaManagement": PersonaManagement,
+    "History": History,
+    "Home": Home,
+    "Homepage": Homepage,
+    "InterviewPrep": InterviewPrep,
+    "KnowledgeAdmin": KnowledgeAdmin,
+    "KnowledgeArticle": KnowledgeArticle,
+    "KnowledgeBase": KnowledgeBase,
     "KnowledgeHub": KnowledgeHub,
     "LandingPage": LandingPage,
-    "ArticleView": ArticleView,
-    "RoleManagement": RoleManagement,
+    "MLAdmin": MLAdmin,
+    "MetaphorsGenerator": MetaphorsGenerator,
+    "PersonaManagement": PersonaManagement,
     "Pricing": Pricing,
-    "Welcome": Welcome,
-    "Website": Website,
+    "PrivacyPolicy": PrivacyPolicy,
+    "PublicWebsite": PublicWebsite,
+    "RoleManagement": RoleManagement,
+    "SecurityAdmin": SecurityAdmin,
     "StrategicIntelligenceBlog": StrategicIntelligenceBlog,
     "SystemHealth": SystemHealth,
-    "KnowledgeBase": KnowledgeBase,
-    "Homepage": Homepage,
-    "AnalyticsDashboard": AnalyticsDashboard,
-    "KnowledgeArticle": KnowledgeArticle,
-    "KnowledgeAdmin": KnowledgeAdmin,
-    "MLAdmin": MLAdmin,
-    "PublicWebsite": PublicWebsite,
+    "TermsOfService": TermsOfService,
+    "Website": Website,
+    "Welcome": Welcome,
 }
 
 export const pagesConfig = {

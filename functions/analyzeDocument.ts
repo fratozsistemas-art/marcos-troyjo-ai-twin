@@ -1,111 +1,136 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
-import OpenAI from 'npm:openai';
-
-const xai = new OpenAI({
-    apiKey: Deno.env.get("XAI_API_KEY"),
-    baseURL: "https://api.x.ai/v1",
-});
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
         
-        const { document_content, analysis_type, specific_questions } = await req.json();
-
-        if (!document_content || !analysis_type) {
-            return Response.json({ 
-                error: 'Missing required fields: document_content and analysis_type' 
-            }, { status: 400 });
+        // Authenticate user
+        const user = await base44.auth.me();
+        if (!user) {
+            return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const troyjoExpertise = `You are Marcos Prado Troyjo's analytical assistant.
+        const { document_id } = await req.json();
 
-EXPERTISE AREAS (Based on public records):
-- Global Economics & Geoeconomics
-- International Trade & Competitiveness
-- BRICS & Emerging Markets Development
-- Economic Diplomacy & Multilateral Negotiations
-- Infrastructure Finance & Development Banking
-- Innovation, Technology & Sustainability
-
-CAREER BACKGROUND:
-- President, New Development Bank (NDB/BRICS Bank) 2020-2023
-- Special Secretary of Foreign Trade, Brazil
-- Diplomat, Brazilian Ministry of Foreign Affairs
-- Founded BRICLab at Columbia University SIPA (2011-2018)
-- Founded international trade and investment consulting firm
-- Board positions and advisory roles in multilateral institutions
-- Academic positions: Columbia University, INSEAD, Oxford (Blavatnik School)
-
-ANALYSIS APPROACH:
-- Pragmatic economic diplomacy perspective
-- Focus on competitiveness and strategic positioning
-- Geoeconomic lens on global developments
-- ESG framework: Economy + Security + Geopolitics
-- Data-driven with realistic assessments`;
-
-        let analysisPrompt = '';
-        
-        switch (analysis_type) {
-            case 'strategic':
-                analysisPrompt = 'Provide strategic analysis focusing on competitive advantages, risks, opportunities, and recommendations.';
-                break;
-            case 'economic':
-                analysisPrompt = 'Analyze economic implications, market dynamics, trade impacts, and financial considerations.';
-                break;
-            case 'geopolitical':
-                analysisPrompt = 'Analyze geopolitical context, power dynamics, international relations implications.';
-                break;
-            case 'investment':
-                analysisPrompt = 'Evaluate investment potential, risk assessment, market opportunities, and ROI considerations.';
-                break;
-            case 'policy':
-                analysisPrompt = 'Analyze policy implications, regulatory environment, and strategic recommendations.';
-                break;
-            default:
-                analysisPrompt = 'Provide comprehensive analysis with key insights and recommendations.';
+        if (!document_id) {
+            return Response.json({ error: 'document_id is required' }, { status: 400 });
         }
 
-        const messages = [
-            { role: 'system', content: troyjoExpertise },
-            { 
-                role: 'user', 
-                content: `${analysisPrompt}
+        // Get document
+        const documents = await base44.entities.Document.filter({ id: document_id });
+        if (!documents || documents.length === 0) {
+            return Response.json({ error: 'Document not found' }, { status: 404 });
+        }
 
-Document/Data to analyze:
-${document_content}
+        const document = documents[0];
 
-${specific_questions ? `\nSpecific questions to address:\n${specific_questions}` : ''}
+        // Prepare prompt for analysis
+        const analysisPrompt = `Você é um assistente especializado em análise de conteúdo sobre economia global, diplomacia e comércio internacional, focado em Marcos Troyjo.
 
-Provide a structured analysis with:
-1. Executive Summary
-2. Key Findings
-3. Strategic Implications
-4. Recommendations
-5. Risk Assessment` 
+Analise o seguinte documento:
+
+Título: ${document.title}
+Descrição: ${document.description || 'Não fornecida'}
+Tipo: ${document.category}
+URL: ${document.file_url}
+
+Por favor, forneça uma análise estruturada com:
+
+1. RESUMO: Um resumo executivo de 2-3 frases do conteúdo principal
+2. ENTIDADES: Liste as principais entidades mencionadas:
+   - Pessoas (nomes de figuras políticas, economistas, etc.)
+   - Locais (países, regiões, cidades)
+   - Organizações (BRICS, NDB, instituições internacionais, etc.)
+3. TEMAS: Liste os 5-8 temas/tags principais abordados
+4. CONTEXTO: Contexto histórico ou situacional (1-2 frases)
+
+Responda em formato JSON válido.`;
+
+        // Call LLM with structured output
+        const analysis = await base44.integrations.Core.InvokeLLM({
+            prompt: analysisPrompt,
+            add_context_from_internet: false,
+            response_json_schema: {
+                type: "object",
+                properties: {
+                    summary: {
+                        type: "string",
+                        description: "Resumo executivo do documento"
+                    },
+                    entities: {
+                        type: "object",
+                        properties: {
+                            people: {
+                                type: "array",
+                                items: { type: "string" },
+                                description: "Lista de pessoas mencionadas"
+                            },
+                            locations: {
+                                type: "array",
+                                items: { type: "string" },
+                                description: "Lista de locais mencionados"
+                            },
+                            organizations: {
+                                type: "array",
+                                items: { type: "string" },
+                                description: "Lista de organizações mencionadas"
+                            }
+                        }
+                    },
+                    themes: {
+                        type: "array",
+                        items: { type: "string" },
+                        description: "Temas e tags principais"
+                    },
+                    context: {
+                        type: "string",
+                        description: "Contexto histórico ou situacional"
+                    }
+                },
+                required: ["summary", "entities", "themes"]
             }
-        ];
-
-        const response = await xai.chat.completions.create({
-            model: 'grok-beta',
-            messages,
-            temperature: 0.7,
         });
 
-        const analysis = response.choices[0].message.content;
+        // Update document with analysis results
+        const updatedTags = [...new Set([
+            ...(document.tags || []),
+            ...(analysis.themes || [])
+        ])];
+
+        const allEntities = [
+            ...(analysis.entities?.people || []),
+            ...(analysis.entities?.locations || []),
+            ...(analysis.entities?.organizations || [])
+        ];
+
+        const updatedKeywords = [...new Set([
+            ...(document.keywords || []),
+            ...allEntities
+        ])];
+
+        await base44.entities.Document.update(document_id, {
+            description: analysis.summary || document.description,
+            tags: updatedTags.slice(0, 20), // Limit to 20 tags
+            keywords: updatedKeywords.slice(0, 30) // Limit to 30 keywords
+        });
 
         return Response.json({
             success: true,
-            analysis,
-            analysis_type,
-            timestamp: new Date().toISOString()
+            analysis: {
+                summary: analysis.summary,
+                entities: analysis.entities,
+                themes: analysis.themes,
+                context: analysis.context,
+                tags_added: updatedTags.length - (document.tags?.length || 0),
+                keywords_added: updatedKeywords.length - (document.keywords?.length || 0)
+            }
         });
 
     } catch (error) {
-        console.error('Error in analyzeDocument:', error);
+        console.error('Error analyzing document:', error);
         return Response.json({ 
-            error: error.message || 'Failed to analyze document',
-            success: false
+            error: error.message || 'Error analyzing document',
+            details: error.toString()
         }, { status: 500 });
     }
 });

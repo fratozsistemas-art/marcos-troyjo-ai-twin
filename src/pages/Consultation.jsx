@@ -223,11 +223,7 @@ function ConsultationInner() {
             // Add message with file URLs and persona mode
             const messageData = {
                 role: 'user',
-                content: messageText || (lang === 'pt' ? 'Arquivo(s) anexado(s)' : 'File(s) attached'),
-                metadata: {
-                    persona_mode: personaMode,
-                    language: lang
-                }
+                content: messageText || (lang === 'pt' ? 'Arquivo(s) anexado(s)' : 'File(s) attached')
             };
 
             if (filesToSend.length > 0) {
@@ -259,6 +255,7 @@ function ConsultationInner() {
             }
         } catch (error) {
             console.error('Error sending message:', error);
+            toast.error(lang === 'pt' ? 'Erro ao enviar mensagem' : 'Error sending message');
         } finally {
             setIsLoading(false);
         }

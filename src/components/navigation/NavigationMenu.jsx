@@ -18,7 +18,8 @@ export default function NavigationMenu({ lang = 'pt' }) {
             knowledge: 'Base de Conhecimento',
             analytics: 'Analytics',
             website: 'Website Público',
-            blog: 'Blog'
+            blog: 'Blog',
+            ssotReports: 'Relatórios SSOT'
         },
         en: {
             home: 'Home',
@@ -27,7 +28,8 @@ export default function NavigationMenu({ lang = 'pt' }) {
             knowledge: 'Knowledge Base',
             analytics: 'Analytics',
             website: 'Public Website',
-            blog: 'Blog'
+            blog: 'Blog',
+            ssotReports: 'SSOT Reports'
         }
     };
 
@@ -39,6 +41,7 @@ export default function NavigationMenu({ lang = 'pt' }) {
         { path: 'Dashboard', icon: LayoutDashboard, label: text.dashboard },
         { path: 'Consultation', icon: MessageSquare, label: text.consultation },
         { path: 'KnowledgeBase', icon: BookOpen, label: text.knowledge },
+        { path: 'SSOTReports', icon: FileText, label: text.ssotReports },
         { path: 'AnalyticsDashboard', icon: BarChart3, label: text.analytics },
         { path: 'StrategicIntelligenceBlog', icon: FileText, label: text.blog }
     ];

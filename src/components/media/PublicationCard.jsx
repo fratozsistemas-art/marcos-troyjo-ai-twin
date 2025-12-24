@@ -92,7 +92,8 @@ export default function PublicationCard({ publication, lang = 'pt' }) {
 
                 {/* Action Buttons */}
                 <div className="flex flex-wrap gap-2">
-                    {publication.url && (
+                    {/* Article Link - Always show for articles */}
+                    {publication.type === 'article' && publication.url && (
                         <a href={publication.url} target="_blank" rel="noopener noreferrer">
                             <Button size="sm" variant="outline" className="gap-2 border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white">
                                 <ExternalLink className="w-3 h-3" />
@@ -100,17 +101,34 @@ export default function PublicationCard({ publication, lang = 'pt' }) {
                             </Button>
                         </a>
                     )}
-                    {publication.video_link && !expanded && (
-                        <Button 
-                            size="sm" 
-                            variant="outline" 
-                            onClick={() => setExpanded(true)}
-                            className="gap-2 border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white"
-                        >
-                            <Video className="w-3 h-3" />
-                            {t.watch}
-                        </Button>
+                    
+                    {/* Interview/Podcast Links - Prioritize video, fallback to URL */}
+                    {publication.type === 'interview' && (
+                        <>
+                            {publication.video_link ? (
+                                !expanded && (
+                                    <Button 
+                                        size="sm" 
+                                        variant="outline" 
+                                        onClick={() => setExpanded(true)}
+                                        className="gap-2 border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white"
+                                    >
+                                        <Video className="w-3 h-3" />
+                                        {t.watch}
+                                    </Button>
+                                )
+                            ) : publication.url ? (
+                                <a href={publication.url} target="_blank" rel="noopener noreferrer">
+                                    <Button size="sm" variant="outline" className="gap-2 border-[#8B1538] text-[#8B1538] hover:bg-[#8B1538] hover:text-white">
+                                        <ExternalLink className="w-3 h-3" />
+                                        {t.watch}
+                                    </Button>
+                                </a>
+                            ) : null}
+                        </>
                     )}
+
+                    {/* Purchase Link */}
                     {publication.purchase_link && (
                         <a href={publication.purchase_link} target="_blank" rel="noopener noreferrer">
                             <Button size="sm" className="gap-2 bg-[#D4AF37] hover:bg-[#C19B2A] text-[#2D2D2D]">

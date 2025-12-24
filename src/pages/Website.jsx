@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { ArrowRight, BookOpen, Award, FileText, Video, ExternalLink, Globe, Mail, Sparkles, MessageSquare, LayoutDashboard, TrendingUp, Filter, Lightbulb } from 'lucide-react';
+import { ArrowRight, BookOpen, Award, FileText, Video, ExternalLink, Globe, Mail, Sparkles, MessageSquare, LayoutDashboard, TrendingUp, Filter, Lightbulb, CheckCircle, BarChart3, Shield, Zap, Users, Star, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -83,6 +83,42 @@ export default function Website() {
             neologismsDesc: 'Inovação conceitual e frameworks estratégicos',
             filterYear: 'Filtrar por Ano',
             allYears: 'Todos os Anos',
+            features: {
+                title: 'Recursos Avançados',
+                subtitle: 'Tudo que você precisa para análise geopolítica de classe mundial',
+                items: [
+                    { icon: MessageSquare, title: 'Consultas Inteligentes', desc: 'Perguntas e respostas em tempo real com contexto histórico' },
+                    { icon: BookOpen, title: 'Base de Conhecimento', desc: 'Acesso a décadas de pesquisas e publicações' },
+                    { icon: BarChart3, title: 'Analytics Avançado', desc: 'Visualizações e insights de dados geopolíticos' },
+                    { icon: Shield, title: 'Protocolo AEGIS', desc: 'Segurança e validação de respostas' },
+                    { icon: Zap, title: 'Respostas Rápidas', desc: 'Processamento em tempo real via IA' },
+                    { icon: Users, title: 'Multi-Personas', desc: 'Adapta-se ao seu contexto e necessidades' }
+                ]
+            },
+            personas: {
+                title: 'Para Cada Público',
+                subtitle: 'Experiência personalizada baseada em quem você é',
+                items: [
+                    { title: 'Executivos', desc: 'Insights estratégicos para tomada de decisão' },
+                    { title: 'Acadêmicos', desc: 'Análises profundas com referências' },
+                    { title: 'Estudantes', desc: 'Explicações didáticas e acessíveis' },
+                    { title: 'Jornalistas', desc: 'Contexto histórico e dados verificados' }
+                ]
+            },
+            stats: {
+                title: 'Números que Impressionam',
+                items: [
+                    { value: '95%+', label: 'Fidelidade HUA' },
+                    { value: '24/7', label: 'Disponibilidade' },
+                    { value: '11', label: 'Neologismos Únicos' },
+                    { value: '2020-2023', label: 'Presidente NDB' }
+                ]
+            },
+            ctaSection: {
+                title: 'Pronto para Começar?',
+                subtitle: 'Junte-se a líderes globais que já utilizam o Troyjo Twin',
+                button: 'Iniciar Gratuitamente'
+            },
             articles: 'Artigos',
             interviews: 'Entrevistas',
             viewArticle: 'Ver artigo',
@@ -119,6 +155,42 @@ export default function Website() {
             neologismsDesc: 'Conceptual innovation and strategic frameworks',
             filterYear: 'Filter by Year',
             allYears: 'All Years',
+            features: {
+                title: 'Advanced Features',
+                subtitle: 'Everything you need for world-class geopolitical analysis',
+                items: [
+                    { icon: MessageSquare, title: 'Smart Consultations', desc: 'Real-time Q&A with historical context' },
+                    { icon: BookOpen, title: 'Knowledge Base', desc: 'Access to decades of research and publications' },
+                    { icon: BarChart3, title: 'Advanced Analytics', desc: 'Geopolitical data visualizations and insights' },
+                    { icon: Shield, title: 'AEGIS Protocol', desc: 'Security and response validation' },
+                    { icon: Zap, title: 'Fast Responses', desc: 'Real-time AI processing' },
+                    { icon: Users, title: 'Multi-Personas', desc: 'Adapts to your context and needs' }
+                ]
+            },
+            personas: {
+                title: 'For Every Audience',
+                subtitle: 'Personalized experience based on who you are',
+                items: [
+                    { title: 'Executives', desc: 'Strategic insights for decision-making' },
+                    { title: 'Academics', desc: 'Deep analysis with references' },
+                    { title: 'Students', desc: 'Educational and accessible explanations' },
+                    { title: 'Journalists', desc: 'Historical context and verified data' }
+                ]
+            },
+            stats: {
+                title: 'Impressive Numbers',
+                items: [
+                    { value: '95%+', label: 'HUA Fidelity' },
+                    { value: '24/7', label: 'Availability' },
+                    { value: '11', label: 'Unique Neologisms' },
+                    { value: '2020-2023', label: 'NDB President' }
+                ]
+            },
+            ctaSection: {
+                title: 'Ready to Start?',
+                subtitle: 'Join global leaders already using Troyjo Twin',
+                button: 'Start Free'
+            },
             articles: 'Articles',
             interviews: 'Interviews',
             viewArticle: 'View article',
@@ -353,6 +425,28 @@ export default function Website() {
                     </div>
                 </section>
 
+                {/* Stats Section */}
+                <section className="py-20 bg-[#002D62]">
+                    <div className="max-w-7xl mx-auto px-4 md:px-6">
+                        <h2 className="text-3xl font-bold text-white text-center mb-12">{text.stats.title}</h2>
+                        <div className="grid md:grid-cols-4 gap-8">
+                            {text.stats.items.map((stat, idx) => (
+                                <motion.div
+                                    key={idx}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: idx * 0.1 }}
+                                    className="text-center"
+                                >
+                                    <div className="text-4xl font-bold text-[#D4AF37] mb-2">{stat.value}</div>
+                                    <div className="text-white/80">{stat.label}</div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
                 {/* Concept Evolution Timeline - Option D */}
                 <section className="py-20 px-4 md:px-6 bg-white">
                     <div className="max-w-7xl mx-auto">
@@ -395,6 +489,42 @@ export default function Website() {
                     </div>
                 </section>
 
+                {/* Features Section */}
+                <section className="py-20 px-4 md:px-6">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="text-center mb-16">
+                            <h2 className="text-4xl font-bold text-[#002D62] mb-4">{text.features.title}</h2>
+                            <p className="text-lg text-gray-600">{text.features.subtitle}</p>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-8">
+                            {text.features.items.map((feature, idx) => {
+                                const Icon = feature.icon;
+                                return (
+                                    <motion.div
+                                        key={idx}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: idx * 0.1 }}
+                                    >
+                                        <Card className="h-full hover:shadow-lg transition-all border-gray-200 hover:border-[#002D62]">
+                                            <CardHeader>
+                                                <div className="w-12 h-12 rounded-xl bg-[#002D62]/10 flex items-center justify-center mb-4">
+                                                    <Icon className="w-6 h-6 text-[#002D62]" />
+                                                </div>
+                                                <CardTitle className="text-xl">{feature.title}</CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <p className="text-gray-600">{feature.desc}</p>
+                                            </CardContent>
+                                        </Card>
+                                    </motion.div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </section>
+
                 {/* Policy Observatory */}
                 <section className="py-20 px-4 md:px-6 bg-gradient-to-b from-white to-gray-50">
                     <div className="max-w-7xl mx-auto">
@@ -414,6 +544,35 @@ export default function Website() {
                             </p>
                         </motion.div>
                         <PolicyObservatory lang={lang} />
+                    </div>
+                </section>
+
+                {/* Personas Section */}
+                <section className="py-20 px-4 md:px-6 bg-gray-50">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="text-center mb-16">
+                            <h2 className="text-4xl font-bold text-[#002D62] mb-4">{text.personas.title}</h2>
+                            <p className="text-lg text-gray-600">{text.personas.subtitle}</p>
+                        </div>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {text.personas.items.map((persona, idx) => (
+                                <motion.div
+                                    key={idx}
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: idx * 0.1 }}
+                                >
+                                    <Card className="text-center p-6 hover:shadow-lg transition-all">
+                                        <div className="w-16 h-16 rounded-full bg-[#00654A]/10 flex items-center justify-center mx-auto mb-4">
+                                            <Star className="w-8 h-8 text-[#00654A]" />
+                                        </div>
+                                        <h3 className="text-lg font-semibold text-[#002D62] mb-2">{persona.title}</h3>
+                                        <p className="text-sm text-gray-600">{persona.desc}</p>
+                                    </Card>
+                                </motion.div>
+                            ))}
+                        </div>
                     </div>
                 </section>
 
@@ -625,6 +784,20 @@ export default function Website() {
                                 {lang === 'pt' ? 'Nenhum prêmio disponível' : 'No awards available'}
                             </div>
                         )}
+                    </div>
+                </section>
+
+                {/* CTA Section */}
+                <section className="py-20 bg-gradient-to-r from-[#002D62] to-[#00654A]">
+                    <div className="max-w-4xl mx-auto px-4 md:px-6 text-center">
+                        <h2 className="text-4xl font-bold text-white mb-4">{text.ctaSection.title}</h2>
+                        <p className="text-xl text-white/80 mb-8">{text.ctaSection.subtitle}</p>
+                        <Link to={createPageUrl('Home')}>
+                            <Button size="lg" className="bg-white text-[#002D62] hover:bg-gray-100 text-lg px-8 py-6">
+                                {text.ctaSection.button}
+                                <ChevronRight className="w-5 h-5 ml-2" />
+                            </Button>
+                        </Link>
                     </div>
                 </section>
 

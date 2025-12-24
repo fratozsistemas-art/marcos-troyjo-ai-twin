@@ -56,6 +56,7 @@ import FlywheelManager from '@/components/flywheel/FlywheelManager';
 import ReportScheduler from '@/components/automation/ReportScheduler';
 import AgentManager from '@/components/admin/AgentManager';
 import BulkArticleGenerator from '@/components/content/BulkArticleGenerator';
+import AuditDashboard from '@/components/audit/AuditDashboard';
 
 const translations = {
     pt: {
@@ -466,6 +467,11 @@ export default function Dashboard() {
                         {/* Bulk Article Generation */}
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.012 }}>
                             <BulkArticleGenerator lang={lang} />
+                        </motion.div>
+
+                        {/* Audit Dashboard - Full Width */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.013 }}>
+                            <AuditDashboard lang={lang} />
                         </motion.div>
 
                         {/* Automation & Agent Management */}

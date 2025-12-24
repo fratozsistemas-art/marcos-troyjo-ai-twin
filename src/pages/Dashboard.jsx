@@ -57,6 +57,7 @@ import ReportScheduler from '@/components/automation/ReportScheduler';
 import AgentManager from '@/components/admin/AgentManager';
 import BulkArticleGenerator from '@/components/content/BulkArticleGenerator';
 import AuditDashboard from '@/components/audit/AuditDashboard';
+import QualityGateIndicator from '@/components/quality/QualityGateIndicator';
 
 const translations = {
     pt: {
@@ -469,10 +470,15 @@ export default function Dashboard() {
                             <BulkArticleGenerator lang={lang} />
                         </motion.div>
 
-                        {/* Audit Dashboard - Full Width */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.013 }}>
-                            <AuditDashboard lang={lang} />
-                        </motion.div>
+                        {/* Quality Gate & Audit - Side by Side */}
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.012 }}>
+                                <QualityGateIndicator lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.013 }}>
+                                <AuditDashboard lang={lang} />
+                            </motion.div>
+                        </div>
 
                         {/* Automation & Agent Management */}
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.015 }}>

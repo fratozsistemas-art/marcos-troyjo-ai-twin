@@ -1,197 +1,291 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
         const user = await base44.auth.me();
-        
+
         if (!user) {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { query, sources = ['transcripts', 'corporate_facts', 'world_bank', 'news'] } = await req.json();
+        const { query, max_results = 5, priority = 'all' } = await req.json();
 
         if (!query) {
             return Response.json({ error: 'Query is required' }, { status: 400 });
         }
 
-        const results = {
-            query,
-            sources_queried: sources,
-            data: {}
+        const startTime = Date.now();
+        const sources = {
+            knowledge_graph: [],
+            government_apis: [],
+            web_scraping: [],
+            external_financial: []
         };
 
-        // 1. Query Transcripts (existing RAG)
-        if (sources.includes('transcripts')) {
-            try {
-                const transcripts = await base44.entities.InterviewTranscript.filter({});
-                const relevantChunks = [];
-
-                for (const transcript of transcripts) {
-                    if (transcript.chunks && transcript.chunks.length > 0) {
-                        const matches = transcript.chunks.filter(chunk => {
-                            const queryLower = query.toLowerCase();
-                            const textLower = chunk.text.toLowerCase();
-                            return textLower.includes(queryLower) ||
-                                   chunk.topic?.toLowerCase().includes(queryLower);
-                        });
-
-                        if (matches.length > 0) {
-                            relevantChunks.push({
-                                transcript_id: transcript.id,
-                                transcript_title: transcript.title,
-                                date: transcript.interview_date,
-                                chunks: matches.slice(0, 3)
-                            });
-                        }
-                    }
-                }
-
-                results.data.transcripts = {
-                    count: relevantChunks.length,
-                    results: relevantChunks
-                };
-            } catch (error) {
-                results.data.transcripts = { error: error.message };
+        // PRIORIDADE 1: Knowledge Graph (RAG)
+        if (priority === 'all' || priority === 'knowledge') {
+            const kgResults = await queryKnowledgeGraph(base44, query, max_results);
+            sources.knowledge_graph = kgResults;
+            
+            // Se encontrou resultados suficientes no Knowledge Graph, retornar
+            if (kgResults.length >= max_results) {
+                return buildResponse(sources, 'knowledge_graph', startTime, user, base44);
             }
         }
 
-        // 2. Query CorporateFact SSOT
-        if (sources.includes('corporate_facts')) {
-            try {
-                const facts = await base44.asServiceRole.entities.CorporateFact.filter({});
-                
-                const relevantFacts = facts.filter(fact => {
-                    const queryLower = query.toLowerCase();
-                    return fact.indicator_name?.toLowerCase().includes(queryLower) ||
-                           fact.description?.toLowerCase().includes(queryLower) ||
-                           fact.country?.toLowerCase().includes(queryLower) ||
-                           fact.tags?.some(tag => tag.toLowerCase().includes(queryLower));
-                }).slice(0, 10);
-
-                results.data.corporate_facts = {
-                    count: relevantFacts.length,
-                    results: relevantFacts.map(f => ({
-                        category: f.category,
-                        indicator: f.indicator_name,
-                        value: f.value,
-                        numeric_value: f.numeric_value,
-                        unit: f.unit,
-                        year: f.year,
-                        country: f.country,
-                        source: f.source,
-                        description: f.description,
-                        verified: f.verified
-                    }))
-                };
-            } catch (error) {
-                results.data.corporate_facts = { error: error.message };
+        // PRIORIDADE 2: APIs Governamentais (IBGE, Banco Central, etc.)
+        if (priority === 'all' || priority === 'government') {
+            const govResults = await queryGovernmentAPIs(query, max_results - sources.knowledge_graph.length);
+            sources.government_apis = govResults;
+            
+            if (sources.knowledge_graph.length + govResults.length >= max_results) {
+                return buildResponse(sources, 'government_apis', startTime, user, base44);
             }
         }
 
-        // 3. Query World Bank API directly
-        if (sources.includes('world_bank')) {
-            try {
-                const searchTerms = query.split(' ').slice(0, 3).join('+');
-                const wbResponse = await fetch(
-                    `https://api.worldbank.org/v2/indicator?format=json&per_page=10&q=${searchTerms}`
-                );
-                
-                if (wbResponse.ok) {
-                    const wbData = await wbResponse.json();
-                    
-                    if (wbData && wbData[1]) {
-                        results.data.world_bank = {
-                            count: wbData[1].length,
-                            results: wbData[1].map(indicator => ({
-                                id: indicator.id,
-                                name: indicator.name,
-                                source: indicator.source?.value,
-                                description: indicator.sourceNote,
-                                topics: indicator.topics?.map(t => t.value)
-                            }))
-                        };
-                    }
-                }
-            } catch (error) {
-                results.data.world_bank = { error: error.message };
+        // PRIORIDADE 3: APIs Financeiras Externas (Alpha Vantage, World Bank)
+        if (priority === 'all' || priority === 'financial') {
+            const finResults = await queryExternalFinancial(query, max_results - sources.knowledge_graph.length - sources.government_apis.length);
+            sources.external_financial = finResults;
+        }
+
+        // PRIORIDADE 4: Web Scraping (último recurso)
+        if (priority === 'all' || priority === 'web') {
+            const remaining = max_results - sources.knowledge_graph.length - sources.government_apis.length - sources.external_financial.length;
+            if (remaining > 0) {
+                const webResults = await queryWebScraping(query, remaining);
+                sources.web_scraping = webResults;
             }
         }
 
-        // 4. Query Financial News (using LLM with internet context)
-        if (sources.includes('news')) {
-            try {
-                const newsResponse = await base44.integrations.Core.InvokeLLM({
-                    prompt: `Search for the MOST RECENT news (last 48 hours, prioritize today) about: ${query}. Focus on: economic indicators, trade data, geopolitical developments, and financial market information. ONLY return news from the last 2 days.`,
-                    add_context_from_internet: true,
-                    response_json_schema: {
-                        type: "object",
-                        properties: {
-                            articles: {
-                                type: "array",
-                                items: {
-                                    type: "object",
-                                    properties: {
-                                        title: { type: "string" },
-                                        summary: { type: "string" },
-                                        source: { type: "string" },
-                                        date: { type: "string" },
-                                        key_facts: {
-                                            type: "array",
-                                            items: { type: "string" }
-                                        }
-                                    }
-                                }
-                            },
-                            key_findings: {
-                                type: "array",
-                                items: { type: "string" }
-                            }
-                        }
-                    }
-                });
-
-                results.data.news = {
-                    count: newsResponse.articles?.length || 0,
-                    results: newsResponse.articles || [],
-                    key_findings: newsResponse.key_findings || []
-                };
-            } catch (error) {
-                results.data.news = { error: error.message };
-            }
-        }
-
-        // 5. Synthesize all results using LLM
-        const synthesisPrompt = `Você é um analista geopolítico. Sintetize as seguintes informações em resposta à query: "${query}"
-
-DADOS DISPONÍVEIS:
-${sources.includes('transcripts') && results.data.transcripts?.results ? 
-  `Entrevistas de Marcos Troyjo: ${JSON.stringify(results.data.transcripts.results.slice(0, 2))}` : ''}
-
-${sources.includes('corporate_facts') && results.data.corporate_facts?.results ? 
-  `Dados Corporativos (SSOT): ${JSON.stringify(results.data.corporate_facts.results.slice(0, 5))}` : ''}
-
-${sources.includes('world_bank') && results.data.world_bank?.results ? 
-  `World Bank: ${JSON.stringify(results.data.world_bank.results.slice(0, 3))}` : ''}
-
-${sources.includes('news') && results.data.news?.key_findings ? 
-  `Notícias Recentes: ${JSON.stringify(results.data.news.key_findings)}` : ''}
-
-Forneça uma resposta completa, contextualizada e baseada nos dados acima. Se houver dados numéricos, cite-os. Se houver insights de Troyjo, inclua-os.`;
-
-        const synthesis = await base44.integrations.Core.InvokeLLM({
-            prompt: synthesisPrompt
-        });
-
-        results.synthesis = synthesis;
-        results.timestamp = new Date().toISOString();
-
-        return Response.json(results);
+        return buildResponse(sources, 'mixed', startTime, user, base44);
 
     } catch (error) {
-        console.error('Error in enhanced RAG:', error);
+        console.error('Enhanced RAG error:', error);
         return Response.json({ 
-            error: error.message 
+            error: error.message,
+            stack: error.stack 
         }, { status: 500 });
     }
 });
+
+async function queryKnowledgeGraph(base44, query, maxResults) {
+    try {
+        // Buscar documentos relevantes no Knowledge Graph
+        const documents = await base44.asServiceRole.entities.Document.filter({
+            $or: [
+                { title: { $regex: query, $options: 'i' } },
+                { description: { $regex: query, $options: 'i' } }
+            ]
+        }, '-usage_count', maxResults);
+
+        // Buscar artigos de conhecimento
+        const articles = await base44.asServiceRole.entities.KnowledgeEntry.filter({
+            $or: [
+                { title: { $regex: query, $options: 'i' } },
+                { content: { $regex: query, $options: 'i' } }
+            ]
+        }, '-relevance_score', maxResults);
+
+        const results = [
+            ...documents.map(d => ({
+                source: 'knowledge_graph',
+                type: 'document',
+                title: d.title,
+                content: d.description,
+                url: d.file_url,
+                relevance: d.usage_count || 0,
+                metadata: { category: d.category, author: d.author }
+            })),
+            ...articles.map(a => ({
+                source: 'knowledge_graph',
+                type: 'article',
+                title: a.title,
+                content: a.content?.substring(0, 500),
+                relevance: a.relevance_score || 0,
+                metadata: { category: a.category, tags: a.tags }
+            }))
+        ];
+
+        return results.sort((a, b) => b.relevance - a.relevance).slice(0, maxResults);
+    } catch (error) {
+        console.error('Knowledge Graph query error:', error);
+        return [];
+    }
+}
+
+async function queryGovernmentAPIs(query, maxResults) {
+    const results = [];
+    
+    // Verificar se a query é relacionada a dados brasileiros
+    const isBrazilianQuery = /brasil|brazilian|ibge|bacen|bcb/i.test(query);
+    
+    if (!isBrazilianQuery) return results;
+
+    try {
+        // API do IBGE - Dados econômicos e demográficos
+        if (/população|pib|inflação|desemprego|censo/i.test(query)) {
+            const ibgeData = await queryIBGE(query);
+            results.push(...ibgeData);
+        }
+
+        // API do Banco Central - Dados financeiros
+        if (/taxa|juros|selic|câmbio|dólar|inflação|ipca/i.test(query)) {
+            const bacenData = await queryBacen(query);
+            results.push(...bacenData);
+        }
+    } catch (error) {
+        console.error('Government API error:', error);
+    }
+
+    return results.slice(0, maxResults);
+}
+
+async function queryIBGE(query) {
+    try {
+        // Exemplo: buscar dados de PIB
+        const response = await fetch('https://servicodados.ibge.gov.br/api/v3/agregados/1620/periodos/2020|2021|2022|2023/variaveis/583?localidades=N1[all]');
+        
+        if (!response.ok) return [];
+        
+        const data = await response.json();
+        
+        return [{
+            source: 'government_api',
+            provider: 'IBGE',
+            type: 'economic_indicator',
+            title: 'Dados do PIB - IBGE',
+            content: JSON.stringify(data).substring(0, 500),
+            url: 'https://www.ibge.gov.br',
+            relevance: 90,
+            metadata: { api: 'ibge', query_type: 'pib' }
+        }];
+    } catch (error) {
+        console.error('IBGE API error:', error);
+        return [];
+    }
+}
+
+async function queryBacen(query) {
+    try {
+        // Exemplo: buscar taxa SELIC
+        const response = await fetch('https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados/ultimos/12?formato=json');
+        
+        if (!response.ok) return [];
+        
+        const data = await response.json();
+        
+        return [{
+            source: 'government_api',
+            provider: 'Banco Central',
+            type: 'financial_indicator',
+            title: 'Taxa SELIC - Banco Central',
+            content: JSON.stringify(data).substring(0, 500),
+            url: 'https://www.bcb.gov.br',
+            relevance: 95,
+            metadata: { api: 'bacen', query_type: 'selic' }
+        }];
+    } catch (error) {
+        console.error('Bacen API error:', error);
+        return [];
+    }
+}
+
+async function queryExternalFinancial(query, maxResults) {
+    const results = [];
+    const apiKey = Deno.env.get('ALPHA_VANTAGE_API_KEY') || 'demo';
+
+    try {
+        // Alpha Vantage - Dados de mercado
+        if (/stock|ação|bolsa|market|nasdaq/i.test(query)) {
+            const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=${apiKey}`);
+            
+            if (response.ok) {
+                const data = await response.json();
+                results.push({
+                    source: 'external_financial',
+                    provider: 'Alpha Vantage',
+                    type: 'market_data',
+                    title: 'Dados de Mercado',
+                    content: JSON.stringify(data).substring(0, 500),
+                    relevance: 80,
+                    metadata: { api: 'alpha_vantage' }
+                });
+            }
+        }
+
+        // World Bank - Dados globais
+        if (/world|global|internacional|gdp|growth/i.test(query)) {
+            const wbResponse = await fetch('https://api.worldbank.org/v2/country/br/indicator/NY.GDP.MKTP.CD?format=json');
+            
+            if (wbResponse.ok) {
+                const wbData = await wbResponse.json();
+                results.push({
+                    source: 'external_financial',
+                    provider: 'World Bank',
+                    type: 'economic_indicator',
+                    title: 'Indicadores Econômicos Globais',
+                    content: JSON.stringify(wbData).substring(0, 500),
+                    url: 'https://data.worldbank.org',
+                    relevance: 85,
+                    metadata: { api: 'world_bank' }
+                });
+            }
+        }
+    } catch (error) {
+        console.error('External financial API error:', error);
+    }
+
+    return results.slice(0, maxResults);
+}
+
+async function queryWebScraping(query, maxResults) {
+    // Web scraping como último recurso
+    // Por enquanto, retornar vazio (implementar conforme necessidade)
+    return [];
+}
+
+async function buildResponse(sources, primarySource, startTime, user, base44) {
+    const responseTime = Date.now() - startTime;
+    
+    const allResults = [
+        ...sources.knowledge_graph,
+        ...sources.government_apis,
+        ...sources.external_financial,
+        ...sources.web_scraping
+    ];
+
+    // Log da query RAG para análise
+    await base44.asServiceRole.entities.AgentInteractionLog.create({
+        agent_name: 'enhanced_rag',
+        user_email: user.email,
+        prompt: JSON.stringify({ query: 'RAG Query' }),
+        response: `${allResults.length} results`,
+        response_time_ms: responseTime,
+        metadata: {
+            primary_source: primarySource,
+            source_distribution: {
+                knowledge_graph: sources.knowledge_graph.length,
+                government_apis: sources.government_apis.length,
+                external_financial: sources.external_financial.length,
+                web_scraping: sources.web_scraping.length
+            }
+        }
+    });
+
+    return Response.json({
+        results: allResults,
+        metadata: {
+            total_results: allResults.length,
+            primary_source: primarySource,
+            response_time_ms: responseTime,
+            source_distribution: {
+                knowledge_graph: sources.knowledge_graph.length,
+                government_apis: sources.government_apis.length,
+                external_financial: sources.external_financial.length,
+                web_scraping: sources.web_scraping.length
+            }
+        }
+    });
+}

@@ -25,8 +25,20 @@ Deno.serve(async (req) => {
 
         const startTime = Date.now();
 
+        // Buscar dados SSOT relevantes
+        let ssotContext = '';
+        try {
+            const ssotResponse = await base44.functions.invoke('querySSOTData', {
+                query_type: 'all',
+                include_related: true
+            });
+            ssotContext = ssotResponse.data.formatted_context || '';
+        } catch (error) {
+            console.error('Error fetching SSOT data:', error);
+        }
+
         // Construir prompt específico para op-ed
-        const prompt = buildOpEdPrompt(topic, angle, target_outlet, word_count, language, context);
+        const prompt = buildOpEdPrompt(topic, angle, target_outlet, word_count, language, context, ssotContext);
 
         // Usar router inteligente para selecionar melhor LLM
         const routerResponse = await base44.functions.invoke('intelligentLLMRouter', {
@@ -112,7 +124,7 @@ Deno.serve(async (req) => {
     }
 });
 
-function buildOpEdPrompt(topic, angle, target_outlet, word_count, language, context) {
+function buildOpEdPrompt(topic, angle, target_outlet, word_count, language, context, ssotContext) {
     const langText = language === 'pt' ? {
         instruction: 'Escreva um artigo de opinião',
         about: 'sobre',
@@ -154,6 +166,10 @@ function buildOpEdPrompt(topic, angle, target_outlet, word_count, language, cont
 
     if (context.rag_documents && context.rag_documents.length > 0) {
         prompt += `${language === 'pt' ? 'Documentos de referência disponíveis' : 'Reference documents available'}: ${context.rag_documents.length}\n\n`;
+    }
+
+    if (ssotContext) {
+        prompt += `\n${language === 'pt' ? 'DADOS VERIFICADOS (SSOT)' : 'VERIFIED DATA (SSOT)'}:\n${ssotContext}\n`;
     }
 
     prompt += `${language === 'pt' ? 'Data de corte de conhecimento' : 'Knowledge cutoff date'}: December 2025\n`;

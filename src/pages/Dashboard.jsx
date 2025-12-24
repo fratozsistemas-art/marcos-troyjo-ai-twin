@@ -53,6 +53,7 @@ import IntelligenceResources from '@/components/dashboard/IntelligenceResources'
 import InterviewTranscriptManager from '@/components/interviews/InterviewTranscriptManager';
 import ExternalDataFeeds from '@/components/dashboard/ExternalDataFeeds';
 import CorporateFactManager from '@/components/ssot/CorporateFactManager';
+import SSOTHub from '@/components/ssot/SSOTHub';
 import FlywheelManager from '@/components/flywheel/FlywheelManager';
 import ReportScheduler from '@/components/automation/ReportScheduler';
 import AgentManager from '@/components/admin/AgentManager';
@@ -454,6 +455,11 @@ export default function Dashboard() {
                         {/* Customizable Dashboard */}
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                             <CustomizableDashboard lang={lang} />
+                        </motion.div>
+
+                        {/* SSOT Hub - Forums, Events, Key Actors */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.003 }}>
+                            <SSOTHub lang={lang} />
                         </motion.div>
 
                         {/* SSOT - Corporate Facts Manager */}

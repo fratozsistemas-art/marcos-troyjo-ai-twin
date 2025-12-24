@@ -5,14 +5,17 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { TrendingUp, Database, Link2, Clock, Tag, AlertCircle, Loader2 } from 'lucide-react';
+import { TrendingUp, Database, Link2, Clock, Tag, AlertCircle, Loader2, Sparkles, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import moment from 'moment';
+import { toast } from 'sonner';
 
 export default function StrategicFactsDashboard({ lang = 'pt' }) {
     const [facts, setFacts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [analytics, setAnalytics] = useState(null);
+    const [generatingSummaries, setGeneratingSummaries] = useState(false);
 
     const t = {
         pt: {
@@ -45,6 +48,9 @@ export default function StrategicFactsDashboard({ lang = 'pt' }) {
             avgFactsPerTopic: 'Avg per Topic',
             mostConnected: 'Most Connected',
             recentlyUpdated: 'Recently Updated',
+            generateSummaries: 'Generate Summaries with AI',
+            generatingSummaries: 'Generating summaries...',
+            summariesGenerated: 'Summaries generated successfully',
             topicDistribution: 'Distribution by Topic',
             factsByType: 'Facts by Type',
             confidenceDistribution: 'Confidence Distribution',
@@ -139,6 +145,44 @@ export default function StrategicFactsDashboard({ lang = 'pt' }) {
         });
     };
 
+    const handleGenerateSummaries = async () => {
+        setGeneratingSummaries(true);
+        try {
+            const factsNeedingSummaries = facts.filter(f => 
+                f.detail && (!f.summary || f.summary.length < 10)
+            );
+
+            if (factsNeedingSummaries.length === 0) {
+                toast.info(lang === 'pt' ? 'Todos os fatos já possuem resumos' : 'All facts already have summaries');
+                setGeneratingSummaries(false);
+                return;
+            }
+
+            let successCount = 0;
+            for (const fact of factsNeedingSummaries.slice(0, 10)) {
+                try {
+                    await base44.functions.invoke('generateFactSummary', {
+                        fact_id: fact.fact_id,
+                        detail: fact.detail,
+                        topic_label: fact.topic_label,
+                        fact_type: fact.fact_type
+                    });
+                    successCount++;
+                } catch (error) {
+                    console.error(`Error generating summary for ${fact.fact_id}:`, error);
+                }
+            }
+
+            toast.success(`${successCount} ${text.summariesGenerated}`);
+            await loadFacts();
+        } catch (error) {
+            console.error('Error generating summaries:', error);
+            toast.error(lang === 'pt' ? 'Erro ao gerar resumos' : 'Error generating summaries');
+        } finally {
+            setGeneratingSummaries(false);
+        }
+    };
+
     const COLORS = ['#002D62', '#00654A', '#8B1538', '#D4AF37', '#4A5568', '#718096', '#A0AEC0'];
 
     if (isLoading) {
@@ -167,11 +211,32 @@ export default function StrategicFactsDashboard({ lang = 'pt' }) {
             {/* Header */}
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-[#002D62]" />
-                        {text.title}
-                    </CardTitle>
-                    <CardDescription>{text.description}</CardDescription>
+                    <div className="flex items-start justify-between">
+                        <div>
+                            <CardTitle className="flex items-center gap-2">
+                                <TrendingUp className="w-5 h-5 text-[#002D62]" />
+                                {text.title}
+                            </CardTitle>
+                            <CardDescription>{text.description}</CardDescription>
+                        </div>
+                        <Button
+                            onClick={handleGenerateSummaries}
+                            disabled={generatingSummaries}
+                            variant="outline"
+                        >
+                            {generatingSummaries ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    {text.generatingSummaries}
+                                </>
+                            ) : (
+                                <>
+                                    <Sparkles className="w-4 h-4 mr-2" />
+                                    {text.generateSummaries}
+                                </>
+                            )}
+                        </Button>
+                    </div>
                 </CardHeader>
             </Card>
 

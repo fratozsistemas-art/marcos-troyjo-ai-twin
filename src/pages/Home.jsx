@@ -51,12 +51,16 @@ export default function Home() {
     const redirectIfFirstTime = async () => {
         try {
             const isAuth = await base44.auth.isAuthenticated();
-            if (!isAuth) return;
+            if (!isAuth) {
+                // Redirect to public home if not authenticated
+                navigate(createPageUrl('PublicHome'));
+                return;
+            }
 
             const user = await base44.auth.me();
             const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
             
-            if (profiles.length === 0 || !profiles[0].dashboard_preferences?.onboarding_completed) {
+            if (profiles.length === 0 || !user.onboarding_completed) {
                 navigate(createPageUrl('Welcome'));
             }
         } catch (error) {

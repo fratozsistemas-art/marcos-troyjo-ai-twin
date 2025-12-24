@@ -365,6 +365,147 @@ export default function PublicHome() {
                     </div>
                 </section>
 
+                {/* Four Pillars Section */}
+                <section className="py-20 px-4 md:px-6 bg-white">
+                    <div className="max-w-7xl mx-auto">
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            className="text-center mb-16"
+                        >
+                            <h2 className="text-4xl md:text-5xl font-bold text-[#002D62] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                                {lang === 'pt' ? 'Quatro Pilares de uma Arquitetura Cognitiva Robusta' : 'Four Pillars of a Robust Cognitive Architecture'}
+                            </h2>
+                            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                                {lang === 'pt' 
+                                    ? 'O Gêmeo Digital é sustentado por uma arquitetura interdependente projetada para garantir autenticidade, relevância, inteligência e segurança.'
+                                    : 'The Digital Twin is supported by an interdependent architecture designed to ensure authenticity, relevance, intelligence and security.'}
+                            </p>
+                        </motion.div>
+
+                        <div className="grid md:grid-cols-2 gap-8">
+                            {/* Pilar 1: Persona */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.1 }}
+                                className="relative group"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-2xl transform group-hover:scale-105 transition-transform" />
+                                <div className="relative bg-white rounded-2xl p-8 border-2 border-gray-100 group-hover:border-blue-500/30 transition-all shadow-lg">
+                                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-6">
+                                        <Users className="w-8 h-8 text-white" />
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-[#002D62] mb-4">
+                                        {lang === 'pt' ? 'Persona Autêntica' : 'Authentic Persona'}
+                                    </h3>
+                                    <p className="text-gray-700 leading-relaxed mb-4">
+                                        {lang === 'pt'
+                                            ? 'Modelos multimodais de raciocínio que capturam estilos analíticos únicos: Professor, Técnico, Diplomático e Consultor.'
+                                            : 'Multimodal reasoning models that capture unique analytical styles: Professor, Technical, Diplomatic and Consultant.'}
+                                    </p>
+                                    <div className="flex flex-wrap gap-2">
+                                        <Badge className="bg-blue-100 text-blue-800">Professor</Badge>
+                                        <Badge className="bg-blue-100 text-blue-800">{lang === 'pt' ? 'Técnico' : 'Technical'}</Badge>
+                                        <Badge className="bg-blue-100 text-blue-800">{lang === 'pt' ? 'Diplomático' : 'Diplomatic'}</Badge>
+                                        <Badge className="bg-blue-100 text-blue-800">{lang === 'pt' ? 'Consultor' : 'Consultant'}</Badge>
+                                    </div>
+                                </div>
+                            </motion.div>
+
+                            {/* Pilar 2: Base de Conhecimento */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.2 }}
+                                className="relative group"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl transform group-hover:scale-105 transition-transform" />
+                                <div className="relative bg-white rounded-2xl p-8 border-2 border-gray-100 group-hover:border-green-500/30 transition-all shadow-lg">
+                                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mb-6">
+                                        <BookOpen className="w-8 h-8 text-white" />
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-[#002D62] mb-4">
+                                        {lang === 'pt' ? 'Base de Conhecimento Viva' : 'Living Knowledge Base'}
+                                    </h3>
+                                    <p className="text-gray-700 leading-relaxed mb-4">
+                                        {lang === 'pt'
+                                            ? 'Corpus fundacional enriquecido continuamente com dados externos em tempo real para análises sempre relevantes.'
+                                            : 'Foundational corpus continuously enriched with real-time external data for always relevant analyses.'}
+                                    </p>
+                                    <div className="flex flex-wrap gap-2">
+                                        <Badge className="bg-green-100 text-green-800">{lang === 'pt' ? '30+ anos' : '30+ years'}</Badge>
+                                        <Badge className="bg-green-100 text-green-800">{lang === 'pt' ? '11 Neologismos' : '11 Neologisms'}</Badge>
+                                        <Badge className="bg-green-100 text-green-800">RAG</Badge>
+                                        <Badge className="bg-green-100 text-green-800">Real-time</Badge>
+                                    </div>
+                                </div>
+                            </motion.div>
+
+                            {/* Pilar 3: Motor de IA */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.3 }}
+                                className="relative group"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl transform group-hover:scale-105 transition-transform" />
+                                <div className="relative bg-white rounded-2xl p-8 border-2 border-gray-100 group-hover:border-purple-500/30 transition-all shadow-lg">
+                                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center mb-6">
+                                        <Zap className="w-8 h-8 text-white" />
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-[#002D62] mb-4">
+                                        {lang === 'pt' ? 'Motor de Inteligência Adaptativa' : 'Adaptive Intelligence Engine'}
+                                    </h3>
+                                    <p className="text-gray-700 leading-relaxed mb-4">
+                                        {lang === 'pt'
+                                            ? 'Sistema nervoso que aprende com cada interação, refinando persona e profundidade analítica continuamente.'
+                                            : 'Nervous system that learns from each interaction, continuously refining persona and analytical depth.'}
+                                    </p>
+                                    <div className="flex flex-wrap gap-2">
+                                        <Badge className="bg-purple-100 text-purple-800">{lang === 'pt' ? 'Aprendizado' : 'Learning'}</Badge>
+                                        <Badge className="bg-purple-100 text-purple-800">{lang === 'pt' ? 'Adaptação' : 'Adaptation'}</Badge>
+                                        <Badge className="bg-purple-100 text-purple-800">Multi-Model</Badge>
+                                    </div>
+                                </div>
+                            </motion.div>
+
+                            {/* Pilar 4: Protocolos */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.4 }}
+                                className="relative group"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-2xl transform group-hover:scale-105 transition-transform" />
+                                <div className="relative bg-white rounded-2xl p-8 border-2 border-gray-100 group-hover:border-amber-500/30 transition-all shadow-lg">
+                                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mb-6">
+                                        <Shield className="w-8 h-8 text-white" />
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-[#002D62] mb-4">
+                                        {lang === 'pt' ? 'Protocolos de Elite' : 'Elite Protocols'}
+                                    </h3>
+                                    <p className="text-gray-700 leading-relaxed mb-4">
+                                        {lang === 'pt'
+                                            ? 'Framework HUA garante excelência em cada insight. Protocolo AEGIS protege propriedade intelectual contra extração.'
+                                            : 'HUA framework ensures excellence in every insight. AEGIS protocol protects intellectual property against extraction.'}
+                                    </p>
+                                    <div className="flex flex-wrap gap-2">
+                                        <Badge className="bg-amber-100 text-amber-800">HUA 95%+</Badge>
+                                        <Badge className="bg-amber-100 text-amber-800">AEGIS</Badge>
+                                        <Badge className="bg-amber-100 text-amber-800">{lang === 'pt' ? 'Segurança' : 'Security'}</Badge>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    </div>
+                </section>
+
                 {/* Stats Section */}
                 <section className="py-20 bg-[#002D62]">
                     <div className="max-w-7xl mx-auto px-4 md:px-6">

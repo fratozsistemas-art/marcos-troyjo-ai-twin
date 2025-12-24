@@ -307,16 +307,52 @@ const OnboardingTour = ({ lang = 'pt', onComplete, userRole = 'general' }) => {
 
     const getTooltipPosition = () => {
         const target = steps[currentStep].target;
-        if (!target) return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
+        if (!target) return { 
+            position: 'fixed',
+            top: '50%', 
+            left: '50%', 
+            transform: 'translate(-50%, -50%)' 
+        };
 
         const element = document.getElementById(target);
-        if (!element) return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
+        if (!element) return { 
+            position: 'fixed',
+            top: '50%', 
+            left: '50%', 
+            transform: 'translate(-50%, -50%)' 
+        };
 
         const rect = element.getBoundingClientRect();
+        const tooltipWidth = 400;
+        const tooltipHeight = 300;
+        
+        let left = rect.left + rect.width / 2;
+        let top = rect.bottom + window.scrollY + 20;
+        let transform = 'translateX(-50%)';
+
+        // Check if tooltip overflows right
+        if (left + tooltipWidth / 2 > window.innerWidth - 20) {
+            left = window.innerWidth - tooltipWidth - 20;
+            transform = 'translateX(0)';
+        }
+        
+        // Check if tooltip overflows left
+        if (left - tooltipWidth / 2 < 20) {
+            left = 20;
+            transform = 'translateX(0)';
+        }
+
+        // Check if tooltip should appear above instead
+        if (rect.bottom + tooltipHeight > window.innerHeight - 50) {
+            top = rect.top + window.scrollY - 20;
+            transform = `${transform} translateY(-100%)`;
+        }
+
         return {
-            top: `${rect.top + window.scrollY - 20}px`,
-            left: `${rect.left + rect.width / 2}px`,
-            transform: 'translateX(-50%) translateY(-100%)'
+            position: 'absolute',
+            top: `${top}px`,
+            left: `${left}px`,
+            transform
         };
     };
 
@@ -338,16 +374,12 @@ const OnboardingTour = ({ lang = 'pt', onComplete, userRole = 'general' }) => {
             <AnimatePresence mode="wait">
                 <motion.div
                     key={currentStep}
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.3 }}
-                    className="fixed z-[101]"
-                    style={steps[currentStep].target ? getTooltipPosition() : {
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)'
-                    }}
+                    className="z-[101]"
+                    style={getTooltipPosition()}
                 >
                     <Card className="w-[400px] shadow-2xl border-2 border-blue-500/50">
                         <CardContent className="p-6">

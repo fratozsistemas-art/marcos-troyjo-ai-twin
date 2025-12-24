@@ -1,71 +1,125 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
-        
         const user = await base44.auth.me();
+
         if (!user) {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { indicator, countries, startYear, endYear, reportType = 'executive' } = await req.json();
+        const { entities, filters, fields } = await req.json();
 
-        // Fetch relevant facts
-        const facts = await base44.asServiceRole.entities.CorporateFact.filter({
-            indicator_name: indicator
-        });
+        if (!entities || !Array.isArray(entities) || entities.length === 0) {
+            return Response.json({ error: 'No entities selected' }, { status: 400 });
+        }
 
-        const filtered = facts.filter(f => 
-            countries.includes(f.country) && 
-            f.year >= startYear && 
-            f.year <= endYear
-        );
+        const reportData = {};
 
-        if (filtered.length === 0) {
-            return Response.json({ 
-                success: false,
-                message: 'No data found for the selected parameters'
+        // Fetch Forums
+        if (entities.includes('Forum')) {
+            const forums = await base44.entities.Forum.filter({ active: true });
+            reportData.Forum = forums.map(forum => {
+                const selected = {};
+                fields.Forum.forEach(field => {
+                    if (field === 'members' && Array.isArray(forum[field])) {
+                        selected[field] = forum[field];
+                    } else if (field === 'key_themes' && Array.isArray(forum[field])) {
+                        selected[field] = forum[field];
+                    } else {
+                        selected[field] = forum[field] || '';
+                    }
+                });
+                return selected;
             });
         }
 
-        // Prepare data summary
-        const dataSummary = filtered.map(f => 
-            `${f.country} (${f.year}): ${f.value} ${f.unit}`
-        ).join('\n');
+        // Fetch Events
+        if (entities.includes('Event')) {
+            let eventQuery = { active: true };
+            
+            // Apply date filters
+            if (filters.startDate || filters.endDate) {
+                eventQuery.start_date = {};
+                if (filters.startDate) {
+                    eventQuery.start_date.$gte = filters.startDate;
+                }
+                if (filters.endDate) {
+                    eventQuery.start_date.$lte = filters.endDate;
+                }
+            }
 
-        // Generate report using LLM
-        const prompt = reportType === 'executive' 
-            ? `Como analista econômico sênior, crie um resumo executivo detalhado sobre o indicador "${indicator}" para os seguintes dados:\n\n${dataSummary}\n\nIncluir: tendências principais, comparações entre países, insights estratégicos e recomendações. Formato profissional.`
-            : `Como analista técnico, crie um relatório técnico completo sobre o indicador "${indicator}" com os seguintes dados:\n\n${dataSummary}\n\nIncluir: metodologia, análise estatística detalhada, gráficos sugeridos, contexto histórico, projeções e conclusões técnicas. Formato acadêmico.`;
+            const events = await base44.entities.Event.filter(eventQuery);
+            reportData.Event = events.map(event => {
+                const selected = {};
+                fields.Event.forEach(field => {
+                    if (field === 'location' && typeof event[field] === 'object') {
+                        selected[field] = `${event[field].city || ''}, ${event[field].country || ''}`;
+                    } else if (field === 'key_themes' && Array.isArray(event[field])) {
+                        selected[field] = event[field];
+                    } else {
+                        selected[field] = event[field] || '';
+                    }
+                });
+                return selected;
+            });
+        }
 
-        const response = await base44.integrations.Core.InvokeLLM({
-            prompt: prompt,
-            add_context_from_internet: false
+        // Fetch Key Actors
+        if (entities.includes('KeyActor')) {
+            let actorQuery = { active: true };
+            
+            // Apply strategic importance filter
+            if (filters.strategicImportance && filters.strategicImportance !== 'all') {
+                actorQuery.strategic_importance = filters.strategicImportance;
+            }
+
+            const actors = await base44.entities.KeyActor.filter(actorQuery);
+            reportData.KeyActor = actors.map(actor => {
+                const selected = {};
+                fields.KeyActor.forEach(field => {
+                    if (field === 'areas_of_influence' && Array.isArray(actor[field])) {
+                        selected[field] = actor[field];
+                    } else if (field === 'key_positions' && Array.isArray(actor[field])) {
+                        selected[field] = actor[field];
+                    } else {
+                        selected[field] = actor[field] || '';
+                    }
+                });
+                return selected;
+            });
+        }
+
+        // Log report generation
+        await base44.entities.AccessLog.create({
+            user_email: user.email,
+            action: 'generate_ssot_report',
+            resource: 'SSOT Report',
+            metadata: {
+                entities,
+                filters,
+                record_counts: Object.keys(reportData).reduce((acc, key) => {
+                    acc[key] = reportData[key].length;
+                    return acc;
+                }, {})
+            }
         });
-
-        const report = {
-            title: `Relatório: ${indicator}`,
-            type: reportType,
-            indicator: indicator,
-            countries: countries,
-            period: `${startYear}-${endYear}`,
-            generated_at: new Date().toISOString(),
-            generated_by: user.email,
-            content: response,
-            data_points: filtered.length,
-            sources: [...new Set(filtered.map(f => f.source))]
-        };
 
         return Response.json({
             success: true,
-            report: report
+            data: reportData,
+            summary: {
+                total_records: Object.values(reportData).reduce((sum, arr) => sum + arr.length, 0),
+                entities: Object.keys(reportData)
+            }
         });
 
     } catch (error) {
-        console.error('Error generating report:', error);
+        console.error('Error generating SSOT report:', error);
         return Response.json({ 
-            error: error.message 
+            error: error.message || 'Internal server error',
+            details: error.toString()
         }, { status: 500 });
     }
 });

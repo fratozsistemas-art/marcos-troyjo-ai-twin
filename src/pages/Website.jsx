@@ -245,7 +245,7 @@ export default function Website() {
             {/* Header */}
             <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm relative">
                 <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                    <Link to={createPageUrl('Website')} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                         <div className="w-12 h-12 rounded-xl overflow-hidden shadow-md">
                             <img 
                                 src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/7b4794e58_CapturadeTela2025-12-23s93044PM.png"
@@ -257,7 +257,7 @@ export default function Website() {
                             <span className="font-bold text-[#002D62] text-lg block">Troyjo Twin</span>
                             <Badge variant="outline" className="text-xs border-[#B8860B] text-[#B8860B]">BETA</Badge>
                         </div>
-                    </div>
+                    </Link>
                     <div className="flex items-center gap-2">
                         <div className="relative group">
                             <button className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 hover:border-[#002D62] bg-white hover:bg-gray-50 transition-all text-sm font-medium">

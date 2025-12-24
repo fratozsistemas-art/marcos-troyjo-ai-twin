@@ -22,10 +22,21 @@ export default function Layout({ children, currentPageName }) {
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
     const [darkMode, setDarkMode] = useState(() => localStorage.getItem('troyjo_theme') === 'dark');
     const [checkingOnboarding, setCheckingOnboarding] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
+        checkAuth();
         setCheckingOnboarding(false);
     }, []);
+
+    const checkAuth = async () => {
+        try {
+            const authenticated = await base44.auth.isAuthenticated();
+            setIsAuthenticated(authenticated);
+        } catch (error) {
+            setIsAuthenticated(false);
+        }
+    };
 
     useEffect(() => {
         if (darkMode) {
@@ -52,7 +63,7 @@ export default function Layout({ children, currentPageName }) {
             <div className="flex flex-1">
             {/* Mobile Overlay */}
             <AnimatePresence>
-                {sidebarOpen && (
+                {sidebarOpen && isAuthenticated && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -65,7 +76,7 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Sidebar */}
             <AnimatePresence>
-                {sidebarOpen && (
+                {sidebarOpen && isAuthenticated && (
                     <motion.aside
                         initial={{ x: -280 }}
                         animate={{ x: 0 }}
@@ -105,6 +116,7 @@ export default function Layout({ children, currentPageName }) {
             </AnimatePresence>
 
             {/* Desktop Sidebar */}
+            {isAuthenticated && (
             <aside className="hidden lg:block w-70 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex-shrink-0 shadow-lg">
                 <div className="sticky top-0">
                     <a href={createPageUrl('Website')} className="block">
@@ -134,10 +146,12 @@ export default function Layout({ children, currentPageName }) {
                     <NavigationMenu lang={lang} />
                 </div>
             </aside>
+            )}
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col min-w-0">
                 {/* Top Bar */}
+                {currentPageName !== 'Website' && (
                 <motion.header 
                     className="sticky top-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 shadow-sm"
                     initial={{ y: -100 }}
@@ -145,6 +159,7 @@ export default function Layout({ children, currentPageName }) {
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 >
                     <div className="px-6 py-4 flex items-center justify-between lg:justify-end">
+                        {isAuthenticated && (
                         <motion.div
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
@@ -158,6 +173,7 @@ export default function Layout({ children, currentPageName }) {
                                 <Menu className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                             </Button>
                         </motion.div>
+                        )}
 
                         <div className="flex items-center gap-3">
                             <NotificationCenter lang={lang} />
@@ -205,6 +221,7 @@ export default function Layout({ children, currentPageName }) {
                         </div>
                     </div>
                 </motion.header>
+                )}
 
                 {/* Beta Badge */}
                                 <motion.div 

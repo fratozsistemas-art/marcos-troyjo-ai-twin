@@ -33,6 +33,7 @@ import SystemHealth from './pages/SystemHealth';
 import TenantAdmin from './pages/TenantAdmin';
 import TermsOfService from './pages/TermsOfService';
 import Welcome from './pages/Welcome';
+import StudyMode from './pages/StudyMode';
 import __Layout from './Layout.jsx';
 
 
@@ -72,6 +73,7 @@ export const PAGES = {
     "TenantAdmin": TenantAdmin,
     "TermsOfService": TermsOfService,
     "Welcome": Welcome,
+    "StudyMode": StudyMode,
 }
 
 export const pagesConfig = {

@@ -76,13 +76,17 @@ export default function Layout({ children, currentPageName }) {
                         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-[#002D62] to-[#00654A] dark:from-gray-800 dark:to-gray-900">
                             <div className="flex items-center gap-3">
                                 <motion.div 
-                                    className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg"
-                                    whileHover={{ scale: 1.05, rotate: 5 }}
+                                    className="w-10 h-10 rounded-xl overflow-hidden shadow-md"
+                                    whileHover={{ scale: 1.05 }}
                                     transition={{ type: 'spring', stiffness: 400 }}
                                 >
-                                    <Sparkles className="w-5 h-5 text-white" />
+                                    <img 
+                                        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/7b4794e58_CapturadeTela2025-12-23s93044PM.png"
+                                        alt="MT Logo"
+                                        className="w-full h-full object-cover"
+                                    />
                                 </motion.div>
-                                <span className="font-bold text-white text-lg">Troyjo Twin</span>
+                                <span className="font-bold text-gray-900 dark:text-white text-lg">Troyjo Twin</span>
                             </div>
                             <Button
                                 variant="ghost"
@@ -102,19 +106,26 @@ export default function Layout({ children, currentPageName }) {
             <aside className="hidden lg:block w-70 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex-shrink-0 shadow-lg">
                 <div className="sticky top-0">
                     <motion.div 
-                        className="flex items-center gap-3 p-5 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-[#002D62] to-[#00654A] dark:from-gray-800 dark:to-gray-900"
+                        className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
                         <motion.div 
-                            className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg"
-                            whileHover={{ scale: 1.1, rotate: 5 }}
+                            className="w-12 h-12 rounded-xl overflow-hidden shadow-md"
+                            whileHover={{ scale: 1.05 }}
                             transition={{ type: 'spring', stiffness: 400 }}
                         >
-                            <Sparkles className="w-5 h-5 text-white" />
+                            <img 
+                                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/7b4794e58_CapturadeTela2025-12-23s93044PM.png"
+                                alt="MT Logo"
+                                className="w-full h-full object-cover"
+                            />
                         </motion.div>
-                        <span className="font-bold text-white text-lg">Troyjo Twin</span>
+                        <div>
+                            <span className="font-bold text-gray-900 dark:text-white text-base block">Troyjo Twin</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">Digital Intelligence</span>
+                        </div>
                     </motion.div>
                     <NavigationMenu lang={lang} />
                 </div>

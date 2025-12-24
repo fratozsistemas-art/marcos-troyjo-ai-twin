@@ -185,12 +185,18 @@ export default function Website() {
             {/* Header */}
             <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm relative">
                 <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#002D62] to-[#00654A] flex items-center justify-center">
-                            <span className="text-white font-bold text-sm">MT</span>
+                    <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl overflow-hidden shadow-md">
+                            <img 
+                                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/7b4794e58_CapturadeTela2025-12-23s93044PM.png"
+                                alt="MT Logo"
+                                className="w-full h-full object-cover"
+                            />
                         </div>
-                        <span className="font-bold text-[#002D62] text-xl">{text.title}</span>
-                        <Badge variant="outline" className="ml-2 text-xs border-[#B8860B] text-[#B8860B]">BETA</Badge>
+                        <div>
+                            <span className="font-bold text-[#002D62] text-lg block">Troyjo Twin</span>
+                            <Badge variant="outline" className="text-xs border-[#B8860B] text-[#B8860B]">BETA</Badge>
+                        </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <div className="relative group">

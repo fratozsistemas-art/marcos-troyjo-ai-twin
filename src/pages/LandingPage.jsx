@@ -1,350 +1,318 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { 
-    ArrowRight, Globe, TrendingUp, BookOpen, Calendar, 
-    LayoutDashboard, MessageSquare, Mail, Sparkles 
+    ArrowRight, CheckCircle, Globe, BookOpen, MessageSquare, 
+    BarChart3, Shield, Zap, Users, Star, ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import ArticleCard from '@/components/editorial/ArticleCard';
-import EditorialCard from '@/components/editorial/EditorialCard';
-import { toast } from 'sonner';
-
-const translations = {
-    pt: {
-        headline: 'Geopolítica, tecnologia e Brasil em posição de ataque.',
-        subheadline: 'Análises assinadas por Marcos Troyjo, com suporte de inteligência artificial estratégica.',
-        ctaRead: 'Ler artigo da semana',
-        ctaNewsletter: 'Receber análises por e-mail',
-        featured: 'Artigos em Destaque',
-        backlog: 'Calendário Editorial',
-        nextWeeks: 'Próximas Semanas',
-        dailyContent: 'Conteúdo Diário',
-        about: 'Sobre o Projeto',
-        aboutText: 'O Troyjo Digital Twin combina a expertise de Marcos Prado Troyjo em economia global, comércio internacional e competitividade com sistemas avançados de IA para análise estratégica. O projeto oferece consultas personalizadas, análises de documentos e geração de conteúdo especializado para tomadores de decisão em política pública, defesa e negócios internacionais.',
-        subscribe: 'Assine',
-        email: 'Seu e-mail',
-        contact: 'Contato & Newsletter',
-        loading: 'Carregando...',
-        subscribeSuccess: 'Inscrição realizada com sucesso!',
-        allArticles: 'Ver todos os artigos',
-        consultation: 'Iniciar Consulta',
-        dashboard: 'Painel de Controle'
-    },
-    en: {
-        headline: 'Geopolitics, technology and Brazil on the offensive.',
-        subheadline: 'Analysis by Marcos Troyjo, powered by strategic artificial intelligence.',
-        ctaRead: 'Read this week\'s article',
-        ctaNewsletter: 'Receive analysis by email',
-        featured: 'Featured Articles',
-        backlog: 'Editorial Calendar',
-        nextWeeks: 'Next Weeks',
-        dailyContent: 'Daily Content',
-        about: 'About the Project',
-        aboutText: 'Troyjo Digital Twin combines Marcos Prado Troyjo\'s expertise in global economics, international trade and competitiveness with advanced AI systems for strategic analysis. The project offers personalized consultations, document analysis and specialized content generation for decision-makers in public policy, defense and international business.',
-        subscribe: 'Subscribe',
-        email: 'Your email',
-        contact: 'Contact & Newsletter',
-        loading: 'Loading...',
-        subscribeSuccess: 'Successfully subscribed!',
-        allArticles: 'View all articles',
-        consultation: 'Start Consultation',
-        dashboard: 'Dashboard'
-    }
-};
 
 export default function LandingPage() {
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
-    const t = translations[lang];
-    
-    const [featuredArticles, setFeaturedArticles] = useState([]);
-    const [backlogItems, setBacklogItems] = useState([]);
-    const [email, setEmail] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
-    const [tierFilter, setTierFilter] = useState('all');
 
-    useEffect(() => {
-        localStorage.setItem('troyjo_lang', lang);
-        loadContent();
-    }, [lang]);
+    const supportedLangs = ['pt', 'en', 'zh', 'ar', 'ru', 'hi', 'fr', 'es'];
+    const langNames = {
+        pt: 'Português',
+        en: 'English',
+        zh: '中文',
+        ar: 'العربية',
+        ru: 'Русский',
+        hi: 'हिन्दी',
+        fr: 'Français',
+        es: 'Español'
+    };
 
-    const loadContent = async () => {
-        setIsLoading(true);
-        try {
-            const [articles, calendar] = await Promise.all([
-                base44.entities.Article.filter({ status: 'publicado' }),
-                base44.entities.EditorialCalendarItem.filter({})
-            ]);
-            
-            // Sort by tier first, then date
-            const sortedArticles = articles.sort((a, b) => {
-                const tierOrder = { troyjo_certified: 3, curator_approved: 2, ai_generated: 1 };
-                const tierDiff = (tierOrder[b.quality_tier] || 0) - (tierOrder[a.quality_tier] || 0);
-                if (tierDiff !== 0) return tierDiff;
-                return new Date(b.publication_date) - new Date(a.publication_date);
-            });
-            
-            setFeaturedArticles(sortedArticles.slice(0, 6));
-            
-            // Sort calendar by date
-            const sorted = calendar.sort((a, b) => 
-                new Date(a.scheduled_date) - new Date(b.scheduled_date)
-            );
-            setBacklogItems(sorted);
-        } catch (error) {
-            console.error('Error loading content:', error);
-        } finally {
-            setIsLoading(false);
+    const t = {
+        pt: {
+            hero: {
+                badge: 'Lançamento BETA',
+                title: 'Expertise Geopolítica Mundial',
+                subtitle: 'Agora Disponível 24/7 via IA',
+                description: 'Acesse o conhecimento de Marcos Troyjo, ex-presidente do Banco do BRICS, com 95%+ de fidelidade HUA-validada.',
+                cta: 'Começar Agora',
+                demo: 'Ver Demonstração'
+            },
+            features: {
+                title: 'Recursos Avançados',
+                subtitle: 'Tudo que você precisa para análise geopolítica de classe mundial',
+                items: [
+                    { icon: MessageSquare, title: 'Consultas Inteligentes', desc: 'Perguntas e respostas em tempo real com contexto histórico' },
+                    { icon: BookOpen, title: 'Base de Conhecimento', desc: 'Acesso a décadas de pesquisas e publicações' },
+                    { icon: BarChart3, title: 'Analytics Avançado', desc: 'Visualizações e insights de dados geopolíticos' },
+                    { icon: Shield, title: 'Protocolo AEGIS', desc: 'Segurança e validação de respostas' },
+                    { icon: Zap, title: 'Respostas Rápidas', desc: 'Processamento em tempo real via IA' },
+                    { icon: Users, title: 'Multi-Personas', desc: 'Adapta-se ao seu contexto e necessidades' }
+                ]
+            },
+            personas: {
+                title: 'Para Cada Público',
+                subtitle: 'Experiência personalizada baseada em quem você é',
+                items: [
+                    { title: 'Executivos', desc: 'Insights estratégicos para tomada de decisão' },
+                    { title: 'Acadêmicos', desc: 'Análises profundas com referências' },
+                    { title: 'Estudantes', desc: 'Explicações didáticas e acessíveis' },
+                    { title: 'Jornalistas', desc: 'Contexto histórico e dados verificados' }
+                ]
+            },
+            stats: {
+                title: 'Números que Impressionam',
+                items: [
+                    { value: '95%+', label: 'Fidelidade HUA' },
+                    { value: '24/7', label: 'Disponibilidade' },
+                    { value: '11', label: 'Neologismos Únicos' },
+                    { value: '2020-2023', label: 'Presidente NDB' }
+                ]
+            },
+            cta: {
+                title: 'Pronto para Começar?',
+                subtitle: 'Junte-se a líderes globais que já utilizam o Troyjo Twin',
+                button: 'Iniciar Gratuitamente'
+            }
+        },
+        en: {
+            hero: {
+                badge: 'BETA Launch',
+                title: 'World-Class Geopolitical Expertise',
+                subtitle: 'Now Available 24/7 via AI',
+                description: 'Access Marcos Troyjo\'s knowledge, former BRICS Bank president, with 95%+ HUA-validated fidelity.',
+                cta: 'Get Started',
+                demo: 'View Demo'
+            },
+            features: {
+                title: 'Advanced Features',
+                subtitle: 'Everything you need for world-class geopolitical analysis',
+                items: [
+                    { icon: MessageSquare, title: 'Smart Consultations', desc: 'Real-time Q&A with historical context' },
+                    { icon: BookOpen, title: 'Knowledge Base', desc: 'Access to decades of research and publications' },
+                    { icon: BarChart3, title: 'Advanced Analytics', desc: 'Geopolitical data visualizations and insights' },
+                    { icon: Shield, title: 'AEGIS Protocol', desc: 'Security and response validation' },
+                    { icon: Zap, title: 'Fast Responses', desc: 'Real-time AI processing' },
+                    { icon: Users, title: 'Multi-Personas', desc: 'Adapts to your context and needs' }
+                ]
+            },
+            personas: {
+                title: 'For Every Audience',
+                subtitle: 'Personalized experience based on who you are',
+                items: [
+                    { title: 'Executives', desc: 'Strategic insights for decision-making' },
+                    { title: 'Academics', desc: 'Deep analysis with references' },
+                    { title: 'Students', desc: 'Educational and accessible explanations' },
+                    { title: 'Journalists', desc: 'Historical context and verified data' }
+                ]
+            },
+            stats: {
+                title: 'Impressive Numbers',
+                items: [
+                    { value: '95%+', label: 'HUA Fidelity' },
+                    { value: '24/7', label: 'Availability' },
+                    { value: '11', label: 'Unique Neologisms' },
+                    { value: '2020-2023', label: 'NDB President' }
+                ]
+            },
+            cta: {
+                title: 'Ready to Start?',
+                subtitle: 'Join global leaders already using Troyjo Twin',
+                button: 'Start Free'
+            }
         }
     };
 
-    const handleSubscribe = async (e) => {
-        e.preventDefault();
-        if (!email) return;
-        
-        try {
-            await base44.integrations.Core.SendEmail({
-                to: 'contact@troyjo.digital',
-                subject: 'Nova Inscrição - Newsletter',
-                body: `Novo inscrito: ${email}`
-            });
-            toast.success(t.subscribeSuccess);
-            setEmail('');
-        } catch (error) {
-            console.error('Error subscribing:', error);
-            toast.error(lang === 'pt' ? 'Erro ao inscrever' : 'Error subscribing');
-        }
-    };
-
-    const nextWeekItems = backlogItems.filter(item => 
-        item.type === 'artigo_longo' || item.type === 'relatorio' || item.type === 'policy_paper'
-    ).slice(0, 6);
-
-    const dailyItems = backlogItems.filter(item => 
-        item.type === 'post_linkedin' || item.type === 'nota_curta' || 
-        item.type === 'grafico' || item.type === 'thread'
-    ).slice(0, 8);
+    const text = t[lang];
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-            {/* Header */}
-            <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
+        <div className="min-h-screen bg-white">
+            {/* Navigation */}
+            <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#002D62] to-[#00654A] flex items-center justify-center">
-                            <span className="text-white font-semibold text-sm">MT</span>
+                        <div className="w-12 h-12 rounded-xl overflow-hidden shadow-md">
+                            <img 
+                                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/7b4794e58_CapturadeTela2025-12-23s93044PM.png"
+                                alt="MT Logo"
+                                className="w-full h-full object-cover"
+                            />
                         </div>
-                        <div>
-                            <span className="font-bold text-[#002D62]">Troyjo</span>
-                            <span className="text-[#333F48] text-sm ml-2">Digital Twin</span>
-                        </div>
+                        <span className="font-bold text-[#002D62] text-lg">Troyjo Twin</span>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <Link to={createPageUrl('Dashboard')}>
-                            <Button variant="ghost" size="sm" className="gap-2">
-                                <LayoutDashboard className="w-4 h-4" />
-                                <span className="hidden sm:inline">{t.dashboard}</span>
-                            </Button>
-                        </Link>
-                        <Link to={createPageUrl('Consultation')}>
-                            <Button size="sm" className="bg-[#002D62] hover:bg-[#001d42] gap-2">
-                                <MessageSquare className="w-4 h-4" />
-                                <span className="hidden sm:inline">{t.consultation}</span>
-                            </Button>
-                        </Link>
-                        <button
-                            onClick={() => setLang(lang === 'pt' ? 'en' : 'pt')}
-                            className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors text-sm"
-                        >
-                            <Globe className="w-4 h-4" />
-                            {lang === 'pt' ? 'EN' : 'PT'}
-                        </button>
-                    </div>
-                </div>
-            </header>
-
-            {/* Hero */}
-            <section className="py-20 px-4 md:px-6">
-                <div className="max-w-6xl mx-auto text-center">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                    >
-                        <Badge className="bg-[#B8860B] text-white mb-6">
-                            <Sparkles className="w-3 h-3 mr-1" />
-                            {lang === 'pt' ? 'Powered by AI' : 'Powered by AI'}
-                        </Badge>
-                        <h1 className="text-4xl md:text-6xl font-bold text-[#002D62] mb-4 leading-tight">
-                            {t.headline}
-                        </h1>
-                        <p className="text-xl text-[#333F48] mb-8 max-w-3xl mx-auto">
-                            {t.subheadline}
-                        </p>
-                        <div className="flex flex-wrap justify-center gap-4">
-                            {featuredArticles.length > 0 && (
-                                <Link to={createPageUrl('ArticleView') + `?id=${featuredArticles[0].id}`}>
-                                    <Button size="lg" className="bg-[#002D62] hover:bg-[#001d42] gap-2">
-                                        <BookOpen className="w-5 h-5" />
-                                        {t.ctaRead}
-                                        <ArrowRight className="w-5 h-5" />
-                                    </Button>
-                                </Link>
-                            )}
-                            <Button size="lg" variant="outline" className="gap-2" onClick={() => document.getElementById('newsletter')?.scrollIntoView({ behavior: 'smooth' })}>
-                                <Mail className="w-5 h-5" />
-                                {t.ctaNewsletter}
-                            </Button>
-                        </div>
-                    </motion.div>
-                </div>
-            </section>
-
-            {/* Featured Articles */}
-            <section className="py-16 px-4 md:px-6 bg-white">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-3xl font-bold text-[#002D62]">{t.featured}</h2>
-                        <div className="flex gap-2">
-                            <Button
-                                variant={tierFilter === 'all' ? 'default' : 'outline'}
-                                size="sm"
-                                onClick={() => setTierFilter('all')}
-                            >
-                                {lang === 'pt' ? 'Todos' : 'All'}
-                            </Button>
-                            <Button
-                                variant={tierFilter === 'troyjo_certified' ? 'default' : 'outline'}
-                                size="sm"
-                                onClick={() => setTierFilter('troyjo_certified')}
-                                className={tierFilter === 'troyjo_certified' ? 'bg-[#B8860B] hover:bg-[#9a7209]' : ''}
-                            >
-                                © Troyjo
-                            </Button>
-                            <Button
-                                variant={tierFilter === 'curator_approved' ? 'default' : 'outline'}
-                                size="sm"
-                                onClick={() => setTierFilter('curator_approved')}
-                            >
-                                {lang === 'pt' ? 'Verificado' : 'Verified'}
-                            </Button>
-                        </div>
-                    </div>
-                    {isLoading ? (
-                        <div className="text-center py-12 text-[#333F48]/60">{t.loading}</div>
-                    ) : (() => {
-                        const filtered = tierFilter === 'all' 
-                            ? featuredArticles 
-                            : featuredArticles.filter(a => a.quality_tier === tierFilter);
-                        
-                        return filtered.length > 0 ? (
-                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {filtered.map((article, index) => (
-                                    <ArticleCard key={article.id} article={article} lang={lang} index={index} />
+                    <div className="flex items-center gap-4">
+                        <div className="relative group">
+                            <button className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 hover:border-[#002D62] bg-white hover:bg-gray-50 transition-all text-sm font-medium">
+                                <Globe className="w-4 h-4 text-[#002D62]" />
+                                <span>{langNames[lang]}</span>
+                            </button>
+                            <div className="absolute right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 min-w-[180px]">
+                                {supportedLangs.map(l => (
+                                    <button
+                                        key={l}
+                                        onClick={() => {
+                                            setLang(l);
+                                            localStorage.setItem('troyjo_lang', l);
+                                        }}
+                                        className={`w-full text-left px-4 py-3 hover:bg-[#002D62] hover:text-white transition-colors ${
+                                            lang === l ? 'bg-[#002D62]/5 text-[#002D62] font-medium' : 'text-gray-700'
+                                        }`}
+                                    >
+                                        {langNames[l]}
+                                    </button>
                                 ))}
                             </div>
-                        ) : (
-                            <div className="text-center py-12 text-[#333F48]/60">
-                                {lang === 'pt' ? 'Nenhum artigo nesta categoria' : 'No articles in this category'}
-                            </div>
-                        );
-                    })()}
-                </div>
-            </section>
-
-            {/* Editorial Calendar */}
-            <section className="py-16 px-4 md:px-6">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex items-center gap-3 mb-8">
-                        <Calendar className="w-8 h-8 text-[#002D62]" />
-                        <h2 className="text-3xl font-bold text-[#002D62]">{t.backlog}</h2>
+                        </div>
+                        <Link to={createPageUrl('Home')}>
+                            <Button className="bg-[#002D62] hover:bg-[#001d42]">
+                                {text.hero.cta}
+                                <ArrowRight className="w-4 h-4 ml-2" />
+                            </Button>
+                        </Link>
                     </div>
-                    
-                    <Tabs defaultValue="next_weeks" className="w-full">
-                        <TabsList className="mb-6">
-                            <TabsTrigger value="next_weeks">{t.nextWeeks}</TabsTrigger>
-                            <TabsTrigger value="daily">{t.dailyContent}</TabsTrigger>
-                        </TabsList>
-                        
-                        <TabsContent value="next_weeks">
-                            {nextWeekItems.length > 0 ? (
-                                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {nextWeekItems.map((item, index) => (
-                                        <EditorialCard key={item.id} item={item} lang={lang} index={index} />
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-12 text-[#333F48]/60">
-                                    {lang === 'pt' ? 'Nenhum item programado' : 'No items scheduled'}
-                                </div>
-                            )}
-                        </TabsContent>
-                        
-                        <TabsContent value="daily">
-                            {dailyItems.length > 0 ? (
-                                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                    {dailyItems.map((item, index) => (
-                                        <EditorialCard key={item.id} item={item} lang={lang} index={index} />
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-12 text-[#333F48]/60">
-                                    {lang === 'pt' ? 'Nenhum conteúdo diário programado' : 'No daily content scheduled'}
-                                </div>
-                            )}
-                        </TabsContent>
-                    </Tabs>
+                </div>
+            </nav>
+
+            {/* Hero Section */}
+            <section className="pt-20 pb-32 bg-gradient-to-b from-gray-50 to-white">
+                <div className="max-w-7xl mx-auto px-4 md:px-6">
+                    <div className="text-center max-w-4xl mx-auto">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6 }}
+                        >
+                            <Badge className="mb-6 bg-[#002D62] text-white">{text.hero.badge}</Badge>
+                            <h1 className="text-5xl md:text-7xl font-bold text-[#002D62] mb-6 leading-tight">
+                                {text.hero.title}
+                            </h1>
+                            <p className="text-2xl md:text-3xl text-gray-600 mb-4">
+                                {text.hero.subtitle}
+                            </p>
+                            <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto">
+                                {text.hero.description}
+                            </p>
+                            <div className="flex gap-4 justify-center">
+                                <Link to={createPageUrl('Home')}>
+                                    <Button size="lg" className="bg-[#002D62] hover:bg-[#001d42] text-lg px-8 py-6">
+                                        {text.hero.cta}
+                                        <ArrowRight className="w-5 h-5 ml-2" />
+                                    </Button>
+                                </Link>
+                                <Link to={createPageUrl('Website')}>
+                                    <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-[#002D62] text-[#002D62]">
+                                        {text.hero.demo}
+                                    </Button>
+                                </Link>
+                            </div>
+                        </motion.div>
+                    </div>
                 </div>
             </section>
 
-            {/* About */}
-            <section className="py-16 px-4 md:px-6 bg-white">
-                <div className="max-w-4xl mx-auto">
-                    <h2 className="text-3xl font-bold text-[#002D62] mb-6">{t.about}</h2>
-                    <p className="text-lg text-[#333F48] leading-relaxed">
-                        {t.aboutText}
-                    </p>
+            {/* Stats Section */}
+            <section className="py-20 bg-[#002D62]">
+                <div className="max-w-7xl mx-auto px-4 md:px-6">
+                    <h2 className="text-3xl font-bold text-white text-center mb-12">{text.stats.title}</h2>
+                    <div className="grid md:grid-cols-4 gap-8">
+                        {text.stats.items.map((stat, idx) => (
+                            <motion.div
+                                key={idx}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: idx * 0.1 }}
+                                className="text-center"
+                            >
+                                <div className="text-4xl font-bold text-[#D4AF37] mb-2">{stat.value}</div>
+                                <div className="text-white/80">{stat.label}</div>
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
-            {/* Newsletter */}
-            <section id="newsletter" className="py-16 px-4 md:px-6 bg-gradient-to-br from-[#002D62] to-[#00654A]">
-                <div className="max-w-2xl mx-auto text-center">
-                    <h2 className="text-3xl font-bold text-white mb-4">{t.contact}</h2>
-                    <p className="text-white/90 mb-6">
-                        {lang === 'pt' 
-                            ? 'Receba análises semanais diretamente no seu e-mail' 
-                            : 'Receive weekly analysis directly in your inbox'}
-                    </p>
-                    <form onSubmit={handleSubscribe} className="flex gap-3 max-w-md mx-auto">
-                        <Input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder={t.email}
-                            className="bg-white"
-                            required
-                        />
-                        <Button type="submit" variant="secondary" className="gap-2">
-                            <Mail className="w-4 h-4" />
-                            {t.subscribe}
+            {/* Features Section */}
+            <section className="py-20">
+                <div className="max-w-7xl mx-auto px-4 md:px-6">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-bold text-[#002D62] mb-4">{text.features.title}</h2>
+                        <p className="text-lg text-gray-600">{text.features.subtitle}</p>
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-8">
+                        {text.features.items.map((feature, idx) => {
+                            const Icon = feature.icon;
+                            return (
+                                <motion.div
+                                    key={idx}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: idx * 0.1 }}
+                                >
+                                    <Card className="h-full hover:shadow-lg transition-all border-gray-200 hover:border-[#002D62]">
+                                        <CardHeader>
+                                            <div className="w-12 h-12 rounded-xl bg-[#002D62]/10 flex items-center justify-center mb-4">
+                                                <Icon className="w-6 h-6 text-[#002D62]" />
+                                            </div>
+                                            <CardTitle className="text-xl">{feature.title}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p className="text-gray-600">{feature.desc}</p>
+                                        </CardContent>
+                                    </Card>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </section>
+
+            {/* Personas Section */}
+            <section className="py-20 bg-gray-50">
+                <div className="max-w-7xl mx-auto px-4 md:px-6">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-bold text-[#002D62] mb-4">{text.personas.title}</h2>
+                        <p className="text-lg text-gray-600">{text.personas.subtitle}</p>
+                    </div>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {text.personas.items.map((persona, idx) => (
+                            <motion.div
+                                key={idx}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: idx * 0.1 }}
+                            >
+                                <Card className="text-center p-6 hover:shadow-lg transition-all">
+                                    <div className="w-16 h-16 rounded-full bg-[#00654A]/10 flex items-center justify-center mx-auto mb-4">
+                                        <Star className="w-8 h-8 text-[#00654A]" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-[#002D62] mb-2">{persona.title}</h3>
+                                    <p className="text-sm text-gray-600">{persona.desc}</p>
+                                </Card>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* CTA Section */}
+            <section className="py-20 bg-gradient-to-r from-[#002D62] to-[#00654A]">
+                <div className="max-w-4xl mx-auto px-4 md:px-6 text-center">
+                    <h2 className="text-4xl font-bold text-white mb-4">{text.cta.title}</h2>
+                    <p className="text-xl text-white/80 mb-8">{text.cta.subtitle}</p>
+                    <Link to={createPageUrl('Home')}>
+                        <Button size="lg" className="bg-white text-[#002D62] hover:bg-gray-100 text-lg px-8 py-6">
+                            {text.cta.button}
+                            <ChevronRight className="w-5 h-5 ml-2" />
                         </Button>
-                    </form>
+                    </Link>
                 </div>
             </section>
 
             {/* Footer */}
-            <footer className="py-8 px-4 md:px-6 bg-white border-t">
-                <div className="max-w-7xl mx-auto text-center text-sm text-[#333F48]/70">
-                    <p>© 2025 Marcos Prado Troyjo Digital Twin</p>
-                    <p className="mt-2">
-                        {lang === 'pt' 
-                            ? 'Desenvolvido por Grupo Fratoz. Powered by CAIO.Vision.' 
-                            : 'Developed by Grupo Fratoz. Powered by CAIO.Vision.'}
+            <footer className="bg-gray-900 text-white py-12">
+                <div className="max-w-7xl mx-auto px-4 md:px-6 text-center">
+                    <p className="text-gray-400">
+                        © 2025 Troyjo Twin. {lang === 'pt' ? 'Todos os direitos reservados.' : 'All rights reserved.'}
                     </p>
                 </div>
             </footer>

@@ -336,17 +336,18 @@ export default function Dashboard() {
     return (
         <div className="min-h-screen bg-[#FAFAFA]" data-ai-screen="Dashboard">
                 {/* Header */}
-                <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
-                <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Link to={createPageUrl('Home')}>
-                            <Button variant="ghost" size="sm" className="text-[#333F48] gap-2">
-                                <ArrowLeft className="w-4 h-4" />
-                                <span className="hidden sm:inline">{t.back}</span>
-                            </Button>
-                        </Link>
+                <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+                <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl overflow-hidden shadow-sm">
+                            <img 
+                                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/7b4794e58_CapturadeTela2025-12-23s93044PM.png"
+                                alt="MT Logo"
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
                         <div>
-                            <h1 className="font-bold text-[#002D62] text-lg">{t.title}</h1>
+                            <h1 className="font-bold text-[#002D62] text-base">{t.title}</h1>
                             <p className="text-xs text-[#333F48]/60">{t.subtitle}</p>
                         </div>
                     </div>
@@ -364,7 +365,7 @@ export default function Dashboard() {
                                 <Button 
                                     data-ai-id="btn_new_chat"
                                     data-ai-role="button"
-                                    className="bg-[#002D62] hover:bg-[#001d42] text-white gap-2"
+                                    className="bg-[#002D62] hover:bg-[#001d42] text-white gap-2 shadow-sm"
                                 >
                                     <MessageSquare className="w-4 h-4" />
                                     <span className="hidden sm:inline">{t.newChat}</span>
@@ -372,7 +373,7 @@ export default function Dashboard() {
                             </Link>
                     </div>
                 </div>
-            </header>
+                </header>
 
             <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 space-y-8">
                 {/* Tab Navigation */}
@@ -409,8 +410,46 @@ export default function Dashboard() {
                 {/* Conditional Content Based on Active Tab */}
                 {activeTab === 'todos' && (
                     <>
-                        {/* Customizable Dashboard */}
+                        {/* Quick Actions */}
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                            <div className="grid md:grid-cols-4 gap-4">
+                                <Link to={createPageUrl('Consultation')}>
+                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#002D62]/20 hover:border-[#002D62]">
+                                        <CardContent className="p-6 text-center">
+                                            <MessageSquare className="w-8 h-8 mx-auto mb-3 text-[#002D62]" />
+                                            <h3 className="font-semibold text-sm">{lang === 'pt' ? 'Nova Consulta' : 'New Consultation'}</h3>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
+                                <Link to={createPageUrl('KnowledgeBase')}>
+                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#00654A]/20 hover:border-[#00654A]">
+                                        <CardContent className="p-6 text-center">
+                                            <BookOpen className="w-8 h-8 mx-auto mb-3 text-[#00654A]" />
+                                            <h3 className="font-semibold text-sm">{lang === 'pt' ? 'Base de Conhecimento' : 'Knowledge Base'}</h3>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
+                                <Link to={createPageUrl('AnalyticsDashboard')}>
+                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#8B1538]/20 hover:border-[#8B1538]">
+                                        <CardContent className="p-6 text-center">
+                                            <TrendingUp className="w-8 h-8 mx-auto mb-3 text-[#8B1538]" />
+                                            <h3 className="font-semibold text-sm">Analytics</h3>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
+                                <Link to={createPageUrl('Website')}>
+                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#D4AF37]/20 hover:border-[#D4AF37]">
+                                        <CardContent className="p-6 text-center">
+                                            <Globe className="w-8 h-8 mx-auto mb-3 text-[#D4AF37]" />
+                                            <h3 className="font-semibold text-sm">{lang === 'pt' ? 'Website Público' : 'Public Website'}</h3>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
+                            </div>
+                        </motion.div>
+
+                        {/* Customizable Dashboard */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                             <CustomizableDashboard lang={lang} />
                         </motion.div>
 

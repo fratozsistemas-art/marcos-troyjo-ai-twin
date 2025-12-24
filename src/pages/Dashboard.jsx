@@ -35,6 +35,7 @@ import PublicationsSection from '@/components/dashboard/PublicationsSection';
 import VoiceCalibration from '@/components/voice-calibration/VoiceCalibration';
 import PersonaAnalytics from '@/components/dashboard/PersonaAnalytics';
 import CustomizableDashboard from '@/components/dashboard/CustomizableDashboard';
+import OnboardingTour from '@/components/onboarding/OnboardingTour';
 
 import TopicDeepDive from '@/components/topics/TopicDeepDive';
 import CustomPersonaTraits from '@/components/persona/CustomPersonaTraits';
@@ -206,6 +207,8 @@ export default function Dashboard() {
     const [generatingSummary, setGeneratingSummary] = useState(null);
     const [conversationSummaries, setConversationSummaries] = useState({});
     const [pendingReviews, setPendingReviews] = useState({ twin: 0, human: 0 });
+    const [showOnboarding, setShowOnboarding] = useState(false);
+    const [user, setUser] = useState(null);
     const t = translations[lang];
 
     const tabs = [
@@ -227,7 +230,26 @@ export default function Dashboard() {
     useEffect(() => {
         loadConversations();
         loadPendingReviews();
+        checkOnboarding();
     }, []);
+
+    const checkOnboarding = async () => {
+        try {
+            const currentUser = await base44.auth.me();
+            setUser(currentUser);
+            
+            // Check if user has completed onboarding
+            if (!currentUser.onboarding_completed && !currentUser.onboarding_skipped) {
+                setShowOnboarding(true);
+            }
+        } catch (error) {
+            console.error('Error checking onboarding:', error);
+        }
+    };
+
+    const handleOnboardingComplete = () => {
+        setShowOnboarding(false);
+    };
 
     const loadConversations = async () => {
         setIsLoading(true);
@@ -342,6 +364,11 @@ export default function Dashboard() {
 
     return (
         <div className="min-h-screen bg-[#FAFAFA]" data-ai-screen="Dashboard">
+                {/* Onboarding Tour */}
+                {showOnboarding && (
+                    <OnboardingTour lang={lang} onComplete={handleOnboardingComplete} />
+                )}
+
                 {/* Header */}
                 <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
@@ -370,6 +397,7 @@ export default function Dashboard() {
                         )}
                         <Link to={createPageUrl('Consultation')}>
                                 <Button 
+                                    id="new-consultation-btn"
                                     data-ai-id="btn_new_chat"
                                     data-ai-role="button"
                                     className="bg-[#002D62] hover:bg-[#001d42] text-white gap-2 shadow-sm"
@@ -419,7 +447,7 @@ export default function Dashboard() {
                     <>
                         {/* Quick Actions */}
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                            <div className="grid md:grid-cols-4 gap-4">
+                            <div id="stats-panel" className="grid md:grid-cols-4 gap-4">
                                 <Link to={createPageUrl('Consultation')}>
                                     <Card className="hover:shadow-lg transition-all cursor-pointer border-[#002D62]/20 hover:border-[#002D62]">
                                         <CardContent className="p-6 text-center">
@@ -514,13 +542,13 @@ export default function Dashboard() {
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                                 <RecentlyViewed lang={lang} />
                             </motion.div>
-                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                            <motion.div id="insights-feed" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                                 <PersonalizedRecommendations lang={lang} />
                             </motion.div>
                         </div>
 
                         {/* First Row - Profile Settings Full Width */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <motion.div id="profile-card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                             <ProfileSettings lang={lang} />
                         </motion.div>
 
@@ -621,7 +649,7 @@ export default function Dashboard() {
 
                 {/* Fourth Row - Topic Tracker & Persona Analytics (Compact Cards) */}
                 <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }}>
+                    <motion.div id="trending-topics" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }}>
                         <TopicTracker lang={lang} />
                     </motion.div>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.34 }}>

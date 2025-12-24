@@ -300,37 +300,32 @@ export default function PublicHome() {
                                     </p>
                                 </div>
                                 
-                                <div className="flex flex-wrap gap-4">
-                                    <Link to={createPageUrl('Home')}>
-                                        <Button size="lg" className="bg-[#002D62] hover:bg-[#001d42] text-white gap-2 text-lg px-8">
-                                            {text.cta}
+                                <div className="flex flex-wrap justify-center gap-4 mb-12">
+                                    <Link to={createPageUrl('Consultation')}>
+                                        <Button size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white gap-2 text-lg px-10 py-6 rounded-full shadow-xl">
+                                            <MessageSquare className="w-5 h-5" />
+                                            {lang === 'pt' ? 'Iniciar Consulta' : 'Start Consultation'}
                                             <ArrowRight className="w-5 h-5" />
-                                        </Button>
-                                    </Link>
-                                    <Link to={createPageUrl('Pricing')}>
-                                        <Button size="lg" variant="outline" className="gap-2 text-lg px-8 border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white">
-                                            <DollarSign className="w-5 h-5" />
-                                            {text.viewPlans}
                                         </Button>
                                     </Link>
                                 </div>
 
-                                <div className="grid grid-cols-4 gap-4 mt-8">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-[#002D62]">95%+</div>
-                                        <div className="text-xs text-[#6B6B6B]">{lang === 'pt' ? 'Fidelidade HUA' : 'HUA Fidelity'}</div>
+                                        <div className="text-4xl font-bold text-white mb-2">30+</div>
+                                        <div className="text-sm text-gray-400">{lang === 'pt' ? 'Anos de Experiência' : 'Years of Experience'}</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-[#002D62]">24/7</div>
-                                        <div className="text-xs text-[#6B6B6B]">{lang === 'pt' ? 'Disponível' : 'Available'}</div>
+                                        <div className="text-4xl font-bold text-white mb-2">BRICS</div>
+                                        <div className="text-sm text-gray-400">{lang === 'pt' ? 'Ex-Presidente do Banco' : 'Former Bank President'}</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-[#002D62]">11</div>
-                                        <div className="text-xs text-[#6B6B6B]">{lang === 'pt' ? 'Neologismos' : 'Neologisms'}</div>
+                                        <div className="text-4xl font-bold text-white mb-2">3</div>
+                                        <div className="text-sm text-gray-400">{lang === 'pt' ? 'Livros Publicados' : 'Published Books'}</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-[#002D62]">2020-2023</div>
-                                        <div className="text-xs text-[#6B6B6B]">{lang === 'pt' ? 'Pres. NDB' : 'NDB Pres.'}</div>
+                                        <div className="text-4xl font-bold text-white mb-2">Global</div>
+                                        <div className="text-sm text-gray-400">{lang === 'pt' ? 'Alcance Geopolítico' : 'Geopolitical Reach'}</div>
                                     </div>
                                 </div>
                             </motion.div>

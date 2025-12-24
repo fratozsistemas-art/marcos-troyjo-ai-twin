@@ -6,13 +6,13 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, FileText, Download, Loader2, FileSpreadsheet, Calendar, Shield, Users, Globe } from 'lucide-react';
+import { ArrowLeft, FileText, Wand2 } from 'lucide-react';
+import ReportBuilder from '../components/reports/ReportBuilder';
+import AdvancedFilters from '../components/reports/AdvancedFilters';
+import ReportPreview from '../components/reports/ReportPreview';
+import PDFCustomizer from '../components/reports/PDFCustomizer';
 
 const translations = {
     pt: {
@@ -152,20 +152,24 @@ export default function SSOTReports() {
 
     const [config, setConfig] = useState({
         entities: { Forum: true, Event: false, KeyActor: false },
-        filters: {
-            startDate: '',
-            endDate: '',
-            strategicImportance: 'all'
-        },
         fields: {
             Forum: ['name', 'type', 'members', 'key_themes'],
             Event: ['name', 'event_type', 'start_date', 'location', 'status'],
             KeyActor: ['name', 'type', 'country', 'role', 'strategic_importance']
+        },
+        advancedFilters: [],
+        pdfConfig: {
+            title: lang === 'pt' ? 'Relatório SSOT' : 'SSOT Report',
+            orientation: 'portrait',
+            fontSize: 'medium',
+            includeHeader: true,
+            includeFooter: true,
+            includeDate: true,
+            includeAuthor: true,
+            colorScheme: 'default',
+            logoPosition: 'top-left'
         }
     });
-
-    const [reportData, setReportData] = useState(null);
-    const [isGenerating, setIsGenerating] = useState(false);
 
     const handleEntityToggle = (entity) => {
         setConfig(prev => ({
@@ -174,93 +178,73 @@ export default function SSOTReports() {
         }));
     };
 
-    const handleFieldToggle = (entity, field) => {
-        setConfig(prev => ({
-            ...prev,
-            fields: {
-                ...prev.fields,
-                [entity]: prev.fields[entity].includes(field)
-                    ? prev.fields[entity].filter(f => f !== field)
-                    : [...prev.fields[entity], field]
-            }
-        }));
-    };
+    const selectedEntities = Object.keys(config.entities).filter(e => config.entities[e]);
 
-    const handleGenerate = async () => {
-        const selectedEntities = Object.keys(config.entities).filter(e => config.entities[e]);
-        if (selectedEntities.length === 0) {
-            toast.error(lang === 'pt' ? 'Selecione pelo menos uma entidade' : 'Select at least one entity');
-            return;
-        }
-
-        setIsGenerating(true);
+    const exportCSV = async () => {
         try {
             const response = await base44.functions.invoke('generateSSOTReport', {
                 entities: selectedEntities,
-                filters: config.filters,
+                filters: config.advancedFilters,
                 fields: config.fields
             });
 
-            if (response.data?.data) {
-                setReportData(response.data.data);
-                toast.success(lang === 'pt' ? 'Relatório gerado!' : 'Report generated!');
-            }
+            if (!response.data?.data) return;
+            const reportData = response.data.data;
+
+            let csvContent = '';
+            Object.keys(reportData).forEach(entity => {
+                const data = reportData[entity];
+                if (data.length === 0) return;
+
+                csvContent += `\n${entity}\n`;
+                const headers = Object.keys(data[0]);
+                csvContent += headers.join(',') + '\n';
+                
+                data.forEach(row => {
+                    const values = headers.map(h => {
+                        const val = row[h];
+                        if (Array.isArray(val)) return `"${val.join('; ')}"`;
+                        if (typeof val === 'object') return `"${JSON.stringify(val)}"`;
+                        return `"${val || ''}"`;
+                    });
+                    csvContent += values.join(',') + '\n';
+                });
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ssot_report_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+            toast.success(lang === 'pt' ? 'CSV exportado!' : 'CSV exported!');
         } catch (error) {
-            console.error('Error generating report:', error);
-            toast.error(lang === 'pt' ? 'Erro ao gerar relatório' : 'Error generating report');
-        } finally {
-            setIsGenerating(false);
+            console.error('Error exporting CSV:', error);
+            toast.error(lang === 'pt' ? 'Erro ao exportar CSV' : 'Error exporting CSV');
         }
     };
 
-    const exportCSV = () => {
-        if (!reportData) return;
-
-        let csvContent = '';
-        
-        Object.keys(reportData).forEach(entity => {
-            const data = reportData[entity];
-            if (data.length === 0) return;
-
-            csvContent += `\n${entity}\n`;
-            const headers = Object.keys(data[0]);
-            csvContent += headers.join(',') + '\n';
-            
-            data.forEach(row => {
-                const values = headers.map(h => {
-                    const val = row[h];
-                    if (Array.isArray(val)) return `"${val.join('; ')}"`;
-                    if (typeof val === 'object') return `"${JSON.stringify(val)}"`;
-                    return `"${val || ''}"`;
-                });
-                csvContent += values.join(',') + '\n';
-            });
-        });
-
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `ssot_report_${new Date().toISOString().split('T')[0]}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        a.remove();
-        toast.success(lang === 'pt' ? 'CSV exportado!' : 'CSV exported!');
-    };
-
     const exportPDF = async () => {
-        if (!reportData) return;
-
         try {
-            const response = await base44.functions.invoke('exportSSOTReportPDF', {
-                reportData,
-                config,
+            const response = await base44.functions.invoke('generateSSOTReport', {
+                entities: selectedEntities,
+                filters: config.advancedFilters,
+                fields: config.fields
+            });
+
+            if (!response.data?.data) return;
+
+            const pdfResponse = await base44.functions.invoke('exportSSOTReportPDF', {
+                reportData: response.data.data,
+                pdfConfig: config.pdfConfig,
                 lang
             });
 
-            if (response.data?.pdf_url) {
-                window.open(response.data.pdf_url, '_blank');
+            if (pdfResponse.data?.pdf_url) {
+                window.open(pdfResponse.data.pdf_url, '_blank');
                 toast.success(lang === 'pt' ? 'PDF exportado!' : 'PDF exported!');
             }
         } catch (error) {
@@ -286,218 +270,88 @@ export default function SSOTReports() {
                     </Link>
                 </div>
 
-                <div className="grid lg:grid-cols-2 gap-6">
+                <div className="grid lg:grid-cols-5 gap-6">
                     {/* Configuration Panel */}
-                    <div className="space-y-6">
+                    <div className="lg:col-span-2 space-y-6">
                         {/* Entity Selection */}
                         <Card>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <FileText className="w-5 h-5 text-[#002D62]" />
+                                <CardTitle className="flex items-center gap-2 text-sm">
+                                    <Wand2 className="w-5 h-5 text-[#002D62]" />
                                     {t.selectEntities}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-3">
-                                {[
-                                    { key: 'Forum', label: t.forums, icon: Globe },
-                                    { key: 'Event', label: t.events, icon: Calendar },
-                                    { key: 'KeyActor', label: t.keyActors, icon: Users }
-                                ].map(({ key, label, icon: Icon }) => (
-                                    <div key={key} className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id={key}
-                                            checked={config.entities[key]}
-                                            onCheckedChange={() => handleEntityToggle(key)}
-                                        />
-                                        <Label htmlFor={key} className="flex items-center gap-2 cursor-pointer">
-                                            <Icon className="w-4 h-4 text-[#002D62]" />
-                                            {label}
-                                        </Label>
-                                    </div>
-                                ))}
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id="Forum"
+                                        checked={config.entities.Forum}
+                                        onCheckedChange={() => handleEntityToggle('Forum')}
+                                    />
+                                    <Label htmlFor="Forum" className="cursor-pointer text-sm">
+                                        {t.forums}
+                                    </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id="Event"
+                                        checked={config.entities.Event}
+                                        onCheckedChange={() => handleEntityToggle('Event')}
+                                    />
+                                    <Label htmlFor="Event" className="cursor-pointer text-sm">
+                                        {t.events}
+                                    </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id="KeyActor"
+                                        checked={config.entities.KeyActor}
+                                        onCheckedChange={() => handleEntityToggle('KeyActor')}
+                                    />
+                                    <Label htmlFor="KeyActor" className="cursor-pointer text-sm">
+                                        {t.keyActors}
+                                    </Label>
+                                </div>
                             </CardContent>
                         </Card>
 
-                        {/* Filters */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>{t.filters}</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                {config.entities.Event && (
-                                    <div className="space-y-3">
-                                        <Label className="text-sm font-semibold">{t.dateRange}</Label>
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <div>
-                                                <Label className="text-xs">{t.startDate}</Label>
-                                                <Input
-                                                    type="date"
-                                                    value={config.filters.startDate}
-                                                    onChange={(e) => setConfig(prev => ({
-                                                        ...prev,
-                                                        filters: { ...prev.filters, startDate: e.target.value }
-                                                    }))}
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label className="text-xs">{t.endDate}</Label>
-                                                <Input
-                                                    type="date"
-                                                    value={config.filters.endDate}
-                                                    onChange={(e) => setConfig(prev => ({
-                                                        ...prev,
-                                                        filters: { ...prev.filters, endDate: e.target.value }
-                                                    }))}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
+                        {/* Report Builder with Drag-Drop */}
+                        {selectedEntities.length > 0 && (
+                            <ReportBuilder
+                                selectedEntities={selectedEntities}
+                                selectedFields={config.fields}
+                                onFieldsChange={(fields) => setConfig(prev => ({ ...prev, fields }))}
+                                lang={lang}
+                            />
+                        )}
 
-                                {config.entities.KeyActor && (
-                                    <div className="space-y-2">
-                                        <Label className="text-sm font-semibold">{t.strategicImportance}</Label>
-                                        <Select
-                                            value={config.filters.strategicImportance}
-                                            onValueChange={(value) => setConfig(prev => ({
-                                                ...prev,
-                                                filters: { ...prev.filters, strategicImportance: value }
-                                            }))}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="all">{t.all}</SelectItem>
-                                                <SelectItem value="critical">{t.critical}</SelectItem>
-                                                <SelectItem value="high">{t.high}</SelectItem>
-                                                <SelectItem value="medium">{t.medium}</SelectItem>
-                                                <SelectItem value="low">{t.low}</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
+                        {/* Advanced Filters */}
+                        {selectedEntities.length > 0 && (
+                            <AdvancedFilters
+                                selectedEntities={selectedEntities}
+                                filters={config.advancedFilters}
+                                onFiltersChange={(filters) => setConfig(prev => ({ ...prev, advancedFilters: filters }))}
+                                lang={lang}
+                            />
+                        )}
 
-                        {/* Field Selection */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>{t.fields}</CardTitle>
-                                <CardDescription>{t.selectFields}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                {Object.keys(config.entities).filter(e => config.entities[e]).map(entity => (
-                                    <div key={entity} className="space-y-2">
-                                        <Label className="text-sm font-semibold text-[#002D62]">
-                                            {entity === 'Forum' ? t.forums : entity === 'Event' ? t.events : t.keyActors}
-                                        </Label>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            {Object.keys(entityFields[entity][lang]).map(field => (
-                                                <div key={field} className="flex items-center space-x-2">
-                                                    <Checkbox
-                                                        id={`${entity}-${field}`}
-                                                        checked={config.fields[entity].includes(field)}
-                                                        onCheckedChange={() => handleFieldToggle(entity, field)}
-                                                    />
-                                                    <Label
-                                                        htmlFor={`${entity}-${field}`}
-                                                        className="text-xs cursor-pointer"
-                                                    >
-                                                        {entityFields[entity][lang][field]}
-                                                    </Label>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ))}
-                            </CardContent>
-                        </Card>
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-3">
-                            <Button
-                                onClick={handleGenerate}
-                                disabled={isGenerating}
-                                className="flex-1 bg-[#002D62] hover:bg-[#001d42]"
-                            >
-                                {isGenerating ? (
-                                    <>
-                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                        {t.generating}
-                                    </>
-                                ) : (
-                                    <>
-                                        <FileText className="w-4 h-4 mr-2" />
-                                        {t.generate}
-                                    </>
-                                )}
-                            </Button>
-                        </div>
+                        {/* PDF Customizer */}
+                        <PDFCustomizer
+                            config={config.pdfConfig}
+                            onConfigChange={(pdfConfig) => setConfig(prev => ({ ...prev, pdfConfig }))}
+                            lang={lang}
+                        />
                     </div>
 
-                    {/* Report Preview */}
-                    <Card className="lg:sticky lg:top-6 h-fit">
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <CardTitle>{t.preview}</CardTitle>
-                                {reportData && (
-                                    <div className="flex gap-2">
-                                        <Button variant="outline" size="sm" onClick={exportCSV}>
-                                            <FileSpreadsheet className="w-4 h-4 mr-2" />
-                                            {t.exportCSV}
-                                        </Button>
-                                        <Button variant="outline" size="sm" onClick={exportPDF}>
-                                            <Download className="w-4 h-4 mr-2" />
-                                            {t.exportPDF}
-                                        </Button>
-                                    </div>
-                                )}
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            {!reportData ? (
-                                <div className="text-center py-12 text-[#6B6B6B]">
-                                    <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                    <p className="text-sm">{t.noData}</p>
-                                </div>
-                            ) : (
-                                <div className="space-y-4 max-h-[600px] overflow-y-auto">
-                                    {Object.keys(reportData).map(entity => (
-                                        <div key={entity}>
-                                            <h3 className="font-semibold text-[#002D62] mb-2 flex items-center gap-2">
-                                                {entity === 'Forum' && <Globe className="w-4 h-4" />}
-                                                {entity === 'Event' && <Calendar className="w-4 h-4" />}
-                                                {entity === 'KeyActor' && <Users className="w-4 h-4" />}
-                                                {entity === 'Forum' ? t.forums : entity === 'Event' ? t.events : t.keyActors}
-                                                <Badge variant="outline">{reportData[entity].length}</Badge>
-                                            </h3>
-                                            <div className="space-y-2">
-                                                {reportData[entity].slice(0, 5).map((item, idx) => (
-                                                    <div key={idx} className="text-xs p-2 bg-gray-50 rounded border border-gray-100">
-                                                        <div className="font-semibold text-[#002D62]">{item.name}</div>
-                                                        {Object.entries(item).slice(1, 4).map(([key, value]) => (
-                                                            <div key={key} className="text-[#6B6B6B]">
-                                                                <span className="font-medium">{entityFields[entity][lang][key]}:</span>{' '}
-                                                                {Array.isArray(value) ? value.join(', ') : 
-                                                                 typeof value === 'object' ? JSON.stringify(value) : value}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                ))}
-                                                {reportData[entity].length > 5 && (
-                                                    <p className="text-xs text-[#6B6B6B] italic">
-                                                        + {reportData[entity].length - 5} {lang === 'pt' ? 'mais registros' : 'more records'}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <Separator className="my-4" />
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                    {/* Real-Time Report Preview */}
+                    <div className="lg:col-span-3 lg:sticky lg:top-6 h-fit">
+                        <ReportPreview
+                            config={config}
+                            onExportCSV={exportCSV}
+                            onExportPDF={exportPDF}
+                            lang={lang}
+                        />
+                    </div>
                 </div>
             </div>
         </div>

@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { entities, filters, fields } = await req.json();
+        const { entities, filters = [], fields } = await req.json();
 
         if (!entities || !Array.isArray(entities) || entities.length === 0) {
             return Response.json({ error: 'No entities selected' }, { status: 400 });
@@ -39,15 +39,18 @@ Deno.serve(async (req) => {
         if (entities.includes('Event')) {
             let eventQuery = { active: true };
             
-            // Apply date filters
-            if (filters.startDate || filters.endDate) {
-                eventQuery.start_date = {};
-                if (filters.startDate) {
-                    eventQuery.start_date.$gte = filters.startDate;
-                }
-                if (filters.endDate) {
-                    eventQuery.start_date.$lte = filters.endDate;
-                }
+            // Apply advanced filters
+            if (Array.isArray(filters)) {
+                filters.filter(f => f.entity === 'Event' && f.field && f.value).forEach(filter => {
+                    const { field, operator, value } = filter;
+                    if (operator === 'eq') eventQuery[field] = value;
+                    else if (operator === 'ne') eventQuery[field] = { $ne: value };
+                    else if (operator === 'gt') eventQuery[field] = { $gt: value };
+                    else if (operator === 'gte') eventQuery[field] = { $gte: value };
+                    else if (operator === 'lt') eventQuery[field] = { $lt: value };
+                    else if (operator === 'lte') eventQuery[field] = { $lte: value };
+                    else if (operator === 'contains') eventQuery[field] = { $regex: value, $options: 'i' };
+                });
             }
 
             const events = await base44.entities.Event.filter(eventQuery);
@@ -70,9 +73,14 @@ Deno.serve(async (req) => {
         if (entities.includes('KeyActor')) {
             let actorQuery = { active: true };
             
-            // Apply strategic importance filter
-            if (filters.strategicImportance && filters.strategicImportance !== 'all') {
-                actorQuery.strategic_importance = filters.strategicImportance;
+            // Apply advanced filters
+            if (Array.isArray(filters)) {
+                filters.filter(f => f.entity === 'KeyActor' && f.field && f.value).forEach(filter => {
+                    const { field, operator, value } = filter;
+                    if (operator === 'eq') actorQuery[field] = value;
+                    else if (operator === 'ne') actorQuery[field] = { $ne: value };
+                    else if (operator === 'contains') actorQuery[field] = { $regex: value, $options: 'i' };
+                });
             }
 
             const actors = await base44.entities.KeyActor.filter(actorQuery);

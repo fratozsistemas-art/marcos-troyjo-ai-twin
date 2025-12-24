@@ -873,8 +873,8 @@ export default function Website() {
                             <h4 className="text-[#D4AF37] font-semibold mb-4">Marcos Troyjo Digital Twin</h4>
                             <p className="text-sm text-[#FAF7F2]/70 leading-relaxed">
                                 {lang === 'pt' 
-                                    ? 'Expertise geopolítica de classe mundial, disponível 24/7 via IA com 95%+ de fidelidade HUA-validada.'
-                                    : 'World-class geopolitical expertise, available 24/7 via AI with 95%+ HUA-validated fidelity.'}
+                                    ? 'Expertise geopolítica de classe mundial, disponível 24/7 via IA com 95%+ de fidelidade HUA-validada. Desenvolvido por CAIO ESIOS AI.'
+                                    : 'World-class geopolitical expertise, available 24/7 via AI with 95%+ HUA-validated fidelity. Developed by CAIO ESIOS AI.'}
                             </p>
                         </div>
                         <div>
@@ -920,9 +920,9 @@ export default function Website() {
                                 <li><Link to={createPageUrl('TermsOfService')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
                                     {lang === 'pt' ? 'Termos' : 'Terms'}
                                 </Link></li>
-                                <li><a href="https://caiovision.com.br" target="_blank" className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
-                                    CAIO.Vision
-                                </a></li>
+                                <li><Link to={createPageUrl('Assets')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                    {lang === 'pt' ? 'Conheça CAIO ESIOS AI' : 'Learn about CAIO ESIOS AI'}
+                                </Link></li>
                             </ul>
                         </div>
                     </div>
@@ -933,8 +933,8 @@ export default function Website() {
                         </p>
                         <p className="text-xs text-[#FAF7F2]/40">
                             {lang === 'pt' 
-                                ? 'Desenvolvido com TSI v9.3 Framework | HUA Protocol 95%+ Fidelity'
-                                : 'Developed with TSI v9.3 Framework | HUA Protocol 95%+ Fidelity'}
+                                ? 'Desenvolvido por CAIO ESIOS AI | TSI v9.3 Framework | HUA Protocol 95%+ Fidelity'
+                                : 'Developed by CAIO ESIOS AI | TSI v9.3 Framework | HUA Protocol 95%+ Fidelity'}
                         </p>
                     </div>
                 </div>

@@ -24,13 +24,14 @@ import Pricing from './pages/Pricing';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import PublicWebsite from './pages/PublicWebsite';
 import RoleManagement from './pages/RoleManagement';
+import SSOTReports from './pages/SSOTReports';
 import SecurityAdmin from './pages/SecurityAdmin';
 import StrategicIntelligenceBlog from './pages/StrategicIntelligenceBlog';
 import SystemHealth from './pages/SystemHealth';
 import TermsOfService from './pages/TermsOfService';
 import Website from './pages/Website';
 import Welcome from './pages/Welcome';
-import SSOTReports from './pages/SSOTReports';
+import DataVisualization from './pages/DataVisualization';
 import __Layout from './Layout.jsx';
 
 
@@ -61,13 +62,14 @@ export const PAGES = {
     "PrivacyPolicy": PrivacyPolicy,
     "PublicWebsite": PublicWebsite,
     "RoleManagement": RoleManagement,
+    "SSOTReports": SSOTReports,
     "SecurityAdmin": SecurityAdmin,
     "StrategicIntelligenceBlog": StrategicIntelligenceBlog,
     "SystemHealth": SystemHealth,
     "TermsOfService": TermsOfService,
     "Website": Website,
     "Welcome": Welcome,
-    "SSOTReports": SSOTReports,
+    "DataVisualization": DataVisualization,
 }
 
 export const pagesConfig = {

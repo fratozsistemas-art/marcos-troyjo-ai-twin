@@ -6,10 +6,104 @@ import { Card, CardContent } from '@/components/ui/card';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 
-const OnboardingTour = ({ lang = 'pt', onComplete }) => {
+const OnboardingTour = ({ lang = 'pt', onComplete, userRole = 'general' }) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [isVisible, setIsVisible] = useState(true);
     const [completedSteps, setCompletedSteps] = useState([]);
+    const [adaptedSteps, setAdaptedSteps] = useState([]);
+
+    const roleSpecificSteps = {
+        ceo: {
+            pt: {
+                additionalSteps: [
+                    {
+                        title: '📊 Insights Estratégicos para CEOs',
+                        description: 'Como CEO, você tem acesso a análises de alto nível focadas em decisões estratégicas, cenários geopolíticos e oportunidades de mercado.',
+                        target: 'insights-feed',
+                        highlight: 'insights'
+                    },
+                    {
+                        title: '📈 Dashboard Executivo',
+                        description: 'Métricas consolidadas e KPIs estratégicos para tomada de decisão rápida. Visualize tendências e padrões em suas consultas.',
+                        target: 'stats-panel',
+                        highlight: 'stats'
+                    }
+                ]
+            },
+            en: {
+                additionalSteps: [
+                    {
+                        title: '📊 Strategic Insights for CEOs',
+                        description: 'As a CEO, you have access to high-level analysis focused on strategic decisions, geopolitical scenarios and market opportunities.',
+                        target: 'insights-feed',
+                        highlight: 'insights'
+                    },
+                    {
+                        title: '📈 Executive Dashboard',
+                        description: 'Consolidated metrics and strategic KPIs for fast decision-making. Visualize trends and patterns in your consultations.',
+                        target: 'stats-panel',
+                        highlight: 'stats'
+                    }
+                ]
+            }
+        },
+        analyst: {
+            pt: {
+                additionalSteps: [
+                    {
+                        title: '🔍 Análise Profunda de Dados',
+                        description: 'Como Analista, você tem ferramentas para explorar dados em profundidade, visualizar tendências e extrair insights detalhados.',
+                        target: 'trending-topics',
+                        highlight: 'trending'
+                    },
+                    {
+                        title: '📑 Relatórios Customizados',
+                        description: 'Gere relatórios personalizados com dados estruturados e visualizações para suas análises estratégicas.',
+                        target: 'insights-feed',
+                        highlight: 'insights'
+                    }
+                ]
+            },
+            en: {
+                additionalSteps: [
+                    {
+                        title: '🔍 Deep Data Analysis',
+                        description: 'As an Analyst, you have tools to explore data in depth, visualize trends and extract detailed insights.',
+                        target: 'trending-topics',
+                        highlight: 'trending'
+                    },
+                    {
+                        title: '📑 Custom Reports',
+                        description: 'Generate custom reports with structured data and visualizations for your strategic analysis.',
+                        target: 'insights-feed',
+                        highlight: 'insights'
+                    }
+                ]
+            }
+        },
+        director: {
+            pt: {
+                additionalSteps: [
+                    {
+                        title: '🎯 Visão Departamental',
+                        description: 'Como Diretor, acompanhe insights relevantes para seu departamento e alinhe estratégias com objetivos organizacionais.',
+                        target: 'insights-feed',
+                        highlight: 'insights'
+                    }
+                ]
+            },
+            en: {
+                additionalSteps: [
+                    {
+                        title: '🎯 Departmental View',
+                        description: 'As a Director, track insights relevant to your department and align strategies with organizational goals.',
+                        target: 'insights-feed',
+                        highlight: 'insights'
+                    }
+                ]
+            }
+        }
+    };
 
     const t = {
         pt: {
@@ -133,7 +227,23 @@ const OnboardingTour = ({ lang = 'pt', onComplete }) => {
     };
 
     const text = t[lang];
-    const steps = text.steps;
+    const baseSteps = text.steps;
+
+    useEffect(() => {
+        // Adapt steps based on user role
+        const roleKey = userRole.toLowerCase();
+        let finalSteps = [...baseSteps];
+
+        if (roleSpecificSteps[roleKey] && roleSpecificSteps[roleKey][lang]) {
+            const roleSteps = roleSpecificSteps[roleKey][lang].additionalSteps;
+            // Insert role-specific steps after the "insights feed" step (index 2)
+            finalSteps.splice(3, 0, ...roleSteps);
+        }
+
+        setAdaptedSteps(finalSteps);
+    }, [userRole, lang]);
+
+    const steps = adaptedSteps.length > 0 ? adaptedSteps : baseSteps;
 
     useEffect(() => {
         if (steps[currentStep].target) {

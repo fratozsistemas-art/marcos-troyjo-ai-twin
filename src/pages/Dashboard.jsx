@@ -36,6 +36,8 @@ import VoiceCalibration from '@/components/voice-calibration/VoiceCalibration';
 import PersonaAnalytics from '@/components/dashboard/PersonaAnalytics';
 import CustomizableDashboard from '@/components/dashboard/CustomizableDashboard';
 import OnboardingTour from '@/components/onboarding/OnboardingTour';
+import ContextualHelp from '@/components/onboarding/ContextualHelp';
+import HelpButton from '@/components/onboarding/HelpButton';
 
 import TopicDeepDive from '@/components/topics/TopicDeepDive';
 import CustomPersonaTraits from '@/components/persona/CustomPersonaTraits';
@@ -247,6 +249,39 @@ export default function Dashboard() {
         }
     };
 
+    const getUserRole = () => {
+        if (!user) return 'general';
+        return user.professional_role || user.role || 'general';
+    };
+
+    const getRoleSpecificHelp = () => {
+        const role = getUserRole().toLowerCase();
+        const helps = {
+            ceo: {
+                'stats-panel': lang === 'pt' 
+                    ? 'CEOs utilizam estas métricas para decisões estratégicas rápidas e monitoramento de engajamento.'
+                    : 'CEOs use these metrics for fast strategic decisions and engagement monitoring.',
+                'insights-feed': lang === 'pt'
+                    ? 'Insights curados especialmente para liderança executiva, focados em oportunidades e riscos estratégicos.'
+                    : 'Insights curated especially for executive leadership, focused on strategic opportunities and risks.'
+            },
+            analyst: {
+                'trending-topics': lang === 'pt'
+                    ? 'Analistas exploram tópicos em tendência para identificar padrões e gerar relatórios detalhados.'
+                    : 'Analysts explore trending topics to identify patterns and generate detailed reports.',
+                'insights-feed': lang === 'pt'
+                    ? 'Feed com dados estruturados e fontes verificadas para análises profundas.'
+                    : 'Feed with structured data and verified sources for deep analysis.'
+            },
+            director: {
+                'insights-feed': lang === 'pt'
+                    ? 'Insights alinhados com objetivos departamentais e metas organizacionais.'
+                    : 'Insights aligned with departmental objectives and organizational goals.'
+            }
+        };
+        return helps[role] || {};
+    };
+
     const handleOnboardingComplete = () => {
         setShowOnboarding(false);
     };
@@ -366,25 +401,63 @@ export default function Dashboard() {
         <div className="min-h-screen bg-[#FAFAFA]" data-ai-screen="Dashboard">
                 {/* Onboarding Tour */}
                 {showOnboarding && (
-                    <OnboardingTour lang={lang} onComplete={handleOnboardingComplete} />
+                    <OnboardingTour 
+                        lang={lang} 
+                        onComplete={handleOnboardingComplete}
+                        userRole={getUserRole()}
+                    />
+                )}
+
+                {/* Contextual Help Overlays */}
+                {!showOnboarding && user && getRoleSpecificHelp()['stats-panel'] && (
+                    <ContextualHelp
+                        elementId="stats-panel"
+                        content={getRoleSpecificHelp()['stats-panel']}
+                        lang={lang}
+                        role={getUserRole()}
+                    />
+                )}
+                {!showOnboarding && user && getRoleSpecificHelp()['insights-feed'] && (
+                    <ContextualHelp
+                        elementId="insights-feed"
+                        content={getRoleSpecificHelp()['insights-feed']}
+                        lang={lang}
+                        role={getUserRole()}
+                    />
+                )}
+                {!showOnboarding && user && getRoleSpecificHelp()['trending-topics'] && (
+                    <ContextualHelp
+                        elementId="trending-topics"
+                        content={getRoleSpecificHelp()['trending-topics']}
+                        lang={lang}
+                        role={getUserRole()}
+                    />
                 )}
 
                 {/* Header */}
                 <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl overflow-hidden shadow-sm">
-                            <img 
-                                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/7b4794e58_CapturadeTela2025-12-23s93044PM.png"
-                                alt="MT Logo"
-                                className="w-full h-full object-cover"
-                            />
+                            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-sm">
+                                <img 
+                                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/7b4794e58_CapturadeTela2025-12-23s93044PM.png"
+                                    alt="MT Logo"
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div>
+                                    <h1 className="font-bold text-[#002D62] text-base">{t.title}</h1>
+                                    <p className="text-xs text-[#333F48]/60">{t.subtitle}</p>
+                                </div>
+                                <HelpButton
+                                    content={lang === 'pt' 
+                                        ? 'Este é seu painel central. Aqui você monitora consultas, acessa insights personalizados e gerencia sua experiência.'
+                                        : 'This is your central dashboard. Here you monitor consultations, access personalized insights and manage your experience.'}
+                                    lang={lang}
+                                />
+                            </div>
                         </div>
-                        <div>
-                            <h1 className="font-bold text-[#002D62] text-base">{t.title}</h1>
-                            <p className="text-xs text-[#333F48]/60">{t.subtitle}</p>
-                        </div>
-                    </div>
                     <div className="flex items-center gap-2">
                         {(pendingReviews.twin > 0 || pendingReviews.human > 0) && (
                             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200">

@@ -2,38 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, Check, Globe, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Globe, Sparkles, BookOpen, TrendingUp, BarChart3, FileText } from 'lucide-react';
-import { toast } from 'sonner';
-import { motion } from 'framer-motion';
+import { Checkbox } from '@/components/ui/checkbox';
+import confetti from 'canvas-confetti';
 
 export default function Welcome() {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
+    const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
     const [selectedInterests, setSelectedInterests] = useState([]);
     const [selectedPersona, setSelectedPersona] = useState('');
-    const [lang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
+    const [skipOnboarding, setSkipOnboarding] = useState(false);
     const [orderedFeatures, setOrderedFeatures] = useState([]);
     const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
-    const [skipOnboarding, setSkipOnboarding] = useState(false);
 
     useEffect(() => {
-        checkAuthAndOnboarding();
+        checkIfShouldSkip();
     }, []);
 
-    const checkAuthAndOnboarding = async () => {
+    const checkIfShouldSkip = async () => {
         try {
             const isAuth = await base44.auth.isAuthenticated();
             if (!isAuth) {
-                navigate(createPageUrl('Website'));
+                navigate(createPageUrl('PublicHome'));
                 return;
             }
 
             const user = await base44.auth.me();
             const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
             
+            // Se já completou onboarding, redirecionar para dashboard
             if (profiles.length > 0 && profiles[0].dashboard_preferences?.onboarding_completed) {
                 navigate(createPageUrl('Dashboard'));
                 return;
@@ -41,8 +43,7 @@ export default function Welcome() {
 
             selectPersonalizedFeatures();
         } catch (error) {
-            console.error('Error checking auth:', error);
-            navigate(createPageUrl('Website'));
+            console.error('Error checking onboarding:', error);
         }
     };
 
@@ -50,177 +51,114 @@ export default function Welcome() {
         try {
             const user = await base44.auth.me();
             const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
-            const subs = await base44.entities.Subscription.filter({ user_email: user.email });
-            
-            let userContext = '';
-            if (profiles.length > 0) {
-                const profile = profiles[0];
-                userContext = `
-                Interesses: ${JSON.stringify(profile.interests)}
-                Uso recente: ${JSON.stringify(subs[0]?.features_used || {})}
-                `;
-            }
+            const subscriptions = await base44.entities.Subscription.filter({ user_email: user.email });
 
-            const result = await base44.integrations.Core.InvokeLLM({
-                prompt: `Com base no perfil do usuário, ranqueie TODAS as 6 features disponíveis da MAIS ÚTIL/RELEVANTE para a MENOS ÚTIL. Priorize features que o usuário ainda NÃO explorou ou explorou POUCO e que teriam maior impacto positivo para seu perfil.
+            const userContext = {
+                interests: profiles[0]?.interests || [],
+                expertise_level: profiles[0]?.expertise_level || 'intermediate',
+                subscription_tier: subscriptions[0]?.tier || 'freemium'
+            };
 
-Contexto do usuário:
-${userContext}
-
-Features disponíveis:
-0. Adaptação de Persona - AI ajusta estilo de comunicação
-1. Base de Conhecimento - Pensamento público de Marcos Troyjo
-2. Sugestões Inteligentes - Recomendações baseadas em tópicos frequentes
-3. Análise de Documentos - Upload e chat com PDFs/DOCX
-4. Monitor de Riscos - Alertas geopolíticos personalizados
-5. Geração de Artigos - Policy papers com voz autêntica
-
-Retorne um array de 6 ÍNDICES (0-5) ordenado da feature mais útil/relevante para a menos útil.`,
+            const response = await base44.integrations.Core.InvokeLLM({
+                prompt: `Given user context: ${JSON.stringify(userContext)}, rank these features by predicted usefulness: ${allFeatures.map(f => f.title).join(', ')}. Return only a comma-separated list of feature titles in order of usefulness.`,
                 response_json_schema: {
                     type: 'object',
                     properties: {
-                        feature_indices: { type: 'array', items: { type: 'integer' } }
+                        ordered_features: {
+                            type: 'array',
+                            items: { type: 'string' }
+                        }
                     }
                 }
             });
 
-            const indices = result.feature_indices || [0, 1, 2, 3, 4, 5];
-            const ordered = indices.map(i => t.allFeatures[i]);
-            setOrderedFeatures(ordered);
+            const orderedTitles = response.ordered_features || [];
+            const ordered = orderedTitles
+                .map(title => allFeatures.find(f => f.title === title))
+                .filter(Boolean);
+            
+            setOrderedFeatures(ordered.length > 0 ? ordered : allFeatures.sort(() => Math.random() - 0.5));
         } catch (error) {
-            console.error('Error selecting features:', error);
-            const allFeats = t.allFeatures;
-            const shuffled = [...allFeats].sort(() => Math.random() - 0.5);
-            setOrderedFeatures(shuffled);
+            console.error('Error personalizing features:', error);
+            setOrderedFeatures(allFeatures.sort(() => Math.random() - 0.5));
         }
     };
-
-
 
     const t = {
         pt: {
-            welcome: "Bem-vindo ao Troyjo Digital Twin",
-            step1Title: "Vamos personalizar sua experiência",
-            step1Desc: "Selecione suas áreas de interesse e persona preferida",
-            step2Title: "Conheça os Recursos",
-            step2Desc: "Explore as funcionalidades principais do Digital Twin",
-            personaTitle: "Escolha sua persona preferida",
-            continue: "Continuar",
-            finish: "Começar",
-            skipOnboarding: "Não mostrar novamente",
-            saveProfile: "Salvar Perfil",
-            profileSaved: "Perfil salvo! Você não verá esta tela novamente",
-            interests: {
-                title: "Escolha seus interesses",
-                industries: "Indústrias",
-                regions: "Regiões",
-                economic_theories: "Teorias Econômicas",
-                topics: "Tópicos"
-            },
-            allFeatures: [
-                {
-                    icon: Sparkles,
-                    title: "Adaptação de Persona",
-                    desc: "O AI ajusta automaticamente seu estilo de comunicação baseado no seu perfil"
-                },
-                {
-                    icon: BookOpen,
-                    title: "Base de Conhecimento",
-                    desc: "Acesso a todo o pensamento público de Marcos Troyjo até dezembro 2025"
-                },
-                {
-                    icon: TrendingUp,
-                    title: "Sugestões Inteligentes",
-                    desc: "Receba recomendações proativas baseadas nos seus tópicos frequentes"
-                },
-                {
-                    icon: Globe,
-                    title: "Análise de Documentos",
-                    desc: "Upload e chat com documentos PDF, DOCX e TXT para análise contextualizada"
-                },
-                {
-                    icon: BarChart3,
-                    title: "Monitor de Riscos",
-                    desc: "Alertas geopolíticos personalizados por região e setor de interesse"
-                },
-                {
-                    icon: FileText,
-                    title: "Geração de Artigos",
-                    desc: "Crie policy papers e análises com a voz autêntica de Troyjo"
-                }
+            welcome: 'Bem-vindo ao',
+            subtitle: 'Vamos personalizar sua experiência',
+            step1Title: 'Seus Interesses',
+            step1Subtitle: 'Selecione áreas de interesse',
+            step2Title: 'Conheça os Recursos',
+            step2Subtitle: 'Personalizados para você',
+            selectPersona: 'Como prefere se comunicar?',
+            interests: 'Interesses',
+            next: 'Próximo',
+            back: 'Voltar',
+            finish: 'Começar',
+            skip: 'Pular esta introdução',
+            interests: [
+                'Economia Global',
+                'Comércio Internacional',
+                'BRICS',
+                'Geopolítica',
+                'Competitividade',
+                'ESG',
+                'Diplomacia Econômica',
+                'Tecnologia'
+            ],
+            personas: [
+                { id: 'professor', name: 'Professor', desc: 'Didático e explicativo' },
+                { id: 'tecnico', name: 'Técnico', desc: 'Preciso e com dados' },
+                { id: 'diplomatico', name: 'Diplomático', desc: 'Nuançado e contextual' }
             ]
         },
         en: {
-            welcome: "Welcome to Troyjo Digital Twin",
-            step1Title: "Let's personalize your experience",
-            step1Desc: "Select your areas of interest and preferred persona",
-            step2Title: "Discover Features",
-            step2Desc: "Explore the Digital Twin's main functionalities",
-            personaTitle: "Choose your preferred persona",
-            continue: "Continue",
-            finish: "Start",
-            skipOnboarding: "Don't show again",
-            saveProfile: "Save Profile",
-            profileSaved: "Profile saved! You won't see this screen again",
-            interests: {
-                title: "Choose your interests",
-                industries: "Industries",
-                regions: "Regions",
-                economic_theories: "Economic Theories",
-                topics: "Topics"
-            },
-            allFeatures: [
-                {
-                    icon: Sparkles,
-                    title: "Persona Adaptation",
-                    desc: "The AI automatically adjusts its communication style based on your profile"
-                },
-                {
-                    icon: BookOpen,
-                    title: "Knowledge Base",
-                    desc: "Access to all of Marcos Troyjo's public thinking until December 2025"
-                },
-                {
-                    icon: TrendingUp,
-                    title: "Smart Suggestions",
-                    desc: "Receive proactive recommendations based on your frequent topics"
-                },
-                {
-                    icon: Globe,
-                    title: "Document Analysis",
-                    desc: "Upload and chat with PDF, DOCX and TXT documents for contextualized analysis"
-                },
-                {
-                    icon: BarChart3,
-                    title: "Risk Monitor",
-                    desc: "Personalized geopolitical alerts by region and sector of interest"
-                },
-                {
-                    icon: FileText,
-                    title: "Article Generation",
-                    desc: "Create policy papers and analyses with Troyjo's authentic voice"
-                }
+            welcome: 'Welcome to',
+            subtitle: 'Let\'s personalize your experience',
+            step1Title: 'Your Interests',
+            step1Subtitle: 'Select areas of interest',
+            step2Title: 'Discover Features',
+            step2Subtitle: 'Personalized for you',
+            selectPersona: 'How do you prefer to communicate?',
+            interests: 'Interests',
+            next: 'Next',
+            back: 'Back',
+            finish: 'Get Started',
+            skip: 'Skip this introduction',
+            interests: [
+                'Global Economics',
+                'International Trade',
+                'BRICS',
+                'Geopolitics',
+                'Competitiveness',
+                'ESG',
+                'Economic Diplomacy',
+                'Technology'
+            ],
+            personas: [
+                { id: 'professor', name: 'Professor', desc: 'Didactic and explanatory' },
+                { id: 'tecnico', name: 'Technical', desc: 'Precise with data' },
+                { id: 'diplomatico', name: 'Diplomatic', desc: 'Nuanced and contextual' }
             ]
         }
-    }[lang];
-
-    const interestOptions = {
-        industries: ['Agronegócio', 'Energia', 'Tecnologia', 'Finanças', 'Infraestrutura', 'Defesa', 'Manufatura', 'Mineração', 'Comércio', 'Saúde'],
-        regions: ['Brasil', 'China', 'Estados Unidos', 'Índia', 'Rússia', 'África do Sul', 'América Latina', 'União Europeia', 'Ásia-Pacífico', 'África', 'Oriente Médio', 'Oceania'],
-        economic_theories: ['Vantagens Comparativas', 'Competitividade Sistêmica', 'Cadeias Globais de Valor', 'Novo Desenvolvimentismo', 'Economia Institucional', 'Geopolítica Econômica'],
-        topics: ['BRICS', 'Comércio Internacional', 'Competitividade', 'Diplomacia Econômica', 'Inteligência Artificial', 'Bioeconomia', 'Crescimento Endógeno', 'Sustentabilidade', 'Inovação Tecnológica', 'Segurança Alimentar']
     };
 
-    const personas = [
-        { id: 'diplomatico', label: lang === 'pt' ? 'Diplomático' : 'Diplomatic', desc: lang === 'pt' ? 'Formal e equilibrado' : 'Formal and balanced' },
-        { id: 'tecnico', label: lang === 'pt' ? 'Técnico' : 'Technical', desc: lang === 'pt' ? 'Detalhado e analítico' : 'Detailed and analytical' },
-        { id: 'executivo', label: lang === 'pt' ? 'Executivo' : 'Executive', desc: lang === 'pt' ? 'Direto e estratégico' : 'Direct and strategic' },
-        { id: 'educador', label: lang === 'pt' ? 'Educador' : 'Educator', desc: lang === 'pt' ? 'Didático e acessível' : 'Educational and accessible' }
+    const text = t[lang];
+
+    const allFeatures = [
+        { icon: '💬', title: lang === 'pt' ? 'Consultas AI' : 'AI Consultations', desc: lang === 'pt' ? 'Converse com o Digital Twin' : 'Chat with the Digital Twin' },
+        { icon: '📊', title: lang === 'pt' ? 'Analytics' : 'Analytics', desc: lang === 'pt' ? 'Visualize seu engajamento' : 'Visualize your engagement' },
+        { icon: '📚', title: lang === 'pt' ? 'Base de Conhecimento' : 'Knowledge Base', desc: lang === 'pt' ? 'Acesse publicações e conceitos' : 'Access publications and concepts' },
+        { icon: '🎭', title: lang === 'pt' ? 'Personas' : 'Personas', desc: lang === 'pt' ? 'Respostas adaptadas ao seu perfil' : 'Responses adapted to your profile' },
+        { icon: '📄', title: lang === 'pt' ? 'Análise de Documentos' : 'Document Analysis', desc: lang === 'pt' ? 'Upload e chat com PDFs' : 'Upload and chat with PDFs' },
+        { icon: '🌍', title: lang === 'pt' ? 'Alertas Geopolíticos' : 'Geopolitical Alerts', desc: lang === 'pt' ? 'Notificações personalizadas' : 'Personalized notifications' }
     ];
 
     const toggleInterest = (interest) => {
-        setSelectedInterests(prev => 
-            prev.includes(interest) 
+        setSelectedInterests(prev =>
+            prev.includes(interest)
                 ? prev.filter(i => i !== interest)
                 : [...prev, interest]
         );
@@ -230,249 +168,230 @@ Retorne um array de 6 ÍNDICES (0-5) ordenado da feature mais útil/relevante pa
         try {
             const user = await base44.auth.me();
             
-            const interestData = {
-                industries: selectedInterests.filter(i => interestOptions.industries.includes(i)),
-                regions: selectedInterests.filter(i => interestOptions.regions.includes(i)),
-                economic_theories: selectedInterests.filter(i => interestOptions.economic_theories.includes(i)),
-                topics: selectedInterests.filter(i => interestOptions.topics.includes(i))
+            const profileData = {
+                user_email: user.email,
+                interests: selectedInterests,
+                expertise_level: 'intermediate',
+                preferred_content_types: [],
+                dashboard_preferences: {
+                    onboarding_completed: true,
+                    completed_at: new Date().toISOString()
+                }
             };
 
             const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
-
             if (profiles.length > 0) {
-                await base44.entities.UserProfile.update(profiles[0].id, {
-                    interests: interestData,
-                    preferred_persona: selectedPersona || 'diplomatico',
-                    dashboard_preferences: {
-                        ...profiles[0].dashboard_preferences,
-                        onboarding_completed: true,
-                        skip_onboarding: skipOnboarding
-                    }
-                });
+                await base44.entities.UserProfile.update(profiles[0].id, profileData);
             } else {
-                await base44.entities.UserProfile.create({
+                await base44.entities.UserProfile.create(profileData);
+            }
+
+            if (selectedPersona) {
+                await base44.entities.PersonaPreferences.create({
                     user_email: user.email,
-                    interests: interestData,
-                    preferred_persona: selectedPersona || 'diplomatico',
-                    dashboard_preferences: {
-                        onboarding_completed: true,
-                        skip_onboarding: skipOnboarding,
-                        layout: 'comfortable',
-                        theme: 'light',
-                        language: lang
-                    }
+                    preferred_mode: selectedPersona,
+                    auto_adapt: true
                 });
             }
 
-            // Initialize free subscription
-            const subs = await base44.entities.Subscription.filter({ user_email: user.email });
-            if (subs.length === 0) {
+            // Criar assinatura freemium inicial
+            const existingSubs = await base44.entities.Subscription.filter({ user_email: user.email });
+            if (existingSubs.length === 0) {
                 await base44.entities.Subscription.create({
                     user_email: user.email,
-                    plan: 'free',
+                    tier: 'freemium',
                     status: 'active',
-                    limits: {
-                        consultations_per_month: 5,
-                        articles_per_month: 2,
-                        documents_per_month: 5
-                    },
-                    features_used: {
-                        consultations: 0,
-                        articles_generated: 0,
-                        documents_analyzed: 0
-                    }
+                    stripe_price_id: 'price_1SgmdtRo0dVPpa4WLPzbGynZ'
                 });
             }
-            
-            toast.success(lang === 'pt' ? 'Configuração completa!' : 'Setup complete!');
-            navigate(createPageUrl('Dashboard'));
+
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            setTimeout(() => {
+                navigate(createPageUrl('Dashboard'));
+            }, 1000);
         } catch (error) {
-            console.error('Error saving preferences:', error);
-            toast.error('Error');
+            console.error('Error finishing onboarding:', error);
+            toast.error(lang === 'pt' ? 'Erro ao finalizar' : 'Error finishing');
         }
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#002D62] to-[#00654A] flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-2xl"
+                className="w-full max-w-4xl"
             >
-                <Card className="border-none shadow-2xl">
+                <Card className="border-0 shadow-2xl">
+                    <CardHeader className="text-center bg-gradient-to-r from-[#002D62] to-[#00654A] text-white rounded-t-lg">
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                            <Sparkles className="w-6 h-6" />
+                            <CardTitle className="text-3xl">{text.welcome} Troyjo Twin</CardTitle>
+                        </div>
+                        <p className="text-white/90">{text.subtitle}</p>
+                    </CardHeader>
                     <CardContent className="p-8">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#002D62] to-[#00654A] flex items-center justify-center">
-                                <span className="text-white font-bold">MT</span>
-                            </div>
-                            <h1 className="text-2xl font-bold text-[#002D62]">{t.welcome}</h1>
-                        </div>
+                        <AnimatePresence mode="wait">
+                            {step === 1 && (
+                                <motion.div
+                                    key="step1"
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                >
+                                    <h2 className="text-2xl font-bold text-[#002D62] mb-2">{text.step1Title}</h2>
+                                    <p className="text-gray-600 mb-6">{text.step1Subtitle}</p>
 
-                        <div className="flex gap-2 mb-8">
-                            {[1, 2].map((s) => (
-                                <div
-                                    key={s}
-                                    className={`h-2 flex-1 rounded-full transition-all ${
-                                        step >= s ? 'bg-[#002D62]' : 'bg-gray-200'
-                                    }`}
-                                />
-                            ))}
-                        </div>
-
-                        {step === 1 && (
-                            <div className="space-y-6">
-                                <div>
-                                    <h2 className="text-xl font-semibold text-[#002D62] mb-2">{t.step1Title}</h2>
-                                    <p className="text-[#333F48]/70">{t.step1Desc}</p>
-                                </div>
-
-                                {Object.entries(interestOptions).map(([category, options]) => (
-                                    <div key={category}>
-                                        <h3 className="text-sm font-medium text-[#333F48] mb-3">
-                                            {t.interests[category]}
-                                        </h3>
-                                        <div className="flex flex-wrap gap-2">
-                                            {options.map((option) => (
-                                                <Badge
-                                                    key={option}
-                                                    variant={selectedInterests.includes(option) ? 'default' : 'outline'}
-                                                    className={`cursor-pointer transition-all ${
-                                                        selectedInterests.includes(option)
-                                                            ? 'bg-[#002D62] hover:bg-[#001d42]'
-                                                            : 'hover:border-[#002D62]'
-                                                    }`}
-                                                    onClick={() => toggleInterest(option)}
-                                                >
-                                                    {option}
-                                                </Badge>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    ))}
-
-                                    {/* Persona Selection */}
-                                    <div className="pt-4 border-t">
-                                    <h3 className="text-sm font-medium text-[#333F48] mb-3">
-                                        {t.personaTitle}
-                                    </h3>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        {personas.map((persona) => (
-                                            <div
-                                                key={persona.id}
-                                                onClick={() => setSelectedPersona(persona.id)}
-                                                className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                                                    selectedPersona === persona.id
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                                        {text.interests.map((interest, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => toggleInterest(interest)}
+                                                className={`p-4 rounded-lg border-2 transition-all ${
+                                                    selectedInterests.includes(interest)
                                                         ? 'border-[#002D62] bg-[#002D62]/5'
-                                                        : 'border-gray-200 hover:border-[#002D62]/50'
+                                                        : 'border-gray-200 hover:border-[#002D62]/30'
                                                 }`}
                                             >
-                                                <h4 className="font-semibold text-sm text-[#002D62]">
-                                                    {persona.label}
-                                                </h4>
-                                                <p className="text-xs text-gray-600 mt-1">
-                                                    {persona.desc}
-                                                </p>
-                                            </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                                                        selectedInterests.includes(interest)
+                                                            ? 'border-[#002D62] bg-[#002D62]'
+                                                            : 'border-gray-300'
+                                                    }`}>
+                                                        {selectedInterests.includes(interest) && (
+                                                            <Check className="w-3 h-3 text-white" />
+                                                        )}
+                                                    </div>
+                                                    <span className="text-sm font-medium">{interest}</span>
+                                                </div>
+                                            </button>
                                         ))}
                                     </div>
-                                    </div>
 
-                                    <div className="flex justify-end pt-4">
-                                    <Button onClick={() => setStep(2)} className="bg-[#002D62]">
-                                        {t.continue}
-                                        <ArrowRight className="w-4 h-4 ml-2" />
-                                    </Button>
-                                    </div>
-                            </div>
-                        )}
-
-                        {step === 2 && (
-                            <div className="space-y-6">
-                                <div>
-                                    <h2 className="text-xl font-semibold text-[#002D62] mb-2">{t.step2Title}</h2>
-                                    <p className="text-[#333F48]/70">{t.step2Desc}</p>
-                                </div>
-
-                                <div className="space-y-4">
-                                    {orderedFeatures.length > 0 && (() => {
-                                        const CurrentIcon = orderedFeatures[currentFeatureIndex].icon;
-                                        return (
-                                            <motion.div
-                                                key={currentFeatureIndex}
-                                                initial={{ opacity: 0, x: 50 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                exit={{ opacity: 0, x: -50 }}
-                                                transition={{ duration: 0.3 }}
-                                            >
-                                                <div className="flex gap-4 p-6 rounded-lg border-2 border-[#002D62]/20 bg-gradient-to-br from-white to-gray-50">
-                                                    <div className="w-14 h-14 rounded-lg bg-[#002D62] flex items-center justify-center flex-shrink-0">
-                                                        <CurrentIcon className="w-7 h-7 text-white" />
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <h3 className="font-semibold text-[#333F48] mb-2 text-lg">
-                                                            {orderedFeatures[currentFeatureIndex].title}
-                                                        </h3>
-                                                        <p className="text-sm text-gray-600 leading-relaxed">
-                                                            {orderedFeatures[currentFeatureIndex].desc}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </motion.div>
-                                        );
-                                    })()}
-
-                                    <div className="flex items-center justify-between">
-                                        <Button
-                                            variant="outline"
-                                            onClick={() => setCurrentFeatureIndex(prev => Math.max(0, prev - 1))}
-                                            disabled={currentFeatureIndex === 0}
-                                        >
-                                            {lang === 'pt' ? '← Anterior' : '← Previous'}
-                                        </Button>
-                                        <div className="flex gap-1">
-                                            {orderedFeatures.map((_, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className={`w-2 h-2 rounded-full transition-all ${
-                                                        idx === currentFeatureIndex ? 'bg-[#002D62] w-4' : 'bg-gray-300'
+                                    <div className="mb-6">
+                                        <h3 className="font-semibold text-[#002D62] mb-3">{text.selectPersona}</h3>
+                                        <div className="grid md:grid-cols-3 gap-3">
+                                            {text.personas.map(persona => (
+                                                <button
+                                                    key={persona.id}
+                                                    onClick={() => setSelectedPersona(persona.id)}
+                                                    className={`p-4 rounded-lg border-2 transition-all text-left ${
+                                                        selectedPersona === persona.id
+                                                            ? 'border-[#00654A] bg-[#00654A]/5'
+                                                            : 'border-gray-200 hover:border-[#00654A]/30'
                                                     }`}
-                                                />
+                                                >
+                                                    <h4 className="font-semibold text-[#002D62]">{persona.name}</h4>
+                                                    <p className="text-sm text-gray-600">{persona.desc}</p>
+                                                </button>
                                             ))}
                                         </div>
-                                        <Button
-                                            variant="outline"
-                                            onClick={() => setCurrentFeatureIndex(prev => Math.min(orderedFeatures.length - 1, prev + 1))}
-                                            disabled={currentFeatureIndex === orderedFeatures.length - 1}
-                                        >
-                                            {lang === 'pt' ? 'Próximo →' : 'Next →'}
-                                        </Button>
                                     </div>
-                                </div>
+                                </motion.div>
+                            )}
 
-                                <div className="flex items-center gap-2 mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                                    <input
-                                        type="checkbox"
-                                        id="skip-onboarding"
-                                        checked={skipOnboarding}
-                                        onChange={(e) => setSkipOnboarding(e.target.checked)}
-                                        className="w-4 h-4"
-                                    />
-                                    <label htmlFor="skip-onboarding" className="text-sm text-gray-700 cursor-pointer">
-                                        {t.skipOnboarding}
-                                    </label>
-                                </div>
+                            {step === 2 && (
+                                <motion.div
+                                    key="step2"
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                >
+                                    <h2 className="text-2xl font-bold text-[#002D62] mb-2">{text.step2Title}</h2>
+                                    <p className="text-gray-600 mb-6">{text.step2Subtitle}</p>
 
-                                <div className="flex justify-between pt-4">
-                                    <Button variant="ghost" onClick={() => setStep(1)}>
-                                        {lang === 'pt' ? 'Voltar' : 'Back'}
-                                    </Button>
-                                    <Button onClick={handleFinish} className="bg-[#002D62]">
-                                        {lang === 'pt' ? 'Começar' : 'Start'}
-                                        <ArrowRight className="w-4 h-4 ml-2" />
-                                    </Button>
-                                </div>
+                                    {orderedFeatures.length > 0 && (
+                                        <div className="mb-6">
+                                            <Card className="border-2 border-[#D4AF37]">
+                                                <CardHeader className="text-center">
+                                                    <div className="text-6xl mb-4">
+                                                        {orderedFeatures[currentFeatureIndex]?.icon}
+                                                    </div>
+                                                    <CardTitle className="text-2xl text-[#002D62]">
+                                                        {orderedFeatures[currentFeatureIndex]?.title}
+                                                    </CardTitle>
+                                                </CardHeader>
+                                                <CardContent className="text-center">
+                                                    <p className="text-gray-600 text-lg">
+                                                        {orderedFeatures[currentFeatureIndex]?.desc}
+                                                    </p>
+                                                </CardContent>
+                                            </Card>
+
+                                            <div className="flex items-center justify-center gap-2 mt-4">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => setCurrentFeatureIndex(Math.max(0, currentFeatureIndex - 1))}
+                                                    disabled={currentFeatureIndex === 0}
+                                                >
+                                                    <ChevronLeft className="w-4 h-4" />
+                                                </Button>
+                                                <div className="flex gap-1">
+                                                    {orderedFeatures.map((_, idx) => (
+                                                        <div
+                                                            key={idx}
+                                                            className={`w-2 h-2 rounded-full ${
+                                                                idx === currentFeatureIndex ? 'bg-[#002D62]' : 'bg-gray-300'
+                                                            }`}
+                                                        />
+                                                    ))}
+                                                </div>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => setCurrentFeatureIndex(Math.min(orderedFeatures.length - 1, currentFeatureIndex + 1))}
+                                                    disabled={currentFeatureIndex === orderedFeatures.length - 1}
+                                                >
+                                                    <ChevronRight className="w-4 h-4" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
+                        <div className="flex items-center justify-between mt-8 pt-6 border-t">
+                            <div className="flex items-center gap-2">
+                                <Checkbox
+                                    checked={skipOnboarding}
+                                    onCheckedChange={setSkipOnboarding}
+                                    id="skip"
+                                />
+                                <label htmlFor="skip" className="text-sm text-gray-600 cursor-pointer">
+                                    {text.skip}
+                                </label>
                             </div>
-                        )}
+
+                            <div className="flex gap-2">
+                                {step === 2 && (
+                                    <Button variant="outline" onClick={() => setStep(1)}>
+                                        <ChevronLeft className="w-4 h-4 mr-2" />
+                                        {text.back}
+                                    </Button>
+                                )}
+                                <Button
+                                    onClick={() => {
+                                        if (skipOnboarding || step === 2) {
+                                            handleFinish();
+                                        } else {
+                                            setStep(2);
+                                        }
+                                    }}
+                                    className="bg-[#002D62] hover:bg-[#001d42]"
+                                >
+                                    {skipOnboarding || step === 2 ? text.finish : text.next}
+                                    <ArrowRight className="w-4 h-4 ml-2" />
+                                </Button>
+                            </div>
+                        </div>
                     </CardContent>
                 </Card>
             </motion.div>

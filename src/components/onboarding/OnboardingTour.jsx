@@ -249,8 +249,15 @@ const OnboardingTour = ({ lang = 'pt', onComplete, userRole = 'general' }) => {
         if (steps[currentStep].target) {
             const element = document.getElementById(steps[currentStep].target);
             if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                element.classList.add('onboarding-highlight');
+                // Scroll with offset for better visibility
+                const yOffset = -150;
+                const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+                
+                // Small delay to ensure smooth scroll completes before highlighting
+                setTimeout(() => {
+                    element.classList.add('onboarding-highlight');
+                }, 300);
             }
         }
 
@@ -325,34 +332,36 @@ const OnboardingTour = ({ lang = 'pt', onComplete, userRole = 'general' }) => {
         const rect = element.getBoundingClientRect();
         const tooltipWidth = 400;
         const tooltipHeight = 300;
+        const margin = 20;
         
         let left = rect.left + rect.width / 2;
-        let top = rect.bottom + window.scrollY + 20;
+        let top = rect.bottom + 20;
         let transform = 'translateX(-50%)';
 
         // Check if tooltip overflows right
-        if (left + tooltipWidth / 2 > window.innerWidth - 20) {
-            left = window.innerWidth - tooltipWidth - 20;
+        if (left + tooltipWidth / 2 > window.innerWidth - margin) {
+            left = rect.right - tooltipWidth;
             transform = 'translateX(0)';
         }
         
         // Check if tooltip overflows left
-        if (left - tooltipWidth / 2 < 20) {
-            left = 20;
+        if (left - tooltipWidth / 2 < margin) {
+            left = rect.left;
             transform = 'translateX(0)';
         }
 
         // Check if tooltip should appear above instead
-        if (rect.bottom + tooltipHeight > window.innerHeight - 50) {
-            top = rect.top + window.scrollY - 20;
+        if (top + tooltipHeight > window.innerHeight - margin) {
+            top = rect.top - 20;
             transform = `${transform} translateY(-100%)`;
         }
 
         return {
-            position: 'absolute',
+            position: 'fixed',
             top: `${top}px`,
             left: `${left}px`,
-            transform
+            transform,
+            maxWidth: '90vw'
         };
     };
 
@@ -374,10 +383,15 @@ const OnboardingTour = ({ lang = 'pt', onComplete, userRole = 'general' }) => {
             <AnimatePresence mode="wait">
                 <motion.div
                     key={currentStep}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.3 }}
+                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                    transition={{ 
+                        type: 'spring',
+                        stiffness: 300,
+                        damping: 25,
+                        duration: 0.3
+                    }}
                     className="z-[101]"
                     style={getTooltipPosition()}
                 >

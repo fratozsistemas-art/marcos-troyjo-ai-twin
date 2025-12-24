@@ -545,7 +545,7 @@ export default function Dashboard() {
                                         </CardContent>
                                     </Card>
                                 </Link>
-                                <Link to={createPageUrl('Website')}>
+                                <Link to={createPageUrl('PublicHome')}>
                                     <Card className="hover:shadow-lg transition-all cursor-pointer border-[#D4AF37]/20 hover:border-[#D4AF37]">
                                         <CardContent className="p-6 text-center">
                                             <Globe className="w-8 h-8 mx-auto mb-3 text-[#D4AF37]" />

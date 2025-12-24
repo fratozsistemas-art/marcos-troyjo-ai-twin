@@ -8,19 +8,27 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, Save, Layout, Eye, Trash2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
+import { Responsive, WidthProvider } from 'react-grid-layout';
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
 import ChartBuilder from './ChartBuilder';
 import VisualizationWidget from './VisualizationWidget';
+import { DashboardProvider } from './DashboardContext';
 
-export default function DashboardBuilder({ lang = 'pt' }) {
+const ResponsiveGridLayout = WidthProvider(Responsive);
+
+function DashboardBuilderInner({ lang = 'pt' }) {
     const [dashboard, setDashboard] = useState({
         name: '',
         description: '',
         widgets: [],
+        layout: [],
         auto_refresh: true,
         refresh_interval: 30000
     });
     const [isChartBuilderOpen, setIsChartBuilderOpen] = useState(false);
     const [editingWidget, setEditingWidget] = useState(null);
+    const [currentLayout, setCurrentLayout] = useState([]);
 
     const t = {
         pt: {
@@ -63,10 +71,21 @@ export default function DashboardBuilder({ lang = 'pt' }) {
                 widgets: prev.widgets.map(w => w.id === widget.id ? widget : w)
             }));
         } else {
+            const newWidget = widget;
+            const newLayoutItem = {
+                i: widget.id,
+                x: (dashboard.widgets.length % 2) * 6,
+                y: Math.floor(dashboard.widgets.length / 2) * 4,
+                w: 6,
+                h: 4
+            };
+            
             setDashboard(prev => ({
                 ...prev,
-                widgets: [...prev.widgets, widget]
+                widgets: [...prev.widgets, newWidget],
+                layout: [...prev.layout, newLayoutItem]
             }));
+            setCurrentLayout(prev => [...prev, newLayoutItem]);
         }
 
         setIsChartBuilderOpen(false);
@@ -76,8 +95,15 @@ export default function DashboardBuilder({ lang = 'pt' }) {
     const handleRemoveWidget = (widgetId) => {
         setDashboard(prev => ({
             ...prev,
-            widgets: prev.widgets.filter(w => w.id !== widgetId)
+            widgets: prev.widgets.filter(w => w.id !== widgetId),
+            layout: prev.layout.filter(l => l.i !== widgetId)
         }));
+        setCurrentLayout(prev => prev.filter(l => l.i !== widgetId));
+    };
+
+    const handleLayoutChange = (newLayout) => {
+        setCurrentLayout(newLayout);
+        setDashboard(prev => ({ ...prev, layout: newLayout }));
     };
 
     const handleSaveDashboard = async () => {
@@ -87,24 +113,17 @@ export default function DashboardBuilder({ lang = 'pt' }) {
         }
 
         try {
-            await base44.entities.SavedDashboard.create({
-                ...dashboard,
-                layout: dashboard.widgets.map((w, i) => ({
-                    i: w.id,
-                    x: (i % 2) * 6,
-                    y: Math.floor(i / 2) * 4,
-                    w: 6,
-                    h: 4
-                }))
-            });
+            await base44.entities.SavedDashboard.create(dashboard);
             toast.success(lang === 'pt' ? 'Dashboard salvo!' : 'Dashboard saved!');
             setDashboard({
                 name: '',
                 description: '',
                 widgets: [],
+                layout: [],
                 auto_refresh: true,
                 refresh_interval: 30000
             });
+            setCurrentLayout([]);
         } catch (error) {
             console.error('Error saving dashboard:', error);
             toast.error(lang === 'pt' ? 'Erro ao salvar' : 'Error saving');
@@ -174,9 +193,20 @@ export default function DashboardBuilder({ lang = 'pt' }) {
                     </CardContent>
                 </Card>
             ) : (
-                <div className="grid md:grid-cols-2 gap-6">
+                <ResponsiveGridLayout
+                    className="layout"
+                    layouts={{ lg: currentLayout }}
+                    breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+                    cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+                    rowHeight={100}
+                    onLayoutChange={handleLayoutChange}
+                    draggableHandle=".drag-handle"
+                >
                     {dashboard.widgets.map(widget => (
                         <div key={widget.id} className="relative group">
+                            <div className="drag-handle absolute top-2 left-2 w-full h-8 cursor-move z-10 flex items-center justify-center">
+                                <div className="w-8 h-1 bg-gray-300 rounded group-hover:bg-gray-400 transition-colors" />
+                            </div>
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -189,11 +219,20 @@ export default function DashboardBuilder({ lang = 'pt' }) {
                                 config={widget}
                                 autoRefresh={dashboard.auto_refresh}
                                 refreshInterval={dashboard.refresh_interval}
+                                lang={lang}
                             />
                         </div>
                     ))}
-                </div>
+                </ResponsiveGridLayout>
             )}
         </div>
+    );
+}
+
+export default function DashboardBuilder({ lang = 'pt' }) {
+    return (
+        <DashboardProvider>
+            <DashboardBuilderInner lang={lang} />
+        </DashboardProvider>
     );
 }

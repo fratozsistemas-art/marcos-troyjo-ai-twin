@@ -34,12 +34,12 @@ export default function NavigationMenu({ lang = 'pt' }) {
     const text = t[lang];
 
     const menuItems = [
+        { path: 'Website', icon: Globe, label: text.website },
         { path: 'Home', icon: Home, label: text.home },
         { path: 'Dashboard', icon: LayoutDashboard, label: text.dashboard },
         { path: 'Consultation', icon: MessageSquare, label: text.consultation },
         { path: 'KnowledgeBase', icon: BookOpen, label: text.knowledge },
         { path: 'AnalyticsDashboard', icon: BarChart3, label: text.analytics },
-        { path: 'Website', icon: Globe, label: text.website },
         { path: 'StrategicIntelligenceBlog', icon: FileText, label: text.blog }
     ];
 

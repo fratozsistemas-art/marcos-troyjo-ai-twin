@@ -27,7 +27,7 @@ export default function Welcome() {
         try {
             const isAuth = await base44.auth.isAuthenticated();
             if (!isAuth) {
-                navigate(createPageUrl('Home'));
+                navigate(createPageUrl('Website'));
                 return;
             }
 
@@ -42,7 +42,7 @@ export default function Welcome() {
             selectPersonalizedFeatures();
         } catch (error) {
             console.error('Error checking auth:', error);
-            navigate(createPageUrl('Home'));
+            navigate(createPageUrl('Website'));
         }
     };
 

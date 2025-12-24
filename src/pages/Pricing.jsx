@@ -5,12 +5,11 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { 
     Check, ArrowRight, Sparkles, Crown, Users, Building2, 
-    Zap, Globe, Mail, Shield, Star, TrendingUp
+    Zap, Globe, Mail, Star
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 
 const translations = {
@@ -365,7 +364,7 @@ export default function Pricing() {
             {/* Header */}
             <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
-                    <Link to={createPageUrl('Home')}>
+                    <Link to={createPageUrl('PublicHome')}>
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#002D62] to-[#00654A] flex items-center justify-center">
                                 <span className="text-white font-bold text-sm">MT</span>
@@ -381,6 +380,11 @@ export default function Pricing() {
                             <Globe className="w-4 h-4" />
                             {lang === 'pt' ? 'EN' : 'PT'}
                         </button>
+                        <Link to={createPageUrl('PublicHome')}>
+                            <Button variant="ghost" size="sm">
+                                {lang === 'pt' ? 'Início Público' : 'Public Home'}
+                            </Button>
+                        </Link>
                         <Link to={createPageUrl('Dashboard')}>
                             <Button variant="ghost" size="sm">
                                 Dashboard

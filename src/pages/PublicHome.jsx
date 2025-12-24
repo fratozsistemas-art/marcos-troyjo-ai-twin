@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { ArrowRight, BookOpen, Award, FileText, Video, ExternalLink, Globe, Mail, Sparkles, MessageSquare, LayoutDashboard, TrendingUp, Filter, Lightbulb, CheckCircle, BarChart3, Shield, Zap, Users, Star, ChevronRight } from 'lucide-react';
+import { ArrowRight, BookOpen, Award, FileText, ExternalLink, Globe, MessageSquare, LayoutDashboard, Filter, Lightbulb, BarChart3, Shield, Zap, Users, Star, ChevronRight, Sparkles, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,26 +15,21 @@ import PublicationCard from '@/components/media/PublicationCard';
 import PolicyObservatory from '@/components/observatory/PolicyObservatory';
 import { useAdvancedTracking, useSectionTracking } from '@/components/tracking/AdvancedTracker';
 
-export default function Website() {
+export default function PublicHome() {
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
     const [publications, setPublications] = useState([]);
     const [books, setBooks] = useState([]);
     const [awards, setAwards] = useState([]);
-    const [neologisms, setNeologisms] = useState([]);
-    const [concepts, setConcepts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [yearFilter, setYearFilter] = useState('all');
     const [publicationTypeFilter, setPublicationTypeFilter] = useState('all');
     
-    // Track page view
-    const { trackClick, trackPurchaseClick } = useAdvancedTracking('page', 'website', 'Website Landing Page', { page_type: 'landing' });
+    const { trackPurchaseClick } = useAdvancedTracking('page', 'public_home', 'Public Home Page', { page_type: 'public_home' });
     
-    // Track section visits
     useSectionTracking('books', 'books-section');
     useSectionTracking('publications', 'publications-section');
     useSectionTracking('neologisms', 'neologisms-section');
     
-    // Supported languages
     const supportedLangs = ['pt', 'en', 'zh', 'ar', 'ru', 'hi', 'fr', 'es'];
     const langNames = {
         pt: 'Português',
@@ -54,25 +49,16 @@ export default function Website() {
     const loadData = async () => {
         setLoading(true);
         try {
-            const [pubs, bks, awds, vocabs, cpts] = await Promise.all([
+            const [pubs, bks, awds] = await Promise.all([
                 base44.entities.Publication.list('-publication_date', 50),
                 base44.entities.Book.filter({ featured: true }, 'order'),
-                base44.entities.Award.filter({ featured: true }, 'order'),
-                base44.entities.Vocabulary.list('-frequency', 20),
-                base44.entities.ConceptEvolution.filter({ status: 'ativo' }, '-version', 20)
+                base44.entities.Award.filter({ featured: true }, 'order')
             ]);
             setPublications(pubs || []);
             setBooks(bks || []);
             setAwards(awds || []);
-            setNeologisms(vocabs || []);
-            setConcepts(cpts || []);
         } catch (error) {
             console.error('Error loading data:', error);
-            setPublications([]);
-            setBooks([]);
-            setAwards([]);
-            setNeologisms([]);
-            setConcepts([]);
         } finally {
             setLoading(false);
         }
@@ -88,10 +74,16 @@ export default function Website() {
             books: 'Principais Livros',
             awards: 'Prêmios & Reconhecimentos',
             publications: 'Artigos & Entrevistas',
-            neologisms: 'Neologismos & Conceitos',
-            neologismsDesc: 'Inovação conceitual e frameworks estratégicos',
-            filterYear: 'Filtrar por Ano',
+            filterAll: 'Todos',
+            filterArticles: 'Artigos',
+            filterInterviews: 'Entrevistas',
             allYears: 'Todos os Anos',
+            purchase: 'Adquirir',
+            accessTwin: 'Acessar Digital Twin',
+            viewPlans: 'Ver Planos',
+            cta: 'Iniciar Consulta',
+            contextUpdate: 'Atualização Geopolítica (nov/2025)',
+            contextText: 'Após meses de volatilidade máxima (Mar-Set 2025), o ambiente comercial global apresenta distensão tática — cessar-fogo EUA-China (até nov/2026), Brasil negocia acordo provisório. A trumpulência está GERENCIADA, não eliminada.',
             features: {
                 title: 'Recursos Avançados',
                 subtitle: 'Tudo que você precisa para análise geopolítica de classe mundial',
@@ -127,29 +119,7 @@ export default function Website() {
                 title: 'Pronto para Começar?',
                 subtitle: 'Junte-se a líderes globais que já utilizam o Troyjo Twin',
                 button: 'Iniciar Gratuitamente'
-            },
-            articles: 'Artigos',
-            interviews: 'Entrevistas',
-            viewArticle: 'Ver artigo',
-            watch: 'Assistir',
-            purchase: 'Adquirir',
-            newsletter: 'Newsletter',
-            newsletterDesc: 'Receba análises e insights sobre economia global',
-            subscribe: 'Inscrever',
-            accessTwin: 'Acessar Digital Twin',
-            dashboard: 'Painel',
-            filterAll: 'Todos',
-            filterArticles: 'Artigos',
-            filterInterviews: 'Entrevistas',
-            cta: 'Iniciar Consulta',
-            contextUpdate: 'Atualização Geopolítica (nov/2025)',
-            contextText: 'Após meses de volatilidade máxima (Mar-Set 2025), o ambiente comercial global apresenta distensão tática — cessar-fogo EUA-China (até nov/2026), Brasil negocia acordo provisório. A trumpulência está GERENCIADA, não eliminada.',
-            capabilities: 'Capacidades do Digital Twin',
-            audiences: 'Quem Você É?',
-            audiencesDesc: 'Experiência customizada para diferentes contextos',
-            neologisms: 'Inovação Conceitual',
-            neologismsDesc: 'Os 11 neologismos que definem o pensamento estratégico',
-            conceptEvolution: 'Evolução Conceitual'
+            }
         },
         en: {
             title: 'Global Thought Leader 24/7',
@@ -160,10 +130,16 @@ export default function Website() {
             books: 'Main Books',
             awards: 'Awards & Recognition',
             publications: 'Articles & Interviews',
-            neologisms: 'Neologisms & Concepts',
-            neologismsDesc: 'Conceptual innovation and strategic frameworks',
-            filterYear: 'Filter by Year',
+            filterAll: 'All',
+            filterArticles: 'Articles',
+            filterInterviews: 'Interviews',
             allYears: 'All Years',
+            purchase: 'Purchase',
+            accessTwin: 'Access Digital Twin',
+            viewPlans: 'View Plans',
+            cta: 'Start Consultation',
+            contextUpdate: 'Geopolitical Update (Nov/2025)',
+            contextText: 'After months at maximum volatility (Mar-Sep 2025), global trade environment shows tactical détente — US-China ceasefire (until Nov/2026), Brazil negotiates provisional agreement. Trumpulence is MANAGED, not eliminated.',
             features: {
                 title: 'Advanced Features',
                 subtitle: 'Everything you need for world-class geopolitical analysis',
@@ -199,29 +175,7 @@ export default function Website() {
                 title: 'Ready to Start?',
                 subtitle: 'Join global leaders already using Troyjo Twin',
                 button: 'Start Free'
-            },
-            articles: 'Articles',
-            interviews: 'Interviews',
-            viewArticle: 'View article',
-            watch: 'Watch',
-            purchase: 'Purchase',
-            newsletter: 'Newsletter',
-            newsletterDesc: 'Receive analysis and insights on global economics',
-            subscribe: 'Subscribe',
-            accessTwin: 'Access Digital Twin',
-            dashboard: 'Dashboard',
-            filterAll: 'All',
-            filterArticles: 'Articles',
-            filterInterviews: 'Interviews',
-            cta: 'Start Consultation',
-            contextUpdate: 'Geopolitical Update (Nov/2025)',
-            contextText: 'After months at maximum volatility (Mar-Sep 2025), global trade environment shows tactical détente — US-China ceasefire (until Nov/2026), Brazil negotiates provisional agreement. Trumpulence is MANAGED, not eliminated.',
-            capabilities: 'Digital Twin Capabilities',
-            audiences: 'Who Are You?',
-            audiencesDesc: 'Customized experience for different contexts',
-            neologisms: 'Conceptual Innovation',
-            neologismsDesc: 'The 11 neologisms that define strategic thinking',
-            conceptEvolution: 'Conceptual Evolution'
+            }
         }
     };
 
@@ -243,18 +197,11 @@ export default function Website() {
     ])].sort((a, b) => b.localeCompare(a));
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white relative">
-            {/* Beta Watermark */}
-            <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 opacity-5 select-none">
-                <span className="text-[200px] font-black text-[#002D62] tracking-wider transform -rotate-45">
-                    BETA
-                </span>
-            </div>
-
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
             {/* Header */}
-            <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm relative">
+            <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
-                    <Link to={createPageUrl('Website')} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                    <Link to={createPageUrl('PublicHome')} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                         <div className="w-12 h-12 rounded-xl overflow-hidden shadow-md">
                             <img 
                                 src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/7b4794e58_CapturadeTela2025-12-23s93044PM.png"
@@ -262,10 +209,7 @@ export default function Website() {
                                 className="w-full h-full object-cover"
                             />
                         </div>
-                        <div>
-                            <span className="font-bold text-[#002D62] text-lg block">Troyjo Twin</span>
-                            <Badge variant="outline" className="text-xs border-[#B8860B] text-[#B8860B]">BETA</Badge>
-                        </div>
+                        <span className="font-bold text-[#002D62] text-lg">Troyjo Twin</span>
                     </Link>
                     <div className="flex items-center gap-2">
                         <div className="relative group">
@@ -301,6 +245,12 @@ export default function Website() {
                                 ))}
                             </div>
                         </div>
+                        <Link to={createPageUrl('Pricing')}>
+                            <Button className="bg-[#00654A] hover:bg-[#00513d]">
+                                <DollarSign className="w-4 h-4 mr-2" />
+                                {lang === 'pt' ? 'Planos' : 'Plans'}
+                            </Button>
+                        </Link>
                         <Link to={createPageUrl('Home')}>
                             <Button className="bg-[#002D62] hover:bg-[#001d42]">
                                 {text.accessTwin}
@@ -315,14 +265,12 @@ export default function Website() {
                 <div className="flex items-center justify-center min-h-screen">
                     <div className="text-center">
                         <div className="w-16 h-16 border-4 border-[#002D62] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                        <p className="text-[#2D2D2D]/60">
-                            {lang === 'pt' ? 'Carregando...' : 'Loading...'}
-                        </p>
+                        <p className="text-[#2D2D2D]/60">{lang === 'pt' ? 'Carregando...' : 'Loading...'}</p>
                     </div>
                 </div>
             ) : (
             <>
-            <main className="relative z-10">
+            <main>
                 {/* Hero Section */}
                 <section className="bg-gradient-to-b from-[#FAF7F2] to-white py-24">
                     <div className="max-w-7xl mx-auto px-4 md:px-6">
@@ -334,9 +282,7 @@ export default function Website() {
                             >
                                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 text-sm font-medium mb-6">
                                     <Sparkles className="w-4 h-4 text-amber-600" />
-                                    <span className="text-amber-900">
-                                        {lang === 'pt' ? 'Contexto Atualizado: nov/2025' : 'Updated Context: Nov/2025'}
-                                    </span>
+                                    <span className="text-amber-900">{text.contextUpdate}</span>
                                 </div>
                                 <h1 className="text-5xl md:text-6xl font-bold text-[#002D62] leading-tight mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                                     {lang === 'pt' ? (
@@ -350,22 +296,21 @@ export default function Website() {
                                 
                                 <div className="bg-white rounded-lg border-l-4 border-[#D4AF37] p-4 mb-6">
                                     <p className="text-sm text-[#2D2D2D] leading-relaxed">
-                                        <strong>📊 {text.contextUpdate}:</strong>{' '}
-                                        {text.contextText}
+                                        <strong>📊 {text.contextUpdate}:</strong> {text.contextText}
                                     </p>
                                 </div>
                                 
                                 <div className="flex flex-wrap gap-4">
-                                    <Link to={createPageUrl('Consultation')}>
+                                    <Link to={createPageUrl('Home')}>
                                         <Button size="lg" className="bg-[#002D62] hover:bg-[#001d42] text-white gap-2 text-lg px-8">
                                             {text.cta}
                                             <ArrowRight className="w-5 h-5" />
                                         </Button>
                                     </Link>
-                                    <Link to={createPageUrl('Dashboard')}>
+                                    <Link to={createPageUrl('Pricing')}>
                                         <Button size="lg" variant="outline" className="gap-2 text-lg px-8 border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white">
-                                            <LayoutDashboard className="w-5 h-5" />
-                                            {text.dashboard}
+                                            <DollarSign className="w-5 h-5" />
+                                            {text.viewPlans}
                                         </Button>
                                     </Link>
                                 </div>
@@ -373,27 +318,19 @@ export default function Website() {
                                 <div className="grid grid-cols-4 gap-4 mt-8">
                                     <div className="text-center">
                                         <div className="text-2xl font-bold text-[#002D62]">95%+</div>
-                                        <div className="text-xs text-[#6B6B6B]">
-                                            {lang === 'pt' ? 'Fidelidade HUA' : 'HUA Fidelity'}
-                                        </div>
+                                        <div className="text-xs text-[#6B6B6B]">{lang === 'pt' ? 'Fidelidade HUA' : 'HUA Fidelity'}</div>
                                     </div>
                                     <div className="text-center">
                                         <div className="text-2xl font-bold text-[#002D62]">24/7</div>
-                                        <div className="text-xs text-[#6B6B6B]">
-                                            {lang === 'pt' ? 'Disponível' : 'Available'}
-                                        </div>
+                                        <div className="text-xs text-[#6B6B6B]">{lang === 'pt' ? 'Disponível' : 'Available'}</div>
                                     </div>
                                     <div className="text-center">
                                         <div className="text-2xl font-bold text-[#002D62]">11</div>
-                                        <div className="text-xs text-[#6B6B6B]">
-                                            {lang === 'pt' ? 'Neologismos' : 'Neologisms'}
-                                        </div>
+                                        <div className="text-xs text-[#6B6B6B]">{lang === 'pt' ? 'Neologismos' : 'Neologisms'}</div>
                                     </div>
                                     <div className="text-center">
                                         <div className="text-2xl font-bold text-[#002D62]">2020-2023</div>
-                                        <div className="text-xs text-[#6B6B6B]">
-                                            {lang === 'pt' ? 'Pres. NDB' : 'NDB Pres.'}
-                                        </div>
+                                        <div className="text-xs text-[#6B6B6B]">{lang === 'pt' ? 'Pres. NDB' : 'NDB Pres.'}</div>
                                     </div>
                                 </div>
                             </motion.div>
@@ -412,8 +349,7 @@ export default function Website() {
                                             alt="Marcos Prado Troyjo"
                                             className="w-full h-full object-cover"
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-[#8B1538]/90 via-[#8B1538]/20 to-transparent" />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-[#002D62]/90 via-[#002D62]/20 to-transparent" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#002D62]/90 via-transparent to-transparent" />
                                         <motion.div 
                                             initial={{ y: 20, opacity: 0 }}
                                             animate={{ y: 0, opacity: 1 }}
@@ -456,7 +392,7 @@ export default function Website() {
                     </div>
                 </section>
 
-                {/* Concept Evolution Timeline - Option D */}
+                {/* Concept Evolution Timeline */}
                 <section className="py-20 px-4 md:px-6 bg-white">
                     <div className="max-w-7xl mx-auto">
                         <motion.div 
@@ -466,12 +402,10 @@ export default function Website() {
                             className="text-center mb-12"
                         >
                             <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
-                                {text.conceptEvolution}
+                                {lang === 'pt' ? 'Evolução Conceitual' : 'Conceptual Evolution'}
                             </h2>
                             <p className="text-lg text-[#2D2D2D]/70">
-                                {lang === 'pt'
-                                    ? 'Acompanhe a jornada intelectual de 2015 a 2025'
-                                    : 'Follow the intellectual journey from 2015 to 2025'}
+                                {lang === 'pt' ? 'Acompanhe a jornada intelectual de 2015 a 2025' : 'Follow the intellectual journey from 2015 to 2025'}
                             </p>
                         </motion.div>
                         <ConceptEvolutionTimeline lang={lang} />
@@ -479,7 +413,7 @@ export default function Website() {
                 </section>
 
                 {/* Neologisms Showcase */}
-                <section className="py-20 px-4 md:px-6 bg-gradient-to-b from-gray-50 to-white">
+                <section id="neologisms-section" className="py-20 px-4 md:px-6 bg-gradient-to-b from-gray-50 to-white">
                     <div className="max-w-7xl mx-auto">
                         <motion.div 
                             initial={{ opacity: 0 }}
@@ -488,10 +422,10 @@ export default function Website() {
                             className="text-center mb-12"
                         >
                             <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
-                                {text.neologisms}
+                                {lang === 'pt' ? 'Inovação Conceitual' : 'Conceptual Innovation'}
                             </h2>
                             <p className="text-lg text-[#2D2D2D]/70">
-                                {text.neologismsDesc}
+                                {lang === 'pt' ? 'Os 11 neologismos que definem o pensamento estratégico' : 'The 11 neologisms that define strategic thinking'}
                             </p>
                         </motion.div>
                         <NeologismShowcase lang={lang} />
@@ -547,9 +481,7 @@ export default function Website() {
                                 {lang === 'pt' ? 'Observatório de Políticas' : 'Policy Observatory'}
                             </h2>
                             <p className="text-lg text-[#2D2D2D]/70">
-                                {lang === 'pt'
-                                    ? 'Linha do tempo de eventos geopolíticos críticos desde 2023'
-                                    : 'Timeline of critical geopolitical events since 2023'}
+                                {lang === 'pt' ? 'Linha do tempo de eventos geopolíticos críticos desde 2023' : 'Timeline of critical geopolitical events since 2023'}
                             </p>
                         </motion.div>
                         <PolicyObservatory lang={lang} />
@@ -595,10 +527,10 @@ export default function Website() {
                             className="text-center mb-12"
                         >
                             <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
-                                {text.audiences}
+                                {lang === 'pt' ? 'Quem Você É?' : 'Who Are You?'}
                             </h2>
                             <p className="text-lg text-[#2D2D2D]/70">
-                                {text.audiencesDesc}
+                                {lang === 'pt' ? 'Experiência customizada para diferentes contextos' : 'Customized experience for different contexts'}
                             </p>
                         </motion.div>
                         <AudienceSegmentation lang={lang} />
@@ -615,95 +547,8 @@ export default function Website() {
                     </div>
                 </section>
 
-                {/* Neologisms & Concepts Section */}
-                {neologisms.length > 0 && (
-                    <section id="neologisms" className="py-20 px-4 md:px-6 bg-gradient-to-b from-white to-gray-50">
-                        <div className="max-w-7xl mx-auto">
-                            <motion.div 
-                                initial={{ opacity: 0 }}
-                                whileInView={{ opacity: 1 }}
-                                viewport={{ once: true }}
-                                className="text-center mb-12"
-                            >
-                                <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4 flex items-center justify-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
-                                    <Lightbulb className="w-8 h-8" />
-                                    {text.neologisms}
-                                </h2>
-                                <p className="text-lg text-[#2D2D2D]/70">{text.neologismsDesc}</p>
-                            </motion.div>
-
-                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                                {neologisms.slice(0, 6).map((neo, idx) => (
-                                    <motion.div
-                                        key={neo.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: idx * 0.1 }}
-                                    >
-                                        <Card className="hover:shadow-lg transition-all group h-full border-l-4 border-[#D4AF37]">
-                                            <CardHeader>
-                                                <div className="flex items-start justify-between">
-                                                    <CardTitle className="text-lg text-[#002D62] group-hover:text-[#D4AF37] transition-colors">
-                                                        {neo.term}
-                                                    </CardTitle>
-                                                    <Badge variant="outline" className="border-[#8B1538] text-[#8B1538]">
-                                                        {neo.category?.replace(/_/g, ' ')}
-                                                    </Badge>
-                                                </div>
-                                            </CardHeader>
-                                            <CardContent className="space-y-3">
-                                                <p className="text-sm text-[#2D2D2D] line-clamp-3">{neo.simple_explanation || neo.definition}</p>
-                                                {neo.first_used_date && (
-                                                    <p className="text-xs text-[#2D2D2D]/50">
-                                                        {lang === 'pt' ? 'Desde' : 'Since'} {new Date(neo.first_used_date).getFullYear()}
-                                                    </p>
-                                                )}
-                                            </CardContent>
-                                        </Card>
-                                    </motion.div>
-                                ))}
-                            </div>
-
-                            {concepts.length > 0 && (
-                                <>
-                                    <h3 className="text-2xl font-bold text-[#002D62] mb-6 mt-12" style={{ fontFamily: 'Crimson Text, serif' }}>
-                                        {lang === 'pt' ? 'Evolução Conceitual' : 'Conceptual Evolution'}
-                                    </h3>
-                                    <div className="space-y-4">
-                                        {concepts.slice(0, 5).map((concept, idx) => (
-                                            <motion.div
-                                                key={concept.id}
-                                                initial={{ opacity: 0, x: -20 }}
-                                                whileInView={{ opacity: 1, x: 0 }}
-                                                viewport={{ once: true }}
-                                                transition={{ delay: idx * 0.1 }}
-                                            >
-                                                <Card className="hover:shadow-md transition-all">
-                                                    <CardHeader>
-                                                        <div className="flex items-center justify-between">
-                                                            <CardTitle className="text-base text-[#002D62]">{concept.concept_name}</CardTitle>
-                                                            <div className="flex items-center gap-2">
-                                                                <Badge className="bg-[#D4AF37] text-[#2D2D2D]">{concept.type}</Badge>
-                                                                <Badge variant="outline">{concept.version}</Badge>
-                                                            </div>
-                                                        </div>
-                                                    </CardHeader>
-                                                    <CardContent>
-                                                        <p className="text-sm text-[#2D2D2D]/70 line-clamp-2">{concept.content}</p>
-                                                    </CardContent>
-                                                </Card>
-                                            </motion.div>
-                                        ))}
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </section>
-                )}
-
                 {/* Books */}
-                <section id="books" className="py-20 px-4 md:px-6 bg-gradient-to-b from-white via-gray-50 to-white">
+                <section id="books-section" className="py-20 px-4 md:px-6 bg-white">
                     <div className="max-w-7xl mx-auto">
                         <motion.div 
                             initial={{ opacity: 0 }}
@@ -715,18 +560,13 @@ export default function Website() {
                                 <BookOpen className="w-9 h-9" />
                                 {text.books}
                             </h2>
-                            <p className="text-lg text-[#2D2D2D]/70 max-w-2xl mx-auto">
-                                {lang === 'pt'
-                                    ? 'Décadas de análise geopolítica cristalizadas em obras fundamentais'
-                                    : 'Decades of geopolitical analysis crystallized in fundamental works'}
-                            </p>
                             {uniqueYears.length > 1 && (
                                 <div className="flex items-center justify-center gap-2 mt-6">
                                     <Filter className="w-4 h-4 text-[#002D62]" />
                                     <select
                                         value={yearFilter}
                                         onChange={(e) => setYearFilter(e.target.value)}
-                                        className="px-4 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#002D62] focus:border-transparent bg-white shadow-sm"
+                                        className="px-4 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#002D62] bg-white shadow-sm"
                                     >
                                         <option value="all">{text.allYears}</option>
                                         {uniqueYears.map(year => (
@@ -747,38 +587,22 @@ export default function Website() {
                                         transition={{ delay: idx * 0.1 }}
                                     >
                                         <Card className="group overflow-hidden border-0 shadow-md hover:shadow-2xl transition-all duration-500 bg-white h-full flex flex-col">
-                                            {book.cover_url ? (
+                                            {book.cover_url && (
                                                 <div className="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
                                                     <img
                                                         src={book.cover_url}
                                                         alt={book.title}
                                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                                        onError={(e) => {
-                                                            e.target.style.display = 'none';
-                                                            e.target.parentElement.classList.add('bg-gradient-to-br', 'from-[#002D62]/5', 'to-[#8B1538]/5');
-                                                        }}
                                                     />
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                                     <div className="absolute top-3 right-3">
-                                                        <Badge className="bg-[#D4AF37] text-[#2D2D2D] font-bold shadow-lg border-0">
+                                                        <Badge className="bg-[#D4AF37] text-[#2D2D2D] font-bold shadow-lg">
                                                             {book.year}
                                                         </Badge>
                                                     </div>
-                                                    {book.isbn && (
-                                                        <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                                            <Badge variant="secondary" className="text-xs bg-white/90 backdrop-blur-sm">
-                                                                ISBN: {book.isbn}
-                                                            </Badge>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ) : (
-                                                <div className="aspect-[2/3] bg-gradient-to-br from-[#002D62]/10 via-[#00654A]/10 to-[#8B1538]/10 flex items-center justify-center">
-                                                    <BookOpen className="w-16 h-16 text-[#002D62]/30" />
                                                 </div>
                                             )}
                                             <CardHeader className="pb-3 flex-grow">
-                                                <CardTitle className="text-base font-bold text-[#002D62] leading-tight group-hover:text-[#8B1538] transition-colors line-clamp-2">
+                                                <CardTitle className="text-base font-bold text-[#002D62] leading-tight group-hover:text-[#8B1538] transition-colors">
                                                     {book.title}
                                                 </CardTitle>
                                             </CardHeader>
@@ -791,16 +615,15 @@ export default function Website() {
                                                         href={book.purchase_link} 
                                                         target="_blank" 
                                                         rel="noopener noreferrer" 
-                                                        className="block"
                                                         onClick={() => trackPurchaseClick(book.purchase_link)}
                                                     >
                                                         <Button 
                                                             size="sm" 
-                                                            className="w-full gap-2 bg-gradient-to-r from-[#002D62] to-[#00654A] hover:from-[#001d42] hover:to-[#004a37] text-white shadow-md group/btn"
+                                                            className="w-full gap-2 bg-gradient-to-r from-[#002D62] to-[#00654A] hover:from-[#001d42] hover:to-[#004a37] text-white shadow-md"
                                                         >
-                                                            <BookOpen className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
-                                                            <span className="font-semibold">{text.purchase}</span>
-                                                            <ExternalLink className="w-3 h-3 ml-auto opacity-70 group-hover/btn:opacity-100 group-hover/btn:translate-x-0.5 transition-all" />
+                                                            <BookOpen className="w-4 h-4" />
+                                                            {text.purchase}
+                                                            <ExternalLink className="w-3 h-3 ml-auto" />
                                                         </Button>
                                                     </a>
                                                 )}
@@ -810,16 +633,9 @@ export default function Website() {
                                 ))}
                             </div>
                         ) : (
-                            <motion.div 
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="text-center py-16"
-                            >
-                                <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                <p className="text-gray-500 text-lg">
-                                    {lang === 'pt' ? 'Nenhum livro disponível' : 'No books available'}
-                                </p>
-                            </motion.div>
+                            <div className="text-center py-16 text-gray-500">
+                                {lang === 'pt' ? 'Nenhum livro disponível' : 'No books available'}
+                            </div>
                         )}
                     </div>
                 </section>
@@ -852,22 +668,8 @@ export default function Website() {
                     </div>
                 </section>
 
-                {/* CTA Section */}
-                <section className="py-20 bg-gradient-to-r from-[#002D62] to-[#00654A]">
-                    <div className="max-w-4xl mx-auto px-4 md:px-6 text-center">
-                        <h2 className="text-4xl font-bold text-white mb-4">{text.ctaSection.title}</h2>
-                        <p className="text-xl text-white/80 mb-8">{text.ctaSection.subtitle}</p>
-                        <Link to={createPageUrl('Home')}>
-                            <Button size="lg" className="bg-white text-[#002D62] hover:bg-gray-100 text-lg px-8 py-6">
-                                {text.ctaSection.button}
-                                <ChevronRight className="w-5 h-5 ml-2" />
-                            </Button>
-                        </Link>
-                    </div>
-                </section>
-
                 {/* Publications */}
-                <section id="publications" className="py-20 px-4 md:px-6 bg-white">
+                <section id="publications-section" className="py-20 px-4 md:px-6 bg-white">
                     <div className="max-w-7xl mx-auto">
                         <h2 className="text-3xl font-bold text-[#002D62] mb-8 flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
                             <FileText className="w-8 h-8" />
@@ -879,40 +681,25 @@ export default function Website() {
                                 <Button
                                     variant={publicationTypeFilter === 'all' ? 'default' : 'outline'}
                                     onClick={() => setPublicationTypeFilter('all')}
-                                    className={publicationTypeFilter === 'all' ? 'bg-[#002D62] hover:bg-[#001d42]' : 'border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white'}
+                                    className={publicationTypeFilter === 'all' ? 'bg-[#002D62]' : ''}
                                 >
                                     {text.filterAll}
                                 </Button>
                                 <Button
                                     variant={publicationTypeFilter === 'article' ? 'default' : 'outline'}
                                     onClick={() => setPublicationTypeFilter('article')}
-                                    className={publicationTypeFilter === 'article' ? 'bg-[#002D62] hover:bg-[#001d42]' : 'border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white'}
+                                    className={publicationTypeFilter === 'article' ? 'bg-[#002D62]' : ''}
                                 >
                                     {text.filterArticles}
                                 </Button>
                                 <Button
                                     variant={publicationTypeFilter === 'interview' ? 'default' : 'outline'}
                                     onClick={() => setPublicationTypeFilter('interview')}
-                                    className={publicationTypeFilter === 'interview' ? 'bg-[#002D62] hover:bg-[#001d42]' : 'border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white'}
+                                    className={publicationTypeFilter === 'interview' ? 'bg-[#002D62]' : ''}
                                 >
                                     {text.filterInterviews}
                                 </Button>
                             </div>
-                            {uniqueYears.length > 1 && (
-                                <div className="flex items-center gap-2 ml-auto">
-                                    <Filter className="w-4 h-4 text-[#002D62]" />
-                                    <select
-                                        value={yearFilter}
-                                        onChange={(e) => setYearFilter(e.target.value)}
-                                        className="px-3 py-1.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#002D62]"
-                                    >
-                                        <option value="all">{text.allYears}</option>
-                                        {uniqueYears.map(year => (
-                                            <option key={year} value={year}>{year}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
                         </div>
 
                         {filteredPublications.length > 0 ? (
@@ -928,65 +715,67 @@ export default function Website() {
                         )}
                     </div>
                 </section>
+
+                {/* CTA Section */}
+                <section className="py-20 bg-gradient-to-r from-[#002D62] to-[#00654A]">
+                    <div className="max-w-4xl mx-auto px-4 md:px-6 text-center">
+                        <h2 className="text-4xl font-bold text-white mb-4">{text.ctaSection.title}</h2>
+                        <p className="text-xl text-white/80 mb-8">{text.ctaSection.subtitle}</p>
+                        <Link to={createPageUrl('Home')}>
+                            <Button size="lg" className="bg-white text-[#002D62] hover:bg-gray-100 text-lg px-8 py-6">
+                                {text.ctaSection.button}
+                                <ChevronRight className="w-5 h-5 ml-2" />
+                            </Button>
+                        </Link>
+                    </div>
+                </section>
             </main>
 
             {/* Footer */}
-            <footer className="bg-[#2D2D2D] text-[#FAF7F2] py-16 relative z-10">
+            <footer className="bg-[#2D2D2D] text-[#FAF7F2] py-16">
                 <div className="max-w-7xl mx-auto px-4 md:px-6">
                     <div className="grid md:grid-cols-4 gap-8 mb-12">
                         <div>
                             <h4 className="text-[#D4AF37] font-semibold mb-4">Marcos Troyjo Digital Twin</h4>
                             <p className="text-sm text-[#FAF7F2]/70 leading-relaxed">
                                 {lang === 'pt' 
-                                    ? 'Expertise geopolítica de classe mundial, disponível 24/7 via IA com 95%+ de fidelidade HUA-validada. Desenvolvido por CAIO ESIOS AI.'
-                                    : 'World-class geopolitical expertise, available 24/7 via AI with 95%+ HUA-validated fidelity. Developed by CAIO ESIOS AI.'}
+                                    ? 'Expertise geopolítica de classe mundial, disponível 24/7 via IA com 95%+ de fidelidade HUA-validada.'
+                                    : 'World-class geopolitical expertise, available 24/7 via AI with 95%+ HUA-validated fidelity.'}
                             </p>
                         </div>
                         <div>
-                            <h4 className="text-[#D4AF37] font-semibold mb-4">
-                                {lang === 'pt' ? 'Produto' : 'Product'}
-                            </h4>
+                            <h4 className="text-[#D4AF37] font-semibold mb-4">{lang === 'pt' ? 'Produto' : 'Product'}</h4>
                             <ul className="space-y-2 text-sm">
-                                <li><a href="#neologisms" className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
-                                    {lang === 'pt' ? 'Neologismos' : 'Neologisms'}
-                                </a></li>
-                                <li><a href="#audiences" className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
-                                    {lang === 'pt' ? 'Audiências' : 'Audiences'}
-                                </a></li>
+                                <li><Link to={createPageUrl('Home')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                    {lang === 'pt' ? 'Acessar Twin' : 'Access Twin'}
+                                </Link></li>
+                                <li><Link to={createPageUrl('Pricing')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                    {lang === 'pt' ? 'Planos' : 'Pricing'}
+                                </Link></li>
                                 <li><Link to={createPageUrl('Dashboard')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
                                     Dashboard
                                 </Link></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="text-[#D4AF37] font-semibold mb-4">
-                                {lang === 'pt' ? 'Recursos' : 'Resources'}
-                            </h4>
+                            <h4 className="text-[#D4AF37] font-semibold mb-4">{lang === 'pt' ? 'Recursos' : 'Resources'}</h4>
                             <ul className="space-y-2 text-sm">
                                 <li><Link to={createPageUrl('StrategicIntelligenceBlog')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
                                     Blog
                                 </Link></li>
-                                <li><a href="#concept-evolution" className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
-                                    ConceptEvolution
-                                </a></li>
-                                <li><a href="#hua-protocol" className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
-                                    {lang === 'pt' ? 'Protocolo HUA' : 'HUA Protocol'}
-                                </a></li>
+                                <li><Link to={createPageUrl('KnowledgeBase')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                    {lang === 'pt' ? 'Base de Conhecimento' : 'Knowledge Base'}
+                                </Link></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="text-[#D4AF37] font-semibold mb-4">
-                                {lang === 'pt' ? 'Empresa' : 'Company'}
-                            </h4>
+                            <h4 className="text-[#D4AF37] font-semibold mb-4">{lang === 'pt' ? 'Legal' : 'Legal'}</h4>
                             <ul className="space-y-2 text-sm">
                                 <li><Link to={createPageUrl('PrivacyPolicy')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
                                     {lang === 'pt' ? 'Privacidade' : 'Privacy'}
                                 </Link></li>
                                 <li><Link to={createPageUrl('TermsOfService')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
-                                    {lang === 'pt' ? 'Termos' : 'Terms'}
-                                </Link></li>
-                                <li><Link to={createPageUrl('Assets')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
-                                    {lang === 'pt' ? 'Conheça CAIO ESIOS AI' : 'Learn about CAIO ESIOS AI'}
+                                    {lang === 'pt' ? 'Termos de Serviço' : 'Terms of Service'}
                                 </Link></li>
                             </ul>
                         </div>
@@ -994,7 +783,7 @@ export default function Website() {
                     <Separator className="bg-[#6B6B6B] mb-8" />
                     <div className="text-center space-y-2">
                         <p className="text-sm text-[#FAF7F2]/60">
-                            © 2025 Marcos Troyjo Digital Twin. {lang === 'pt' ? 'Parte do Ecossistema CAIO. Todos os direitos reservados.' : 'Part of CAIO Ecosystem. All rights reserved.'}
+                            © 2025 Marcos Troyjo Digital Twin. {lang === 'pt' ? 'Todos os direitos reservados.' : 'All rights reserved.'}
                         </p>
                         <p className="text-xs text-[#FAF7F2]/40">
                             {lang === 'pt' 

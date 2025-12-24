@@ -3,80 +3,80 @@ import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { 
-    Home, LayoutDashboard, MessageSquare, BookOpen, 
-    BarChart3, Globe, Menu, User, FileText, Compass
+    LayoutDashboard, MessageSquare, BookOpen, FileText, 
+    BarChart3, Shield, Database, Globe, DollarSign, Lock
 } from 'lucide-react';
 
 export default function NavigationMenu({ lang = 'pt' }) {
     const location = useLocation();
 
-    const t = {
+    const text = {
         pt: {
-            home: 'Início',
             dashboard: 'Painel',
             consultation: 'Consulta',
             knowledge: 'Base de Conhecimento',
-            analytics: 'Analytics',
-            website: 'Website Público',
             blog: 'Blog',
-            ssotReports: 'Relatórios SSOT',
-            dataViz: 'Visualização de Dados'
+            analytics: 'Analytics',
+            ssot: 'SSOT',
+            public: 'Início Público',
+            pricing: 'Planos',
+            privacy: 'Privacidade'
         },
         en: {
-            home: 'Home',
             dashboard: 'Dashboard',
             consultation: 'Consultation',
             knowledge: 'Knowledge Base',
-            analytics: 'Analytics',
-            website: 'Public Website',
             blog: 'Blog',
-            ssotReports: 'SSOT Reports',
-            dataViz: 'Data Visualization'
+            analytics: 'Analytics',
+            ssot: 'SSOT',
+            public: 'Public Home',
+            pricing: 'Pricing',
+            privacy: 'Privacy'
         }
     };
 
-    const text = t[lang];
+    const t = text[lang];
 
     const menuItems = [
-        { path: 'Website', icon: Globe, label: text.website },
-        { path: 'Home', icon: Home, label: text.home },
-        { path: 'Dashboard', icon: LayoutDashboard, label: text.dashboard },
-        { path: 'Discover', icon: Compass, label: lang === 'pt' ? 'Descobrir' : 'Discover' },
-        { path: 'Consultation', icon: MessageSquare, label: text.consultation },
-        { path: 'KnowledgeBase', icon: BookOpen, label: text.knowledge },
-        { path: 'SSOTReports', icon: FileText, label: text.ssotReports },
-        { path: 'DataVisualization', icon: BarChart3, label: text.dataViz },
-        { path: 'AnalyticsDashboard', icon: BarChart3, label: text.analytics },
-        { path: 'StrategicIntelligenceBlog', icon: FileText, label: text.blog }
+        { path: 'Dashboard', icon: LayoutDashboard, label: t.dashboard },
+        { path: 'Consultation', icon: MessageSquare, label: t.consultation },
+        { path: 'KnowledgeBase', icon: BookOpen, label: t.knowledge },
+        { path: 'StrategicIntelligenceBlog', icon: FileText, label: t.blog },
+        { path: 'AnalyticsDashboard', icon: BarChart3, label: t.analytics },
+        { path: 'Pricing', icon: DollarSign, label: t.pricing },
+        { path: 'PublicHome', icon: Globe, label: t.public },
+        { path: 'PrivacyPolicy', icon: Lock, label: t.privacy }
     ];
 
     const isActive = (path) => {
-        const currentPath = location.pathname.split('/').pop();
-        return currentPath === path || (path === 'Home' && currentPath === '');
+        return location.pathname === createPageUrl(path);
     };
 
     return (
-        <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-100px)]">
-            {menuItems.map((item) => {
-                const Icon = item.icon;
-                const active = isActive(item.path);
-                
-                return (
-                    <Link key={item.path} to={createPageUrl(item.path)}>
-                        <motion.div
-                            whileHover={{ x: 4 }}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                                active
-                                    ? 'bg-[#002D62] text-white shadow-md'
-                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                            }`}
-                        >
-                            <Icon className="w-5 h-5 flex-shrink-0" />
-                            <span className="text-sm font-medium">{item.label}</span>
-                        </motion.div>
-                    </Link>
-                );
-            })}
+        <nav className="flex-1 overflow-y-auto p-3">
+            <div className="space-y-1">
+                {menuItems.map((item) => {
+                    const Icon = item.icon;
+                    const active = isActive(item.path);
+
+                    return (
+                        <Link key={item.path} to={createPageUrl(item.path)}>
+                            <motion.div
+                                whileHover={{ x: 4 }}
+                                whileTap={{ scale: 0.98 }}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer ${
+                                    active 
+                                        ? 'bg-gradient-to-r from-[#002D62] to-[#00654A] text-white shadow-md' 
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                }`}
+                            >
+                                <Icon className={`w-5 h-5 ${active ? 'text-white' : 'text-gray-500 dark:text-gray-400'}`} />
+                                <span className="text-sm font-medium">{item.label}</span>
+                            </motion.div>
+                        </Link>
+                    );
+                })}
+            </div>
         </nav>
     );
 }

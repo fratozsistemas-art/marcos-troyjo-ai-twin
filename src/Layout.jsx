@@ -86,7 +86,7 @@ export default function Layout({ children, currentPageName }) {
                     >
                         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-[#002D62] to-[#00654A] dark:from-gray-800 dark:to-gray-900">
                             <div className="flex items-center gap-3">
-                                <a href={createPageUrl('Website')} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                                <a href={createPageUrl('PublicHome')} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                                     <motion.div 
                                         className="w-10 h-10 rounded-xl overflow-hidden shadow-md"
                                         whileHover={{ scale: 1.05 }}
@@ -119,7 +119,7 @@ export default function Layout({ children, currentPageName }) {
             {isAuthenticated && (
             <aside className="hidden lg:block w-70 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex-shrink-0 shadow-lg">
                 <div className="sticky top-0">
-                    <a href={createPageUrl('Website')} className="block">
+                    <a href={createPageUrl('PublicHome')} className="block">
                         <motion.div 
                             className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                             initial={{ opacity: 0, y: -20 }}
@@ -151,7 +151,7 @@ export default function Layout({ children, currentPageName }) {
             {/* Main Content */}
             <div className="flex-1 flex flex-col min-w-0">
                 {/* Top Bar */}
-                {currentPageName !== 'Website' && (
+                {currentPageName !== 'PublicHome' && (
                 <motion.header 
                     className="sticky top-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 shadow-sm"
                     initial={{ y: -100 }}
@@ -224,67 +224,67 @@ export default function Layout({ children, currentPageName }) {
                 )}
 
                 {/* Beta Badge */}
-                                <motion.div 
-                                    className="fixed top-24 right-6 z-50 pointer-events-none"
-                                    initial={{ opacity: 0, scale: 0.8, x: 50 }}
-                                    animate={{ opacity: 1, scale: 1, x: 0 }}
-                                    transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
-                                >
-                                    <div className="relative">
-                                        <motion.div 
-                                            className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-2xl blur-md opacity-75"
+                            <motion.div 
+                                className="fixed top-24 right-6 z-50 pointer-events-none"
+                                initial={{ opacity: 0, scale: 0.8, x: 50 }}
+                                animate={{ opacity: 1, scale: 1, x: 0 }}
+                                transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
+                            >
+                                <div className="relative">
+                                    <motion.div 
+                                        className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-2xl blur-md opacity-75"
+                                        animate={{ 
+                                            scale: [1, 1.1, 1],
+                                            opacity: [0.75, 0.9, 0.75]
+                                        }}
+                                        transition={{ 
+                                            duration: 3,
+                                            repeat: Infinity,
+                                            ease: "easeInOut"
+                                        }}
+                                    />
+                                    <div className="relative bg-white dark:bg-gray-900 rounded-2xl px-4 py-2 border-2 border-transparent shadow-xl" style={{
+                                        backgroundImage: darkMode 
+                                            ? 'linear-gradient(rgba(17, 24, 39, 1), rgba(17, 24, 39, 1)), linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)'
+                                            : 'linear-gradient(white, white), linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)',
+                                        backgroundOrigin: 'border-box',
+                                        backgroundClip: 'padding-box, border-box'
+                                    }}>
+                                        <motion.span 
+                                            className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-sm tracking-wider flex items-center gap-1"
                                             animate={{ 
-                                                scale: [1, 1.1, 1],
-                                                opacity: [0.75, 0.9, 0.75]
+                                                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
                                             }}
                                             transition={{ 
-                                                duration: 3,
-                                                repeat: Infinity,
-                                                ease: "easeInOut"
+                                                duration: 5,
+                                                repeat: Infinity
                                             }}
-                                        />
-                                        <div className="relative bg-white dark:bg-gray-900 rounded-2xl px-4 py-2 border-2 border-transparent shadow-xl" style={{
-                                            backgroundImage: darkMode 
-                                                ? 'linear-gradient(rgba(17, 24, 39, 1), rgba(17, 24, 39, 1)), linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)'
-                                                : 'linear-gradient(white, white), linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)',
-                                            backgroundOrigin: 'border-box',
-                                            backgroundClip: 'padding-box, border-box'
-                                        }}>
-                                            <motion.span 
-                                                className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-sm tracking-wider flex items-center gap-1"
-                                                animate={{ 
-                                                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-                                                }}
-                                                transition={{ 
-                                                    duration: 5,
-                                                    repeat: Infinity
-                                                }}
-                                            >
-                                                <Sparkles className="w-3 h-3" />
-                                                BETA
-                                            </motion.span>
-                                        </div>
+                                        >
+                                            <Sparkles className="w-3 h-3" />
+                                            BETA
+                                        </motion.span>
                                     </div>
-                                </motion.div>
+                                </div>
+                            </motion.div>
 
-                                {/* Page Content */}
-                                <main className="flex-1">
-                                    <motion.div 
-                                        className="max-w-7xl mx-auto px-4 md:px-6 py-4"
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.5 }}
-                                    >
-                                        <Breadcrumbs lang={lang} />
-                                    </motion.div>
-                                    <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ duration: 0.3 }}
-                                    >
-                                        {children}
-                                    </motion.div>
-                                </main>
+                            {/* Page Content */}
+                            <main className="flex-1">
+                                <motion.div 
+                                    className="max-w-7xl mx-auto px-4 md:px-6 py-4"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5 }}
+                                >
+                                    <Breadcrumbs lang={lang} />
+                                </motion.div>
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    {children}
+                                </motion.div>
+                            </main>
             </div>
             </div>
             <KeyboardShortcuts lang={lang} />

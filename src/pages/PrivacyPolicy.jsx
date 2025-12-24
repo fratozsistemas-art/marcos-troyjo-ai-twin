@@ -139,10 +139,10 @@ export default function PrivacyPolicy() {
         <div className="min-h-screen bg-[#FAFAFA]">
             <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
                 <div className="max-w-4xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
-                    <Link to={createPageUrl('Home')}>
+                    <Link to={createPageUrl('PublicHome')}>
                         <Button variant="ghost" size="sm" className="text-[#333F48] gap-2">
                             <ArrowLeft className="w-4 h-4" />
-                            <span className="hidden sm:inline">{lang === 'pt' ? 'Voltar' : 'Back'}</span>
+                            <span className="hidden sm:inline">{lang === 'pt' ? 'Início Público' : 'Public Home'}</span>
                         </Button>
                     </Link>
                     <button

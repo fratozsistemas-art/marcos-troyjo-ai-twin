@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, CheckCircle, ExternalLink } from 'lucide-react';
+import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 
@@ -11,7 +11,7 @@ export default function StrategicIntelligenceBlog() {
 
     const t = {
         pt: {
-            back: "Voltar",
+            back: "Início Público",
             title: "Como Escolher Ferramentas de Inteligência Estratégica para Decisões de C-Suite",
             date: "8 de Dezembro, 2025",
             intro: "No cenário empresarial moderno, executivos de alto escalão dependem cada vez mais de sistemas de inteligência estratégica para tomar decisões críticas. Este guia explora as principais considerações ao selecionar plataformas de análise para o C-Suite.",
@@ -59,7 +59,7 @@ export default function StrategicIntelligenceBlog() {
             caioLink: "Conheça CAIO Strategic Intelligence"
         },
         en: {
-            back: "Back",
+            back: "Public Home",
             title: "How to Choose Strategic Intelligence Tools for C-Suite Decisions",
             date: "December 8, 2025",
             intro: "In the modern business landscape, senior executives increasingly rely on strategic intelligence systems to make critical decisions. This guide explores key considerations when selecting analysis platforms for the C-Suite.",
@@ -112,7 +112,7 @@ export default function StrategicIntelligenceBlog() {
         <div className="min-h-screen bg-[#FAFAFA]">
             <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
                 <div className="max-w-4xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
-                    <Link to={createPageUrl('Home')}>
+                    <Link to={createPageUrl('PublicHome')}>
                         <Button variant="ghost" size="sm" className="gap-2">
                             <ArrowLeft className="w-4 h-4" />
                             {t.back}

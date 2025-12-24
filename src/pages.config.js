@@ -7,6 +7,7 @@ import Consultation from './pages/Consultation';
 import ContentManagement from './pages/ContentManagement';
 import Dashboard from './pages/Dashboard';
 import DataVisualization from './pages/DataVisualization';
+import Discover from './pages/Discover';
 import DocumentAssessment from './pages/DocumentAssessment';
 import DocumentChatPage from './pages/DocumentChatPage';
 import History from './pages/History';
@@ -17,22 +18,19 @@ import KnowledgeAdmin from './pages/KnowledgeAdmin';
 import KnowledgeArticle from './pages/KnowledgeArticle';
 import KnowledgeBase from './pages/KnowledgeBase';
 import KnowledgeHub from './pages/KnowledgeHub';
-import LandingPage from './pages/LandingPage';
 import MLAdmin from './pages/MLAdmin';
 import MetaphorsGenerator from './pages/MetaphorsGenerator';
 import PersonaManagement from './pages/PersonaManagement';
 import Pricing from './pages/Pricing';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-import PublicWebsite from './pages/PublicWebsite';
 import RoleManagement from './pages/RoleManagement';
 import SSOTReports from './pages/SSOTReports';
 import SecurityAdmin from './pages/SecurityAdmin';
 import StrategicIntelligenceBlog from './pages/StrategicIntelligenceBlog';
 import SystemHealth from './pages/SystemHealth';
 import TermsOfService from './pages/TermsOfService';
-import Website from './pages/Website';
 import Welcome from './pages/Welcome';
-import Discover from './pages/Discover';
+import PublicHome from './pages/PublicHome';
 import __Layout from './Layout.jsx';
 
 
@@ -46,6 +44,7 @@ export const PAGES = {
     "ContentManagement": ContentManagement,
     "Dashboard": Dashboard,
     "DataVisualization": DataVisualization,
+    "Discover": Discover,
     "DocumentAssessment": DocumentAssessment,
     "DocumentChatPage": DocumentChatPage,
     "History": History,
@@ -56,22 +55,19 @@ export const PAGES = {
     "KnowledgeArticle": KnowledgeArticle,
     "KnowledgeBase": KnowledgeBase,
     "KnowledgeHub": KnowledgeHub,
-    "LandingPage": LandingPage,
     "MLAdmin": MLAdmin,
     "MetaphorsGenerator": MetaphorsGenerator,
     "PersonaManagement": PersonaManagement,
     "Pricing": Pricing,
     "PrivacyPolicy": PrivacyPolicy,
-    "PublicWebsite": PublicWebsite,
     "RoleManagement": RoleManagement,
     "SSOTReports": SSOTReports,
     "SecurityAdmin": SecurityAdmin,
     "StrategicIntelligenceBlog": StrategicIntelligenceBlog,
     "SystemHealth": SystemHealth,
     "TermsOfService": TermsOfService,
-    "Website": Website,
     "Welcome": Welcome,
-    "Discover": Discover,
+    "PublicHome": PublicHome,
 }
 
 export const pagesConfig = {

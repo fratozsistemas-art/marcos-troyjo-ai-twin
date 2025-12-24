@@ -193,18 +193,39 @@ export default function Website() {
                         <Badge variant="outline" className="ml-2 text-xs border-[#B8860B] text-[#B8860B]">BETA</Badge>
                     </div>
                     <div className="flex items-center gap-2">
-                        <select
-                            value={lang}
-                            onChange={(e) => {
-                                setLang(e.target.value);
-                                localStorage.setItem('troyjo_lang', e.target.value);
-                            }}
-                            className="px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors text-sm font-medium bg-white"
-                        >
-                            {supportedLangs.map(l => (
-                                <option key={l} value={l}>{langNames[l]}</option>
-                            ))}
-                        </select>
+                        <div className="relative group">
+                            <button className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 hover:border-[#002D62] bg-white hover:bg-gray-50 transition-all text-sm font-medium">
+                                <Globe className="w-4 h-4 text-[#002D62]" />
+                                <span>{langNames[lang]}</span>
+                            </button>
+                            <div className="absolute right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 min-w-[180px]">
+                                {supportedLangs.map(l => (
+                                    <button
+                                        key={l}
+                                        onClick={() => {
+                                            setLang(l);
+                                            localStorage.setItem('troyjo_lang', l);
+                                        }}
+                                        className={`w-full text-left px-4 py-3 hover:bg-[#002D62] hover:text-white transition-colors flex items-center gap-3 ${
+                                            lang === l ? 'bg-[#002D62]/5 text-[#002D62] font-medium' : 'text-gray-700'
+                                        }`}
+                                    >
+                                        <span className="text-lg">{
+                                            l === 'pt' ? '🇧🇷' : 
+                                            l === 'en' ? '🇺🇸' :
+                                            l === 'zh' ? '🇨🇳' :
+                                            l === 'ar' ? '🇸🇦' :
+                                            l === 'ru' ? '🇷🇺' :
+                                            l === 'hi' ? '🇮🇳' :
+                                            l === 'fr' ? '🇫🇷' :
+                                            l === 'es' ? '🇪🇸' : '🌐'
+                                        }</span>
+                                        <span className="flex-1">{langNames[l]}</span>
+                                        {lang === l && <span className="text-xs">✓</span>}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                         <Link to={createPageUrl('Home')}>
                             <Button className="bg-[#002D62] hover:bg-[#001d42]">
                                 {text.accessTwin}

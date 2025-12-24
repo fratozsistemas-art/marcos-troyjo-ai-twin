@@ -272,27 +272,27 @@ export default function PublicHome() {
             <>
             <main>
                 {/* Hero Section */}
-                <section className="bg-gradient-to-b from-[#FAF7F2] to-white py-24">
+                <section className="bg-gradient-to-br from-[#001d42] via-[#002D62] to-[#003366] py-32">
                     <div className="max-w-7xl mx-auto px-4 md:px-6">
-                        <div className="grid lg:grid-cols-2 gap-16 items-center">
+                        <div className="text-center max-w-5xl mx-auto">
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.6 }}
                             >
-                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 text-sm font-medium mb-6">
-                                    <Sparkles className="w-4 h-4 text-amber-600" />
-                                    <span className="text-amber-900">{text.contextUpdate}</span>
+                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/20 border border-blue-400/30 text-sm font-medium mb-8">
+                                    <Sparkles className="w-4 h-4 text-blue-300" />
+                                    <span className="text-blue-200">{lang === 'pt' ? '🧠 Inteligência Estratégica Reimaginada' : '🧠 Strategic Intelligence Reimagined'}</span>
                                 </div>
-                                <h1 className="text-5xl md:text-6xl font-bold text-[#002D62] leading-tight mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
-                                    {lang === 'pt' ? (
-                                        <>Formador de Opinião Global <span className="text-[#D4AF37]">24/7</span></>
-                                    ) : (
-                                        <>Global Thought Leader <span className="text-[#D4AF37]">24/7</span></>
-                                    )}
+                                <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight mb-6" style={{ fontFamily: 'Crimson Text, serif' }}>
+                                    Marcos Prado Troyjo<br />
+                                    <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">Digital Twin</span>
                                 </h1>
-                                <p className="text-xl text-[#2D2D2D] mb-3">{text.subtitle}</p>
-                                <p className="text-lg text-[#2D2D2D]/80 mb-6">{text.tagline}</p>
+                                <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto">
+                                    {lang === 'pt' 
+                                        ? 'Uma plataforma de inteligência cognitiva que replica com fidelidade máxima o raciocínio estratégico, a retórica diplomática e os frameworks analíticos de Marcos Prado Troyjo.'
+                                        : 'A cognitive intelligence platform that replicates with maximum fidelity the strategic reasoning, diplomatic rhetoric and analytical frameworks of Marcos Prado Troyjo.'}
+                                </p>
                                 
                                 <div className="bg-white rounded-lg border-l-4 border-[#D4AF37] p-4 mb-6">
                                     <p className="text-sm text-[#2D2D2D] leading-relaxed">

@@ -214,7 +214,7 @@ export default function ExternalDataFeeds({ lang = 'pt' }) {
                                 <div className="flex items-center justify-between mb-4">
                                     <div>
                                         <h3 className="font-semibold text-[#002D62] text-lg mb-1">
-                                            {t.worldbank} Data Sync
+                                            {lang === 'pt' ? 'Sincronização de Dados World Bank' : 'World Bank Data Sync'}
                                         </h3>
                                         <p className="text-sm text-gray-600">
                                             {lang === 'pt' 

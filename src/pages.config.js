@@ -4,6 +4,7 @@ import ArticleGenerator from './pages/ArticleGenerator';
 import ArticleView from './pages/ArticleView';
 import Assets from './pages/Assets';
 import Consultation from './pages/Consultation';
+import ContentManagement from './pages/ContentManagement';
 import Dashboard from './pages/Dashboard';
 import DocumentAssessment from './pages/DocumentAssessment';
 import DocumentChatPage from './pages/DocumentChatPage';
@@ -29,7 +30,6 @@ import SystemHealth from './pages/SystemHealth';
 import TermsOfService from './pages/TermsOfService';
 import Website from './pages/Website';
 import Welcome from './pages/Welcome';
-import ContentManagement from './pages/ContentManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -40,6 +40,7 @@ export const PAGES = {
     "ArticleView": ArticleView,
     "Assets": Assets,
     "Consultation": Consultation,
+    "ContentManagement": ContentManagement,
     "Dashboard": Dashboard,
     "DocumentAssessment": DocumentAssessment,
     "DocumentChatPage": DocumentChatPage,
@@ -65,7 +66,6 @@ export const PAGES = {
     "TermsOfService": TermsOfService,
     "Website": Website,
     "Welcome": Welcome,
-    "ContentManagement": ContentManagement,
 }
 
 export const pagesConfig = {

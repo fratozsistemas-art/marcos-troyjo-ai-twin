@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { ArrowRight, BookOpen, Award, FileText, Video, ExternalLink, Globe, Mail, Sparkles, MessageSquare, LayoutDashboard, TrendingUp } from 'lucide-react';
+import { ArrowRight, BookOpen, Award, FileText, Video, ExternalLink, Globe, Mail, Sparkles, MessageSquare, LayoutDashboard, TrendingUp, Filter, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -19,7 +19,11 @@ export default function Website() {
     const [publications, setPublications] = useState([]);
     const [books, setBooks] = useState([]);
     const [awards, setAwards] = useState([]);
+    const [neologisms, setNeologisms] = useState([]);
+    const [concepts, setConcepts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [yearFilter, setYearFilter] = useState('all');
+    const [publicationTypeFilter, setPublicationTypeFilter] = useState('all');
     
     // Supported languages
     const supportedLangs = ['pt', 'en', 'zh', 'ar', 'ru', 'hi', 'fr', 'es'];
@@ -41,19 +45,25 @@ export default function Website() {
     const loadData = async () => {
         setLoading(true);
         try {
-            const [pubs, bks, awds] = await Promise.all([
+            const [pubs, bks, awds, vocabs, cpts] = await Promise.all([
                 base44.entities.Publication.list('-publication_date', 50),
                 base44.entities.Book.filter({ featured: true }, 'order'),
-                base44.entities.Award.filter({ featured: true }, 'order')
+                base44.entities.Award.filter({ featured: true }, 'order'),
+                base44.entities.Vocabulary.list('-frequency', 20),
+                base44.entities.ConceptEvolution.filter({ status: 'ativo' }, '-version', 20)
             ]);
             setPublications(pubs || []);
             setBooks(bks || []);
             setAwards(awds || []);
+            setNeologisms(vocabs || []);
+            setConcepts(cpts || []);
         } catch (error) {
             console.error('Error loading data:', error);
             setPublications([]);
             setBooks([]);
             setAwards([]);
+            setNeologisms([]);
+            setConcepts([]);
         } finally {
             setLoading(false);
         }
@@ -69,6 +79,10 @@ export default function Website() {
             books: 'Principais Livros',
             awards: 'Prêmios & Reconhecimentos',
             publications: 'Artigos & Entrevistas',
+            neologisms: 'Neologismos & Conceitos',
+            neologismsDesc: 'Inovação conceitual e frameworks estratégicos',
+            filterYear: 'Filtrar por Ano',
+            allYears: 'Todos os Anos',
             articles: 'Artigos',
             interviews: 'Entrevistas',
             viewArticle: 'Ver artigo',
@@ -101,6 +115,10 @@ export default function Website() {
             books: 'Main Books',
             awards: 'Awards & Recognition',
             publications: 'Articles & Interviews',
+            neologisms: 'Neologisms & Concepts',
+            neologismsDesc: 'Conceptual innovation and strategic frameworks',
+            filterYear: 'Filter by Year',
+            allYears: 'All Years',
             articles: 'Articles',
             interviews: 'Interviews',
             viewArticle: 'View article',
@@ -128,12 +146,20 @@ export default function Website() {
 
     const text = t[lang];
 
-    const [filter, setFilter] = useState('all');
-
     const filteredPublications = publications.filter(pub => {
-        if (filter === 'all') return true;
-        return pub.type === filter;
+        const typeMatch = publicationTypeFilter === 'all' || pub.type === publicationTypeFilter;
+        const yearMatch = yearFilter === 'all' || (pub.publication_date && pub.publication_date.startsWith(yearFilter));
+        return typeMatch && yearMatch;
     });
+
+    const filteredBooks = books.filter(book => {
+        return yearFilter === 'all' || book.year === yearFilter;
+    });
+
+    const uniqueYears = [...new Set([
+        ...publications.map(p => p.publication_date?.substring(0, 4)).filter(Boolean),
+        ...books.map(b => b.year).filter(Boolean)
+    ])].sort((a, b) => b.localeCompare(a));
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white relative">
@@ -421,14 +447,118 @@ export default function Website() {
                     </div>
                 </section>
 
+                {/* Neologisms & Concepts Section */}
+                {neologisms.length > 0 && (
+                    <section className="py-20 px-4 md:px-6 bg-gradient-to-b from-white to-gray-50">
+                        <div className="max-w-7xl mx-auto">
+                            <motion.div 
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
+                                viewport={{ once: true }}
+                                className="text-center mb-12"
+                            >
+                                <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4 flex items-center justify-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
+                                    <Lightbulb className="w-8 h-8" />
+                                    {text.neologisms}
+                                </h2>
+                                <p className="text-lg text-[#2D2D2D]/70">{text.neologismsDesc}</p>
+                            </motion.div>
+
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                                {neologisms.slice(0, 6).map((neo, idx) => (
+                                    <motion.div
+                                        key={neo.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: idx * 0.1 }}
+                                    >
+                                        <Card className="hover:shadow-lg transition-all group h-full border-l-4 border-[#D4AF37]">
+                                            <CardHeader>
+                                                <div className="flex items-start justify-between">
+                                                    <CardTitle className="text-lg text-[#002D62] group-hover:text-[#D4AF37] transition-colors">
+                                                        {neo.term}
+                                                    </CardTitle>
+                                                    <Badge variant="outline" className="border-[#8B1538] text-[#8B1538]">
+                                                        {neo.category?.replace(/_/g, ' ')}
+                                                    </Badge>
+                                                </div>
+                                            </CardHeader>
+                                            <CardContent className="space-y-3">
+                                                <p className="text-sm text-[#2D2D2D] line-clamp-3">{neo.simple_explanation || neo.definition}</p>
+                                                {neo.first_used_date && (
+                                                    <p className="text-xs text-[#2D2D2D]/50">
+                                                        {lang === 'pt' ? 'Desde' : 'Since'} {new Date(neo.first_used_date).getFullYear()}
+                                                    </p>
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    </motion.div>
+                                ))}
+                            </div>
+
+                            {concepts.length > 0 && (
+                                <>
+                                    <h3 className="text-2xl font-bold text-[#002D62] mb-6 mt-12" style={{ fontFamily: 'Crimson Text, serif' }}>
+                                        {lang === 'pt' ? 'Evolução Conceitual' : 'Conceptual Evolution'}
+                                    </h3>
+                                    <div className="space-y-4">
+                                        {concepts.slice(0, 5).map((concept, idx) => (
+                                            <motion.div
+                                                key={concept.id}
+                                                initial={{ opacity: 0, x: -20 }}
+                                                whileInView={{ opacity: 1, x: 0 }}
+                                                viewport={{ once: true }}
+                                                transition={{ delay: idx * 0.1 }}
+                                            >
+                                                <Card className="hover:shadow-md transition-all">
+                                                    <CardHeader>
+                                                        <div className="flex items-center justify-between">
+                                                            <CardTitle className="text-base text-[#002D62]">{concept.concept_name}</CardTitle>
+                                                            <div className="flex items-center gap-2">
+                                                                <Badge className="bg-[#D4AF37] text-[#2D2D2D]">{concept.type}</Badge>
+                                                                <Badge variant="outline">{concept.version}</Badge>
+                                                            </div>
+                                                        </div>
+                                                    </CardHeader>
+                                                    <CardContent>
+                                                        <p className="text-sm text-[#2D2D2D]/70 line-clamp-2">{concept.content}</p>
+                                                    </CardContent>
+                                                </Card>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </section>
+                )}
+
                 {/* Books */}
                 <section className="py-20 px-4 md:px-6 bg-white">
                     <div className="max-w-7xl mx-auto">
-                        <h2 className="text-3xl font-bold text-[#002D62] mb-8 flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
-                            <BookOpen className="w-8 h-8" />
-                            {text.books}
-                        </h2>
-                        {books.length > 0 ? (
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-3xl font-bold text-[#002D62] flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
+                                <BookOpen className="w-8 h-8" />
+                                {text.books}
+                            </h2>
+                            {uniqueYears.length > 1 && (
+                                <div className="flex items-center gap-2">
+                                    <Filter className="w-4 h-4 text-[#002D62]" />
+                                    <select
+                                        value={yearFilter}
+                                        onChange={(e) => setYearFilter(e.target.value)}
+                                        className="px-3 py-1.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#002D62]"
+                                    >
+                                        <option value="all">{text.allYears}</option>
+                                        {uniqueYears.map(year => (
+                                            <option key={year} value={year}>{year}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+                        </div>
+                        {filteredBooks.length > 0 ? (
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {books.map((book, idx) => (
                                     <Card key={book.id} className="hover:shadow-lg hover:border-[#8B1538]/30 transition-all group overflow-hidden">
@@ -506,28 +636,45 @@ export default function Website() {
                             {text.publications}
                         </h2>
 
-                        <div className="flex gap-2 mb-6">
-                            <Button
-                                variant={filter === 'all' ? 'default' : 'outline'}
-                                onClick={() => setFilter('all')}
-                                className={filter === 'all' ? 'bg-[#002D62] hover:bg-[#001d42]' : 'border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white'}
-                            >
-                                {text.filterAll}
-                            </Button>
-                            <Button
-                                variant={filter === 'article' ? 'default' : 'outline'}
-                                onClick={() => setFilter('article')}
-                                className={filter === 'article' ? 'bg-[#002D62] hover:bg-[#001d42]' : 'border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white'}
-                            >
-                                {text.filterArticles}
-                            </Button>
-                            <Button
-                                variant={filter === 'interview' ? 'default' : 'outline'}
-                                onClick={() => setFilter('interview')}
-                                className={filter === 'interview' ? 'bg-[#002D62] hover:bg-[#001d42]' : 'border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white'}
-                            >
-                                {text.filterInterviews}
-                            </Button>
+                        <div className="flex flex-wrap items-center gap-3 mb-6">
+                            <div className="flex gap-2">
+                                <Button
+                                    variant={publicationTypeFilter === 'all' ? 'default' : 'outline'}
+                                    onClick={() => setPublicationTypeFilter('all')}
+                                    className={publicationTypeFilter === 'all' ? 'bg-[#002D62] hover:bg-[#001d42]' : 'border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white'}
+                                >
+                                    {text.filterAll}
+                                </Button>
+                                <Button
+                                    variant={publicationTypeFilter === 'article' ? 'default' : 'outline'}
+                                    onClick={() => setPublicationTypeFilter('article')}
+                                    className={publicationTypeFilter === 'article' ? 'bg-[#002D62] hover:bg-[#001d42]' : 'border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white'}
+                                >
+                                    {text.filterArticles}
+                                </Button>
+                                <Button
+                                    variant={publicationTypeFilter === 'interview' ? 'default' : 'outline'}
+                                    onClick={() => setPublicationTypeFilter('interview')}
+                                    className={publicationTypeFilter === 'interview' ? 'bg-[#002D62] hover:bg-[#001d42]' : 'border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white'}
+                                >
+                                    {text.filterInterviews}
+                                </Button>
+                            </div>
+                            {uniqueYears.length > 1 && (
+                                <div className="flex items-center gap-2 ml-auto">
+                                    <Filter className="w-4 h-4 text-[#002D62]" />
+                                    <select
+                                        value={yearFilter}
+                                        onChange={(e) => setYearFilter(e.target.value)}
+                                        className="px-3 py-1.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#002D62]"
+                                    >
+                                        <option value="all">{text.allYears}</option>
+                                        {uniqueYears.map(year => (
+                                            <option key={year} value={year}>{year}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
                         </div>
 
                         {filteredPublications.length > 0 ? (

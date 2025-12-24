@@ -6,6 +6,7 @@ import Assets from './pages/Assets';
 import Consultation from './pages/Consultation';
 import ContentManagement from './pages/ContentManagement';
 import Dashboard from './pages/Dashboard';
+import DataVisualization from './pages/DataVisualization';
 import DocumentAssessment from './pages/DocumentAssessment';
 import DocumentChatPage from './pages/DocumentChatPage';
 import History from './pages/History';
@@ -31,7 +32,6 @@ import SystemHealth from './pages/SystemHealth';
 import TermsOfService from './pages/TermsOfService';
 import Website from './pages/Website';
 import Welcome from './pages/Welcome';
-import DataVisualization from './pages/DataVisualization';
 import __Layout from './Layout.jsx';
 
 
@@ -44,6 +44,7 @@ export const PAGES = {
     "Consultation": Consultation,
     "ContentManagement": ContentManagement,
     "Dashboard": Dashboard,
+    "DataVisualization": DataVisualization,
     "DocumentAssessment": DocumentAssessment,
     "DocumentChatPage": DocumentChatPage,
     "History": History,
@@ -69,7 +70,6 @@ export const PAGES = {
     "TermsOfService": TermsOfService,
     "Website": Website,
     "Welcome": Welcome,
-    "DataVisualization": DataVisualization,
 }
 
 export const pagesConfig = {

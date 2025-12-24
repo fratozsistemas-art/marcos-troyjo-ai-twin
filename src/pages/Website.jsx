@@ -694,20 +694,30 @@ export default function Website() {
                 )}
 
                 {/* Books */}
-                <section className="py-20 px-4 md:px-6 bg-white">
+                <section className="py-20 px-4 md:px-6 bg-gradient-to-b from-white via-gray-50 to-white">
                     <div className="max-w-7xl mx-auto">
-                        <div className="flex items-center justify-between mb-8">
-                            <h2 className="text-3xl font-bold text-[#002D62] flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
-                                <BookOpen className="w-8 h-8" />
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            className="text-center mb-12"
+                        >
+                            <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4 flex items-center justify-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
+                                <BookOpen className="w-9 h-9" />
                                 {text.books}
                             </h2>
+                            <p className="text-lg text-[#2D2D2D]/70 max-w-2xl mx-auto">
+                                {lang === 'pt'
+                                    ? 'Décadas de análise geopolítica cristalizadas em obras fundamentais'
+                                    : 'Decades of geopolitical analysis crystallized in fundamental works'}
+                            </p>
                             {uniqueYears.length > 1 && (
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center justify-center gap-2 mt-6">
                                     <Filter className="w-4 h-4 text-[#002D62]" />
                                     <select
                                         value={yearFilter}
                                         onChange={(e) => setYearFilter(e.target.value)}
-                                        className="px-3 py-1.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#002D62]"
+                                        className="px-4 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#002D62] focus:border-transparent bg-white shadow-sm"
                                     >
                                         <option value="all">{text.allYears}</option>
                                         {uniqueYears.map(year => (
@@ -716,45 +726,85 @@ export default function Website() {
                                     </select>
                                 </div>
                             )}
-                        </div>
+                        </motion.div>
                         {filteredBooks.length > 0 ? (
-                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                                 {books.map((book, idx) => (
-                                    <Card key={book.id} className="hover:shadow-lg hover:border-[#8B1538]/30 transition-all group overflow-hidden">
-                                        {book.cover_url && (
-                                            <div className="aspect-[3/4] overflow-hidden bg-gray-100">
-                                                <img
-                                                    src={book.cover_url}
-                                                    alt={book.title}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                                    onError={(e) => e.target.style.display = 'none'}
-                                                />
-                                            </div>
-                                        )}
-                                        <CardHeader>
-                                            <div className="flex items-start justify-between">
-                                                <CardTitle className="text-lg text-[#002D62]">{book.title}</CardTitle>
-                                                <Badge variant="outline" className="border-[#D4AF37] text-[#D4AF37]">{book.year}</Badge>
-                                            </div>
-                                        </CardHeader>
-                                        <CardContent className="space-y-4">
-                                            <p className="text-sm text-[#2D2D2D]/70">{book.description}</p>
-                                            {book.purchase_link && (
-                                                <a href={book.purchase_link} target="_blank" rel="noopener noreferrer">
-                                                    <Button size="sm" className="w-full gap-2 bg-[#D4AF37] hover:bg-[#C19B2A] text-[#2D2D2D]">
-                                                        <BookOpen className="w-4 h-4" />
-                                                        {text.purchase}
-                                                    </Button>
-                                                </a>
+                                    <motion.div
+                                        key={book.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: idx * 0.1 }}
+                                    >
+                                        <Card className="group overflow-hidden border-0 shadow-md hover:shadow-2xl transition-all duration-500 bg-white h-full flex flex-col">
+                                            {book.cover_url ? (
+                                                <div className="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+                                                    <img
+                                                        src={book.cover_url}
+                                                        alt={book.title}
+                                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                        onError={(e) => {
+                                                            e.target.style.display = 'none';
+                                                            e.target.parentElement.classList.add('bg-gradient-to-br', 'from-[#002D62]/5', 'to-[#8B1538]/5');
+                                                        }}
+                                                    />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                                    <div className="absolute top-3 right-3">
+                                                        <Badge className="bg-[#D4AF37] text-[#2D2D2D] font-bold shadow-lg border-0">
+                                                            {book.year}
+                                                        </Badge>
+                                                    </div>
+                                                    {book.isbn && (
+                                                        <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                                            <Badge variant="secondary" className="text-xs bg-white/90 backdrop-blur-sm">
+                                                                ISBN: {book.isbn}
+                                                            </Badge>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div className="aspect-[2/3] bg-gradient-to-br from-[#002D62]/10 via-[#00654A]/10 to-[#8B1538]/10 flex items-center justify-center">
+                                                    <BookOpen className="w-16 h-16 text-[#002D62]/30" />
+                                                </div>
                                             )}
-                                        </CardContent>
-                                    </Card>
+                                            <CardHeader className="pb-3 flex-grow">
+                                                <CardTitle className="text-base font-bold text-[#002D62] leading-tight group-hover:text-[#8B1538] transition-colors line-clamp-2">
+                                                    {book.title}
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="space-y-3 pt-0">
+                                                <p className="text-sm text-[#2D2D2D]/70 leading-relaxed line-clamp-3">
+                                                    {book.description}
+                                                </p>
+                                                {book.purchase_link && (
+                                                    <a href={book.purchase_link} target="_blank" rel="noopener noreferrer" className="block">
+                                                        <Button 
+                                                            size="sm" 
+                                                            className="w-full gap-2 bg-gradient-to-r from-[#002D62] to-[#00654A] hover:from-[#001d42] hover:to-[#004a37] text-white shadow-md group/btn"
+                                                        >
+                                                            <BookOpen className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
+                                                            <span className="font-semibold">{text.purchase}</span>
+                                                            <ExternalLink className="w-3 h-3 ml-auto opacity-70 group-hover/btn:opacity-100 group-hover/btn:translate-x-0.5 transition-all" />
+                                                        </Button>
+                                                    </a>
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    </motion.div>
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-center py-12 text-gray-500">
-                                {lang === 'pt' ? 'Nenhum livro disponível' : 'No books available'}
-                            </div>
+                            <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="text-center py-16"
+                            >
+                                <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                <p className="text-gray-500 text-lg">
+                                    {lang === 'pt' ? 'Nenhum livro disponível' : 'No books available'}
+                                </p>
+                            </motion.div>
                         )}
                     </div>
                 </section>

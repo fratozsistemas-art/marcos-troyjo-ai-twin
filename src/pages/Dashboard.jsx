@@ -24,6 +24,8 @@ import KnowledgeHub from '@/components/knowledge/KnowledgeHub';
 import ProfileSettings from '@/components/profile/ProfileSettings';
 import TopicTracker from '@/components/profile/TopicTracker';
 import DocumentManager from '@/components/documents/DocumentManager';
+import PersonalizedRecommendations from '@/components/recommendations/PersonalizedRecommendations';
+import RecentlyViewed from '@/components/recommendations/RecentlyViewed';
 import DocumentChat from '@/components/chat/DocumentChat';
 import RAGDocumentManager from '@/components/documents/RAGDocumentManager';
 import ExecutiveReports from '@/components/reports/ExecutiveReports';
@@ -503,6 +505,16 @@ export default function Dashboard() {
                             </motion.div>
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
                                 <GeopoliticalAlertPanel userContext={{}} personaMode="tecnico" lang={lang} />
+                            </motion.div>
+                        </div>
+
+                        {/* Recommendations Row - Side by Side */}
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <RecentlyViewed lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <PersonalizedRecommendations lang={lang} />
                             </motion.div>
                         </div>
 

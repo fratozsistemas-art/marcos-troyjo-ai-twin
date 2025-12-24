@@ -4,7 +4,7 @@ import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { 
     Home, LayoutDashboard, MessageSquare, BookOpen, 
-    BarChart3, Globe, Menu, User, FileText
+    BarChart3, Globe, Menu, User, FileText, Compass
 } from 'lucide-react';
 
 export default function NavigationMenu({ lang = 'pt' }) {
@@ -41,6 +41,7 @@ export default function NavigationMenu({ lang = 'pt' }) {
         { path: 'Website', icon: Globe, label: text.website },
         { path: 'Home', icon: Home, label: text.home },
         { path: 'Dashboard', icon: LayoutDashboard, label: text.dashboard },
+        { path: 'Discover', icon: Compass, label: lang === 'pt' ? 'Descobrir' : 'Discover' },
         { path: 'Consultation', icon: MessageSquare, label: text.consultation },
         { path: 'KnowledgeBase', icon: BookOpen, label: text.knowledge },
         { path: 'SSOTReports', icon: FileText, label: text.ssotReports },

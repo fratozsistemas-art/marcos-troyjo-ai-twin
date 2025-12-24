@@ -8,9 +8,11 @@ import { RefreshCw, Newspaper, TrendingUp, MessageCircle, ExternalLink, ArrowUp,
 import { toast } from 'sonner';
 
 export default function ExternalDataFeeds({ lang = 'pt' }) {
-    const [data, setData] = useState({ news: [], indicators: [], sentiment: [] });
+    const [data, setData] = useState({ news: [], indicators: [], sentiment: [], worldbank: [] });
     const [loading, setLoading] = useState(false);
     const [lastUpdated, setLastUpdated] = useState(null);
+    const [syncing, setSyncing] = useState(false);
+    const [syncStatus, setSyncStatus] = useState(null);
 
     const t = {
         pt: {
@@ -19,6 +21,7 @@ export default function ExternalDataFeeds({ lang = 'pt' }) {
             news: 'Notícias',
             economic: 'Indicadores',
             sentiment: 'Sentimento',
+            worldbank: 'World Bank',
             refresh: 'Atualizar',
             lastUpdated: 'Atualizado',
             loading: 'Carregando dados...',
@@ -33,7 +36,19 @@ export default function ExternalDataFeeds({ lang = 'pt' }) {
             negative: 'Negativo',
             neutral: 'Neutro',
             volume: 'Volume',
-            trending: 'Em alta'
+            trending: 'Em alta',
+            syncWorldBank: 'Sincronizar World Bank',
+            syncing: 'Sincronizando...',
+            syncSuccess: 'Sincronização concluída',
+            syncError: 'Erro na sincronização',
+            indicator: 'Indicador',
+            country: 'País',
+            value: 'Valor',
+            year: 'Ano',
+            availableIndicators: 'Indicadores Disponíveis',
+            totalCountries: 'Países Disponíveis',
+            lastSync: 'Última Sincronização',
+            dataPoints: 'Pontos de Dados'
         },
         en: {
             title: 'External Data Feeds',
@@ -41,6 +56,7 @@ export default function ExternalDataFeeds({ lang = 'pt' }) {
             news: 'News',
             economic: 'Indicators',
             sentiment: 'Sentiment',
+            worldbank: 'World Bank',
             refresh: 'Refresh',
             lastUpdated: 'Updated',
             loading: 'Loading data...',
@@ -55,7 +71,19 @@ export default function ExternalDataFeeds({ lang = 'pt' }) {
             negative: 'Negative',
             neutral: 'Neutral',
             volume: 'Volume',
-            trending: 'Trending'
+            trending: 'Trending',
+            syncWorldBank: 'Sync World Bank',
+            syncing: 'Syncing...',
+            syncSuccess: 'Sync completed',
+            syncError: 'Sync error',
+            indicator: 'Indicator',
+            country: 'Country',
+            value: 'Value',
+            year: 'Year',
+            availableIndicators: 'Available Indicators',
+            totalCountries: 'Available Countries',
+            lastSync: 'Last Sync',
+            dataPoints: 'Data Points'
         }
     }[lang];
 
@@ -95,6 +123,42 @@ export default function ExternalDataFeeds({ lang = 'pt' }) {
         return <Minus className="w-4 h-4 text-gray-600" />;
     };
 
+    const syncWorldBank = async () => {
+        setSyncing(true);
+        try {
+            const response = await base44.functions.invoke('syncWorldBankData', {
+                indicators: [
+                    'NY.GDP.MKTP.CD', // GDP
+                    'FP.CPI.TOTL.ZG', // Inflation
+                    'SL.UEM.TOTL.ZS', // Unemployment
+                    'NE.EXP.GNFS.ZS', // Exports
+                    'NE.IMP.GNFS.ZS', // Imports
+                    'GC.DOD.TOTL.GD.ZS', // Government debt
+                    'NY.GDP.PCAP.CD', // GDP per capita
+                    'SP.POP.TOTL', // Population
+                    'EN.ATM.CO2E.PC', // CO2 emissions
+                    'SE.XPD.TOTL.GD.ZS' // Education expenditure
+                ],
+                countries: ['BRA', 'USA', 'CHN', 'IND', 'RUS', 'ZAF', 'ARG', 'MEX', 'DEU', 'JPN', 'GBR', 'FRA'],
+                startYear: 2010,
+                endYear: 2024
+            });
+
+            if (response.data.success) {
+                setSyncStatus(response.data);
+                toast.success(t.syncSuccess);
+                loadData(); // Reload to show synced data
+            } else {
+                toast.error(t.syncError);
+            }
+        } catch (error) {
+            console.error('Error syncing World Bank data:', error);
+            toast.error(t.syncError);
+        } finally {
+            setSyncing(false);
+        }
+    };
+
     return (
         <Card>
             <CardHeader>
@@ -125,8 +189,12 @@ export default function ExternalDataFeeds({ lang = 'pt' }) {
                         <span className="text-sm text-gray-600">{t.loading}</span>
                     </div>
                 ) : (
-                    <Tabs defaultValue="news">
-                        <TabsList className="grid w-full grid-cols-3">
+                    <Tabs defaultValue="worldbank">
+                        <TabsList className="grid w-full grid-cols-4">
+                            <TabsTrigger value="worldbank">
+                                <TrendingUp className="w-4 h-4 mr-2" />
+                                {t.worldbank}
+                            </TabsTrigger>
                             <TabsTrigger value="news">
                                 <Newspaper className="w-4 h-4 mr-2" />
                                 {t.news}
@@ -140,6 +208,132 @@ export default function ExternalDataFeeds({ lang = 'pt' }) {
                                 {t.sentiment}
                             </TabsTrigger>
                         </TabsList>
+
+                        <TabsContent value="worldbank" className="space-y-4 mt-4">
+                            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div>
+                                        <h3 className="font-semibold text-[#002D62] text-lg mb-1">
+                                            {t.worldbank} Data Sync
+                                        </h3>
+                                        <p className="text-sm text-gray-600">
+                                            {lang === 'pt' 
+                                                ? 'Sincronize dados econômicos de 12 países com 10 indicadores estratégicos'
+                                                : 'Sync economic data from 12 countries with 10 strategic indicators'}
+                                        </p>
+                                    </div>
+                                    <Button 
+                                        onClick={syncWorldBank} 
+                                        disabled={syncing}
+                                        className="bg-[#002D62] hover:bg-[#001d42]"
+                                    >
+                                        {syncing ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                {t.syncing}
+                                            </>
+                                        ) : (
+                                            <>
+                                                <RefreshCw className="w-4 h-4 mr-2" />
+                                                {t.syncWorldBank}
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                    <div className="bg-white rounded-lg p-3 border">
+                                        <div className="text-2xl font-bold text-[#002D62]">10</div>
+                                        <div className="text-xs text-gray-600">{t.availableIndicators}</div>
+                                    </div>
+                                    <div className="bg-white rounded-lg p-3 border">
+                                        <div className="text-2xl font-bold text-[#002D62]">12</div>
+                                        <div className="text-xs text-gray-600">{t.totalCountries}</div>
+                                    </div>
+                                    <div className="bg-white rounded-lg p-3 border">
+                                        <div className="text-2xl font-bold text-[#002D62]">2010-2024</div>
+                                        <div className="text-xs text-gray-600">{lang === 'pt' ? 'Período' : 'Period'}</div>
+                                    </div>
+                                    <div className="bg-white rounded-lg p-3 border">
+                                        <div className="text-2xl font-bold text-[#002D62]">
+                                            {syncStatus?.total_synced || '-'}
+                                        </div>
+                                        <div className="text-xs text-gray-600">{t.dataPoints}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <h4 className="font-semibold text-sm text-[#002D62]">
+                                    {t.availableIndicators}:
+                                </h4>
+                                <div className="grid sm:grid-cols-2 gap-2">
+                                    {[
+                                        { code: 'NY.GDP.MKTP.CD', name: lang === 'pt' ? 'PIB (USD corrente)' : 'GDP (current USD)' },
+                                        { code: 'FP.CPI.TOTL.ZG', name: lang === 'pt' ? 'Inflação (%)' : 'Inflation (%)' },
+                                        { code: 'SL.UEM.TOTL.ZS', name: lang === 'pt' ? 'Desemprego (%)' : 'Unemployment (%)' },
+                                        { code: 'NE.EXP.GNFS.ZS', name: lang === 'pt' ? 'Exportações (% PIB)' : 'Exports (% GDP)' },
+                                        { code: 'NE.IMP.GNFS.ZS', name: lang === 'pt' ? 'Importações (% PIB)' : 'Imports (% GDP)' },
+                                        { code: 'GC.DOD.TOTL.GD.ZS', name: lang === 'pt' ? 'Dívida Pública (% PIB)' : 'Govt Debt (% GDP)' },
+                                        { code: 'NY.GDP.PCAP.CD', name: lang === 'pt' ? 'PIB per capita' : 'GDP per capita' },
+                                        { code: 'SP.POP.TOTL', name: lang === 'pt' ? 'População' : 'Population' },
+                                        { code: 'EN.ATM.CO2E.PC', name: lang === 'pt' ? 'Emissões CO2 per capita' : 'CO2 emissions per capita' },
+                                        { code: 'SE.XPD.TOTL.GD.ZS', name: lang === 'pt' ? 'Gastos Educação (% PIB)' : 'Education Exp (% GDP)' }
+                                    ].map((ind, idx) => (
+                                        <div key={idx} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg border">
+                                            <Badge variant="outline" className="text-xs font-mono">
+                                                {ind.code}
+                                            </Badge>
+                                            <span className="text-xs text-gray-700">{ind.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <h4 className="font-semibold text-sm text-[#002D62]">
+                                    {t.totalCountries}:
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {[
+                                        { code: 'BRA', name: 'Brasil' },
+                                        { code: 'USA', name: 'USA' },
+                                        { code: 'CHN', name: lang === 'pt' ? 'China' : 'China' },
+                                        { code: 'IND', name: lang === 'pt' ? 'Índia' : 'India' },
+                                        { code: 'RUS', name: lang === 'pt' ? 'Rússia' : 'Russia' },
+                                        { code: 'ZAF', name: lang === 'pt' ? 'África do Sul' : 'South Africa' },
+                                        { code: 'ARG', name: 'Argentina' },
+                                        { code: 'MEX', name: lang === 'pt' ? 'México' : 'Mexico' },
+                                        { code: 'DEU', name: lang === 'pt' ? 'Alemanha' : 'Germany' },
+                                        { code: 'JPN', name: lang === 'pt' ? 'Japão' : 'Japan' },
+                                        { code: 'GBR', name: lang === 'pt' ? 'Reino Unido' : 'UK' },
+                                        { code: 'FRA', name: lang === 'pt' ? 'França' : 'France' }
+                                    ].map((country, idx) => (
+                                        <Badge key={idx} className="bg-blue-100 text-blue-800">
+                                            {country.code} - {country.name}
+                                        </Badge>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {syncStatus && (
+                                <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Badge className="bg-green-600">
+                                            {lang === 'pt' ? 'Sincronizado' : 'Synced'}
+                                        </Badge>
+                                        <span className="text-sm text-gray-600">
+                                            {new Date(syncStatus.timestamp).toLocaleString(lang === 'pt' ? 'pt-BR' : 'en-US')}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm text-gray-700">
+                                        {lang === 'pt' 
+                                            ? `${syncStatus.total_synced} pontos de dados sincronizados com sucesso`
+                                            : `${syncStatus.total_synced} data points synced successfully`}
+                                    </p>
+                                </div>
+                            )}
+                        </TabsContent>
 
                         <TabsContent value="news" className="space-y-3 mt-4">
                             {data.news?.length > 0 ? (

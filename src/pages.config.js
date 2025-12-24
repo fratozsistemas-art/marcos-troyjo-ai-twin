@@ -32,6 +32,7 @@ import TermsOfService from './pages/TermsOfService';
 import Welcome from './pages/Welcome';
 import PublicHome from './pages/PublicHome';
 import TenantAdmin from './pages/TenantAdmin';
+import ReportGenerator from './pages/ReportGenerator';
 import __Layout from './Layout.jsx';
 
 
@@ -70,6 +71,7 @@ export const PAGES = {
     "Welcome": Welcome,
     "PublicHome": PublicHome,
     "TenantAdmin": TenantAdmin,
+    "ReportGenerator": ReportGenerator,
 }
 
 export const pagesConfig = {

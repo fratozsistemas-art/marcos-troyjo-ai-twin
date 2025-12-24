@@ -9,14 +9,15 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Get comprehensive user interaction data
-        const [interactions, profile] = await Promise.all([
+        // Get comprehensive user interaction data and engagement insights
+        const [interactions, profile, engagementInsights] = await Promise.all([
             base44.asServiceRole.entities.UserInteraction.filter({ user_email: user.email }),
-            base44.asServiceRole.entities.UserProfile.filter({ user_email: user.email }).then(p => p[0])
+            base44.asServiceRole.entities.UserProfile.filter({ user_email: user.email }).then(p => p[0]),
+            base44.functions.invoke('getEngagementInsights').then(r => r.data).catch(() => null)
         ]);
 
-        // Analyze interaction patterns
-        const patternAnalysis = analyzePatterns(interactions);
+        // Analyze interaction patterns with enhanced data
+        const patternAnalysis = analyzePatterns(interactions, engagementInsights);
 
         // Get all available content
         const [books, publications, neologisms, concepts, articles] = await Promise.all([
@@ -43,9 +44,21 @@ ${Object.entries(patternAnalysis.contentTypeScores).map(([type, score]) => `  - 
 Time-of-Day Pattern: ${patternAnalysis.timePattern}
 Reading Depth: ${patternAnalysis.readingDepth}
 Engagement Level: ${patternAnalysis.engagementLevel}
+Avg Engagement Score: ${patternAnalysis.avgEngagementScore}%
+Scroll Completion Rate: ${patternAnalysis.scrollCompletionRate}%
 
 Recently Viewed Topics: ${patternAnalysis.recentTopics.join(', ')}
 Emerging Interests: ${patternAnalysis.emergingInterests.join(', ')}
+
+GRANULAR ENGAGEMENT DATA:
+${engagementInsights ? `
+- Purchase Clicks: ${engagementInsights.conversion_metrics.purchase_clicks}
+- Bookmarks: ${engagementInsights.conversion_metrics.bookmarks}
+- Shares: ${engagementInsights.conversion_metrics.shares}
+- Avg Reading Time: ${engagementInsights.reading_behavior.avg_reading_time_minutes}min
+- Most Visited Sections: ${engagementInsights.section_frequency.slice(0, 3).map(s => s.section).join(', ')}
+- Peak Activity: ${engagementInsights.time_based_patterns.peak_day} at ${engagementInsights.time_based_patterns.peak_hour}:00
+` : 'No engagement insights available yet'}
 
 AVAILABLE CONTENT POOL:
 - Books: ${books.length} (focusing on ${books.slice(0, 3).map(b => b.title).join(', ')})
@@ -161,7 +174,7 @@ Prioritize:
     }
 });
 
-function analyzePatterns(interactions) {
+function analyzePatterns(interactions, engagementInsights) {
     const now = Date.now();
     const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
     
@@ -185,32 +198,44 @@ function analyzePatterns(interactions) {
     const avgHour = hours.reduce((a, b) => a + b, 0) / (hours.length || 1);
     const timePattern = avgHour < 12 ? 'morning' : avgHour < 18 ? 'afternoon' : 'evening';
     
-    // Engagement metrics
+    // Engagement metrics from detailed tracking
     const durations = recent.map(i => i.duration_seconds || 0);
     const avgDuration = durations.reduce((a, b) => a + b, 0) / (durations.length || 1);
+    
+    const engagementScores = recent.map(i => i.engagement_score || 0);
+    const avgEngagementScore = Math.round(engagementScores.reduce((a, b) => a + b, 0) / (engagementScores.length || 1));
+    
+    const scrollDepths = recent.filter(i => i.scroll_depth).map(i => i.scroll_depth);
+    const avgScrollDepth = scrollDepths.length > 0 
+        ? Math.round(scrollDepths.reduce((a, b) => a + b, 0) / scrollDepths.length)
+        : 0;
+    const scrollCompletionRate = Math.round((scrollDepths.filter(d => d > 80).length / (scrollDepths.length || 1)) * 100);
     
     // Active days
     const uniqueDays = new Set(recent.map(i => new Date(i.created_date).toDateString())).size;
     
-    // Recent topics
+    // Recent topics from metadata
     const recentTopics = [...new Set(recent.slice(0, 20).map(i => 
-        i.content_metadata?.topic || i.content_title?.split(' ').slice(0, 2).join(' ')
+        i.content_metadata?.topic || i.content_metadata?.category || i.content_title?.split(' ').slice(0, 2).join(' ')
     ))].filter(Boolean).slice(0, 5);
     
-    // Emerging interests (topics with increasing frequency)
+    // Emerging interests based on click events
     const weekOld = now - 7 * 24 * 60 * 60 * 1000;
     const lastWeek = recent.filter(i => new Date(i.created_date).getTime() > weekOld);
-    const emergingInterests = [...new Set(lastWeek.map(i => i.content_type))].slice(0, 3);
+    const clickEvents = lastWeek.filter(i => i.interaction_type === 'click' || i.interaction_type === 'purchase');
+    const emergingInterests = [...new Set(clickEvents.map(i => i.content_type))].slice(0, 3);
     
     return {
         contentTypeScores,
         timePattern,
         avgSessionDuration: Math.round(avgDuration / 60),
+        avgEngagementScore,
+        scrollCompletionRate,
         activeDays: uniqueDays,
         recentTopics,
         emergingInterests,
         readingDepth: avgDuration > 300 ? 'deep' : avgDuration > 120 ? 'moderate' : 'light',
-        engagementLevel: uniqueDays > 15 ? 'high' : uniqueDays > 7 ? 'medium' : 'low'
+        engagementLevel: avgEngagementScore > 70 ? 'high' : avgEngagementScore > 40 ? 'medium' : 'low'
     };
 }
 

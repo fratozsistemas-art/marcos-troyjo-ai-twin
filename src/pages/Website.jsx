@@ -13,6 +13,7 @@ import AudienceSegmentation from '@/components/audience/AudienceSegmentation';
 import ConceptEvolutionTimeline from '@/components/neologisms/ConceptEvolutionTimeline';
 import PublicationCard from '@/components/media/PublicationCard';
 import PolicyObservatory from '@/components/observatory/PolicyObservatory';
+import { useAdvancedTracking, useSectionTracking } from '@/components/tracking/AdvancedTracker';
 
 export default function Website() {
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
@@ -24,6 +25,14 @@ export default function Website() {
     const [loading, setLoading] = useState(true);
     const [yearFilter, setYearFilter] = useState('all');
     const [publicationTypeFilter, setPublicationTypeFilter] = useState('all');
+    
+    // Track page view
+    const { trackClick, trackPurchaseClick } = useAdvancedTracking('page', 'website', 'Website Landing Page', { page_type: 'landing' });
+    
+    // Track section visits
+    useSectionTracking('books', 'books-section');
+    useSectionTracking('publications', 'publications-section');
+    useSectionTracking('neologisms', 'neologisms-section');
     
     // Supported languages
     const supportedLangs = ['pt', 'en', 'zh', 'ar', 'ru', 'hi', 'fr', 'es'];
@@ -608,7 +617,7 @@ export default function Website() {
 
                 {/* Neologisms & Concepts Section */}
                 {neologisms.length > 0 && (
-                    <section className="py-20 px-4 md:px-6 bg-gradient-to-b from-white to-gray-50">
+                    <section id="neologisms" className="py-20 px-4 md:px-6 bg-gradient-to-b from-white to-gray-50">
                         <div className="max-w-7xl mx-auto">
                             <motion.div 
                                 initial={{ opacity: 0 }}
@@ -694,7 +703,7 @@ export default function Website() {
                 )}
 
                 {/* Books */}
-                <section className="py-20 px-4 md:px-6 bg-gradient-to-b from-white via-gray-50 to-white">
+                <section id="books" className="py-20 px-4 md:px-6 bg-gradient-to-b from-white via-gray-50 to-white">
                     <div className="max-w-7xl mx-auto">
                         <motion.div 
                             initial={{ opacity: 0 }}
@@ -778,7 +787,13 @@ export default function Website() {
                                                     {book.description}
                                                 </p>
                                                 {book.purchase_link && (
-                                                    <a href={book.purchase_link} target="_blank" rel="noopener noreferrer" className="block">
+                                                    <a 
+                                                        href={book.purchase_link} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer" 
+                                                        className="block"
+                                                        onClick={() => trackPurchaseClick(book.purchase_link)}
+                                                    >
                                                         <Button 
                                                             size="sm" 
                                                             className="w-full gap-2 bg-gradient-to-r from-[#002D62] to-[#00654A] hover:from-[#001d42] hover:to-[#004a37] text-white shadow-md group/btn"
@@ -852,7 +867,7 @@ export default function Website() {
                 </section>
 
                 {/* Publications */}
-                <section className="py-20 px-4 md:px-6 bg-white">
+                <section id="publications" className="py-20 px-4 md:px-6 bg-white">
                     <div className="max-w-7xl mx-auto">
                         <h2 className="text-3xl font-bold text-[#002D62] mb-8 flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
                             <FileText className="w-8 h-8" />

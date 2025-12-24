@@ -26,6 +26,7 @@ import TopicTracker from '@/components/profile/TopicTracker';
 import DocumentManager from '@/components/documents/DocumentManager';
 import PersonalizedRecommendations from '@/components/recommendations/PersonalizedRecommendations';
 import RecentlyViewed from '@/components/recommendations/RecentlyViewed';
+import EngagementDashboard from '@/components/analytics/EngagementDashboard';
 import DocumentChat from '@/components/chat/DocumentChat';
 import RAGDocumentManager from '@/components/documents/RAGDocumentManager';
 import ExecutiveReports from '@/components/reports/ExecutiveReports';
@@ -586,6 +587,11 @@ export default function Dashboard() {
                 {/* Multi-Modal RAG Interface */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.31 }}>
                     <MultiModalRAGInterface lang={lang} />
+                </motion.div>
+
+                {/* Engagement Dashboard */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.29 }}>
+                    <EngagementDashboard lang={lang} />
                 </motion.div>
 
                 {/* Agent Performance Dashboard */}

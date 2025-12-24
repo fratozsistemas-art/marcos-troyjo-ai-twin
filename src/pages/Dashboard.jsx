@@ -35,6 +35,7 @@ import CustomizableDashboard from '@/components/dashboard/CustomizableDashboard'
 
 import TopicDeepDive from '@/components/topics/TopicDeepDive';
 import CustomPersonaTraits from '@/components/persona/CustomPersonaTraits';
+import CustomPersonaManager from '@/components/persona/CustomPersonaManager';
 import PersonaHistoryViewer from '@/components/persona/PersonaHistoryViewer';
 import GeopoliticalAlertPanel from '@/components/alerts/GeopoliticalAlertPanel';
 import AlertFeedManager from '@/components/alerts/AlertFeedManager';
@@ -504,12 +505,17 @@ export default function Dashboard() {
                             <ProfileSettings lang={lang} />
                         </motion.div>
 
-                {/* Second Row - Custom Traits & AI Suggestions */}
+                {/* Second Row - Custom Persona Manager Full Width */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+                    <CustomPersonaManager lang={lang} />
+                </motion.div>
+
+                {/* Third Row - Custom Traits & AI Suggestions */}
                 <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="h-full">
                         <CustomPersonaTraits lang={lang} />
                     </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="h-full">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.09 }} className="h-full">
                         <PersonaSuggestionPanel lang={lang} />
                     </motion.div>
                 </div>

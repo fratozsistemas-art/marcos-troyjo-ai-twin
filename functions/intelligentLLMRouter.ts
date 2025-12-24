@@ -9,35 +9,51 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { query, context = {} } = await req.json();
+        const { query, context = {}, custom_persona_id = null } = await req.json();
 
         if (!query) {
             return Response.json({ error: 'Query is required' }, { status: 400 });
         }
 
+        // Carregar persona customizada se fornecida
+        let customPersona = null;
+        if (custom_persona_id) {
+            try {
+                customPersona = await base44.asServiceRole.entities.CustomAgentPersona.filter({ id: custom_persona_id });
+                customPersona = customPersona[0];
+            } catch (error) {
+                console.error('Error loading custom persona:', error);
+            }
+        }
+
         // Análise de tipo de consulta
-        const queryAnalysis = analyzeQuery(query);
+        const queryAnalysis = analyzeQuery(query, customPersona);
         
-        // Seleção do modelo baseado na análise
-        const selectedModel = selectModel(queryAnalysis);
+        // Seleção do modelo baseado na análise (customPersona pode influenciar)
+        const selectedModel = selectModel(queryAnalysis, customPersona);
         
         // Execução da consulta no modelo selecionado
         const startTime = Date.now();
         let response, tokenCount, modelUsed;
 
+        // Aplicar configurações da persona customizada
+        const temperature = customPersona?.temperature || queryAnalysis.suggestedTemperature;
+        const topP = customPersona?.top_p || 0.9;
+        const systemPrompt = customPersona?.system_prompt || context.systemPrompt;
+
         try {
             if (selectedModel === 'grok') {
-                const result = await callGrok(query, context);
+                const result = await callGrok(query, { ...context, systemPrompt, temperature, topP });
                 response = result.response;
                 tokenCount = result.tokens;
                 modelUsed = 'grok-beta';
             } else if (selectedModel === 'deepseek') {
-                const result = await callDeepSeek(query, context);
+                const result = await callDeepSeek(query, { ...context, systemPrompt, temperature, topP });
                 response = result.response;
                 tokenCount = result.tokens;
                 modelUsed = 'deepseek-chat';
             } else {
-                const result = await callGPT4(query, context);
+                const result = await callGPT4(query, { ...context, systemPrompt, temperature, topP });
                 response = result.response;
                 tokenCount = result.tokens;
                 modelUsed = 'gpt-4o';
@@ -45,10 +61,21 @@ Deno.serve(async (req) => {
         } catch (error) {
             // Fallback para GPT-4 em caso de erro
             console.error(`Error with ${selectedModel}, falling back to GPT-4:`, error);
-            const result = await callGPT4(query, context);
+            const result = await callGPT4(query, { ...context, systemPrompt, temperature, topP });
             response = result.response;
             tokenCount = result.tokens;
             modelUsed = 'gpt-4o (fallback)';
+        }
+
+        // Incrementar uso da persona customizada
+        if (customPersona) {
+            try {
+                await base44.asServiceRole.entities.CustomAgentPersona.update(customPersona.id, {
+                    usage_count: (customPersona.usage_count || 0) + 1
+                });
+            } catch (error) {
+                console.error('Error updating persona usage:', error);
+            }
         }
 
         const responseTime = Date.now() - startTime;
@@ -59,15 +86,20 @@ Deno.serve(async (req) => {
             user_email: user.email,
             prompt: query,
             response: response,
-            persona_mode: selectedModel,
-            temperature: queryAnalysis.suggestedTemperature,
+            persona_mode: customPersona ? `custom_${customPersona.name}` : selectedModel,
+            temperature: temperature,
             response_time_ms: responseTime,
             token_count: tokenCount,
             metadata: {
                 query_type: queryAnalysis.type,
                 complexity: queryAnalysis.complexity,
                 model_selected: modelUsed,
-                reasoning: queryAnalysis.reasoning
+                reasoning: queryAnalysis.reasoning,
+                custom_persona_used: customPersona ? {
+                    id: customPersona.id,
+                    name: customPersona.name,
+                    role: customPersona.role
+                } : null
             }
         });
 
@@ -91,8 +123,23 @@ Deno.serve(async (req) => {
     }
 });
 
-function analyzeQuery(query) {
+function analyzeQuery(query, customPersona) {
     const lowerQuery = query.toLowerCase();
+    
+    // Se há persona customizada com áreas de foco, influenciar análise
+    if (customPersona?.focus_areas && customPersona.focus_areas.length > 0) {
+        const focusMatch = customPersona.focus_areas.some(area => 
+            lowerQuery.includes(area.toLowerCase())
+        );
+        if (focusMatch) {
+            return {
+                type: 'custom_focus',
+                complexity: 'high',
+                reasoning: `Matched custom persona focus area: ${customPersona.name}`,
+                suggestedTemperature: customPersona.temperature || 0.7
+            };
+        }
+    }
     
     // Padrões matemáticos e quantitativos
     const mathPatterns = [
@@ -151,7 +198,12 @@ function analyzeQuery(query) {
     };
 }
 
-function selectModel(analysis) {
+function selectModel(analysis, customPersona) {
+    // Se há persona customizada com foco específico, usar GPT-4 para versatilidade
+    if (analysis.type === 'custom_focus') {
+        return 'gpt4';
+    }
+    
     // Lógica de seleção baseada na análise
     switch (analysis.type) {
         case 'mathematical':
@@ -186,7 +238,8 @@ async function callGPT4(query, context) {
                     content: query
                 }
             ],
-            temperature: 0.7
+            temperature: context.temperature || 0.7,
+            top_p: context.topP || 0.9
         })
     });
 
@@ -220,7 +273,8 @@ async function callDeepSeek(query, context) {
                     content: query
                 }
             ],
-            temperature: 0.3
+            temperature: context.temperature || 0.3,
+            top_p: context.topP || 0.85
         })
     });
 
@@ -253,7 +307,8 @@ async function callGrok(query, context) {
                     content: query
                 }
             ],
-            temperature: 0.9
+            temperature: context.temperature || 0.9,
+            top_p: context.topP || 0.95
         })
     });
 

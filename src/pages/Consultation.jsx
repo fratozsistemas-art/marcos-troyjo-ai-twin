@@ -63,12 +63,22 @@ function ConsultationInner() {
     const [attachedFiles, setAttachedFiles] = useState([]);
     const [uploadingFiles, setUploadingFiles] = useState(false);
     const [personaMode, setPersonaMode] = useState('tecnico');
+    const [customPersona, setCustomPersona] = useState(null);
     const messagesEndRef = useRef(null);
     const textareaRef = useRef(null);
     const fileInputRef = useRef(null);
     const t = translations[lang];
     const { analyzeInteraction, getContextualPrompt } = usePersonaAdaptation();
     const { canUseFeature, incrementUsage } = useSubscription();
+
+    const handlePersonaModeChange = (mode, persona = null) => {
+        setPersonaMode(mode);
+        if (mode.startsWith('custom_')) {
+            setCustomPersona(persona);
+        } else {
+            setCustomPersona(null);
+        }
+    };
 
     useEffect(() => {
         localStorage.setItem('troyjo_lang', lang);
@@ -424,7 +434,7 @@ function ConsultationInner() {
                     <div className="mb-4">
                         <PersonaModeSelector
                             selectedMode={personaMode}
-                            onModeChange={setPersonaMode}
+                            onModeChange={handlePersonaModeChange}
                             lang={lang}
                             compact={true}
                         />

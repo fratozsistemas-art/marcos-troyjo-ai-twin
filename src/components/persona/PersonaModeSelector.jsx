@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { GraduationCap, TrendingUp, Users, BookOpen, Brain, Lightbulb } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { GraduationCap, TrendingUp, Users, BookOpen, Brain, Lightbulb, Sparkles } from 'lucide-react';
 
 const translations = {
     pt: {
@@ -30,6 +32,24 @@ const translations = {
 
 export default function PersonaModeSelector({ selectedMode, onModeChange, lang = 'pt', compact = false }) {
     const t = translations[lang];
+    const [customPersonas, setCustomPersonas] = useState([]);
+
+    useEffect(() => {
+        loadCustomPersonas();
+    }, []);
+
+    const loadCustomPersonas = async () => {
+        try {
+            const user = await base44.auth.me();
+            const data = await base44.entities.CustomAgentPersona.filter({
+                created_by: user.email,
+                active: true
+            }, '-created_date', 10);
+            setCustomPersonas(data || []);
+        } catch (error) {
+            console.error('Error loading custom personas:', error);
+        }
+    };
 
     if (compact) {
         return (
@@ -49,6 +69,18 @@ export default function PersonaModeSelector({ selectedMode, onModeChange, lang =
                         </Button>
                     );
                 })}
+                {customPersonas.map(persona => (
+                    <Button
+                        key={persona.id}
+                        variant={selectedMode === `custom_${persona.id}` ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => onModeChange(`custom_${persona.id}`, persona)}
+                        className="gap-2 border-[#D4AF37]"
+                    >
+                        <Sparkles className="w-3 h-3" />
+                        {persona.name}
+                    </Button>
+                ))}
             </div>
         );
     }
@@ -77,6 +109,23 @@ export default function PersonaModeSelector({ selectedMode, onModeChange, lang =
                         </button>
                     );
                 })}
+                {customPersonas.map(persona => (
+                    <button
+                        key={persona.id}
+                        onClick={() => onModeChange(`custom_${persona.id}`, persona)}
+                        className={`p-3 rounded-lg border-2 transition-all text-left ${
+                            selectedMode === `custom_${persona.id}`
+                                ? 'border-[#D4AF37] bg-[#D4AF37]/5'
+                                : 'border-gray-200 hover:border-[#D4AF37]/30'
+                        }`}
+                    >
+                        <Sparkles className={`w-5 h-5 mb-2 ${
+                            selectedMode === `custom_${persona.id}` ? 'text-[#D4AF37]' : 'text-gray-400'
+                        }`} />
+                        <div className="font-medium text-sm text-[#333F48]">{persona.name}</div>
+                        <div className="text-xs text-[#333F48]/60 mt-1">{persona.role}</div>
+                    </button>
+                ))}
             </div>
         </Card>
     );

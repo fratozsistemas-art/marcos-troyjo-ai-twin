@@ -26,8 +26,20 @@ Deno.serve(async (req) => {
 
         const startTime = Date.now();
 
+        // Buscar dados SSOT relevantes
+        let ssotContext = '';
+        try {
+            const ssotResponse = await base44.functions.invoke('querySSOTData', {
+                query_type: 'all',
+                include_related: true
+            });
+            ssotContext = ssotResponse.data.formatted_context || '';
+        } catch (error) {
+            console.error('Error fetching SSOT data:', error);
+        }
+
         // Construir prompt para discurso
-        const prompt = buildSpeechPrompt(topic, event_name, audience_profile, duration_minutes, language, include_qa_prep, context);
+        const prompt = buildSpeechPrompt(topic, event_name, audience_profile, duration_minutes, language, include_qa_prep, context, ssotContext);
 
         // Usar router inteligente
         const routerResponse = await base44.functions.invoke('intelligentLLMRouter', {
@@ -123,7 +135,7 @@ Deno.serve(async (req) => {
     }
 });
 
-function buildSpeechPrompt(topic, event_name, audience_profile, duration_minutes, language, include_qa_prep, context) {
+function buildSpeechPrompt(topic, event_name, audience_profile, duration_minutes, language, include_qa_prep, context, ssotContext) {
     const target_words = duration_minutes * 130; // 130 palavras/minuto
     
     const langText = language === 'pt' ? {
@@ -178,6 +190,11 @@ function buildSpeechPrompt(topic, event_name, audience_profile, duration_minutes
 
     if (context.rag_documents && context.rag_documents.length > 0) {
         prompt += `${language === 'pt' ? 'Material de referência disponível' : 'Reference material available'}: ${context.rag_documents.length}\n\n`;
+    }
+
+    if (ssotContext) {
+        prompt += `\n${language === 'pt' ? 'DADOS VERIFICADOS PARA CITAÇÃO (SSOT)' : 'VERIFIED DATA FOR CITATION (SSOT)'}:\n${ssotContext}\n`;
+        prompt += `${language === 'pt' ? 'Use estes dados ao mencionar datas, fóruns, eventos ou instituições.' : 'Use this data when mentioning dates, forums, events or institutions.'}\n\n`;
     }
 
     prompt += `${language === 'pt' ? 'Data de referência' : 'Reference date'}: December 24, 2025\n`;

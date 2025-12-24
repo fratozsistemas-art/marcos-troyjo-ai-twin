@@ -25,8 +25,20 @@ Deno.serve(async (req) => {
 
         const startTime = Date.now();
 
+        // Buscar dados SSOT relevantes
+        let ssotContext = '';
+        try {
+            const ssotResponse = await base44.functions.invoke('querySSOTData', {
+                query_type: 'all',
+                include_related: true
+            });
+            ssotContext = ssotResponse.data.formatted_context || '';
+        } catch (error) {
+            console.error('Error fetching SSOT data:', error);
+        }
+
         // Construir prompt para policy brief
-        const prompt = buildPolicyBriefPrompt(topic, target_institution, page_count, language, include_scenarios, context);
+        const prompt = buildPolicyBriefPrompt(topic, target_institution, page_count, language, include_scenarios, context, ssotContext);
 
         // Usar router inteligente
         const routerResponse = await base44.functions.invoke('intelligentLLMRouter', {
@@ -117,7 +129,7 @@ Deno.serve(async (req) => {
     }
 });
 
-function buildPolicyBriefPrompt(topic, target_institution, page_count, language, include_scenarios, context) {
+function buildPolicyBriefPrompt(topic, target_institution, page_count, language, include_scenarios, context, ssotContext) {
     const langText = language === 'pt' ? {
         instruction: 'Elabore um policy brief detalhado',
         about: 'sobre',
@@ -179,6 +191,11 @@ function buildPolicyBriefPrompt(topic, target_institution, page_count, language,
 
     if (context.rag_documents && context.rag_documents.length > 0) {
         prompt += `${language === 'pt' ? 'Documentos de referência' : 'Reference documents'}: ${context.rag_documents.length}\n\n`;
+    }
+
+    if (ssotContext) {
+        prompt += `\n${language === 'pt' ? 'DADOS VERIFICADOS (SSOT - Single Source of Truth)' : 'VERIFIED DATA (SSOT - Single Source of Truth)'}:\n${ssotContext}\n`;
+        prompt += `${language === 'pt' ? 'IMPORTANTE: Use SEMPRE estes dados verificados ao mencionar fóruns, eventos ou atores.' : 'IMPORTANT: ALWAYS use this verified data when mentioning forums, events or actors.'}\n\n`;
     }
 
     prompt += `${language === 'pt' ? 'Data de corte' : 'Cutoff date'}: December 2025\n`;

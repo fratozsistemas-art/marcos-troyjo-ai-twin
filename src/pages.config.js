@@ -29,6 +29,7 @@ import SystemHealth from './pages/SystemHealth';
 import TermsOfService from './pages/TermsOfService';
 import Website from './pages/Website';
 import Welcome from './pages/Welcome';
+import ContentManagement from './pages/ContentManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -64,6 +65,7 @@ export const PAGES = {
     "TermsOfService": TermsOfService,
     "Website": Website,
     "Welcome": Welcome,
+    "ContentManagement": ContentManagement,
 }
 
 export const pagesConfig = {

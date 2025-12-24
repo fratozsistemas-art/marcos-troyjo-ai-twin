@@ -17,6 +17,8 @@ import PolicyObservatory from '@/components/observatory/PolicyObservatory';
 export default function Website() {
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
     const [publications, setPublications] = useState([]);
+    const [books, setBooks] = useState([]);
+    const [awards, setAwards] = useState([]);
     const [loading, setLoading] = useState(true);
     
     // Supported languages
@@ -33,17 +35,25 @@ export default function Website() {
     };
 
     useEffect(() => {
-        loadPublications();
+        loadData();
     }, []);
 
-    const loadPublications = async () => {
+    const loadData = async () => {
         setLoading(true);
         try {
-            const pubs = await base44.entities.Publication.list('-publication_date', 50);
+            const [pubs, bks, awds] = await Promise.all([
+                base44.entities.Publication.list('-publication_date', 50),
+                base44.entities.Book.filter({ featured: true }, 'order'),
+                base44.entities.Award.filter({ featured: true }, 'order')
+            ]);
             setPublications(pubs || []);
+            setBooks(bks || []);
+            setAwards(awds || []);
         } catch (error) {
-            console.error('Error loading publications:', error);
+            console.error('Error loading data:', error);
             setPublications([]);
+            setBooks([]);
+            setAwards([]);
         } finally {
             setLoading(false);
         }
@@ -117,54 +127,6 @@ export default function Website() {
     };
 
     const text = t[lang];
-
-    const books = [
-        { 
-            title: 'Tecnologia e Diplomacia', 
-            year: '2003', 
-            description: 'Desafios da cooperação internacional no campo científico-tecnológico',
-            purchaseLink: 'https://www.amazon.com.br/Tecnologia-Diplomacia-Marcos-Prado-Troyjo/dp/8571293864',
-            cover: 'https://m.media-amazon.com/images/I/51MxQnB7qNL._SY344_BO1,204,203,200_.jpg'
-        },
-        { 
-            title: 'Nação-Comerciante', 
-            year: '2007', 
-            description: 'Poder e Prosperidade no Século XXI - estratégias de inserção internacional competitiva',
-            purchaseLink: 'https://www.amazon.com.br/Nação-Comerciante-Marcos-Prado-Troyjo/dp/8587364642',
-            cover: 'https://m.media-amazon.com/images/I/41YZwQXnCLL._SY344_BO1,204,203,200_.jpg'
-        },
-        { 
-            title: 'Desglobalização', 
-            year: '2016', 
-            description: 'Reflexões sobre o futuro da globalização e a desaceleração do comércio mundial',
-            purchaseLink: 'https://www.amazon.com.br/Desglobalização-Marcos-Troyjo/dp/8501109568',
-            cover: 'https://m.media-amazon.com/images/I/51XQmB9VWZL._SY344_BO1,204,203,200_QL70_ML2_.jpg'
-        },
-        { 
-            title: 'A Metamorfose dos BRICS', 
-            year: '2016', 
-            description: 'Transformações nas economias emergentes e reconfiguração do poder global',
-            purchaseLink: 'https://www.estantevirtual.com.br/livros/marcos-troyjo',
-            cover: 'https://m.media-amazon.com/images/I/51B7sQdLcmL._SY344_BO1,204,203,200_QL70_ML2_.jpg'
-        },
-        { 
-            title: 'Trading Up', 
-            year: '2022', 
-            description: 'Como o Brasil pode se tornar uma potência comercial no século XXI',
-            purchaseLink: 'https://www.amazon.com.br/Trading-Up-Brasil-tornar-potência/dp/8501117420',
-            cover: 'https://m.media-amazon.com/images/I/41XyH+JYZRL._SY344_BO1,204,203,200_.jpg'
-        }
-    ];
-
-    const awards = [
-        'Grande Oficial da Ordem do Rio Branco',
-        'Personalidade do Comércio Exterior (FUNCEX 2020)',
-        'TOYP World (The Outstanding Young Person) - 2004',
-        'Presidente do Novo Banco de Desenvolvimento (NDB) - 2020-2023',
-        'Professor visitante - Columbia University',
-        'Membro do Conselho de Administração - múltiplas organizações internacionais',
-        'Consultor sênior - organizações multilaterais'
-    ];
 
     const [filter, setFilter] = useState('all');
 
@@ -466,39 +428,45 @@ export default function Website() {
                             <BookOpen className="w-8 h-8" />
                             {text.books}
                         </h2>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {books.map((book, idx) => (
-                                <Card key={idx} className="hover:shadow-lg hover:border-[#8B1538]/30 transition-all group overflow-hidden">
-                                    {book.cover && (
-                                        <div className="aspect-[3/4] overflow-hidden bg-gray-100">
-                                            <img
-                                                src={book.cover}
-                                                alt={book.title}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                                onError={(e) => e.target.style.display = 'none'}
-                                            />
-                                        </div>
-                                    )}
-                                    <CardHeader>
-                                        <div className="flex items-start justify-between">
-                                            <CardTitle className="text-lg text-[#002D62]">{book.title}</CardTitle>
-                                            <Badge variant="outline" className="border-[#D4AF37] text-[#D4AF37]">{book.year}</Badge>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                        <p className="text-sm text-[#2D2D2D]/70">{book.description}</p>
-                                        {book.purchaseLink && (
-                                            <a href={book.purchaseLink} target="_blank" rel="noopener noreferrer">
-                                                <Button size="sm" className="w-full gap-2 bg-[#D4AF37] hover:bg-[#C19B2A] text-[#2D2D2D]">
-                                                    <BookOpen className="w-4 h-4" />
-                                                    {text.purchase}
-                                                </Button>
-                                            </a>
+                        {books.length > 0 ? (
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {books.map((book, idx) => (
+                                    <Card key={book.id} className="hover:shadow-lg hover:border-[#8B1538]/30 transition-all group overflow-hidden">
+                                        {book.cover_url && (
+                                            <div className="aspect-[3/4] overflow-hidden bg-gray-100">
+                                                <img
+                                                    src={book.cover_url}
+                                                    alt={book.title}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                    onError={(e) => e.target.style.display = 'none'}
+                                                />
+                                            </div>
                                         )}
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
+                                        <CardHeader>
+                                            <div className="flex items-start justify-between">
+                                                <CardTitle className="text-lg text-[#002D62]">{book.title}</CardTitle>
+                                                <Badge variant="outline" className="border-[#D4AF37] text-[#D4AF37]">{book.year}</Badge>
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent className="space-y-4">
+                                            <p className="text-sm text-[#2D2D2D]/70">{book.description}</p>
+                                            {book.purchase_link && (
+                                                <a href={book.purchase_link} target="_blank" rel="noopener noreferrer">
+                                                    <Button size="sm" className="w-full gap-2 bg-[#D4AF37] hover:bg-[#C19B2A] text-[#2D2D2D]">
+                                                        <BookOpen className="w-4 h-4" />
+                                                        {text.purchase}
+                                                    </Button>
+                                                </a>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-12 text-gray-500">
+                                {lang === 'pt' ? 'Nenhum livro disponível' : 'No books available'}
+                            </div>
+                        )}
                     </div>
                 </section>
 
@@ -509,14 +477,24 @@ export default function Website() {
                             <Award className="w-8 h-8" />
                             {text.awards}
                         </h2>
-                        <div className="grid md:grid-cols-2 gap-4">
-                            {awards.map((award, idx) => (
-                                <div key={idx} className="flex items-start gap-3 p-4 rounded-lg border border-gray-100 bg-white hover:border-[#D4AF37]/30 hover:shadow-md transition-all">
-                                    <Award className="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5" />
-                                    <span className="text-[#2D2D2D]">{award}</span>
-                                </div>
-                            ))}
-                        </div>
+                        {awards.length > 0 ? (
+                            <div className="grid md:grid-cols-2 gap-4">
+                                {awards.map((award) => (
+                                    <div key={award.id} className="flex items-start gap-3 p-4 rounded-lg border border-gray-100 bg-white hover:border-[#D4AF37]/30 hover:shadow-md transition-all">
+                                        <Award className="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5" />
+                                        <div className="flex-1">
+                                            <span className="text-[#2D2D2D] font-medium">{award.title}</span>
+                                            {award.organization && <p className="text-sm text-gray-600 mt-1">{award.organization}</p>}
+                                            {award.year && <p className="text-xs text-gray-500 mt-1">{award.year}</p>}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-12 text-gray-500">
+                                {lang === 'pt' ? 'Nenhum prêmio disponível' : 'No awards available'}
+                            </div>
+                        )}
                     </div>
                 </section>
 

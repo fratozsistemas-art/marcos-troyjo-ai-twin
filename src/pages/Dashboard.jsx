@@ -10,7 +10,7 @@ import TroyjoLogo from '@/components/branding/TroyjoLogo';
 import { 
     ArrowLeft, Globe, BookOpen, Award, MessageSquare, 
     Trash2, Eye, Plus, Calendar, Loader2, Database, Info, FileSpreadsheet, FileJson,
-    Sparkles, ToggleLeft, ToggleRight
+    Sparkles, ToggleLeft, ToggleRight, TrendingUp
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

@@ -52,6 +52,7 @@ import MultiModalRAGInterface from '@/components/interviews/MultiModalRAGInterfa
 import GeopoliticalRiskMonitor from '@/components/dashboard/GeopoliticalRiskMonitor';
 import UsageMeter from '@/components/subscription/UsageMeter';
 import MultiModelChat from '@/components/ai/MultiModelChat';
+import SentimentDashboard from '@/components/analytics/SentimentDashboard';
 import MultiModelWorkflow from '@/components/ai/MultiModelWorkflow';
 import EnhancedAIChat from '@/components/ai/EnhancedAIChat';
 import AgentPerformanceDashboard from '@/components/analytics/AgentPerformanceDashboard';
@@ -690,10 +691,15 @@ export default function Dashboard() {
                     <MultiModalRAGInterface lang={lang} />
                 </motion.div>
 
-                {/* Engagement Dashboard */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.29 }}>
-                    <EngagementDashboard lang={lang} />
-                </motion.div>
+                {/* Analytics Row - Engagement & Sentiment Side by Side */}
+                <div className="grid lg:grid-cols-2 gap-6">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.29 }}>
+                        <EngagementDashboard lang={lang} />
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.30 }}>
+                        <SentimentDashboard lang={lang} />
+                    </motion.div>
+                </div>
 
                 {/* Agent Performance Dashboard */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.30 }}>

@@ -4,12 +4,20 @@ import { cn } from "@/lib/utils";
 import { User } from 'lucide-react';
 import InlineFeedback from '@/components/feedback/InlineFeedback';
 import DeepDiveSuggestions from './DeepDiveSuggestions';
+import CRVBadge from '@/components/feedback/CRVBadge';
+import AuditTrailModal from '@/components/feedback/AuditTrailModal';
+import ParadoxResolution from '@/components/feedback/ParadoxResolution';
 
 export default function MessageBubble({ message, onSuggestionSelect, lang = 'pt', conversationId, messageIndex, personaMode }) {
     const isUser = message.role === 'user';
     const usedRag = message.metadata?.used_rag || false;
     const documentIds = message.metadata?.document_ids || [];
     const isLoading = message.role === 'assistant' && !message.content && message.tool_calls?.some(tc => tc.status === 'running' || tc.status === 'in_progress');
+    
+    // Extract CRV scores and sources for advanced features
+    const crvScores = message.metadata?.crv_scores || { confidence: 75, risk: 30, value: 80 };
+    const sources = message.metadata?.sources || [];
+    const paradox = message.metadata?.paradox;
     
     return (
         <div className={cn("flex gap-4", isUser ? "justify-end" : "justify-start")}>
@@ -70,18 +78,36 @@ export default function MessageBubble({ message, onSuggestionSelect, lang = 'pt'
                                     {message.content}
                                 </ReactMarkdown>
 
-                                {/* Inline Feedback */}
+                                {/* Advanced Analytics & Feedback */}
                                 {conversationId && messageIndex !== undefined && (
-                                    <div className="mt-4 pt-4 border-t border-gray-100">
-                                        <InlineFeedback
-                                            conversationId={conversationId}
-                                            messageIndex={messageIndex}
-                                            messageContent={message.content}
-                                            personaMode={personaMode}
-                                            usedRag={usedRag}
-                                            documentIds={documentIds}
+                                    <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
+                                        {/* CRV Badge */}
+                                        <CRVBadge 
+                                            confidence={crvScores.confidence}
+                                            risk={crvScores.risk}
+                                            value={crvScores.value}
                                             lang={lang}
+                                            compact={true}
                                         />
+                                        
+                                        {/* Audit Trail & Inline Feedback */}
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            {sources.length > 0 && (
+                                                <AuditTrailModal 
+                                                    sources={sources}
+                                                    lang={lang}
+                                                />
+                                            )}
+                                            <InlineFeedback
+                                                conversationId={conversationId}
+                                                messageIndex={messageIndex}
+                                                messageContent={message.content}
+                                                personaMode={personaMode}
+                                                usedRag={usedRag}
+                                                documentIds={documentIds}
+                                                lang={lang}
+                                            />
+                                        </div>
                                     </div>
                                 )}
                             </>
@@ -89,6 +115,19 @@ export default function MessageBubble({ message, onSuggestionSelect, lang = 'pt'
                     </div>
                 ) : null}
 
+                {/* Paradox Resolution (if present) */}
+                {!isUser && paradox && (
+                    <div className="mt-3">
+                        <ParadoxResolution 
+                            paradox={paradox}
+                            lang={lang}
+                            onResolve={(resolution) => {
+                                console.log('Paradox resolved:', resolution);
+                            }}
+                        />
+                    </div>
+                )}
+                
                 {!isUser && message.suggestions && message.suggestions.length > 0 && (
                     <DeepDiveSuggestions 
                         suggestions={message.suggestions}

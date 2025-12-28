@@ -19,6 +19,7 @@ export default function NavigationMenu({ lang = 'pt' }) {
             blog: 'Blog',
             analytics: 'Analytics',
             entities: 'Entidades',
+            team: 'Equipe',
             public: 'Início Público',
             pricing: 'Planos',
             privacy: 'Privacidade'
@@ -31,6 +32,7 @@ export default function NavigationMenu({ lang = 'pt' }) {
             blog: 'Blog',
             analytics: 'Analytics',
             entities: 'Entities',
+            team: 'Team',
             public: 'Public Home',
             pricing: 'Pricing',
             privacy: 'Privacy'
@@ -46,6 +48,7 @@ export default function NavigationMenu({ lang = 'pt' }) {
         { path: 'KnowledgeBase', icon: BookOpen, label: t.knowledge },
         { path: 'StrategicIntelligenceBlog', icon: FileText, label: t.blog },
         { path: 'AnalyticsDashboard', icon: BarChart3, label: t.analytics },
+        { path: 'TeamDashboard', icon: Settings, label: t.team },
         { path: 'AdminEntities', icon: Database, label: t.entities },
         { path: 'Pricing', icon: DollarSign, label: t.pricing },
         { path: 'PublicHome', icon: Globe, label: t.public },

@@ -42,6 +42,7 @@ import SystemHealth from './pages/SystemHealth';
 import TenantAdmin from './pages/TenantAdmin';
 import TermsOfService from './pages/TermsOfService';
 import Welcome from './pages/Welcome';
+import TeamDashboard from './pages/TeamDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -90,6 +91,7 @@ export const PAGES = {
     "TenantAdmin": TenantAdmin,
     "TermsOfService": TermsOfService,
     "Welcome": Welcome,
+    "TeamDashboard": TeamDashboard,
 }
 
 export const pagesConfig = {

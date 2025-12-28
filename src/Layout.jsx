@@ -223,51 +223,7 @@ export default function Layout({ children, currentPageName }) {
                 </motion.header>
                 )}
 
-                {/* Beta Badge */}
-                            <motion.div 
-                                className="fixed top-24 right-6 z-50 pointer-events-none"
-                                initial={{ opacity: 0, scale: 0.8, x: 50 }}
-                                animate={{ opacity: 1, scale: 1, x: 0 }}
-                                transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
-                            >
-                                <div className="relative">
-                                    <motion.div 
-                                        className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-2xl blur-md opacity-75"
-                                        animate={{ 
-                                            scale: [1, 1.1, 1],
-                                            opacity: [0.75, 0.9, 0.75]
-                                        }}
-                                        transition={{ 
-                                            duration: 3,
-                                            repeat: Infinity,
-                                            ease: "easeInOut"
-                                        }}
-                                    />
-                                    <div className="relative bg-white dark:bg-gray-900 rounded-2xl px-4 py-2 border-2 border-transparent shadow-xl" style={{
-                                        backgroundImage: darkMode 
-                                            ? 'linear-gradient(rgba(17, 24, 39, 1), rgba(17, 24, 39, 1)), linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)'
-                                            : 'linear-gradient(white, white), linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)',
-                                        backgroundOrigin: 'border-box',
-                                        backgroundClip: 'padding-box, border-box'
-                                    }}>
-                                        <motion.span 
-                                            className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-sm tracking-wider flex items-center gap-1"
-                                            animate={{ 
-                                                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-                                            }}
-                                            transition={{ 
-                                                duration: 5,
-                                                repeat: Infinity
-                                            }}
-                                        >
-                                            <Sparkles className="w-3 h-3" />
-                                            BETA
-                                        </motion.span>
-                                    </div>
-                                </div>
-                            </motion.div>
-
-                            {/* Page Content */}
+                {/* Page Content */}
                             <main className="flex-1">
                                 <motion.div 
                                     className="max-w-7xl mx-auto px-4 md:px-6 py-4"

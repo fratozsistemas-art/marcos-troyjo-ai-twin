@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* CAIO Design System - Light Mode */
+    --background: 0 0% 100%;
+    --foreground: 216 68% 7%;                    /* Abyss Blue */
+    
+    --card: 0 0% 100%;
+    --card-foreground: 216 68% 7%;               /* Abyss Blue */
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 216 68% 7%;
+    
+    --primary: 216 68% 7%;                       /* Abyss Blue #06101F */
+    --primary-foreground: 0 0% 98%;
+    
+    --secondary: 190 100% 50%;                   /* Electric Cyan #00D4FF */
+    --secondary-foreground: 216 68% 7%;
+    
+    --accent: 41 46% 58%;                        /* Metallic Gold #C7A763 */
+    --accent-foreground: 216 68% 7%;
+    
+    --muted: 216 68% 96%;
+    --muted-foreground: 216 34% 45%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 216 34% 85%;
+    --input: 216 34% 85%;
+    --ring: 190 100% 50%;                        /* Electric Cyan focus ring */
+    
+    /* CAIO Chart Colors */
+    --chart-1: 190 100% 50%;                     /* Electric Cyan */
+    --chart-2: 41 46% 58%;                       /* Metallic Gold */
+    --chart-3: 216 68% 7%;                       /* Abyss Blue */
+    --chart-4: 190 100% 70%;                     /* Electric Cyan light */
+    --chart-5: 41 46% 70%;                       /* Metallic Gold light */
+    
+    --radius: 0.5rem;
+  }
+  
+  .dark {
+    /* CAIO Design System - Dark Mode */
+    --background: 216 68% 7%;                    /* Abyss Blue #06101F */
+    --foreground: 0 0% 98%;
+    
+    --card: 216 68% 12%;                         /* Abyss Blue lighter */
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 216 68% 12%;
+    --popover-foreground: 0 0% 98%;
+    
+    --primary: 190 100% 50%;                     /* Electric Cyan (primary in dark) */
+    --primary-foreground: 216 68% 7%;
+    
+    --secondary: 216 68% 18%;
+    --secondary-foreground: 190 100% 70%;        /* Electric Cyan light */
+    
+    --accent: 41 46% 58%;                        /* Metallic Gold */
+    --accent-foreground: 216 68% 7%;
+    
+    --muted: 216 68% 15%;
+    --muted-foreground: 190 50% 70%;
+    
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 216 40% 22%;
+    --input: 216 40% 22%;
+    --ring: 190 100% 50%;                        /* Electric Cyan */
+    
+    /* CAIO Chart Colors (Dark) */
+    --chart-1: 190 100% 50%;                     /* Electric Cyan */
+    --chart-2: 41 46% 65%;                       /* Metallic Gold */
+    --chart-3: 190 100% 70%;                     /* Electric Cyan light */
+    --chart-4: 41 46% 75%;                       /* Metallic Gold light */
+    --chart-5: 216 68% 45%;                      /* Abyss Blue medium */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

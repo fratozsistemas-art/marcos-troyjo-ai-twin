@@ -35,6 +35,7 @@ import TermsOfService from './pages/TermsOfService';
 import Welcome from './pages/Welcome';
 import StudyMode from './pages/StudyMode';
 import PublicPolicyObservatory from './pages/PublicPolicyObservatory';
+import CAIODemo from './pages/CAIODemo';
 import __Layout from './Layout.jsx';
 
 
@@ -76,6 +77,7 @@ export const PAGES = {
     "Welcome": Welcome,
     "StudyMode": StudyMode,
     "PublicPolicyObservatory": PublicPolicyObservatory,
+    "CAIODemo": CAIODemo,
 }
 
 export const pagesConfig = {

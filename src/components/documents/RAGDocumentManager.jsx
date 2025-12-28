@@ -193,7 +193,7 @@ export default function RAGDocumentManager({ lang = 'pt' }) {
         <>
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-[#002D62]">
+                <CardTitle className="flex items-center gap-2 text-[#06101F]">
                     <Database className="w-5 h-5" />
                     {t.title}
                 </CardTitle>
@@ -214,13 +214,13 @@ export default function RAGDocumentManager({ lang = 'pt' }) {
 
                 {searchResults.length > 0 && (
                     <div className="space-y-2 mb-4">
-                        <h4 className="text-sm font-semibold text-[#002D62]">
+                        <h4 className="text-sm font-semibold text-[#06101F]">
                             {lang === 'pt' ? 'Resultados' : 'Results'}:
                         </h4>
                         {searchResults.map((result, idx) => (
                             <div key={idx} className="p-3 rounded-lg border border-gray-200 bg-gray-50">
                                 <div className="flex items-start justify-between mb-2">
-                                    <span className="text-sm font-medium text-[#002D62]">
+                                    <span className="text-sm font-medium text-[#06101F]">
                                         {result.document_name}
                                     </span>
                                     <Badge variant="outline">
@@ -237,7 +237,7 @@ export default function RAGDocumentManager({ lang = 'pt' }) {
                 <div className="space-y-2">
                     {loading ? (
                         <div className="text-center py-8">
-                            <Loader2 className="w-6 h-6 animate-spin mx-auto text-[#002D62]" />
+                            <Loader2 className="w-6 h-6 animate-spin mx-auto text-[#06101F]" />
                         </div>
                     ) : documents.length === 0 ? (
                         <div className="text-center py-8 text-gray-500">
@@ -252,7 +252,7 @@ export default function RAGDocumentManager({ lang = 'pt' }) {
                                 <div className="flex items-center gap-3 flex-1 min-w-0">
                                     <FileText className="w-5 h-5 text-gray-400 flex-shrink-0" />
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-sm text-[#333F48] truncate">
+                                        <p className="font-medium text-sm text-[#2D2D2D] truncate">
                                             {doc.title}
                                         </p>
                                         <div className="flex items-center gap-2 mt-1">
@@ -308,7 +308,7 @@ export default function RAGDocumentManager({ lang = 'pt' }) {
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => handleViewSummary(doc)}
-                                            className="text-[#00654A] hover:bg-[#00654A]/10"
+                                            className="text-[#06101F] hover:bg-[#06101F]/10"
                                         >
                                             <BookOpen className="w-4 h-4" />
                                         </Button>
@@ -319,7 +319,7 @@ export default function RAGDocumentManager({ lang = 'pt' }) {
                                             size="sm"
                                             onClick={() => handleGenerateSummary(doc.id)}
                                             disabled={generatingSummary === doc.id}
-                                            className="text-[#002D62] hover:bg-[#002D62]/10"
+                                            className="text-[#06101F] hover:bg-[#06101F]/10"
                                         >
                                             {generatingSummary === doc.id ? (
                                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -348,7 +348,7 @@ export default function RAGDocumentManager({ lang = 'pt' }) {
             <DialogContent className="max-w-3xl max-h-[80vh]">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-[#D4AF37]" />
+                        <Sparkles className="w-5 h-5 text-[#C7A763]" />
                         {t.summaryTitle}
                     </DialogTitle>
                 </DialogHeader>
@@ -356,7 +356,7 @@ export default function RAGDocumentManager({ lang = 'pt' }) {
                     {currentSummary && (
                         <div className="space-y-6">
                             <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                                <h4 className="font-semibold text-[#002D62] mb-1">
+                                <h4 className="font-semibold text-[#06101F] mb-1">
                                     {currentSummary.document.title}
                                 </h4>
                                 <p className="text-xs text-gray-600">
@@ -365,27 +365,27 @@ export default function RAGDocumentManager({ lang = 'pt' }) {
                             </div>
 
                             <div>
-                                <h3 className="font-semibold text-[#002D62] mb-2 flex items-center gap-2">
+                                <h3 className="font-semibold text-[#06101F] mb-2 flex items-center gap-2">
                                     <FileText className="w-4 h-4" />
                                     {t.executiveSummary}
                                 </h3>
-                                <p className="text-[#333F48] leading-relaxed">
+                                <p className="text-[#2D2D2D] leading-relaxed">
                                     {currentSummary.executive_summary}
                                 </p>
                             </div>
 
                             {currentSummary.key_insights?.length > 0 && (
                                 <div>
-                                    <h3 className="font-semibold text-[#002D62] mb-3">
+                                    <h3 className="font-semibold text-[#06101F] mb-3">
                                         {t.keyInsights}
                                     </h3>
                                     <div className="space-y-4">
                                         {currentSummary.key_insights.map((insight, idx) => (
-                                            <div key={idx} className="bg-gray-50 rounded-lg p-4 border-l-4 border-[#00654A]">
-                                                <h4 className="font-semibold text-[#00654A] mb-2">
+                                            <div key={idx} className="bg-gray-50 rounded-lg p-4 border-l-4 border-[#06101F]">
+                                                <h4 className="font-semibold text-[#06101F] mb-2">
                                                     {insight.insight}
                                                 </h4>
-                                                <p className="text-sm text-[#333F48] mb-2 leading-relaxed">
+                                                <p className="text-sm text-[#2D2D2D] mb-2 leading-relaxed">
                                                     {insight.analysis}
                                                 </p>
                                                 <p className="text-xs text-gray-500 italic">
@@ -399,12 +399,12 @@ export default function RAGDocumentManager({ lang = 'pt' }) {
 
                             {currentSummary.troyjo_frameworks_applied?.length > 0 && (
                                 <div>
-                                    <h3 className="font-semibold text-[#002D62] mb-2">
+                                    <h3 className="font-semibold text-[#06101F] mb-2">
                                         {t.frameworksApplied}
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
                                         {currentSummary.troyjo_frameworks_applied.map((framework, idx) => (
-                                            <Badge key={idx} className="bg-[#D4AF37] text-[#2D2D2D]">
+                                            <Badge key={idx} className="bg-[#C7A763] text-[#2D2D2D]">
                                                 {framework}
                                             </Badge>
                                         ))}
@@ -414,10 +414,10 @@ export default function RAGDocumentManager({ lang = 'pt' }) {
 
                             {currentSummary.strategic_implications && (
                                 <div>
-                                    <h3 className="font-semibold text-[#002D62] mb-2">
+                                    <h3 className="font-semibold text-[#06101F] mb-2">
                                         {t.strategicImplications}
                                     </h3>
-                                    <p className="text-[#333F48] leading-relaxed">
+                                    <p className="text-[#2D2D2D] leading-relaxed">
                                         {currentSummary.strategic_implications}
                                     </p>
                                 </div>
@@ -425,13 +425,13 @@ export default function RAGDocumentManager({ lang = 'pt' }) {
 
                             {currentSummary.recommendations?.length > 0 && (
                                 <div>
-                                    <h3 className="font-semibold text-[#002D62] mb-2">
+                                    <h3 className="font-semibold text-[#06101F] mb-2">
                                         {t.recommendations}
                                     </h3>
                                     <ul className="space-y-2">
                                         {currentSummary.recommendations.map((rec, idx) => (
-                                            <li key={idx} className="flex items-start gap-2 text-sm text-[#333F48]">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-[#00654A] mt-2 flex-shrink-0" />
+                                            <li key={idx} className="flex items-start gap-2 text-sm text-[#2D2D2D]">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-[#06101F] mt-2 flex-shrink-0" />
                                                 {rec}
                                             </li>
                                         ))}

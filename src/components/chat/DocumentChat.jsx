@@ -85,7 +85,7 @@ Mantenha seu estilo analítico, use dados concretos quando disponíveis nos docu
 
             <Card className="flex-1 flex flex-col">
                 <CardHeader>
-                    <CardTitle className="text-[#002D62] flex items-center gap-2">
+                    <CardTitle className="text-[#06101F] flex items-center gap-2">
                         <FileText className="w-5 h-5" />
                         {t.title}
                     </CardTitle>
@@ -106,7 +106,7 @@ Mantenha seu estilo analítico, use dados concretos quando disponíveis nos docu
                                         <div
                                             className={`max-w-[80%] rounded-lg p-4 ${
                                                 msg.role === 'user'
-                                                    ? 'bg-[#002D62] text-white'
+                                                    ? 'bg-[#06101F] text-white'
                                                     : 'bg-white border border-gray-200'
                                             }`}
                                         >
@@ -123,7 +123,7 @@ Mantenha seu estilo analítico, use dados concretos quando disponíveis nos docu
                                 {loading && (
                                     <div className="flex justify-start">
                                         <div className="bg-white border border-gray-200 rounded-lg p-4">
-                                            <Loader2 className="w-5 h-5 animate-spin text-[#002D62]" />
+                                            <Loader2 className="w-5 h-5 animate-spin text-[#06101F]" />
                                         </div>
                                     </div>
                                 )}
@@ -147,7 +147,7 @@ Mantenha seu estilo analítico, use dados concretos quando disponíveis nos docu
                                 <Button
                                     onClick={handleSend}
                                     disabled={!input.trim() || loading || selectedDocuments.length === 0}
-                                    className="bg-[#002D62] hover:bg-[#001d42]"
+                                    className="bg-[#06101F] hover:bg-[#050D19]"
                                 >
                                     {loading ? (
                                         <Loader2 className="w-5 h-5 animate-spin" />

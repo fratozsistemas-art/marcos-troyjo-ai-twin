@@ -23,7 +23,7 @@ import InsightsSection from '@/components/dashboard/InsightsSection';
 import KnowledgeHub from '@/components/knowledge/KnowledgeHub';
 import ProfileSettings from '@/components/profile/ProfileSettings';
 import TopicTracker from '@/components/profile/TopicTracker';
-import DocumentManager from '@/components/documents/DocumentManager';
+import EnhancedDocumentManager from '@/components/documents/EnhancedDocumentManager';
 import PersonalizedRecommendations from '@/components/recommendations/PersonalizedRecommendations';
 import RecentlyViewed from '@/components/recommendations/RecentlyViewed';
 import EngagementDashboard from '@/components/analytics/EngagementDashboard';
@@ -675,7 +675,7 @@ export default function Dashboard() {
                                 <ExecutiveReports lang={lang} />
                             </motion.div>
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                                <DocumentManager lang={lang} />
+                                <EnhancedDocumentManager lang={lang} />
                             </motion.div>
                         </div>
 

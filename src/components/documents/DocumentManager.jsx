@@ -195,7 +195,7 @@ export default function DocumentManager({ lang = 'pt', onDocumentSelect }) {
         return (
             <Card>
                 <CardContent className="flex items-center justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin text-[#002D62]" />
+                    <Loader2 className="w-6 h-6 animate-spin text-[#06101F]" />
                 </CardContent>
             </Card>
         );
@@ -206,7 +206,7 @@ export default function DocumentManager({ lang = 'pt', onDocumentSelect }) {
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div>
-                        <CardTitle className="text-[#002D62] flex items-center gap-2">
+                        <CardTitle className="text-[#06101F] flex items-center gap-2">
                             <File className="w-5 h-5" />
                             {t.title}
                         </CardTitle>
@@ -214,7 +214,7 @@ export default function DocumentManager({ lang = 'pt', onDocumentSelect }) {
                     </div>
                     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button className="bg-[#002D62] hover:bg-[#001d42]">
+                            <Button className="bg-[#06101F] hover:bg-[#050D19]">
                                 <Upload className="w-4 h-4 mr-2" />
                                 {t.upload}
                             </Button>
@@ -231,13 +231,13 @@ export default function DocumentManager({ lang = 'pt', onDocumentSelect }) {
                             <div className="space-y-4">
                                 <div>
                                     <Label htmlFor="file-upload" className="cursor-pointer">
-                                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#002D62] transition-colors">
+                                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#06101F] transition-colors">
                                             <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
                                             <p className="text-sm text-gray-600">{t.uploadMultiple}</p>
                                             {selectedFiles.length > 0 && (
                                                 <div className="mt-2 space-y-1">
                                                     {selectedFiles.map((file, idx) => (
-                                                        <p key={idx} className="text-xs text-[#002D62]">
+                                                        <p key={idx} className="text-xs text-[#06101F]">
                                                             {file.name} ({(file.size / 1024).toFixed(1)} KB)
                                                         </p>
                                                     ))}
@@ -333,13 +333,13 @@ export default function DocumentManager({ lang = 'pt', onDocumentSelect }) {
                         {filteredDocuments.map((doc) => (
                             <div
                                 key={doc.id}
-                                className="border border-gray-100 rounded-lg p-4 hover:border-[#002D62]/20 hover:bg-gray-50/50 transition-all"
+                                className="border border-gray-100 rounded-lg p-4 hover:border-[#06101F]/20 hover:bg-gray-50/50 transition-all"
                             >
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-start gap-3 flex-1 min-w-0">
                                         <div className="text-3xl">{getFileIcon(doc.file_type)}</div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="font-semibold text-sm text-[#002D62] truncate">
+                                            <h4 className="font-semibold text-sm text-[#06101F] truncate">
                                                 {doc.title}
                                             </h4>
                                             {doc.description && (
@@ -355,7 +355,7 @@ export default function DocumentManager({ lang = 'pt', onDocumentSelect }) {
                                                     {(doc.file_size / 1024).toFixed(1)} KB
                                                 </span>
                                                 {doc.usage_count > 0 && (
-                                                    <span className="text-xs text-[#00654A]">
+                                                    <span className="text-xs text-[#06101F]">
                                                         {t.usedTimes.replace('{{count}}', doc.usage_count)}
                                                     </span>
                                                 )}

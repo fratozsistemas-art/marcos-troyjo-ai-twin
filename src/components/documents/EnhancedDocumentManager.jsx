@@ -124,6 +124,8 @@ export default function EnhancedDocumentManager({ lang = 'pt', onDocumentSelect 
     const [sortBy, setSortBy] = useState('date');
     const [typeFilter, setTypeFilter] = useState('all');
     const [autoSummarizing, setAutoSummarizing] = useState({});
+    const [summaryDialog, setSummaryDialog] = useState(false);
+    const [currentSummary, setCurrentSummary] = useState(null);
     const [currentDoc, setCurrentDoc] = useState({
         title: '',
         description: '',

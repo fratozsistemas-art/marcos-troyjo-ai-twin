@@ -3,6 +3,7 @@ import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import ArticleGenerator from './pages/ArticleGenerator';
 import ArticleView from './pages/ArticleView';
 import Assets from './pages/Assets';
+import CAIODemo from './pages/CAIODemo';
 import Consultation from './pages/Consultation';
 import ContentManagement from './pages/ContentManagement';
 import Dashboard from './pages/Dashboard';
@@ -24,18 +25,22 @@ import PersonaManagement from './pages/PersonaManagement';
 import Pricing from './pages/Pricing';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import PublicHome from './pages/PublicHome';
+import PublicPolicyObservatory from './pages/PublicPolicyObservatory';
 import ReportGenerator from './pages/ReportGenerator';
 import RoleManagement from './pages/RoleManagement';
 import SSOTReports from './pages/SSOTReports';
 import SecurityAdmin from './pages/SecurityAdmin';
 import StrategicIntelligenceBlog from './pages/StrategicIntelligenceBlog';
+import StudyMode from './pages/StudyMode';
 import SystemHealth from './pages/SystemHealth';
 import TenantAdmin from './pages/TenantAdmin';
 import TermsOfService from './pages/TermsOfService';
 import Welcome from './pages/Welcome';
-import StudyMode from './pages/StudyMode';
-import PublicPolicyObservatory from './pages/PublicPolicyObservatory';
-import CAIODemo from './pages/CAIODemo';
+import AdminProjectStatus from './pages/AdminProjectStatus';
+import AdminDataSources from './pages/AdminDataSources';
+import AdminChannels from './pages/AdminChannels';
+import AdminGovernance from './pages/AdminGovernance';
+import AdminIntegrations from './pages/AdminIntegrations';
 import __Layout from './Layout.jsx';
 
 
@@ -45,6 +50,7 @@ export const PAGES = {
     "ArticleGenerator": ArticleGenerator,
     "ArticleView": ArticleView,
     "Assets": Assets,
+    "CAIODemo": CAIODemo,
     "Consultation": Consultation,
     "ContentManagement": ContentManagement,
     "Dashboard": Dashboard,
@@ -66,18 +72,22 @@ export const PAGES = {
     "Pricing": Pricing,
     "PrivacyPolicy": PrivacyPolicy,
     "PublicHome": PublicHome,
+    "PublicPolicyObservatory": PublicPolicyObservatory,
     "ReportGenerator": ReportGenerator,
     "RoleManagement": RoleManagement,
     "SSOTReports": SSOTReports,
     "SecurityAdmin": SecurityAdmin,
     "StrategicIntelligenceBlog": StrategicIntelligenceBlog,
+    "StudyMode": StudyMode,
     "SystemHealth": SystemHealth,
     "TenantAdmin": TenantAdmin,
     "TermsOfService": TermsOfService,
     "Welcome": Welcome,
-    "StudyMode": StudyMode,
-    "PublicPolicyObservatory": PublicPolicyObservatory,
-    "CAIODemo": CAIODemo,
+    "AdminProjectStatus": AdminProjectStatus,
+    "AdminDataSources": AdminDataSources,
+    "AdminChannels": AdminChannels,
+    "AdminGovernance": AdminGovernance,
+    "AdminIntegrations": AdminIntegrations,
 }
 
 export const pagesConfig = {

@@ -1,3 +1,8 @@
+import AdminChannels from './pages/AdminChannels';
+import AdminDataSources from './pages/AdminDataSources';
+import AdminGovernance from './pages/AdminGovernance';
+import AdminIntegrations from './pages/AdminIntegrations';
+import AdminProjectStatus from './pages/AdminProjectStatus';
 import AgentUI from './pages/AgentUI';
 import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import ArticleGenerator from './pages/ArticleGenerator';
@@ -36,15 +41,16 @@ import SystemHealth from './pages/SystemHealth';
 import TenantAdmin from './pages/TenantAdmin';
 import TermsOfService from './pages/TermsOfService';
 import Welcome from './pages/Welcome';
-import AdminProjectStatus from './pages/AdminProjectStatus';
-import AdminDataSources from './pages/AdminDataSources';
-import AdminChannels from './pages/AdminChannels';
-import AdminGovernance from './pages/AdminGovernance';
-import AdminIntegrations from './pages/AdminIntegrations';
+import AdminEntities from './pages/AdminEntities';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "AdminChannels": AdminChannels,
+    "AdminDataSources": AdminDataSources,
+    "AdminGovernance": AdminGovernance,
+    "AdminIntegrations": AdminIntegrations,
+    "AdminProjectStatus": AdminProjectStatus,
     "AgentUI": AgentUI,
     "AnalyticsDashboard": AnalyticsDashboard,
     "ArticleGenerator": ArticleGenerator,
@@ -83,11 +89,7 @@ export const PAGES = {
     "TenantAdmin": TenantAdmin,
     "TermsOfService": TermsOfService,
     "Welcome": Welcome,
-    "AdminProjectStatus": AdminProjectStatus,
-    "AdminDataSources": AdminDataSources,
-    "AdminChannels": AdminChannels,
-    "AdminGovernance": AdminGovernance,
-    "AdminIntegrations": AdminIntegrations,
+    "AdminEntities": AdminEntities,
 }
 
 export const pagesConfig = {

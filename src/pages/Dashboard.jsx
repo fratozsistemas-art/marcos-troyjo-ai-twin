@@ -521,9 +521,9 @@ export default function Dashboard() {
                     <>
                         {/* Quick Actions */}
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                            <div id="stats-panel" className="grid md:grid-cols-4 gap-4">
+                            <div id="stats-panel" className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <Link to={createPageUrl('Consultation')}>
-                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#002D62]/20 hover:border-[#002D62]">
+                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#002D62]/20 hover:border-[#002D62] h-full">
                                         <CardContent className="p-6 text-center">
                                             <MessageSquare className="w-8 h-8 mx-auto mb-3 text-[#002D62]" />
                                             <h3 className="font-semibold text-sm">{lang === 'pt' ? 'Nova Consulta' : 'New Consultation'}</h3>
@@ -531,7 +531,7 @@ export default function Dashboard() {
                                     </Card>
                                 </Link>
                                 <Link to={createPageUrl('KnowledgeBase')}>
-                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#00654A]/20 hover:border-[#00654A]">
+                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#00654A]/20 hover:border-[#00654A] h-full">
                                         <CardContent className="p-6 text-center">
                                             <BookOpen className="w-8 h-8 mx-auto mb-3 text-[#00654A]" />
                                             <h3 className="font-semibold text-sm">{lang === 'pt' ? 'Base de Conhecimento' : 'Knowledge Base'}</h3>
@@ -539,7 +539,7 @@ export default function Dashboard() {
                                     </Card>
                                 </Link>
                                 <Link to={createPageUrl('AnalyticsDashboard')}>
-                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#8B1538]/20 hover:border-[#8B1538]">
+                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#8B1538]/20 hover:border-[#8B1538] h-full">
                                         <CardContent className="p-6 text-center">
                                             <TrendingUp className="w-8 h-8 mx-auto mb-3 text-[#8B1538]" />
                                             <h3 className="font-semibold text-sm">Analytics</h3>
@@ -547,7 +547,7 @@ export default function Dashboard() {
                                     </Card>
                                 </Link>
                                 <Link to={createPageUrl('PublicHome')}>
-                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#D4AF37]/20 hover:border-[#D4AF37]">
+                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#D4AF37]/20 hover:border-[#D4AF37] h-full">
                                         <CardContent className="p-6 text-center">
                                             <Globe className="w-8 h-8 mx-auto mb-3 text-[#D4AF37]" />
                                             <h3 className="font-semibold text-sm">{lang === 'pt' ? 'Website Público' : 'Public Website'}</h3>
@@ -557,479 +557,472 @@ export default function Dashboard() {
                             </div>
                         </motion.div>
 
-                        {/* Customizable Dashboard */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                            <CustomizableDashboard lang={lang} />
-                        </motion.div>
-
-                        {/* SSOT Hub - Forums, Events, Key Actors */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.003 }}>
-                            <SSOTHub lang={lang} />
-                        </motion.div>
-
-                        {/* SSOT - Corporate Facts Manager */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.005 }}>
-                            <CorporateFactManager lang={lang} />
-                        </motion.div>
-
-                        {/* External Data Feeds - Full Width */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.01 }}>
-                            <ExternalDataFeeds lang={lang} />
-                        </motion.div>
-
-                        {/* Bulk Article Generation */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.012 }}>
-                            <BulkArticleGenerator lang={lang} />
-                        </motion.div>
-
-                        {/* Quality Gate & Audit - Side by Side */}
-                        <div className="grid lg:grid-cols-2 gap-6">
-                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.012 }}>
-                                <QualityGateIndicator lang={lang} />
+                        {/* Row 1: Customizable Dashboard + Usage Meter */}
+                        <div className="grid lg:grid-cols-3 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="lg:col-span-2">
+                                <CustomizableDashboard lang={lang} />
                             </motion.div>
-                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.013 }}>
-                                <AuditDashboard lang={lang} />
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <UsageMeter lang={lang} />
                             </motion.div>
                         </div>
 
-                        {/* Automation & Agent Management */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.015 }}>
-                            <ReportScheduler lang={lang} />
-                        </motion.div>
+                        {/* Row 2: Profile Settings + AEGIS Indicator */}
+                        <div className="grid lg:grid-cols-3 gap-6">
+                            <motion.div id="profile-card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="lg:col-span-2">
+                                <ProfileSettings lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <AegisIndicator lang={lang} />
+                            </motion.div>
+                        </div>
 
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.018 }}>
-                            <AgentManager lang={lang} />
-                        </motion.div>
-
-                        {/* Geopolitical Section - Side by Side */}
+                        {/* Row 3: Recommendations + Recently Viewed */}
                         <div className="grid lg:grid-cols-2 gap-6">
-                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }}>
+                            <motion.div id="insights-feed" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <PersonalizedRecommendations lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <RecentlyViewed lang={lang} />
+                            </motion.div>
+                        </div>
+
+                        {/* Row 4: SSOT Hub + Corporate Facts */}
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <SSOTHub lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <CorporateFactManager lang={lang} />
+                            </motion.div>
+                        </div>
+
+                        {/* Row 5: External Data Feeds (Full Width) */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                            <ExternalDataFeeds lang={lang} />
+                        </motion.div>
+
+                        {/* Row 6: Quality Gate + Audit + Bulk Articles */}
+                        <div className="grid lg:grid-cols-3 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <QualityGateIndicator lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <AuditDashboard lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <BulkArticleGenerator lang={lang} />
+                            </motion.div>
+                        </div>
+
+                        {/* Row 7: Report Scheduler + Agent Manager */}
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <ReportScheduler lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <AgentManager lang={lang} />
+                            </motion.div>
+                        </div>
+
+                        {/* Row 8: Geopolitical Alerts */}
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                                 <AlertFeedManager lang={lang} />
                             </motion.div>
-                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                                 <GeopoliticalAlertPanel userContext={{}} personaMode="tecnico" lang={lang} />
                             </motion.div>
                         </div>
 
-                        {/* Recommendations Row - Side by Side */}
-                        <div className="grid lg:grid-cols-2 gap-6">
+                        {/* Row 9: Custom Persona Manager (Full Width) */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                            <CustomPersonaManager lang={lang} />
+                        </motion.div>
+
+                        {/* Row 10: Persona Traits + Suggestions + Settings */}
+                        <div className="grid lg:grid-cols-3 gap-6">
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                                <RecentlyViewed lang={lang} />
+                                <CustomPersonaTraits lang={lang} />
                             </motion.div>
-                            <motion.div id="insights-feed" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                                <PersonalizedRecommendations lang={lang} />
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <PersonaSuggestionPanel lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <PersonaSettings lang={lang} />
                             </motion.div>
                         </div>
 
-                        {/* First Row - Profile Settings Full Width */}
-                        <motion.div id="profile-card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                            <ProfileSettings lang={lang} />
+                        {/* Row 11: Persona Training + Interview + History */}
+                        <div className="grid lg:grid-cols-3 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <PersonaTraining lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <InterviewSimulation lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <PersonaHistoryViewer lang={lang} />
+                            </motion.div>
+                        </div>
+
+                        {/* Row 12: RAG + Executive Reports + Documents */}
+                        <div className="grid lg:grid-cols-3 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <RAGDocumentManager lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <ExecutiveReports lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <DocumentManager lang={lang} />
+                            </motion.div>
+                        </div>
+
+                        {/* Row 13: Document Chat + Multi-Modal RAG + Interview Transcripts */}
+                        <div className="grid lg:grid-cols-3 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <DocumentChat lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <MultiModalRAGInterface lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <InterviewTranscriptManager lang={lang} />
+                            </motion.div>
+                        </div>
+
+                        {/* Row 14: Geopolitical Risk + Intelligence Resources */}
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <GeopoliticalRiskMonitor lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <IntelligenceResources lang={lang} />
+                            </motion.div>
+                        </div>
+
+                        {/* Row 15: Engagement + Sentiment + Agent Performance */}
+                        <div className="grid lg:grid-cols-3 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <EngagementDashboard lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <SentimentDashboard lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <AgentPerformanceDashboard lang={lang} />
+                            </motion.div>
+                        </div>
+
+                        {/* Row 16: AI Chat Tools */}
+                        <div className="grid lg:grid-cols-3 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <EnhancedAIChat lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <MultiModelWorkflow lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <MultiModelChat lang={lang} />
+                            </motion.div>
+                        </div>
+
+                        {/* Row 17: Knowledge Hub (Full Width) */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                            <KnowledgeHub lang={lang} />
                         </motion.div>
 
-                {/* Second Row - Custom Persona Manager Full Width */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-                    <CustomPersonaManager lang={lang} />
-                </motion.div>
+                        {/* Row 18: Topic Tracker + Persona Analytics + Insights */}
+                        <div className="grid lg:grid-cols-3 gap-6">
+                            <motion.div id="trending-topics" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <TopicTracker lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <PersonaAnalytics lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <InsightsSection lang={lang} />
+                            </motion.div>
+                        </div>
 
-                {/* Third Row - Custom Traits & AI Suggestions */}
-                <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="h-full">
-                        <CustomPersonaTraits lang={lang} />
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.09 }} className="h-full">
-                        <PersonaSuggestionPanel lang={lang} />
-                    </motion.div>
-                </div>
+                        {/* Row 19: Proactive Suggestions + Topic Deep Dive */}
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <ProactiveSuggestions lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <TopicDeepDive lang={lang} />
+                            </motion.div>
+                        </div>
 
-                {/* Persona Training & Interview Simulation */}
-                <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="h-full">
-                        <PersonaTraining lang={lang} />
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.09 }} className="h-full">
-                        <InterviewSimulation lang={lang} />
-                    </motion.div>
-                </div>
-
-                {/* Fourth Row - RAG & Reports Side by Side */}
-                <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.09 }}>
-                        <RAGDocumentManager lang={lang} />
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.095 }}>
-                        <ExecutiveReports lang={lang} />
-                    </motion.div>
-                </div>
-
-                {/* Fifth Row - Documents Side by Side */}
-                <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.10 }} className="h-full">
-                        <DocumentManager lang={lang} />
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.11 }} className="h-full">
-                        <DocumentChat lang={lang} />
-                    </motion.div>
-                </div>
-
-                {/* Geopolitical Risk Monitor */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-                    <GeopoliticalRiskMonitor lang={lang} />
-                </motion.div>
-
-                {/* Intelligence Resources */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.27 }}>
-                    <IntelligenceResources lang={lang} />
-                </motion.div>
-
-                {/* Interview Transcripts RAG */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.29 }}>
-                    <InterviewTranscriptManager lang={lang} />
-                </motion.div>
-
-                {/* Multi-Modal RAG Interface */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.31 }}>
-                    <MultiModalRAGInterface lang={lang} />
-                </motion.div>
-
-                {/* Analytics Row - Engagement & Sentiment Side by Side */}
-                <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.29 }}>
-                        <EngagementDashboard lang={lang} />
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.30 }}>
-                        <SentimentDashboard lang={lang} />
-                    </motion.div>
-                </div>
-
-                {/* Agent Performance Dashboard */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.30 }}>
-                    <AgentPerformanceDashboard lang={lang} />
-                </motion.div>
-
-                {/* Enhanced AI Chat with History & Metrics */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.31 }}>
-                    <EnhancedAIChat lang={lang} />
-                </motion.div>
-
-                {/* Multi-Model Workflow */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }}>
-                    <MultiModelWorkflow lang={lang} />
-                </motion.div>
-
-                {/* Multi-Model AI Chat Comparison */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.33 }}>
-                    <MultiModelChat lang={lang} />
-                </motion.div>
-
-                {/* Third Row - Knowledge Hub Full Width */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                    <KnowledgeHub lang={lang} />
-                </motion.div>
-
-                {/* Fourth Row - Topic Tracker & Persona Analytics (Compact Cards) */}
-                <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div id="trending-topics" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }}>
-                        <TopicTracker lang={lang} />
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.34 }}>
-                        <PersonaAnalytics lang={lang} />
-                    </motion.div>
-                </div>
-
-                {/* Fifth Row - Proactive Suggestions & Topic Deep Dive (Taller Cards) */}
-                <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.36 }}>
-                        <ProactiveSuggestions lang={lang} />
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }}>
-                        <TopicDeepDive lang={lang} />
-                    </motion.div>
-                </div>
-
-                {/* Sixth Row - Expertise Full Width */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-[#8B1538]">
-                                <BookOpen className="w-5 h-5" />
-                                {t.expertise}
-                            </CardTitle>
-                            <CardDescription>{t.expertiseDesc}</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                                {t.expertiseAreas.map((area, index) => (
-                                    <div key={index} className="p-3 rounded-lg border border-gray-100 hover:border-[#8B1538]/20 transition-colors">
-                                        <h4 className="font-semibold text-sm text-[#8B1538] mb-1">{area.title}</h4>
-                                        <p className="text-xs text-[#333F48]/70">{area.desc}</p>
-                                    </div>
-                                ))}
-                            </div>
-                            <Separator />
-                            <div>
-                                <h4 className="font-semibold text-sm text-[#8B1538] mb-3">
-                                    {lang === 'pt' ? 'Princípios Fundamentais' : 'Foundational Principles'}
-                                </h4>
-                                <ul className="grid sm:grid-cols-2 gap-2">
-                                    {t.principles.map((principle, index) => (
-                                        <li key={index} className="flex items-start gap-2 text-sm text-[#333F48]">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] mt-1.5 flex-shrink-0" />
-                                            {principle}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </motion.div>
-
-                        {/* Seventh Row - Insights */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.42 }}>
-                        <InsightsSection lang={lang} />
-                        </motion.div>
-
-                {/* Eighth Row - Persona Settings & History */}
-                <div className="grid lg:grid-cols-2 gap-6">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.44 }} className="h-full">
-                        <PersonaSettings lang={lang} />
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.46 }} className="h-full">
-                        <PersonaHistoryViewer lang={lang} />
-                    </motion.div>
-                </div>
-
-                {/* Ninth Row - Conversations */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.48 }}>
-                        <Card className="h-full">
-                            <CardHeader>
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <CardTitle className="flex items-center gap-2 text-[#002D62]">
-                                            <MessageSquare className="w-5 h-5" />
-                                            {t.conversations}
-                                        </CardTitle>
-                                        <CardDescription>{t.conversationsDesc}</CardDescription>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        {conversations.length > 0 && (
-                                            <div className="flex gap-1">
-                                                <Button onClick={exportConversationsCSV} variant="ghost" size="sm">
-                                                    <FileSpreadsheet className="w-4 h-4" />
-                                                </Button>
-                                                <Button onClick={exportConversationsJSON} variant="ghost" size="sm">
-                                                    <FileJson className="w-4 h-4" />
-                                                </Button>
+                        {/* Row 20: Expertise (Full Width) */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2 text-[#8B1538]">
+                                        <BookOpen className="w-5 h-5" />
+                                        {t.expertise}
+                                    </CardTitle>
+                                    <CardDescription>{t.expertiseDesc}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                                        {t.expertiseAreas.map((area, index) => (
+                                            <div key={index} className="p-3 rounded-lg border border-gray-100 hover:border-[#8B1538]/20 transition-colors">
+                                                <h4 className="font-semibold text-sm text-[#8B1538] mb-1">{area.title}</h4>
+                                                <p className="text-xs text-[#333F48]/70">{area.desc}</p>
                                             </div>
-                                        )}
-                                        <Button
-                                            variant={summariesEnabled ? "default" : "outline"}
-                                            size="sm"
-                                            onClick={() => setSummariesEnabled(!summariesEnabled)}
-                                            className="gap-2"
-                                        >
-                                            {summariesEnabled ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
-                                            <Sparkles className="w-4 h-4" />
-                                            <span className="hidden md:inline">{t.summaries}</span>
-                                        </Button>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                                        <CardContent>
-                                        {conversations.length > 0 && (
-                                        <div className="mb-4">
-                                        <Input
-                                            placeholder={t.search}
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="w-full"
-                                        />
-                                        </div>
-                                        )}
-                                        {isLoading ? (
-                                    <div className="flex items-center justify-center py-8">
-                                        <Loader2 className="w-6 h-6 animate-spin text-[#002D62]" />
-                                        <span className="ml-2 text-sm text-[#333F48]/60">{t.loading}</span>
-                                    </div>
-                                ) : conversations.length === 0 ? (
-                                    <div className="text-center py-8">
-                                        <MessageSquare className="w-12 h-12 text-[#333F48]/20 mx-auto mb-3" />
-                                        <p className="text-sm text-[#333F48]/60 mb-1">{t.noConversations}</p>
-                                        <p className="text-xs text-[#333F48]/40">{t.startFirst}</p>
-                                        <Link to={createPageUrl('Consultation')}>
-                                            <Button className="mt-4 bg-[#002D62] hover:bg-[#001d42]">
-                                                <Plus className="w-4 h-4 mr-2" />
-                                                {t.newChat}
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                ) : (
-                                    <div className="space-y-2 max-h-80 overflow-y-auto">
-                                        {(() => {
-                                            const filtered = conversations.filter(conv => {
-                                                const name = conv.metadata?.name || `Conversa ${new Date(conv.created_date).toLocaleDateString()}`;
-                                                return name.toLowerCase().includes(searchQuery.toLowerCase());
-                                            });
-
-                                            if (filtered.length === 0 && searchQuery) {
-                                                return (
-                                                    <div className="text-center py-8 text-gray-500 text-sm">
-                                                        {t.noResults}
-                                                    </div>
-                                                );
-                                            }
-
-                                            return filtered.map((conv) => (
-                                            <div key={conv.id} className="p-3 rounded-lg border border-gray-100 hover:border-[#002D62]/20 hover:bg-gray-50/50 transition-all space-y-2">
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex-1 min-w-0">
-                                                        <h4 className="font-medium text-sm text-[#333F48] truncate">
-                                                            {conv.metadata?.name || `Conversa ${new Date(conv.created_date).toLocaleDateString()}`}
-                                                        </h4>
-                                                        <p className="text-xs text-[#333F48]/50 flex items-center gap-1 mt-1">
-                                                            <Calendar className="w-3 h-3" />
-                                                            {new Date(conv.created_date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', {
-                                                                day: '2-digit',
-                                                                month: 'short',
-                                                                year: 'numeric',
-                                                                hour: '2-digit',
-                                                                minute: '2-digit'
-                                                            })}
-                                                        </p>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        {summariesEnabled && (
-                                                            <Button 
-                                                                variant="ghost" 
-                                                                size="sm" 
-                                                                className="h-8 px-2"
-                                                                onClick={() => handleGenerateSummary(conv.id)}
-                                                                disabled={generatingSummary === conv.id || conversationSummaries[conv.id]}
-                                                            >
-                                                                {generatingSummary === conv.id ? (
-                                                                    <>
-                                                                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                                                                        <span className="text-xs">{t.generating}</span>
-                                                                    </>
-                                                                ) : conversationSummaries[conv.id] ? (
-                                                                    <span className="text-xs text-green-600">✓</span>
-                                                                ) : (
-                                                                    <>
-                                                                        <Sparkles className="w-3 h-3 mr-1" />
-                                                                        <span className="text-xs">{t.generateSummary}</span>
-                                                                    </>
-                                                                )}
-                                                            </Button>
-                                                        )}
-                                                        <Link to={createPageUrl('Consultation') + `?conversationId=${conv.id}`}>
-                                                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                                                <Eye className="w-4 h-4" />
-                                                            </Button>
-                                                        </Link>
-                                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => handleDeleteConversation(conv.id)}>
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                                {conversationSummaries[conv.id] && (
-                                                    <div className="bg-blue-50 rounded-lg p-2 border border-blue-100">
-                                                        <p className="text-xs font-semibold text-blue-900 mb-1">{t.summary}:</p>
-                                                        <p className="text-xs text-blue-800 leading-relaxed">{conversationSummaries[conv.id]}</p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            ));
-                                                })()}
-                                                </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                </motion.div>
-
-                {/* Bottom Section - Reorganized Grid */}
-                <div className="grid lg:grid-cols-2 gap-6">
-                    {/* Books & Awards Combined */}
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="h-full">
-                        <Card className="h-full">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-[#002D62]">
-                                    <BookOpen className="w-5 h-5" />
-                                    {t.books}
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-6">
-                                <ul className="space-y-3">
-                                    {t.booksList.map((book, index) => (
-                                        <li key={index} className="flex items-center justify-between p-2 rounded-lg border border-gray-100">
-                                            <span className="text-sm text-[#333F48]">{book.title}</span>
-                                            <Badge variant="outline" className="ml-2">{book.year}</Badge>
-                                        </li>
-                                    ))}
-                                </ul>
-                                <div className="pt-4 border-t">
-                                    <div className="flex items-center gap-2 mb-3">
-                                        <Award className="w-5 h-5 text-[#002D62]" />
-                                        <h4 className="font-semibold text-[#002D62]">{t.awards}</h4>
-                                    </div>
-                                    <ul className="space-y-2">
-                                        {t.awardsList.map((award, index) => (
-                                            <li key={index} className="flex items-start gap-2 text-sm text-[#333F48]">
-                                                <span className="w-2 h-2 rounded-full bg-[#B8860B] mt-1.5 flex-shrink-0" />
-                                                {award}
-                                            </li>
                                         ))}
-                                    </ul>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-
-                    {/* Knowledge Base & Language */}
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.52 }} className="h-full">
-                        <Card className="h-full">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-[#002D62]">
-                                    <Database className="w-5 h-5" />
-                                    {t.knowledgeBase}
-                                </CardTitle>
-                                <CardDescription>{t.knowledgeBaseDesc}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200">
-                                    <Info className="w-4 h-4 text-amber-700 flex-shrink-0" />
-                                    <span className="text-xs font-medium text-amber-900">{t.cutoffDate}</span>
-                                </div>
-                                <div className="grid grid-cols-2 gap-2">
-                                    {t.sources.map((source, index) => (
-                                        <div key={index} className="p-2.5 rounded-lg border border-gray-100 hover:border-[#002D62]/20 transition-colors">
-                                            <h5 className="font-semibold text-xs text-[#002D62] mb-1">{source.category}</h5>
-                                            <p className="text-xs text-[#333F48]/70 line-clamp-2">{source.desc}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="pt-4 border-t">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Globe className="w-4 h-4 text-[#002D62]" />
-                                        <h4 className="font-semibold text-sm text-[#002D62]">{t.language}</h4>
                                     </div>
-                                    <Button onClick={toggleLanguage} variant="outline" className="w-full justify-between">
-                                        <span>{lang === 'pt' ? 'Português (Brasil)' : 'English (US)'}</span>
-                                        <Globe className="w-4 h-4" />
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-                </div>
+                                    <Separator />
+                                    <div>
+                                        <h4 className="font-semibold text-sm text-[#8B1538] mb-3">
+                                            {lang === 'pt' ? 'Princípios Fundamentais' : 'Foundational Principles'}
+                                        </h4>
+                                        <ul className="grid sm:grid-cols-2 gap-2">
+                                            {t.principles.map((principle, index) => (
+                                                <li key={index} className="flex items-start gap-2 text-sm text-[#333F48]">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] mt-1.5 flex-shrink-0" />
+                                                    {principle}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
 
-                {/* Publications Section */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.54 }}>
-                    <PublicationsSection lang={lang} />
-                </motion.div>
+                        {/* Row 21: Conversations (Full Width) */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                            <Card>
+                                <CardHeader>
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <CardTitle className="flex items-center gap-2 text-[#002D62]">
+                                                <MessageSquare className="w-5 h-5" />
+                                                {t.conversations}
+                                            </CardTitle>
+                                            <CardDescription>{t.conversationsDesc}</CardDescription>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            {conversations.length > 0 && (
+                                                <div className="flex gap-1">
+                                                    <Button onClick={exportConversationsCSV} variant="ghost" size="sm">
+                                                        <FileSpreadsheet className="w-4 h-4" />
+                                                    </Button>
+                                                    <Button onClick={exportConversationsJSON} variant="ghost" size="sm">
+                                                        <FileJson className="w-4 h-4" />
+                                                    </Button>
+                                                </div>
+                                            )}
+                                            <Button
+                                                variant={summariesEnabled ? "default" : "outline"}
+                                                size="sm"
+                                                onClick={() => setSummariesEnabled(!summariesEnabled)}
+                                                className="gap-2"
+                                            >
+                                                {summariesEnabled ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
+                                                <Sparkles className="w-4 h-4" />
+                                                <span className="hidden md:inline">{t.summaries}</span>
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    {conversations.length > 0 && (
+                                        <div className="mb-4">
+                                            <Input
+                                                placeholder={t.search}
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                    )}
+                                    {isLoading ? (
+                                        <div className="flex items-center justify-center py-8">
+                                            <Loader2 className="w-6 h-6 animate-spin text-[#002D62]" />
+                                            <span className="ml-2 text-sm text-[#333F48]/60">{t.loading}</span>
+                                        </div>
+                                    ) : conversations.length === 0 ? (
+                                        <div className="text-center py-8">
+                                            <MessageSquare className="w-12 h-12 text-[#333F48]/20 mx-auto mb-3" />
+                                            <p className="text-sm text-[#333F48]/60 mb-1">{t.noConversations}</p>
+                                            <p className="text-xs text-[#333F48]/40">{t.startFirst}</p>
+                                            <Link to={createPageUrl('Consultation')}>
+                                                <Button className="mt-4 bg-[#002D62] hover:bg-[#001d42]">
+                                                    <Plus className="w-4 h-4 mr-2" />
+                                                    {t.newChat}
+                                                </Button>
+                                            </Link>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2 max-h-80 overflow-y-auto">
+                                            {(() => {
+                                                const filtered = conversations.filter(conv => {
+                                                    const name = conv.metadata?.name || `Conversa ${new Date(conv.created_date).toLocaleDateString()}`;
+                                                    return name.toLowerCase().includes(searchQuery.toLowerCase());
+                                                });
 
-                {/* Voice Calibration Section */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.56 }}>
-                    <VoiceCalibration lang={lang} />
-                </motion.div>
+                                                if (filtered.length === 0 && searchQuery) {
+                                                    return (
+                                                        <div className="text-center py-8 text-gray-500 text-sm">
+                                                            {t.noResults}
+                                                        </div>
+                                                    );
+                                                }
+
+                                                return filtered.map((conv) => (
+                                                    <div key={conv.id} className="p-3 rounded-lg border border-gray-100 hover:border-[#002D62]/20 hover:bg-gray-50/50 transition-all space-y-2">
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="flex-1 min-w-0">
+                                                                <h4 className="font-medium text-sm text-[#333F48] truncate">
+                                                                    {conv.metadata?.name || `Conversa ${new Date(conv.created_date).toLocaleDateString()}`}
+                                                                </h4>
+                                                                <p className="text-xs text-[#333F48]/50 flex items-center gap-1 mt-1">
+                                                                    <Calendar className="w-3 h-3" />
+                                                                    {new Date(conv.created_date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', {
+                                                                        day: '2-digit',
+                                                                        month: 'short',
+                                                                        year: 'numeric',
+                                                                        hour: '2-digit',
+                                                                        minute: '2-digit'
+                                                                    })}
+                                                                </p>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                {summariesEnabled && (
+                                                                    <Button 
+                                                                        variant="ghost" 
+                                                                        size="sm" 
+                                                                        className="h-8 px-2"
+                                                                        onClick={() => handleGenerateSummary(conv.id)}
+                                                                        disabled={generatingSummary === conv.id || conversationSummaries[conv.id]}
+                                                                    >
+                                                                        {generatingSummary === conv.id ? (
+                                                                            <>
+                                                                                <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                                                                                <span className="text-xs">{t.generating}</span>
+                                                                            </>
+                                                                        ) : conversationSummaries[conv.id] ? (
+                                                                            <span className="text-xs text-green-600">✓</span>
+                                                                        ) : (
+                                                                            <>
+                                                                                <Sparkles className="w-3 h-3 mr-1" />
+                                                                                <span className="text-xs">{t.generateSummary}</span>
+                                                                            </>
+                                                                        )}
+                                                                    </Button>
+                                                                )}
+                                                                <Link to={createPageUrl('Consultation') + `?conversationId=${conv.id}`}>
+                                                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                                                        <Eye className="w-4 h-4" />
+                                                                    </Button>
+                                                                </Link>
+                                                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => handleDeleteConversation(conv.id)}>
+                                                                    <Trash2 className="w-4 h-4" />
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                        {conversationSummaries[conv.id] && (
+                                                            <div className="bg-blue-50 rounded-lg p-2 border border-blue-100">
+                                                                <p className="text-xs font-semibold text-blue-900 mb-1">{t.summary}:</p>
+                                                                <p className="text-xs text-blue-800 leading-relaxed">{conversationSummaries[conv.id]}</p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ));
+                                            })()}
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+
+                        {/* Row 22: Books & Awards + Knowledge Base */}
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <Card className="h-full">
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2 text-[#002D62]">
+                                            <BookOpen className="w-5 h-5" />
+                                            {t.books}
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-6">
+                                        <ul className="space-y-3">
+                                            {t.booksList.map((book, index) => (
+                                                <li key={index} className="flex items-center justify-between p-2 rounded-lg border border-gray-100">
+                                                    <span className="text-sm text-[#333F48]">{book.title}</span>
+                                                    <Badge variant="outline" className="ml-2">{book.year}</Badge>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        <div className="pt-4 border-t">
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <Award className="w-5 h-5 text-[#002D62]" />
+                                                <h4 className="font-semibold text-[#002D62]">{t.awards}</h4>
+                                            </div>
+                                            <ul className="space-y-2">
+                                                {t.awardsList.map((award, index) => (
+                                                    <li key={index} className="flex items-start gap-2 text-sm text-[#333F48]">
+                                                        <span className="w-2 h-2 rounded-full bg-[#B8860B] mt-1.5 flex-shrink-0" />
+                                                        {award}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
+
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <Card className="h-full">
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2 text-[#002D62]">
+                                            <Database className="w-5 h-5" />
+                                            {t.knowledgeBase}
+                                        </CardTitle>
+                                        <CardDescription>{t.knowledgeBaseDesc}</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200">
+                                            <Info className="w-4 h-4 text-amber-700 flex-shrink-0" />
+                                            <span className="text-xs font-medium text-amber-900">{t.cutoffDate}</span>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {t.sources.map((source, index) => (
+                                                <div key={index} className="p-2.5 rounded-lg border border-gray-100 hover:border-[#002D62]/20 transition-colors">
+                                                    <h5 className="font-semibold text-xs text-[#002D62] mb-1">{source.category}</h5>
+                                                    <p className="text-xs text-[#333F48]/70 line-clamp-2">{source.desc}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="pt-4 border-t">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <Globe className="w-4 h-4 text-[#002D62]" />
+                                                <h4 className="font-semibold text-sm text-[#002D62]">{t.language}</h4>
+                                            </div>
+                                            <Button onClick={toggleLanguage} variant="outline" className="w-full justify-between">
+                                                <span>{lang === 'pt' ? 'Português (Brasil)' : 'English (US)'}</span>
+                                                <Globe className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
+                        </div>
+
+                        {/* Row 23: Publications + Voice Calibration */}
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <PublicationsSection lang={lang} />
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                                <VoiceCalibration lang={lang} />
+                            </motion.div>
+                        </div>
                 </>
                 )}
 

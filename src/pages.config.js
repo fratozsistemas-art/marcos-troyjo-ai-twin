@@ -34,6 +34,7 @@ import TenantAdmin from './pages/TenantAdmin';
 import TermsOfService from './pages/TermsOfService';
 import Welcome from './pages/Welcome';
 import StudyMode from './pages/StudyMode';
+import PublicPolicyObservatory from './pages/PublicPolicyObservatory';
 import __Layout from './Layout.jsx';
 
 
@@ -74,6 +75,7 @@ export const PAGES = {
     "TermsOfService": TermsOfService,
     "Welcome": Welcome,
     "StudyMode": StudyMode,
+    "PublicPolicyObservatory": PublicPolicyObservatory,
 }
 
 export const pagesConfig = {

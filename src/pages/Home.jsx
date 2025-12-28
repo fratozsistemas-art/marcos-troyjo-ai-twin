@@ -3,8 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { ArrowRight, Globe, TrendingUp, Building2, Landmark, BookOpen, MessageSquare, LayoutDashboard, Sparkles } from 'lucide-react';
+import { 
+    ArrowRight, Globe, TrendingUp, Building2, Landmark, BookOpen, 
+    MessageSquare, LayoutDashboard, Sparkles, Eye, Newspaper, Activity,
+    BarChart3, FileText, Bell
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import TroyjoLogo from '@/components/branding/TroyjoLogo';
 import NeologismShowcase from '@/components/neologisms/NeologismShowcase';
 import AudienceSegmentation from '@/components/audience/AudienceSegmentation';
@@ -43,16 +49,20 @@ export default function Home() {
     const navigate = useNavigate();
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [dashboardStats, setDashboardStats] = useState(null);
+    const [recentInsights, setRecentInsights] = useState([]);
+    const [loadingStats, setLoadingStats] = useState(true);
 
     useEffect(() => {
         redirectIfFirstTime();
+        loadDashboardStats();
+        loadRecentInsights();
     }, []);
 
     const redirectIfFirstTime = async () => {
         try {
             const isAuth = await base44.auth.isAuthenticated();
             if (!isAuth) {
-                // Redirect to public home if not authenticated
                 navigate(createPageUrl('PublicHome'));
                 return;
             }
@@ -67,6 +77,38 @@ export default function Home() {
             console.error('Error checking first time:', error);
         }
     };
+
+    const loadDashboardStats = async () => {
+        try {
+            const user = await base44.auth.me();
+            const [conversations, documents, interactions] = await Promise.all([
+                base44.agents.listConversations({ agent_name: "troyjo_twin" }),
+                base44.entities.Document.filter({ created_by: user.email }),
+                base44.entities.UserInteraction.filter({ user_email: user.email })
+            ]);
+
+            setDashboardStats({
+                conversations: conversations?.length || 0,
+                documents: documents?.length || 0,
+                insights: interactions?.length || 0,
+                lastActivity: interactions?.[0]?.created_date || null
+            });
+        } catch (error) {
+            console.error('Error loading stats:', error);
+        } finally {
+            setLoadingStats(false);
+        }
+    };
+
+    const loadRecentInsights = async () => {
+        try {
+            const articles = await base44.entities.Article.list('-created_date', 5);
+            setRecentInsights(articles || []);
+        } catch (error) {
+            console.error('Error loading insights:', error);
+        }
+    };
+
     const t = translations[lang];
 
     const slides = [
@@ -146,8 +188,93 @@ export default function Home() {
                 </div>
             </header>
 
+            {/* Quick Stats */}
+            <section className="pt-24 pb-8 px-6">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                            <Card className="bg-white hover:shadow-lg transition-all cursor-pointer">
+                                <CardContent className="p-4">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <MessageSquare className="w-5 h-5 text-[#002D62]" />
+                                        <Badge variant="outline" className="text-xs">
+                                            {lang === 'pt' ? 'Total' : 'Total'}
+                                        </Badge>
+                                    </div>
+                                    <p className="text-2xl font-bold text-[#002D62]">
+                                        {loadingStats ? '...' : dashboardStats?.conversations || 0}
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        {lang === 'pt' ? 'Consultas Realizadas' : 'Consultations'}
+                                    </p>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                            <Card className="bg-white hover:shadow-lg transition-all cursor-pointer">
+                                <CardContent className="p-4">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <FileText className="w-5 h-5 text-[#00654A]" />
+                                        <Badge variant="outline" className="text-xs">
+                                            {lang === 'pt' ? 'Biblioteca' : 'Library'}
+                                        </Badge>
+                                    </div>
+                                    <p className="text-2xl font-bold text-[#00654A]">
+                                        {loadingStats ? '...' : dashboardStats?.documents || 0}
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        {lang === 'pt' ? 'Documentos Carregados' : 'Documents Loaded'}
+                                    </p>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                            <Card className="bg-white hover:shadow-lg transition-all cursor-pointer">
+                                <CardContent className="p-4">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <Activity className="w-5 h-5 text-[#D4AF37]" />
+                                        <Badge variant="outline" className="text-xs">
+                                            {lang === 'pt' ? 'Engajamento' : 'Engagement'}
+                                        </Badge>
+                                    </div>
+                                    <p className="text-2xl font-bold text-[#D4AF37]">
+                                        {loadingStats ? '...' : dashboardStats?.insights || 0}
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        {lang === 'pt' ? 'Interações' : 'Interactions'}
+                                    </p>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+
+                        <Link to={createPageUrl('Dashboard')} className="block">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                                <Card className="bg-gradient-to-br from-[#002D62] to-[#00654A] text-white hover:shadow-xl transition-all h-full">
+                                    <CardContent className="p-4 flex flex-col justify-between h-full">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <LayoutDashboard className="w-5 h-5" />
+                                            <ArrowRight className="w-4 h-4" />
+                                        </div>
+                                        <div>
+                                            <p className="text-lg font-bold mb-1">
+                                                {lang === 'pt' ? 'Meu Painel' : 'My Dashboard'}
+                                            </p>
+                                            <p className="text-xs opacity-90">
+                                                {lang === 'pt' ? 'Ver tudo →' : 'View all →'}
+                                            </p>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
             {/* Hero */}
-            <section className="pt-32 pb-20 px-6">
+            <section className="pt-8 pb-20 px-6">
                 <div className="max-w-7xl mx-auto">
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
                         <motion.div
@@ -339,7 +466,66 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Expertise Areas */}
+            {/* Recent Insights Feed */}
+            <section className="py-12 px-6 bg-gray-50">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 className="text-2xl font-bold text-[#002D62] mb-2" style={{ fontFamily: 'Crimson Text, serif' }}>
+                                {lang === 'pt' ? 'Novidades & Insights' : 'Latest & Insights'}
+                            </h2>
+                            <p className="text-sm text-gray-600">
+                                {lang === 'pt' ? 'Análises recentes e conteúdo relevante' : 'Recent analysis and relevant content'}
+                            </p>
+                        </div>
+                        <Link to={createPageUrl('StrategicIntelligenceBlog')}>
+                            <Button variant="outline" size="sm" className="gap-2">
+                                <Newspaper className="w-4 h-4" />
+                                {lang === 'pt' ? 'Ver Todos' : 'View All'}
+                            </Button>
+                        </Link>
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-4">
+                        {recentInsights.slice(0, 3).map((insight, index) => (
+                            <motion.div
+                                key={insight.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                            >
+                                <Link to={createPageUrl('ArticleView') + `?id=${insight.id}`}>
+                                    <Card className="hover:shadow-lg transition-all h-full">
+                                        <CardHeader>
+                                            <div className="flex items-start justify-between mb-2">
+                                                <Badge variant="outline" className="text-xs">
+                                                    {insight.category || 'Análise'}
+                                                </Badge>
+                                                <Eye className="w-4 h-4 text-gray-400" />
+                                            </div>
+                                            <CardTitle className="text-base line-clamp-2">
+                                                {insight.title}
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p className="text-sm text-gray-600 line-clamp-3 mb-3">
+                                                {insight.summary || insight.content?.substring(0, 120)}...
+                                            </p>
+                                            <div className="flex items-center justify-between text-xs text-gray-500">
+                                                <span>
+                                                    {new Date(insight.created_date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US')}
+                                                </span>
+                                                <ArrowRight className="w-4 h-4" />
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Expertise Areas - Interactive */}
             <section className="py-20 px-6 bg-white">
                 <div className="max-w-7xl mx-auto">
                     <motion.div 
@@ -349,23 +535,39 @@ export default function Home() {
                         className="text-center mb-12"
                     >
                         <h2 className="text-3xl font-bold text-[#8B1538] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>{t.topics}</h2>
+                        <p className="text-gray-600">
+                            {lang === 'pt' ? 'Clique para explorar cada área de expertise' : 'Click to explore each expertise area'}
+                        </p>
                     </motion.div>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
                         {t.topicsList.map((topic, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                className="group p-6 rounded-lg border border-gray-100 hover:border-[#002D62]/20 hover:shadow-lg transition-all duration-300 bg-white"
-                            >
-                                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#002D62] to-[#00654A] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                    <topic.icon className="w-6 h-6 text-white" />
-                                </div>
-                                <h3 className="font-semibold text-[#2D2D2D] mb-2">{topic.title}</h3>
-                                <p className="text-sm text-[#2D2D2D]/60">{topic.desc}</p>
-                            </motion.div>
+                            <Link key={index} to={createPageUrl('Consultation')}>
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.1 }}
+                                    whileHover={{ scale: 1.03, y: -5 }}
+                                    className="group p-6 rounded-lg border-2 border-gray-100 hover:border-[#002D62] hover:shadow-xl transition-all duration-300 bg-white cursor-pointer"
+                                >
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#002D62] to-[#00654A] flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <topic.icon className="w-7 h-7 text-white" />
+                                        </div>
+                                        <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#002D62] group-hover:translate-x-1 transition-all" />
+                                    </div>
+                                    <h3 className="font-bold text-lg text-[#2D2D2D] mb-2 group-hover:text-[#002D62] transition-colors">
+                                        {topic.title}
+                                    </h3>
+                                    <p className="text-sm text-[#2D2D2D]/70 group-hover:text-[#2D2D2D] transition-colors">
+                                        {topic.desc}
+                                    </p>
+                                    <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-2 text-sm text-[#002D62] font-medium">
+                                        <MessageSquare className="w-4 h-4" />
+                                        <span>{lang === 'pt' ? 'Iniciar consulta' : 'Start consultation'}</span>
+                                    </div>
+                                </motion.div>
+                            </Link>
                         ))}
                     </div>
                 </div>

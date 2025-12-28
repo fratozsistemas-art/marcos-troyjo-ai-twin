@@ -16,6 +16,11 @@ const REGIONS = [
     'Índia', 'África', 'Oriente Médio', 'Brasil', 'BRICS', 'Rússia'
 ];
 
+const INTERNATIONAL_GROUPS = [
+    'G7', 'G20', 'BRICS', 'OECD', 'SCO', 'OTAN', 'MINTS', 
+    'União Europeia', 'ASEAN', 'MERCOSUL', 'UNASUL', 'CELAC'
+];
+
 const COUNTRIES = [
     'Brasil', 'China', 'Estados Unidos', 'Índia', 'Rússia', 'África do Sul',
     'Argentina', 'México', 'Alemanha', 'França', 'Reino Unido', 'Japão', 
@@ -61,6 +66,7 @@ export default function AlertConfigurationPanel({ lang = 'pt' }) {
             desc: "Personalize seus alertas geopolíticos",
             enabled: "Alertas Ativos",
             regions: "Regiões de Interesse",
+            internationalGroups: "Grupos Internacionais",
             countries: "Países Específicos",
             riskTypes: "Tipos de Risco",
             severity: "Severidade Mínima",
@@ -90,6 +96,7 @@ export default function AlertConfigurationPanel({ lang = 'pt' }) {
             desc: "Customize your geopolitical alerts",
             enabled: "Alerts Enabled",
             regions: "Regions of Interest",
+            internationalGroups: "International Groups",
             countries: "Specific Countries",
             riskTypes: "Risk Types",
             severity: "Minimum Severity",
@@ -135,6 +142,7 @@ export default function AlertConfigurationPanel({ lang = 'pt' }) {
                     user_email: user.email,
                     enabled: true,
                     regions: [],
+                    international_groups: [],
                     countries: [],
                     risk_types: ['political', 'economic', 'security'],
                     severity_threshold: 'medium',
@@ -250,6 +258,26 @@ export default function AlertConfigurationPanel({ lang = 'pt' }) {
                                         })}
                                     >
                                         {region}
+                                    </Badge>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* International Groups */}
+                        <div>
+                            <Label className="text-sm font-semibold mb-2 block">{t.internationalGroups}</Label>
+                            <div className="flex flex-wrap gap-2">
+                                {INTERNATIONAL_GROUPS.map(group => (
+                                    <Badge
+                                        key={group}
+                                        variant={config?.international_groups?.includes(group) ? "default" : "outline"}
+                                        className="cursor-pointer"
+                                        onClick={() => setConfig({
+                                            ...config,
+                                            international_groups: toggleArrayItem(config.international_groups || [], group)
+                                        })}
+                                    >
+                                        {group}
                                     </Badge>
                                 ))}
                             </div>

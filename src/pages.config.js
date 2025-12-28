@@ -1,5 +1,6 @@
 import AdminChannels from './pages/AdminChannels';
 import AdminDataSources from './pages/AdminDataSources';
+import AdminEntities from './pages/AdminEntities';
 import AdminGovernance from './pages/AdminGovernance';
 import AdminIntegrations from './pages/AdminIntegrations';
 import AdminProjectStatus from './pages/AdminProjectStatus';
@@ -41,13 +42,13 @@ import SystemHealth from './pages/SystemHealth';
 import TenantAdmin from './pages/TenantAdmin';
 import TermsOfService from './pages/TermsOfService';
 import Welcome from './pages/Welcome';
-import AdminEntities from './pages/AdminEntities';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AdminChannels": AdminChannels,
     "AdminDataSources": AdminDataSources,
+    "AdminEntities": AdminEntities,
     "AdminGovernance": AdminGovernance,
     "AdminIntegrations": AdminIntegrations,
     "AdminProjectStatus": AdminProjectStatus,
@@ -89,7 +90,6 @@ export const PAGES = {
     "TenantAdmin": TenantAdmin,
     "TermsOfService": TermsOfService,
     "Welcome": Welcome,
-    "AdminEntities": AdminEntities,
 }
 
 export const pagesConfig = {

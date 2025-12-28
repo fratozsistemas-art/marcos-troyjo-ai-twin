@@ -448,8 +448,8 @@ export default function Dashboard() {
                             </div>
                             <div className="flex items-center gap-2">
                                 <div>
-                                    <h1 className="font-bold text-[#002D62] text-base">{t.title}</h1>
-                                    <p className="text-xs text-[#333F48]/60">{t.subtitle}</p>
+                                    <h1 className="font-bold text-[#06101F] text-base">{t.title}</h1>
+                                    <p className="text-xs text-[#2D2D2D]/60">{t.subtitle}</p>
                                 </div>
                                 <HelpButton
                                     content={lang === 'pt' 
@@ -474,7 +474,7 @@ export default function Dashboard() {
                                     id="new-consultation-btn"
                                     data-ai-id="btn_new_chat"
                                     data-ai-role="button"
-                                    className="bg-[#002D62] hover:bg-[#001d42] text-white gap-2 shadow-sm"
+                                    className="bg-[#06101F] hover:bg-[#050D19] text-white gap-2 shadow-sm"
                                 >
                                     <MessageSquare className="w-4 h-4" />
                                     <span className="hidden sm:inline">{t.newChat}</span>
@@ -495,8 +495,8 @@ export default function Dashboard() {
                                     onClick={() => setActiveTab(tab.id)}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                                         activeTab === tab.id
-                                            ? 'bg-[#002D62] text-white'
-                                            : 'text-[#333F48] hover:bg-gray-100'
+                                            ? 'bg-[#06101F] text-white'
+                                            : 'text-[#2D2D2D] hover:bg-gray-100'
                                     }`}
                                 >
                                     {tab.label}
@@ -523,33 +523,33 @@ export default function Dashboard() {
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                             <div id="stats-panel" className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <Link to={createPageUrl('Consultation')}>
-                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#002D62]/20 hover:border-[#002D62] h-full">
+                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#06101F]/20 hover:border-[#06101F] h-full">
                                         <CardContent className="p-6 text-center">
-                                            <MessageSquare className="w-8 h-8 mx-auto mb-3 text-[#002D62]" />
+                                            <MessageSquare className="w-8 h-8 mx-auto mb-3 text-[#06101F]" />
                                             <h3 className="font-semibold text-sm">{lang === 'pt' ? 'Nova Consulta' : 'New Consultation'}</h3>
                                         </CardContent>
                                     </Card>
                                 </Link>
                                 <Link to={createPageUrl('KnowledgeBase')}>
-                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#00654A]/20 hover:border-[#00654A] h-full">
+                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#06101F]/20 hover:border-[#06101F] h-full">
                                         <CardContent className="p-6 text-center">
-                                            <BookOpen className="w-8 h-8 mx-auto mb-3 text-[#00654A]" />
+                                            <BookOpen className="w-8 h-8 mx-auto mb-3 text-[#06101F]" />
                                             <h3 className="font-semibold text-sm">{lang === 'pt' ? 'Base de Conhecimento' : 'Knowledge Base'}</h3>
                                         </CardContent>
                                     </Card>
                                 </Link>
                                 <Link to={createPageUrl('AnalyticsDashboard')}>
-                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#8B1538]/20 hover:border-[#8B1538] h-full">
+                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#00D4FF]/20 hover:border-[#00D4FF] h-full">
                                         <CardContent className="p-6 text-center">
-                                            <TrendingUp className="w-8 h-8 mx-auto mb-3 text-[#8B1538]" />
+                                            <TrendingUp className="w-8 h-8 mx-auto mb-3 text-[#00D4FF]" />
                                             <h3 className="font-semibold text-sm">Analytics</h3>
                                         </CardContent>
                                     </Card>
                                 </Link>
                                 <Link to={createPageUrl('PublicHome')}>
-                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#D4AF37]/20 hover:border-[#D4AF37] h-full">
+                                    <Card className="hover:shadow-lg transition-all cursor-pointer border-[#C7A763]/20 hover:border-[#C7A763] h-full">
                                         <CardContent className="p-6 text-center">
-                                            <Globe className="w-8 h-8 mx-auto mb-3 text-[#D4AF37]" />
+                                            <Globe className="w-8 h-8 mx-auto mb-3 text-[#C7A763]" />
                                             <h3 className="font-semibold text-sm">{lang === 'pt' ? 'Website Público' : 'Public Website'}</h3>
                                         </CardContent>
                                     </Card>
@@ -760,7 +760,7 @@ export default function Dashboard() {
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 text-[#8B1538]">
+                                    <CardTitle className="flex items-center gap-2 text-[#00D4FF]">
                                         <BookOpen className="w-5 h-5" />
                                         {t.expertise}
                                     </CardTitle>
@@ -769,21 +769,21 @@ export default function Dashboard() {
                                 <CardContent className="space-y-4">
                                     <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
                                         {t.expertiseAreas.map((area, index) => (
-                                            <div key={index} className="p-3 rounded-lg border border-gray-100 hover:border-[#8B1538]/20 transition-colors">
-                                                <h4 className="font-semibold text-sm text-[#8B1538] mb-1">{area.title}</h4>
-                                                <p className="text-xs text-[#333F48]/70">{area.desc}</p>
+                                            <div key={index} className="p-3 rounded-lg border border-gray-100 hover:border-[#00D4FF]/20 transition-colors">
+                                                <h4 className="font-semibold text-sm text-[#00D4FF] mb-1">{area.title}</h4>
+                                                <p className="text-xs text-[#2D2D2D]/70">{area.desc}</p>
                                             </div>
                                         ))}
                                     </div>
                                     <Separator />
                                     <div>
-                                        <h4 className="font-semibold text-sm text-[#8B1538] mb-3">
+                                        <h4 className="font-semibold text-sm text-[#00D4FF] mb-3">
                                             {lang === 'pt' ? 'Princípios Fundamentais' : 'Foundational Principles'}
                                         </h4>
                                         <ul className="grid sm:grid-cols-2 gap-2">
                                             {t.principles.map((principle, index) => (
-                                                <li key={index} className="flex items-start gap-2 text-sm text-[#333F48]">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] mt-1.5 flex-shrink-0" />
+                                                <li key={index} className="flex items-start gap-2 text-sm text-[#2D2D2D]">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#C7A763] mt-1.5 flex-shrink-0" />
                                                     {principle}
                                                 </li>
                                             ))}
@@ -799,7 +799,7 @@ export default function Dashboard() {
                                 <CardHeader>
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <CardTitle className="flex items-center gap-2 text-[#002D62]">
+                                            <CardTitle className="flex items-center gap-2 text-[#06101F]">
                                                 <MessageSquare className="w-5 h-5" />
                                                 {t.conversations}
                                             </CardTitle>
@@ -842,16 +842,16 @@ export default function Dashboard() {
                                     )}
                                     {isLoading ? (
                                         <div className="flex items-center justify-center py-8">
-                                            <Loader2 className="w-6 h-6 animate-spin text-[#002D62]" />
-                                            <span className="ml-2 text-sm text-[#333F48]/60">{t.loading}</span>
+                                            <Loader2 className="w-6 h-6 animate-spin text-[#06101F]" />
+                                            <span className="ml-2 text-sm text-[#2D2D2D]/60">{t.loading}</span>
                                         </div>
                                     ) : conversations.length === 0 ? (
                                         <div className="text-center py-8">
-                                            <MessageSquare className="w-12 h-12 text-[#333F48]/20 mx-auto mb-3" />
-                                            <p className="text-sm text-[#333F48]/60 mb-1">{t.noConversations}</p>
-                                            <p className="text-xs text-[#333F48]/40">{t.startFirst}</p>
+                                            <MessageSquare className="w-12 h-12 text-[#2D2D2D]/20 mx-auto mb-3" />
+                                            <p className="text-sm text-[#2D2D2D]/60 mb-1">{t.noConversations}</p>
+                                            <p className="text-xs text-[#2D2D2D]/40">{t.startFirst}</p>
                                             <Link to={createPageUrl('Consultation')}>
-                                                <Button className="mt-4 bg-[#002D62] hover:bg-[#001d42]">
+                                                <Button className="mt-4 bg-[#06101F] hover:bg-[#050D19]">
                                                     <Plus className="w-4 h-4 mr-2" />
                                                     {t.newChat}
                                                 </Button>
@@ -874,13 +874,13 @@ export default function Dashboard() {
                                                 }
 
                                                 return filtered.map((conv) => (
-                                                    <div key={conv.id} className="p-3 rounded-lg border border-gray-100 hover:border-[#002D62]/20 hover:bg-gray-50/50 transition-all space-y-2">
+                                                    <div key={conv.id} className="p-3 rounded-lg border border-gray-100 hover:border-[#06101F]/20 hover:bg-gray-50/50 transition-all space-y-2">
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex-1 min-w-0">
-                                                                <h4 className="font-medium text-sm text-[#333F48] truncate">
+                                                                <h4 className="font-medium text-sm text-[#2D2D2D] truncate">
                                                                     {conv.metadata?.name || `Conversa ${new Date(conv.created_date).toLocaleDateString()}`}
                                                                 </h4>
-                                                                <p className="text-xs text-[#333F48]/50 flex items-center gap-1 mt-1">
+                                                                <p className="text-xs text-[#2D2D2D]/50 flex items-center gap-1 mt-1">
                                                                     <Calendar className="w-3 h-3" />
                                                                     {new Date(conv.created_date).toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', {
                                                                         day: '2-digit',
@@ -945,7 +945,7 @@ export default function Dashboard() {
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                                 <Card className="h-full">
                                     <CardHeader>
-                                        <CardTitle className="flex items-center gap-2 text-[#002D62]">
+                                        <CardTitle className="flex items-center gap-2 text-[#06101F]">
                                             <BookOpen className="w-5 h-5" />
                                             {t.books}
                                         </CardTitle>
@@ -954,20 +954,20 @@ export default function Dashboard() {
                                         <ul className="space-y-3">
                                             {t.booksList.map((book, index) => (
                                                 <li key={index} className="flex items-center justify-between p-2 rounded-lg border border-gray-100">
-                                                    <span className="text-sm text-[#333F48]">{book.title}</span>
+                                                    <span className="text-sm text-[#2D2D2D]">{book.title}</span>
                                                     <Badge variant="outline" className="ml-2">{book.year}</Badge>
                                                 </li>
                                             ))}
                                         </ul>
                                         <div className="pt-4 border-t">
                                             <div className="flex items-center gap-2 mb-3">
-                                                <Award className="w-5 h-5 text-[#002D62]" />
-                                                <h4 className="font-semibold text-[#002D62]">{t.awards}</h4>
+                                                <Award className="w-5 h-5 text-[#06101F]" />
+                                                <h4 className="font-semibold text-[#06101F]">{t.awards}</h4>
                                             </div>
                                             <ul className="space-y-2">
                                                 {t.awardsList.map((award, index) => (
-                                                    <li key={index} className="flex items-start gap-2 text-sm text-[#333F48]">
-                                                        <span className="w-2 h-2 rounded-full bg-[#B8860B] mt-1.5 flex-shrink-0" />
+                                                    <li key={index} className="flex items-start gap-2 text-sm text-[#2D2D2D]">
+                                                        <span className="w-2 h-2 rounded-full bg-[#C7A763] mt-1.5 flex-shrink-0" />
                                                         {award}
                                                     </li>
                                                 ))}
@@ -980,7 +980,7 @@ export default function Dashboard() {
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                                 <Card className="h-full">
                                     <CardHeader>
-                                        <CardTitle className="flex items-center gap-2 text-[#002D62]">
+                                        <CardTitle className="flex items-center gap-2 text-[#06101F]">
                                             <Database className="w-5 h-5" />
                                             {t.knowledgeBase}
                                         </CardTitle>
@@ -993,16 +993,16 @@ export default function Dashboard() {
                                         </div>
                                         <div className="grid grid-cols-2 gap-2">
                                             {t.sources.map((source, index) => (
-                                                <div key={index} className="p-2.5 rounded-lg border border-gray-100 hover:border-[#002D62]/20 transition-colors">
-                                                    <h5 className="font-semibold text-xs text-[#002D62] mb-1">{source.category}</h5>
-                                                    <p className="text-xs text-[#333F48]/70 line-clamp-2">{source.desc}</p>
+                                                <div key={index} className="p-2.5 rounded-lg border border-gray-100 hover:border-[#06101F]/20 transition-colors">
+                                                    <h5 className="font-semibold text-xs text-[#06101F] mb-1">{source.category}</h5>
+                                                    <p className="text-xs text-[#2D2D2D]/70 line-clamp-2">{source.desc}</p>
                                                 </div>
                                             ))}
                                         </div>
                                         <div className="pt-4 border-t">
                                             <div className="flex items-center gap-2 mb-2">
-                                                <Globe className="w-4 h-4 text-[#002D62]" />
-                                                <h4 className="font-semibold text-sm text-[#002D62]">{t.language}</h4>
+                                                <Globe className="w-4 h-4 text-[#06101F]" />
+                                                <h4 className="font-semibold text-sm text-[#06101F]">{t.language}</h4>
                                             </div>
                                             <Button onClick={toggleLanguage} variant="outline" className="w-full justify-between">
                                                 <span>{lang === 'pt' ? 'Português (Brasil)' : 'English (US)'}</span>
@@ -1031,7 +1031,7 @@ export default function Dashboard() {
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-[#002D62]">
+                                <CardTitle className="text-[#06101F]">
                                     {lang === 'pt' ? 'Discursos Públicos' : 'Public Speeches'}
                                 </CardTitle>
                                 <CardDescription>
@@ -1041,7 +1041,7 @@ export default function Dashboard() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-[#333F48]/60 text-center py-8">
+                                <p className="text-[#2D2D2D]/60 text-center py-8">
                                     {lang === 'pt' ? 'Conteúdo em desenvolvimento' : 'Content in development'}
                                 </p>
                             </CardContent>
@@ -1054,7 +1054,7 @@ export default function Dashboard() {
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-[#002D62]">
+                                <CardTitle className="text-[#06101F]">
                                     {lang === 'pt' ? 'Livros Publicados' : 'Published Books'}
                                 </CardTitle>
                                 <CardDescription>
@@ -1064,7 +1064,7 @@ export default function Dashboard() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-[#333F48]/60 text-center py-8">
+                                <p className="text-[#2D2D2D]/60 text-center py-8">
                                     {lang === 'pt' ? 'Conteúdo em desenvolvimento' : 'Content in development'}
                                 </p>
                             </CardContent>
@@ -1077,7 +1077,7 @@ export default function Dashboard() {
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-[#002D62]">
+                                <CardTitle className="text-[#06101F]">
                                     {lang === 'pt' ? 'Artigos & Ensaios' : 'Articles & Essays'}
                                 </CardTitle>
                                 <CardDescription>
@@ -1087,7 +1087,7 @@ export default function Dashboard() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-[#333F48]/60 text-center py-8">
+                                <p className="text-[#2D2D2D]/60 text-center py-8">
                                     {lang === 'pt' ? 'Conteúdo em desenvolvimento' : 'Content in development'}
                                 </p>
                             </CardContent>
@@ -1100,7 +1100,7 @@ export default function Dashboard() {
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-[#002D62]">
+                                <CardTitle className="text-[#06101F]">
                                     {lang === 'pt' ? 'Pesquisas Acadêmicas' : 'Academic Research'}
                                 </CardTitle>
                                 <CardDescription>
@@ -1110,7 +1110,7 @@ export default function Dashboard() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-[#333F48]/60 text-center py-8">
+                                <p className="text-[#2D2D2D]/60 text-center py-8">
                                     {lang === 'pt' ? 'Conteúdo em desenvolvimento' : 'Content in development'}
                                 </p>
                             </CardContent>
@@ -1130,7 +1130,7 @@ export default function Dashboard() {
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-[#002D62]">
+                                <CardTitle className="text-[#06101F]">
                                     {lang === 'pt' ? 'Relatórios Institucionais' : 'Institutional Reports'}
                                 </CardTitle>
                                 <CardDescription>
@@ -1140,7 +1140,7 @@ export default function Dashboard() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-[#333F48]/60 text-center py-8">
+                                <p className="text-[#2D2D2D]/60 text-center py-8">
                                     {lang === 'pt' ? 'Conteúdo em desenvolvimento' : 'Content in development'}
                                 </p>
                             </CardContent>
@@ -1153,7 +1153,7 @@ export default function Dashboard() {
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-[#002D62]">
+                                <CardTitle className="text-[#06101F]">
                                     {lang === 'pt' ? 'Documentos Políticos' : 'Policy Documents'}
                                 </CardTitle>
                                 <CardDescription>
@@ -1163,7 +1163,7 @@ export default function Dashboard() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-[#333F48]/60 text-center py-8">
+                                <p className="text-[#2D2D2D]/60 text-center py-8">
                                     {lang === 'pt' ? 'Conteúdo em desenvolvimento' : 'Content in development'}
                                 </p>
                             </CardContent>
@@ -1176,7 +1176,7 @@ export default function Dashboard() {
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-[#002D62]">
+                                <CardTitle className="text-[#06101F]">
                                     {lang === 'pt' ? 'Outros Conteúdos' : 'Other Content'}
                                 </CardTitle>
                                 <CardDescription>
@@ -1186,7 +1186,7 @@ export default function Dashboard() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-[#333F48]/60 text-center py-8">
+                                <p className="text-[#2D2D2D]/60 text-center py-8">
                                     {lang === 'pt' ? 'Conteúdo em desenvolvimento' : 'Content in development'}
                                 </p>
                             </CardContent>

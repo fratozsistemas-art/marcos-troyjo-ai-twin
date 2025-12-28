@@ -84,7 +84,7 @@ export default function Layout({ children, currentPageName }) {
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                         className="fixed left-0 top-0 bottom-0 w-70 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 z-50 lg:hidden shadow-2xl"
                     >
-                        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-[#002D62] to-[#00654A] dark:from-gray-800 dark:to-gray-900">
+                        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-[#06101F] to-[#06101F] dark:from-gray-800 dark:to-gray-900">
                             <div className="flex items-center gap-3">
                                 <a href={createPageUrl('PublicHome')} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                                     <motion.div 

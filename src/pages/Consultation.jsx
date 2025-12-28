@@ -299,9 +299,9 @@ function ConsultationInner() {
                     <img 
                         src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/8c955389f_Replace_the_transparent_checkered_background_with_-1765063055494.png"
                         alt="Marcos Troyjo"
-                        className="w-16 h-16 rounded-full object-cover mx-auto mb-4 animate-pulse border-2 border-[#D4AF37]"
+                        className="w-16 h-16 rounded-full object-cover mx-auto mb-4 animate-pulse border-2 border-[#C7A763]"
                     />
-                    <p className="text-[#333F48]/60">{lang === 'pt' ? 'Iniciando sessão...' : 'Starting session...'}</p>
+                    <p className="text-[#2D2D2D]/60">{lang === 'pt' ? 'Iniciando sessão...' : 'Starting session...'}</p>
                 </div>
             </div>
         );
@@ -359,13 +359,13 @@ function ConsultationInner() {
                             onClick={() => setSidebarOpen(!sidebarOpen)}
                             variant="ghost"
                             size="sm"
-                            className="lg:hidden text-[#333F48]"
+                            className="lg:hidden text-[#2D2D2D]"
                         >
                             <Menu className="w-5 h-5" />
                         </Button>
                         
                         <Link to={createPageUrl('Home')}>
-                            <Button variant="ghost" size="sm" className="text-[#333F48] gap-2">
+                            <Button variant="ghost" size="sm" className="text-[#2D2D2D] gap-2">
                                 <ArrowLeft className="w-4 h-4" />
                                 <span className="hidden sm:inline">{t.back}</span>
                             </Button>
@@ -373,8 +373,8 @@ function ConsultationInner() {
                         <div className="flex items-center gap-3">
                             <TroyjoLogo size={36} />
                             <div>
-                                <h1 className="font-semibold text-[#333F48] text-sm">{t.title}</h1>
-                                <p className="text-xs text-[#333F48]/50">{t.subtitle}</p>
+                                <h1 className="font-semibold text-[#2D2D2D] text-sm">{t.title}</h1>
+                                <p className="text-xs text-[#2D2D2D]/50">{t.subtitle}</p>
                             </div>
                         </div>
                     </div>
@@ -385,7 +385,7 @@ function ConsultationInner() {
                                 data-ai-role="button"
                                 variant="ghost"
                                 size="sm"
-                                className="text-[#333F48] gap-2"
+                                className="text-[#2D2D2D] gap-2"
                             >
                                 <LayoutDashboard className="w-4 h-4" />
                                 <span className="hidden sm:inline">{lang === 'pt' ? 'Painel' : 'Dashboard'}</span>
@@ -397,7 +397,7 @@ function ConsultationInner() {
                             variant="ghost"
                             size="sm"
                             onClick={handleNewChat}
-                            className="text-[#333F48] gap-2"
+                            className="text-[#2D2D2D] gap-2"
                         >
                             <Plus className="w-4 h-4" />
                             <span className="hidden sm:inline">{t.newChat}</span>
@@ -413,7 +413,7 @@ function ConsultationInner() {
                             data-ai-id="btn_toggle_language"
                             data-ai-role="button"
                             onClick={() => setLang(lang === 'pt' ? 'en' : 'pt')}
-                            className="flex items-center gap-1 px-2 py-1 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors text-xs font-medium text-[#333F48]"
+                            className="flex items-center gap-1 px-2 py-1 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors text-xs font-medium text-[#2D2D2D]"
                         >
                             <Globe className="w-3 h-3" />
                             {lang === 'pt' ? 'EN' : 'PT'}
@@ -460,19 +460,19 @@ function ConsultationInner() {
                                     <img 
                                         src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/8c955389f_Replace_the_transparent_checkered_background_with_-1765063055494.png"
                                         alt="Marcos Troyjo"
-                                        className="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-[#D4AF37]"
+                                        className="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-[#C7A763]"
                                     />
                                     <div>
-                                        <p className="text-[#002D62] font-semibold mb-2">{t.greeting}</p>
-                                        <p className="text-[#333F48] leading-relaxed mb-4">{t.greetingText}</p>
-                                        <p className="text-[#333F48] leading-relaxed">{t.promptQuestion}</p>
+                                        <p className="text-[#06101F] font-semibold mb-2">{t.greeting}</p>
+                                        <p className="text-[#2D2D2D] leading-relaxed mb-4">{t.greetingText}</p>
+                                        <p className="text-[#2D2D2D] leading-relaxed">{t.promptQuestion}</p>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Topic Cards */}
                             <div>
-                                <h3 className="text-sm font-medium text-[#333F48]/60 mb-4">{t.suggestedTopics}</h3>
+                                <h3 className="text-sm font-medium text-[#2D2D2D]/60 mb-4">{t.suggestedTopics}</h3>
                                 <TopicCards lang={lang} onSelect={(prompt) => {
                                     setInput(prompt);
                                     textareaRef.current?.focus();
@@ -537,7 +537,7 @@ function ConsultationInner() {
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={handleKeyDown}
                                 placeholder={t.placeholder}
-                                className="min-h-[52px] max-h-32 resize-none pr-4 rounded-xl border-gray-200 focus:border-[#002D62] focus:ring-[#002D62]/20 text-[15px]"
+                                className="min-h-[52px] max-h-32 resize-none pr-4 rounded-xl border-gray-200 focus:border-[#06101F] focus:ring-[#06101F]/20 text-[15px]"
                                 rows={1}
                             />
                         </div>
@@ -566,7 +566,7 @@ function ConsultationInner() {
                             data-ai-role="button"
                             onClick={() => handleSend()}
                             disabled={(!input.trim() && attachedFiles.length === 0) || isLoading || !conversation?.id}
-                            className="h-[52px] w-[52px] rounded-xl bg-[#002D62] hover:bg-[#001d42] disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="h-[52px] w-[52px] rounded-xl bg-[#06101F] hover:bg-[#050D19] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading ? (
                                 <Loader2 className="w-5 h-5 animate-spin" />

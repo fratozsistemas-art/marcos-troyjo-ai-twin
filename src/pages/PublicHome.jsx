@@ -209,12 +209,12 @@ export default function PublicHome() {
                                 className="w-full h-full object-cover"
                             />
                         </div>
-                        <span className="font-bold text-[#002D62] text-lg">Troyjo Twin</span>
+                        <span className="font-bold text-[#06101F] text-lg">Troyjo Twin</span>
                     </Link>
                     <div className="flex items-center gap-2">
                         <div className="relative group">
-                            <button className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 hover:border-[#002D62] bg-white hover:bg-gray-50 transition-all text-sm font-medium">
-                                <Globe className="w-4 h-4 text-[#002D62]" />
+                            <button className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 hover:border-[#06101F] bg-white hover:bg-gray-50 transition-all text-sm font-medium">
+                                <Globe className="w-4 h-4 text-[#06101F]" />
                                 <span>{langNames[lang]}</span>
                             </button>
                             <div className="absolute right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 min-w-[180px]">
@@ -225,8 +225,8 @@ export default function PublicHome() {
                                             setLang(l);
                                             localStorage.setItem('troyjo_lang', l);
                                         }}
-                                        className={`w-full text-left px-4 py-3 hover:bg-[#002D62] hover:text-white transition-colors flex items-center gap-3 ${
-                                            lang === l ? 'bg-[#002D62]/5 text-[#002D62] font-medium' : 'text-gray-700'
+                                        className={`w-full text-left px-4 py-3 hover:bg-[#06101F] hover:text-white transition-colors flex items-center gap-3 ${
+                                            lang === l ? 'bg-[#06101F]/5 text-[#06101F] font-medium' : 'text-gray-700'
                                         }`}
                                     >
                                         <span className="text-lg">{
@@ -246,13 +246,13 @@ export default function PublicHome() {
                             </div>
                         </div>
                         <Link to={createPageUrl('Pricing')}>
-                            <Button className="bg-[#00654A] hover:bg-[#00513d]">
+                            <Button className="bg-[#06101F] hover:bg-[#00513d]">
                                 <DollarSign className="w-4 h-4 mr-2" />
                                 {lang === 'pt' ? 'Planos' : 'Plans'}
                             </Button>
                         </Link>
                         <Link to={createPageUrl('Home')}>
-                            <Button className="bg-[#002D62] hover:bg-[#001d42]">
+                            <Button className="bg-[#06101F] hover:bg-[#050D19]">
                                 {text.accessTwin}
                                 <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>
@@ -264,7 +264,7 @@ export default function PublicHome() {
             {loading ? (
                 <div className="flex items-center justify-center min-h-screen">
                     <div className="text-center">
-                        <div className="w-16 h-16 border-4 border-[#002D62] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                        <div className="w-16 h-16 border-4 border-[#06101F] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                         <p className="text-[#2D2D2D]/60">{lang === 'pt' ? 'Carregando...' : 'Loading...'}</p>
                     </div>
                 </div>
@@ -272,7 +272,7 @@ export default function PublicHome() {
             <>
             <main>
                 {/* Hero Section */}
-                <section className="bg-gradient-to-br from-[#001d42] via-[#002D62] to-[#003366] py-32">
+                <section className="bg-gradient-to-br from-[#050D19] via-[#06101F] to-[#003366] py-32">
                     <div className="max-w-7xl mx-auto px-4 md:px-6">
                         <div className="text-center max-w-5xl mx-auto">
                             <motion.div
@@ -294,7 +294,7 @@ export default function PublicHome() {
                                         : 'A cognitive intelligence platform that replicates with maximum fidelity the strategic reasoning, diplomatic rhetoric and analytical frameworks of Marcos Prado Troyjo.'}
                                 </p>
                                 
-                                <div className="bg-white rounded-lg border-l-4 border-[#D4AF37] p-4 mb-6">
+                                <div className="bg-white rounded-lg border-l-4 border-[#C7A763] p-4 mb-6">
                                     <p className="text-sm text-[#2D2D2D] leading-relaxed">
                                         <strong>📊 {text.contextUpdate}:</strong> {text.contextText}
                                     </p>
@@ -337,21 +337,21 @@ export default function PublicHome() {
                                 className="relative"
                             >
                                 <div className="aspect-square max-w-md mx-auto relative">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-[#8B1538]/15 to-[#D4AF37]/15 rounded-2xl transform rotate-6" />
+                                    <div className="absolute inset-0 bg-gradient-to-br from-[#00D4FF]/15 to-[#C7A763]/15 rounded-2xl transform rotate-6" />
                                     <div className="absolute inset-0 rounded-2xl overflow-hidden shadow-2xl">
                                         <img 
                                             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/8c955389f_Replace_the_transparent_checkered_background_with_-1765063055494.png"
                                             alt="Marcos Prado Troyjo"
                                             className="w-full h-full object-cover"
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-[#002D62]/90 via-transparent to-transparent" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#06101F]/90 via-transparent to-transparent" />
                                         <motion.div 
                                             initial={{ y: 20, opacity: 0 }}
                                             animate={{ y: 0, opacity: 1 }}
                                             transition={{ delay: 0.4, duration: 0.6 }}
                                             className="absolute bottom-8 left-8 right-8"
                                         >
-                                            <BookOpen className="w-8 h-8 text-[#D4AF37] mb-3" />
+                                            <BookOpen className="w-8 h-8 text-[#C7A763] mb-3" />
                                             <p className="text-white text-lg italic leading-relaxed font-light" style={{ fontFamily: 'Crimson Text, serif' }}>
                                                 "{lang === 'pt' 
                                                     ? 'Temos todas as cartas na mão, mas só jogaremos bem se fizermos a lição de casa antes do colapso.'
@@ -374,7 +374,7 @@ export default function PublicHome() {
                             viewport={{ once: true }}
                             className="text-center mb-16"
                         >
-                            <h2 className="text-4xl md:text-5xl font-bold text-[#002D62] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            <h2 className="text-4xl md:text-5xl font-bold text-[#06101F] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                                 {lang === 'pt' ? 'Quatro Pilares de uma Arquitetura Cognitiva Robusta' : 'Four Pillars of a Robust Cognitive Architecture'}
                             </h2>
                             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
@@ -398,7 +398,7 @@ export default function PublicHome() {
                                     <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-6">
                                         <Users className="w-8 h-8 text-white" />
                                     </div>
-                                    <h3 className="text-2xl font-bold text-[#002D62] mb-4">
+                                    <h3 className="text-2xl font-bold text-[#06101F] mb-4">
                                         {lang === 'pt' ? 'Persona Autêntica' : 'Authentic Persona'}
                                     </h3>
                                     <p className="text-gray-700 leading-relaxed mb-4">
@@ -428,7 +428,7 @@ export default function PublicHome() {
                                     <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mb-6">
                                         <BookOpen className="w-8 h-8 text-white" />
                                     </div>
-                                    <h3 className="text-2xl font-bold text-[#002D62] mb-4">
+                                    <h3 className="text-2xl font-bold text-[#06101F] mb-4">
                                         {lang === 'pt' ? 'Base de Conhecimento Viva' : 'Living Knowledge Base'}
                                     </h3>
                                     <p className="text-gray-700 leading-relaxed mb-4">
@@ -458,7 +458,7 @@ export default function PublicHome() {
                                     <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center mb-6">
                                         <Zap className="w-8 h-8 text-white" />
                                     </div>
-                                    <h3 className="text-2xl font-bold text-[#002D62] mb-4">
+                                    <h3 className="text-2xl font-bold text-[#06101F] mb-4">
                                         {lang === 'pt' ? 'Motor de Inteligência Adaptativa' : 'Adaptive Intelligence Engine'}
                                     </h3>
                                     <p className="text-gray-700 leading-relaxed mb-4">
@@ -487,7 +487,7 @@ export default function PublicHome() {
                                     <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mb-6">
                                         <Shield className="w-8 h-8 text-white" />
                                     </div>
-                                    <h3 className="text-2xl font-bold text-[#002D62] mb-4">
+                                    <h3 className="text-2xl font-bold text-[#06101F] mb-4">
                                         {lang === 'pt' ? 'Protocolos de Elite' : 'Elite Protocols'}
                                     </h3>
                                     <p className="text-gray-700 leading-relaxed mb-4">
@@ -507,7 +507,7 @@ export default function PublicHome() {
                 </section>
 
                 {/* Stats Section */}
-                <section className="py-20 bg-[#002D62]">
+                <section className="py-20 bg-[#06101F]">
                     <div className="max-w-7xl mx-auto px-4 md:px-6">
                         <h2 className="text-3xl font-bold text-white text-center mb-12">{text.stats.title}</h2>
                         <div className="grid md:grid-cols-4 gap-8">
@@ -520,7 +520,7 @@ export default function PublicHome() {
                                     transition={{ delay: idx * 0.1 }}
                                     className="text-center"
                                 >
-                                    <div className="text-4xl font-bold text-[#D4AF37] mb-2">{stat.value}</div>
+                                    <div className="text-4xl font-bold text-[#C7A763] mb-2">{stat.value}</div>
                                     <div className="text-white/80">{stat.label}</div>
                                 </motion.div>
                             ))}
@@ -537,7 +537,7 @@ export default function PublicHome() {
                             viewport={{ once: true }}
                             className="text-center mb-12"
                         >
-                            <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            <h2 className="text-3xl md:text-4xl font-bold text-[#06101F] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                                 {lang === 'pt' ? 'Evolução Conceitual' : 'Conceptual Evolution'}
                             </h2>
                             <p className="text-lg text-[#2D2D2D]/70">
@@ -557,7 +557,7 @@ export default function PublicHome() {
                             viewport={{ once: true }}
                             className="text-center mb-12"
                         >
-                            <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            <h2 className="text-3xl md:text-4xl font-bold text-[#06101F] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                                 {lang === 'pt' ? 'Inovação Conceitual' : 'Conceptual Innovation'}
                             </h2>
                             <p className="text-lg text-[#2D2D2D]/70">
@@ -572,7 +572,7 @@ export default function PublicHome() {
                 <section className="py-20 px-4 md:px-6">
                     <div className="max-w-7xl mx-auto">
                         <div className="text-center mb-16">
-                            <h2 className="text-4xl font-bold text-[#002D62] mb-4">{text.features.title}</h2>
+                            <h2 className="text-4xl font-bold text-[#06101F] mb-4">{text.features.title}</h2>
                             <p className="text-lg text-gray-600">{text.features.subtitle}</p>
                         </div>
                         <div className="grid md:grid-cols-3 gap-8">
@@ -586,10 +586,10 @@ export default function PublicHome() {
                                         viewport={{ once: true }}
                                         transition={{ delay: idx * 0.1 }}
                                     >
-                                        <Card className="h-full hover:shadow-lg transition-all border-gray-200 hover:border-[#002D62]">
+                                        <Card className="h-full hover:shadow-lg transition-all border-gray-200 hover:border-[#06101F]">
                                             <CardHeader>
-                                                <div className="w-12 h-12 rounded-xl bg-[#002D62]/10 flex items-center justify-center mb-4">
-                                                    <Icon className="w-6 h-6 text-[#002D62]" />
+                                                <div className="w-12 h-12 rounded-xl bg-[#06101F]/10 flex items-center justify-center mb-4">
+                                                    <Icon className="w-6 h-6 text-[#06101F]" />
                                                 </div>
                                                 <CardTitle className="text-xl">{feature.title}</CardTitle>
                                             </CardHeader>
@@ -613,7 +613,7 @@ export default function PublicHome() {
                             viewport={{ once: true }}
                             className="text-center mb-12"
                         >
-                            <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            <h2 className="text-3xl md:text-4xl font-bold text-[#06101F] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                                 {lang === 'pt' ? 'Observatório de Políticas' : 'Policy Observatory'}
                             </h2>
                             <p className="text-lg text-[#2D2D2D]/70">
@@ -628,7 +628,7 @@ export default function PublicHome() {
                 <section className="py-20 px-4 md:px-6 bg-gray-50">
                     <div className="max-w-7xl mx-auto">
                         <div className="text-center mb-16">
-                            <h2 className="text-4xl font-bold text-[#002D62] mb-4">{text.personas.title}</h2>
+                            <h2 className="text-4xl font-bold text-[#06101F] mb-4">{text.personas.title}</h2>
                             <p className="text-lg text-gray-600">{text.personas.subtitle}</p>
                         </div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -641,10 +641,10 @@ export default function PublicHome() {
                                     transition={{ delay: idx * 0.1 }}
                                 >
                                     <Card className="text-center p-6 hover:shadow-lg transition-all">
-                                        <div className="w-16 h-16 rounded-full bg-[#00654A]/10 flex items-center justify-center mx-auto mb-4">
-                                            <Star className="w-8 h-8 text-[#00654A]" />
+                                        <div className="w-16 h-16 rounded-full bg-[#06101F]/10 flex items-center justify-center mx-auto mb-4">
+                                            <Star className="w-8 h-8 text-[#06101F]" />
                                         </div>
-                                        <h3 className="text-lg font-semibold text-[#002D62] mb-2">{persona.title}</h3>
+                                        <h3 className="text-lg font-semibold text-[#06101F] mb-2">{persona.title}</h3>
                                         <p className="text-sm text-gray-600">{persona.desc}</p>
                                     </Card>
                                 </motion.div>
@@ -662,7 +662,7 @@ export default function PublicHome() {
                             viewport={{ once: true }}
                             className="text-center mb-12"
                         >
-                            <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            <h2 className="text-3xl md:text-4xl font-bold text-[#06101F] mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
                                 {lang === 'pt' ? 'Quem Você É?' : 'Who Are You?'}
                             </h2>
                             <p className="text-lg text-[#2D2D2D]/70">
@@ -676,7 +676,7 @@ export default function PublicHome() {
                 {/* About Section */}
                 <section className="py-20 px-4 md:px-6 bg-gradient-to-b from-gray-50 to-white">
                     <div className="max-w-7xl mx-auto">
-                        <h2 className="text-3xl font-bold text-[#002D62] mb-6" style={{ fontFamily: 'Crimson Text, serif' }}>
+                        <h2 className="text-3xl font-bold text-[#06101F] mb-6" style={{ fontFamily: 'Crimson Text, serif' }}>
                             {text.about}
                         </h2>
                         <p className="text-lg text-[#2D2D2D] leading-relaxed max-w-4xl">{text.aboutText}</p>
@@ -692,17 +692,17 @@ export default function PublicHome() {
                             viewport={{ once: true }}
                             className="text-center mb-12"
                         >
-                            <h2 className="text-3xl md:text-4xl font-bold text-[#002D62] mb-4 flex items-center justify-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
+                            <h2 className="text-3xl md:text-4xl font-bold text-[#06101F] mb-4 flex items-center justify-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
                                 <BookOpen className="w-9 h-9" />
                                 {text.books}
                             </h2>
                             {uniqueYears.length > 1 && (
                                 <div className="flex items-center justify-center gap-2 mt-6">
-                                    <Filter className="w-4 h-4 text-[#002D62]" />
+                                    <Filter className="w-4 h-4 text-[#06101F]" />
                                     <select
                                         value={yearFilter}
                                         onChange={(e) => setYearFilter(e.target.value)}
-                                        className="px-4 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#002D62] bg-white shadow-sm"
+                                        className="px-4 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#06101F] bg-white shadow-sm"
                                     >
                                         <option value="all">{text.allYears}</option>
                                         {uniqueYears.map(year => (
@@ -731,14 +731,14 @@ export default function PublicHome() {
                                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                                     />
                                                     <div className="absolute top-3 right-3">
-                                                        <Badge className="bg-[#D4AF37] text-[#2D2D2D] font-bold shadow-lg">
+                                                        <Badge className="bg-[#C7A763] text-[#2D2D2D] font-bold shadow-lg">
                                                             {book.year}
                                                         </Badge>
                                                     </div>
                                                 </div>
                                             )}
                                             <CardHeader className="pb-3 flex-grow">
-                                                <CardTitle className="text-base font-bold text-[#002D62] leading-tight group-hover:text-[#8B1538] transition-colors">
+                                                <CardTitle className="text-base font-bold text-[#06101F] leading-tight group-hover:text-[#00D4FF] transition-colors">
                                                     {book.title}
                                                 </CardTitle>
                                             </CardHeader>
@@ -755,7 +755,7 @@ export default function PublicHome() {
                                                     >
                                                         <Button 
                                                             size="sm" 
-                                                            className="w-full gap-2 bg-gradient-to-r from-[#002D62] to-[#00654A] hover:from-[#001d42] hover:to-[#004a37] text-white shadow-md"
+                                                            className="w-full gap-2 bg-gradient-to-r from-[#06101F] to-[#06101F] hover:from-[#050D19] hover:to-[#004a37] text-white shadow-md"
                                                         >
                                                             <BookOpen className="w-4 h-4" />
                                                             {text.purchase}
@@ -779,15 +779,15 @@ export default function PublicHome() {
                 {/* Awards */}
                 <section className="py-20 px-4 md:px-6 bg-gradient-to-b from-gray-50 to-white">
                     <div className="max-w-7xl mx-auto">
-                        <h2 className="text-3xl font-bold text-[#002D62] mb-8 flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
+                        <h2 className="text-3xl font-bold text-[#06101F] mb-8 flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
                             <Award className="w-8 h-8" />
                             {text.awards}
                         </h2>
                         {awards.length > 0 ? (
                             <div className="grid md:grid-cols-2 gap-4">
                                 {awards.map((award) => (
-                                    <div key={award.id} className="flex items-start gap-3 p-4 rounded-lg border border-gray-100 bg-white hover:border-[#D4AF37]/30 hover:shadow-md transition-all">
-                                        <Award className="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5" />
+                                    <div key={award.id} className="flex items-start gap-3 p-4 rounded-lg border border-gray-100 bg-white hover:border-[#C7A763]/30 hover:shadow-md transition-all">
+                                        <Award className="w-5 h-5 text-[#C7A763] flex-shrink-0 mt-0.5" />
                                         <div className="flex-1">
                                             <span className="text-[#2D2D2D] font-medium">{award.title}</span>
                                             {award.organization && <p className="text-sm text-gray-600 mt-1">{award.organization}</p>}
@@ -807,7 +807,7 @@ export default function PublicHome() {
                 {/* Publications */}
                 <section id="publications-section" className="py-20 px-4 md:px-6 bg-white">
                     <div className="max-w-7xl mx-auto">
-                        <h2 className="text-3xl font-bold text-[#002D62] mb-8 flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
+                        <h2 className="text-3xl font-bold text-[#06101F] mb-8 flex items-center gap-3" style={{ fontFamily: 'Crimson Text, serif' }}>
                             <FileText className="w-8 h-8" />
                             {text.publications}
                         </h2>
@@ -817,21 +817,21 @@ export default function PublicHome() {
                                 <Button
                                     variant={publicationTypeFilter === 'all' ? 'default' : 'outline'}
                                     onClick={() => setPublicationTypeFilter('all')}
-                                    className={publicationTypeFilter === 'all' ? 'bg-[#002D62]' : ''}
+                                    className={publicationTypeFilter === 'all' ? 'bg-[#06101F]' : ''}
                                 >
                                     {text.filterAll}
                                 </Button>
                                 <Button
                                     variant={publicationTypeFilter === 'article' ? 'default' : 'outline'}
                                     onClick={() => setPublicationTypeFilter('article')}
-                                    className={publicationTypeFilter === 'article' ? 'bg-[#002D62]' : ''}
+                                    className={publicationTypeFilter === 'article' ? 'bg-[#06101F]' : ''}
                                 >
                                     {text.filterArticles}
                                 </Button>
                                 <Button
                                     variant={publicationTypeFilter === 'interview' ? 'default' : 'outline'}
                                     onClick={() => setPublicationTypeFilter('interview')}
-                                    className={publicationTypeFilter === 'interview' ? 'bg-[#002D62]' : ''}
+                                    className={publicationTypeFilter === 'interview' ? 'bg-[#06101F]' : ''}
                                 >
                                     {text.filterInterviews}
                                 </Button>
@@ -853,12 +853,12 @@ export default function PublicHome() {
                 </section>
 
                 {/* CTA Section */}
-                <section className="py-20 bg-gradient-to-r from-[#002D62] to-[#00654A]">
+                <section className="py-20 bg-gradient-to-r from-[#06101F] to-[#06101F]">
                     <div className="max-w-4xl mx-auto px-4 md:px-6 text-center">
                         <h2 className="text-4xl font-bold text-white mb-4">{text.ctaSection.title}</h2>
                         <p className="text-xl text-white/80 mb-8">{text.ctaSection.subtitle}</p>
                         <Link to={createPageUrl('Home')}>
-                            <Button size="lg" className="bg-white text-[#002D62] hover:bg-gray-100 text-lg px-8 py-6">
+                            <Button size="lg" className="bg-white text-[#06101F] hover:bg-gray-100 text-lg px-8 py-6">
                                 {text.ctaSection.button}
                                 <ChevronRight className="w-5 h-5 ml-2" />
                             </Button>
@@ -872,7 +872,7 @@ export default function PublicHome() {
                 <div className="max-w-7xl mx-auto px-4 md:px-6">
                     <div className="grid md:grid-cols-4 gap-8 mb-12">
                         <div>
-                            <h4 className="text-[#D4AF37] font-semibold mb-4">Marcos Troyjo Digital Twin</h4>
+                            <h4 className="text-[#C7A763] font-semibold mb-4">Marcos Troyjo Digital Twin</h4>
                             <p className="text-sm text-[#FAF7F2]/70 leading-relaxed">
                                 {lang === 'pt' 
                                     ? 'Expertise geopolítica de classe mundial, disponível 24/7 via IA com 95%+ de fidelidade HUA-validada.'
@@ -880,37 +880,37 @@ export default function PublicHome() {
                             </p>
                         </div>
                         <div>
-                            <h4 className="text-[#D4AF37] font-semibold mb-4">{lang === 'pt' ? 'Produto' : 'Product'}</h4>
+                            <h4 className="text-[#C7A763] font-semibold mb-4">{lang === 'pt' ? 'Produto' : 'Product'}</h4>
                             <ul className="space-y-2 text-sm">
-                                <li><Link to={createPageUrl('Home')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                <li><Link to={createPageUrl('Home')} className="text-[#FAF7F2]/70 hover:text-[#C7A763] transition-colors">
                                     {lang === 'pt' ? 'Acessar Twin' : 'Access Twin'}
                                 </Link></li>
-                                <li><Link to={createPageUrl('Pricing')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                <li><Link to={createPageUrl('Pricing')} className="text-[#FAF7F2]/70 hover:text-[#C7A763] transition-colors">
                                     {lang === 'pt' ? 'Planos' : 'Pricing'}
                                 </Link></li>
-                                <li><Link to={createPageUrl('Dashboard')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                <li><Link to={createPageUrl('Dashboard')} className="text-[#FAF7F2]/70 hover:text-[#C7A763] transition-colors">
                                     Dashboard
                                 </Link></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="text-[#D4AF37] font-semibold mb-4">{lang === 'pt' ? 'Recursos' : 'Resources'}</h4>
+                            <h4 className="text-[#C7A763] font-semibold mb-4">{lang === 'pt' ? 'Recursos' : 'Resources'}</h4>
                             <ul className="space-y-2 text-sm">
-                                <li><Link to={createPageUrl('StrategicIntelligenceBlog')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                <li><Link to={createPageUrl('StrategicIntelligenceBlog')} className="text-[#FAF7F2]/70 hover:text-[#C7A763] transition-colors">
                                     Blog
                                 </Link></li>
-                                <li><Link to={createPageUrl('KnowledgeBase')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                <li><Link to={createPageUrl('KnowledgeBase')} className="text-[#FAF7F2]/70 hover:text-[#C7A763] transition-colors">
                                     {lang === 'pt' ? 'Base de Conhecimento' : 'Knowledge Base'}
                                 </Link></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="text-[#D4AF37] font-semibold mb-4">{lang === 'pt' ? 'Legal' : 'Legal'}</h4>
+                            <h4 className="text-[#C7A763] font-semibold mb-4">{lang === 'pt' ? 'Legal' : 'Legal'}</h4>
                             <ul className="space-y-2 text-sm">
-                                <li><Link to={createPageUrl('PrivacyPolicy')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                <li><Link to={createPageUrl('PrivacyPolicy')} className="text-[#FAF7F2]/70 hover:text-[#C7A763] transition-colors">
                                     {lang === 'pt' ? 'Privacidade' : 'Privacy'}
                                 </Link></li>
-                                <li><Link to={createPageUrl('TermsOfService')} className="text-[#FAF7F2]/70 hover:text-[#D4AF37] transition-colors">
+                                <li><Link to={createPageUrl('TermsOfService')} className="text-[#FAF7F2]/70 hover:text-[#C7A763] transition-colors">
                                     {lang === 'pt' ? 'Termos de Serviço' : 'Terms of Service'}
                                 </Link></li>
                             </ul>

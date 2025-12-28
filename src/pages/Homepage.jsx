@@ -329,8 +329,8 @@ export default function Homepage() {
                     <div className="flex items-center gap-3">
                         <TroyjoLogo size={40} />
                         <div className="hidden sm:block">
-                            <span className="font-bold text-[#002D62]">Troyjo</span>
-                            <span className="text-[#333F48] text-sm ml-2">Digital Twin</span>
+                            <span className="font-bold text-[#06101F]">Troyjo</span>
+                            <span className="text-[#2D2D2D] text-sm ml-2">Digital Twin</span>
                         </div>
                     </div>
                     
@@ -343,7 +343,7 @@ export default function Homepage() {
                             </Button>
                         </Link>
                         <Link to={createPageUrl('Consultation')}>
-                            <Button size="sm" className="bg-[#002D62] hover:bg-[#001d42] gap-2">
+                            <Button size="sm" className="bg-[#06101F] hover:bg-[#050D19] gap-2">
                                 <MessageSquare className="w-4 h-4" />
                                 {t.nav.consultation}
                             </Button>
@@ -385,7 +385,7 @@ export default function Homepage() {
                                     </Button>
                                 </Link>
                                 <Link to={createPageUrl('Consultation')}>
-                                    <Button size="sm" className="w-full bg-[#002D62] hover:bg-[#001d42] gap-2">
+                                    <Button size="sm" className="w-full bg-[#06101F] hover:bg-[#050D19] gap-2">
                                         <MessageSquare className="w-4 h-4" />
                                         {t.nav.consultation}
                                     </Button>
@@ -411,11 +411,11 @@ export default function Homepage() {
                             className="absolute inset-0 bg-cover bg-center"
                             style={{ backgroundImage: `url(${heroSlides[heroSlide].image})` }}
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-[#002D62]/95 to-[#002D62]/70" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-[#06101F]/95 to-[#06101F]/70" />
                         </div>
                         <div className="relative h-full flex items-center">
                             <div className="max-w-6xl mx-auto px-4 md:px-6 text-white">
-                                <Badge className="bg-[#B8860B] text-white mb-6">
+                                <Badge className="bg-[#C7A763] text-white mb-6">
                                     <Sparkles className="w-3 h-3 mr-1" />
                                     {t.hero.badge}
                                 </Badge>
@@ -425,12 +425,12 @@ export default function Homepage() {
                                 <p className="text-xl mb-2 max-w-3xl">
                                     {t.hero.subtitle}
                                 </p>
-                                <p className="text-2xl italic mb-8 text-[#D4AF37]">
+                                <p className="text-2xl italic mb-8 text-[#C7A763]">
                                     {heroSlides[heroSlide].quote}
                                 </p>
                                 <div className="flex flex-wrap gap-4">
                                     <Link to={createPageUrl('Consultation')}>
-                                        <Button size="lg" className="bg-white text-[#002D62] hover:bg-gray-100 gap-2">
+                                        <Button size="lg" className="bg-white text-[#06101F] hover:bg-gray-100 gap-2">
                                             <MessageSquare className="w-5 h-5" />
                                             {t.hero.cta1}
                                             <ArrowRight className="w-5 h-5" />
@@ -462,8 +462,8 @@ export default function Homepage() {
             <section className="py-16 px-4 md:px-6">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold text-[#002D62] mb-3">{t.capabilities.title}</h2>
-                        <p className="text-[#333F48]">{t.capabilities.subtitle}</p>
+                        <h2 className="text-3xl font-bold text-[#06101F] mb-3">{t.capabilities.title}</h2>
+                        <p className="text-[#2D2D2D]">{t.capabilities.subtitle}</p>
                     </div>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {t.capabilities.items.map((item, idx) => {
@@ -478,11 +478,11 @@ export default function Homepage() {
                                 >
                                     <Card className="h-full hover:shadow-lg transition-shadow">
                                         <CardContent className="p-6">
-                                            <div className="w-12 h-12 rounded-lg bg-[#002D62] flex items-center justify-center mb-4">
+                                            <div className="w-12 h-12 rounded-lg bg-[#06101F] flex items-center justify-center mb-4">
                                                 <Icon className="w-6 h-6 text-white" />
                                             </div>
-                                            <h3 className="font-semibold text-[#002D62] mb-2">{item.title}</h3>
-                                            <p className="text-sm text-[#333F48]">{item.desc}</p>
+                                            <h3 className="font-semibold text-[#06101F] mb-2">{item.title}</h3>
+                                            <p className="text-sm text-[#2D2D2D]">{item.desc}</p>
                                         </CardContent>
                                     </Card>
                                 </motion.div>
@@ -496,8 +496,8 @@ export default function Homepage() {
             <section className="py-16 px-4 md:px-6 bg-white">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold text-[#002D62] mb-3">{t.evolution.title}</h2>
-                        <p className="text-[#333F48]">{t.evolution.subtitle}</p>
+                        <h2 className="text-3xl font-bold text-[#06101F] mb-3">{t.evolution.title}</h2>
+                        <p className="text-[#2D2D2D]">{t.evolution.subtitle}</p>
                     </div>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {t.evolution.concepts.map((concept, idx) => (
@@ -510,8 +510,8 @@ export default function Homepage() {
                                 className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-xl border border-gray-100"
                             >
                                 <Badge className="mb-3">{concept.year}</Badge>
-                                <h3 className="font-bold text-[#8B1538] mb-2">{concept.term}</h3>
-                                <p className="text-sm text-[#333F48]">{concept.desc}</p>
+                                <h3 className="font-bold text-[#00D4FF] mb-2">{concept.term}</h3>
+                                <p className="text-sm text-[#2D2D2D]">{concept.desc}</p>
                             </motion.div>
                         ))}
                     </div>
@@ -522,8 +522,8 @@ export default function Homepage() {
             <section className="py-16 px-4 md:px-6">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold text-[#002D62] mb-3">{t.audience.title}</h2>
-                        <p className="text-[#333F48]">{t.audience.subtitle}</p>
+                        <h2 className="text-3xl font-bold text-[#06101F] mb-3">{t.audience.title}</h2>
+                        <p className="text-[#2D2D2D]">{t.audience.subtitle}</p>
                     </div>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {t.audience.segments.map((segment, idx) => {
@@ -531,11 +531,11 @@ export default function Homepage() {
                             return (
                                 <Card key={idx} className="hover:shadow-lg transition-shadow">
                                     <CardContent className="p-6 text-center">
-                                        <div className="w-16 h-16 rounded-full bg-[#00654A]/10 flex items-center justify-center mx-auto mb-4">
-                                            <Icon className="w-8 h-8 text-[#00654A]" />
+                                        <div className="w-16 h-16 rounded-full bg-[#06101F]/10 flex items-center justify-center mx-auto mb-4">
+                                            <Icon className="w-8 h-8 text-[#06101F]" />
                                         </div>
-                                        <h3 className="font-semibold text-[#002D62] mb-2">{segment.title}</h3>
-                                        <p className="text-sm text-[#333F48]">{segment.desc}</p>
+                                        <h3 className="font-semibold text-[#06101F] mb-2">{segment.title}</h3>
+                                        <p className="text-sm text-[#2D2D2D]">{segment.desc}</p>
                                     </CardContent>
                                 </Card>
                             );
@@ -545,7 +545,7 @@ export default function Homepage() {
             </section>
 
             {/* Expertise & Vision */}
-            <section className="py-16 px-4 md:px-6 bg-gradient-to-br from-[#002D62] to-[#00654A] text-white">
+            <section className="py-16 px-4 md:px-6 bg-gradient-to-br from-[#06101F] to-[#06101F] text-white">
                 <div className="max-w-7xl mx-auto">
                     <div className="grid md:grid-cols-2 gap-12">
                         <div>
@@ -553,7 +553,7 @@ export default function Homepage() {
                             <ul className="space-y-3">
                                 {t.expertise.items.map((item, idx) => (
                                     <li key={idx} className="flex items-center gap-3">
-                                        <CheckCircle className="w-5 h-5 text-[#D4AF37]" />
+                                        <CheckCircle className="w-5 h-5 text-[#C7A763]" />
                                         <span>{item}</span>
                                     </li>
                                 ))}
@@ -564,7 +564,7 @@ export default function Homepage() {
                             <ul className="space-y-3">
                                 {t.vision.items.map((item, idx) => (
                                     <li key={idx} className="flex items-start gap-3">
-                                        <Zap className="w-5 h-5 text-[#D4AF37] mt-0.5 flex-shrink-0" />
+                                        <Zap className="w-5 h-5 text-[#C7A763] mt-0.5 flex-shrink-0" />
                                         <span className="text-sm leading-relaxed">{item}</span>
                                     </li>
                                 ))}
@@ -577,31 +577,31 @@ export default function Homepage() {
             {/* Credentials */}
             <section className="py-16 px-4 md:px-6 bg-white">
                 <div className="max-w-7xl mx-auto">
-                    <h2 className="text-3xl font-bold text-[#002D62] mb-8 text-center">{t.credentials.title}</h2>
+                    <h2 className="text-3xl font-bold text-[#06101F] mb-8 text-center">{t.credentials.title}</h2>
                     <div className="grid md:grid-cols-2 gap-8">
                         <div>
-                            <h3 className="font-semibold text-[#002D62] mb-4 flex items-center gap-2">
+                            <h3 className="font-semibold text-[#06101F] mb-4 flex items-center gap-2">
                                 <Target className="w-5 h-5" />
                                 {lang === 'pt' ? 'Posições Principais' : 'Main Positions'}
                             </h3>
                             <ul className="space-y-2">
                                 {t.credentials.positions.map((pos, idx) => (
-                                    <li key={idx} className="flex items-start gap-2 text-[#333F48]">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-[#002D62] mt-2" />
+                                    <li key={idx} className="flex items-start gap-2 text-[#2D2D2D]">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-[#06101F] mt-2" />
                                         {pos}
                                     </li>
                                 ))}
                             </ul>
                         </div>
                         <div>
-                            <h3 className="font-semibold text-[#002D62] mb-4 flex items-center gap-2">
+                            <h3 className="font-semibold text-[#06101F] mb-4 flex items-center gap-2">
                                 <Award className="w-5 h-5" />
                                 {lang === 'pt' ? 'Reconhecimentos' : 'Awards'}
                             </h3>
                             <ul className="space-y-2">
                                 {t.credentials.awards.map((award, idx) => (
-                                    <li key={idx} className="flex items-start gap-2 text-[#333F48]">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-2" />
+                                    <li key={idx} className="flex items-start gap-2 text-[#2D2D2D]">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-[#C7A763] mt-2" />
                                         {award}
                                     </li>
                                 ))}
@@ -615,7 +615,7 @@ export default function Homepage() {
             <section id="articles" className="py-16 px-4 md:px-6">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-3xl font-bold text-[#002D62]">{t.articles.title}</h2>
+                        <h2 className="text-3xl font-bold text-[#06101F]">{t.articles.title}</h2>
                         <div className="flex gap-2">
                             <Button
                                 variant={tierFilter === 'all' ? 'default' : 'outline'}
@@ -628,7 +628,7 @@ export default function Homepage() {
                                 variant={tierFilter === 'troyjo_certified' ? 'default' : 'outline'}
                                 size="sm"
                                 onClick={() => setTierFilter('troyjo_certified')}
-                                className={tierFilter === 'troyjo_certified' ? 'bg-[#B8860B] hover:bg-[#9a7209]' : ''}
+                                className={tierFilter === 'troyjo_certified' ? 'bg-[#C7A763] hover:bg-[#9a7209]' : ''}
                             >
                                 {t.articles.certified}
                             </Button>
@@ -642,7 +642,7 @@ export default function Homepage() {
                         </div>
                     </div>
                     {isLoading ? (
-                        <div className="text-center py-12 text-[#333F48]/60">{t.articles.loading}</div>
+                        <div className="text-center py-12 text-[#2D2D2D]/60">{t.articles.loading}</div>
                     ) : (() => {
                         const filtered = tierFilter === 'all' 
                             ? featuredArticles 
@@ -655,7 +655,7 @@ export default function Homepage() {
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-center py-12 text-[#333F48]/60">
+                            <div className="text-center py-12 text-[#2D2D2D]/60">
                                 {lang === 'pt' ? 'Nenhum artigo nesta categoria' : 'No articles in this category'}
                             </div>
                         );
@@ -667,8 +667,8 @@ export default function Homepage() {
             <section className="py-16 px-4 md:px-6 bg-white">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex items-center gap-3 mb-8">
-                        <Calendar className="w-8 h-8 text-[#002D62]" />
-                        <h2 className="text-3xl font-bold text-[#002D62]">{t.calendar.title}</h2>
+                        <Calendar className="w-8 h-8 text-[#06101F]" />
+                        <h2 className="text-3xl font-bold text-[#06101F]">{t.calendar.title}</h2>
                     </div>
                     
                     <Tabs defaultValue="next_weeks" className="w-full">
@@ -685,7 +685,7 @@ export default function Homepage() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-12 text-[#333F48]/60">{t.calendar.noItems}</div>
+                                <div className="text-center py-12 text-[#2D2D2D]/60">{t.calendar.noItems}</div>
                             )}
                         </TabsContent>
                         
@@ -697,7 +697,7 @@ export default function Homepage() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-12 text-[#333F48]/60">{t.calendar.noItems}</div>
+                                <div className="text-center py-12 text-[#2D2D2D]/60">{t.calendar.noItems}</div>
                             )}
                         </TabsContent>
                     </Tabs>
@@ -707,14 +707,14 @@ export default function Homepage() {
             {/* Strategic Intelligence Blog */}
             <section className="py-16 px-4 md:px-6">
                 <div className="max-w-7xl mx-auto">
-                    <h2 className="text-3xl font-bold text-[#002D62] mb-8">{t.blog.title}</h2>
+                    <h2 className="text-3xl font-bold text-[#06101F] mb-8">{t.blog.title}</h2>
                     <Card className="hover:shadow-lg transition-shadow">
                         <CardContent className="p-8">
                             <div className="flex flex-col md:flex-row gap-6">
                                 <div className="flex-1">
                                     <Badge className="mb-3">{t.blog.date}</Badge>
-                                    <h3 className="text-2xl font-bold text-[#8B1538] mb-4">{t.blog.articleTitle}</h3>
-                                    <p className="text-[#333F48] mb-4">
+                                    <h3 className="text-2xl font-bold text-[#00D4FF] mb-4">{t.blog.articleTitle}</h3>
+                                    <p className="text-[#2D2D2D] mb-4">
                                         {lang === 'pt' 
                                             ? 'No cenário empresarial moderno, executivos dependem cada vez mais de sistemas de inteligência estratégica. Explore as principais considerações ao selecionar plataformas de análise.'
                                             : 'In the modern business landscape, executives increasingly rely on strategic intelligence systems. Explore key considerations when selecting analysis platforms.'}
@@ -733,7 +733,7 @@ export default function Homepage() {
             </section>
 
             {/* Newsletter */}
-            <section id="newsletter" className="py-16 px-4 md:px-6 bg-gradient-to-br from-[#002D62] to-[#00654A]">
+            <section id="newsletter" className="py-16 px-4 md:px-6 bg-gradient-to-br from-[#06101F] to-[#06101F]">
                 <div className="max-w-2xl mx-auto text-center">
                     <h2 className="text-3xl font-bold text-white mb-4">{t.newsletter.title}</h2>
                     <p className="text-white/90 mb-6">{t.newsletter.subtitle}</p>
@@ -756,7 +756,7 @@ export default function Homepage() {
 
             {/* Footer */}
             <footer className="py-8 px-4 md:px-6 bg-white border-t">
-                <div className="max-w-7xl mx-auto text-center text-sm text-[#333F48]/70">
+                <div className="max-w-7xl mx-auto text-center text-sm text-[#2D2D2D]/70">
                     <p>© 2025 Marcos Prado Troyjo Digital Twin</p>
                     <p className="mt-2">
                         {lang === 'pt' 

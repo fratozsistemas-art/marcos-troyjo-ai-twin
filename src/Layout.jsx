@@ -4,6 +4,7 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Globe, Moon, Sun, Sparkles } from 'lucide-react';
+import { Helmet } from 'react-helmet';
 import NavigationMenu from '@/components/navigation/NavigationMenu';
 import TroyjoLogo from '@/components/branding/TroyjoLogo';
 import TrialBanner from '@/components/subscription/TrialBanner';
@@ -59,6 +60,11 @@ export default function Layout({ children, currentPageName }) {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex flex-col transition-colors duration-300">
+            <Helmet>
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
+                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+            </Helmet>
             <TrialBanner />
             <div className="flex flex-1">
             {/* Mobile Overlay */}

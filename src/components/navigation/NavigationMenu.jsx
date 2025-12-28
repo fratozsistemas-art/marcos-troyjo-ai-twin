@@ -4,7 +4,7 @@ import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { 
     LayoutDashboard, MessageSquare, BookOpen, FileText, 
-    BarChart3, Shield, Database, Globe, DollarSign, Lock
+    BarChart3, Shield, Database, Globe, DollarSign, Lock, Home
 } from 'lucide-react';
 
 export default function NavigationMenu({ lang = 'pt' }) {
@@ -12,6 +12,7 @@ export default function NavigationMenu({ lang = 'pt' }) {
 
     const text = {
         pt: {
+            home: 'Início',
             dashboard: 'Painel',
             consultation: 'Consulta',
             knowledge: 'Base de Conhecimento',
@@ -23,6 +24,7 @@ export default function NavigationMenu({ lang = 'pt' }) {
             privacy: 'Privacidade'
         },
         en: {
+            home: 'Home',
             dashboard: 'Dashboard',
             consultation: 'Consultation',
             knowledge: 'Knowledge Base',
@@ -38,6 +40,7 @@ export default function NavigationMenu({ lang = 'pt' }) {
     const t = text[lang];
 
     const menuItems = [
+        { path: 'Home', icon: Home, label: t.home },
         { path: 'Dashboard', icon: LayoutDashboard, label: t.dashboard },
         { path: 'Consultation', icon: MessageSquare, label: t.consultation },
         { path: 'KnowledgeBase', icon: BookOpen, label: t.knowledge },

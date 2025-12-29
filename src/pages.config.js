@@ -33,6 +33,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import PublicHome from './pages/PublicHome';
 import PublicPolicyObservatory from './pages/PublicPolicyObservatory';
 import ReportGenerator from './pages/ReportGenerator';
+import ReportsHub from './pages/ReportsHub';
 import RoleManagement from './pages/RoleManagement';
 import SSOTReports from './pages/SSOTReports';
 import SecurityAdmin from './pages/SecurityAdmin';
@@ -43,7 +44,7 @@ import TeamDashboard from './pages/TeamDashboard';
 import TenantAdmin from './pages/TenantAdmin';
 import TermsOfService from './pages/TermsOfService';
 import Welcome from './pages/Welcome';
-import ReportsHub from './pages/ReportsHub';
+import ContentManagementHub from './pages/ContentManagementHub';
 import __Layout from './Layout.jsx';
 
 
@@ -83,6 +84,7 @@ export const PAGES = {
     "PublicHome": PublicHome,
     "PublicPolicyObservatory": PublicPolicyObservatory,
     "ReportGenerator": ReportGenerator,
+    "ReportsHub": ReportsHub,
     "RoleManagement": RoleManagement,
     "SSOTReports": SSOTReports,
     "SecurityAdmin": SecurityAdmin,
@@ -93,7 +95,7 @@ export const PAGES = {
     "TenantAdmin": TenantAdmin,
     "TermsOfService": TermsOfService,
     "Welcome": Welcome,
-    "ReportsHub": ReportsHub,
+    "ContentManagementHub": ContentManagementHub,
 }
 
 export const pagesConfig = {

@@ -51,6 +51,7 @@ export default function NavigationMenu({ lang = 'pt' }) {
         { path: 'StrategicIntelligenceBlog', icon: FileText, label: t.blog },
         { path: 'AnalyticsDashboard', icon: BarChart3, label: t.analytics },
         { path: 'ReportsHub', icon: FileSpreadsheet, label: t.reports },
+        { path: 'ContentManagementHub', icon: Database, label: lang === 'pt' ? 'Gestão de Conteúdo' : 'Content Hub' },
         { path: 'TeamDashboard', icon: Users, label: t.team },
         { path: 'AdminEntities', icon: Database, label: t.entities },
         { path: 'Pricing', icon: DollarSign, label: t.pricing },

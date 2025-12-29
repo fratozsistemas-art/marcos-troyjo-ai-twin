@@ -39,10 +39,10 @@ import SecurityAdmin from './pages/SecurityAdmin';
 import StrategicIntelligenceBlog from './pages/StrategicIntelligenceBlog';
 import StudyMode from './pages/StudyMode';
 import SystemHealth from './pages/SystemHealth';
+import TeamDashboard from './pages/TeamDashboard';
 import TenantAdmin from './pages/TenantAdmin';
 import TermsOfService from './pages/TermsOfService';
 import Welcome from './pages/Welcome';
-import TeamDashboard from './pages/TeamDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -88,10 +88,10 @@ export const PAGES = {
     "StrategicIntelligenceBlog": StrategicIntelligenceBlog,
     "StudyMode": StudyMode,
     "SystemHealth": SystemHealth,
+    "TeamDashboard": TeamDashboard,
     "TenantAdmin": TenantAdmin,
     "TermsOfService": TermsOfService,
     "Welcome": Welcome,
-    "TeamDashboard": TeamDashboard,
 }
 
 export const pagesConfig = {

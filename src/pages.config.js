@@ -43,6 +43,7 @@ import TeamDashboard from './pages/TeamDashboard';
 import TenantAdmin from './pages/TenantAdmin';
 import TermsOfService from './pages/TermsOfService';
 import Welcome from './pages/Welcome';
+import ReportsHub from './pages/ReportsHub';
 import __Layout from './Layout.jsx';
 
 
@@ -92,6 +93,7 @@ export const PAGES = {
     "TenantAdmin": TenantAdmin,
     "TermsOfService": TermsOfService,
     "Welcome": Welcome,
+    "ReportsHub": ReportsHub,
 }
 
 export const pagesConfig = {

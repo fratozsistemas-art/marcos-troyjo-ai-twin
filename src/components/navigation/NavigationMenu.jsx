@@ -4,7 +4,7 @@ import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { 
     LayoutDashboard, MessageSquare, BookOpen, FileText, 
-    BarChart3, Shield, Database, Globe, DollarSign, Lock, Home, Settings
+    BarChart3, Shield, Database, Globe, DollarSign, Lock, Home, Settings, FileSpreadsheet
 } from 'lucide-react';
 
 export default function NavigationMenu({ lang = 'pt' }) {
@@ -18,6 +18,7 @@ export default function NavigationMenu({ lang = 'pt' }) {
             knowledge: 'Base de Conhecimento',
             blog: 'Blog',
             analytics: 'Analytics',
+            reports: 'Relatórios',
             entities: 'Entidades',
             team: 'Equipe',
             public: 'Início Público',
@@ -31,6 +32,7 @@ export default function NavigationMenu({ lang = 'pt' }) {
             knowledge: 'Knowledge Base',
             blog: 'Blog',
             analytics: 'Analytics',
+            reports: 'Reports',
             entities: 'Entities',
             team: 'Team',
             public: 'Public Home',
@@ -48,6 +50,7 @@ export default function NavigationMenu({ lang = 'pt' }) {
         { path: 'KnowledgeBase', icon: BookOpen, label: t.knowledge },
         { path: 'StrategicIntelligenceBlog', icon: FileText, label: t.blog },
         { path: 'AnalyticsDashboard', icon: BarChart3, label: t.analytics },
+        { path: 'ReportsHub', icon: FileSpreadsheet, label: t.reports },
         { path: 'TeamDashboard', icon: Settings, label: t.team },
         { path: 'AdminEntities', icon: Database, label: t.entities },
         { path: 'Pricing', icon: DollarSign, label: t.pricing },

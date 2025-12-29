@@ -1,209 +1,288 @@
 import React, { useState } from 'react';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { X, GripVertical, Plus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { 
+    FileText, Download, Loader2, Calendar, Filter,
+    CheckCircle, Settings, Sparkles
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
-const entityFields = {
-    Forum: {
-        pt: {
-            name: 'Nome', full_name: 'Nome Completo', acronym: 'Sigla', type: 'Tipo',
-            members: 'Membros', established_year: 'Ano de Criação', headquarters: 'Sede',
-            key_themes: 'Temas Principais', significance: 'Importância'
+export default function ReportBuilder({ lang = 'pt', onReportGenerated }) {
+    const [config, setConfig] = useState({
+        title: '',
+        include_facts: true,
+        include_risks: true,
+        include_articles: true,
+        include_interactions: true,
+        include_documents: false,
+        include_predictions: true,
+        date_range: {
+            start_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            end_date: new Date().toISOString().split('T')[0]
         },
-        en: {
-            name: 'Name', full_name: 'Full Name', acronym: 'Acronym', type: 'Type',
-            members: 'Members', established_year: 'Established Year', headquarters: 'Headquarters',
-            key_themes: 'Key Themes', significance: 'Significance'
-        }
-    },
-    Event: {
-        pt: {
-            name: 'Nome', event_type: 'Tipo', start_date: 'Data Início', end_date: 'Data Fim',
-            location: 'Localização', description: 'Descrição', key_themes: 'Temas',
-            status: 'Status', significance: 'Importância'
-        },
-        en: {
-            name: 'Name', event_type: 'Type', start_date: 'Start Date', end_date: 'End Date',
-            location: 'Location', description: 'Description', key_themes: 'Themes',
-            status: 'Status', significance: 'Significance'
-        }
-    },
-    KeyActor: {
-        pt: {
-            name: 'Nome', type: 'Tipo', country: 'País', acronym: 'Sigla',
-            full_name: 'Nome Completo', description: 'Descrição', role: 'Papel',
-            areas_of_influence: 'Áreas de Influência', strategic_importance: 'Importância Estratégica'
-        },
-        en: {
-            name: 'Name', type: 'Type', country: 'Country', acronym: 'Acronym',
-            full_name: 'Full Name', description: 'Description', role: 'Role',
-            areas_of_influence: 'Areas of Influence', strategic_importance: 'Strategic Importance'
-        }
-    }
-};
-
-export default function ReportBuilder({ selectedEntities, selectedFields, onFieldsChange, lang = 'pt' }) {
-    const [availableFields, setAvailableFields] = useState(() => {
-        const fields = {};
-        selectedEntities.forEach(entity => {
-            fields[entity] = Object.keys(entityFields[entity][lang]).filter(
-                f => !selectedFields[entity]?.includes(f)
-            );
-        });
-        return fields;
+        regions: [],
+        include_ai_summary: true
     });
+    const [generating, setGenerating] = useState(false);
+    const [exportFormat, setExportFormat] = useState('json');
 
-    const handleDragEnd = (result) => {
-        const { source, destination } = result;
-        if (!destination) return;
-
-        const sourceEntity = source.droppableId.replace('available-', '').replace('selected-', '');
-        const destEntity = destination.droppableId.replace('available-', '').replace('selected-', '');
-        
-        if (source.droppableId.startsWith('available-') && destination.droppableId.startsWith('selected-')) {
-            // Moving from available to selected
-            const field = availableFields[sourceEntity][source.index];
-            const newAvailable = [...availableFields[sourceEntity]];
-            newAvailable.splice(source.index, 1);
-            
-            const newSelected = [...(selectedFields[sourceEntity] || [])];
-            newSelected.splice(destination.index, 0, field);
-
-            setAvailableFields({ ...availableFields, [sourceEntity]: newAvailable });
-            onFieldsChange({ ...selectedFields, [sourceEntity]: newSelected });
-        } else if (source.droppableId.startsWith('selected-') && destination.droppableId.startsWith('selected-')) {
-            // Reordering within selected
-            const newSelected = [...selectedFields[sourceEntity]];
-            const [removed] = newSelected.splice(source.index, 1);
-            newSelected.splice(destination.index, 0, removed);
-            
-            onFieldsChange({ ...selectedFields, [sourceEntity]: newSelected });
+    const t = {
+        pt: {
+            title: 'Construtor de Relatórios',
+            subtitle: 'Crie relatórios analíticos personalizados',
+            reportTitle: 'Título do Relatório',
+            titlePlaceholder: 'Ex: Análise Geopolítica Q4 2024',
+            dataSelection: 'Seleção de Dados',
+            dateRange: 'Período',
+            filters: 'Filtros',
+            options: 'Opções',
+            includeFacts: 'Incluir Fatos Estratégicos',
+            includeRisks: 'Incluir Riscos Geopolíticos',
+            includeArticles: 'Incluir Artigos',
+            includeInteractions: 'Incluir Interações do Usuário',
+            includeDocuments: 'Incluir Documentos',
+            includePredictions: 'Incluir Previsões ML',
+            aiSummary: 'Gerar Resumo Executivo com IA',
+            regions: 'Regiões',
+            exportFormat: 'Formato de Exportação',
+            generate: 'Gerar Relatório',
+            generating: 'Gerando...',
+            download: 'Baixar',
+            preview: 'Visualizar',
+            success: 'Relatório gerado com sucesso!'
+        },
+        en: {
+            title: 'Report Builder',
+            subtitle: 'Create custom analytical reports',
+            reportTitle: 'Report Title',
+            titlePlaceholder: 'e.g. Geopolitical Analysis Q4 2024',
+            dataSelection: 'Data Selection',
+            dateRange: 'Date Range',
+            filters: 'Filters',
+            options: 'Options',
+            includeFacts: 'Include Strategic Facts',
+            includeRisks: 'Include Geopolitical Risks',
+            includeArticles: 'Include Articles',
+            includeInteractions: 'Include User Interactions',
+            includeDocuments: 'Include Documents',
+            includePredictions: 'Include ML Predictions',
+            aiSummary: 'Generate AI Executive Summary',
+            regions: 'Regions',
+            exportFormat: 'Export Format',
+            generate: 'Generate Report',
+            generating: 'Generating...',
+            download: 'Download',
+            preview: 'Preview',
+            success: 'Report generated successfully!'
         }
+    }[lang];
+
+    const REGIONS = [
+        'América Latina', 'América do Norte', 'Europa', 'Ásia-Pacífico',
+        'China', 'Índia', 'África', 'Oriente Médio', 'Brasil', 'BRICS'
+    ];
+
+    const toggleRegion = (region) => {
+        setConfig(prev => ({
+            ...prev,
+            regions: prev.regions.includes(region)
+                ? prev.regions.filter(r => r !== region)
+                : [...prev.regions, region]
+        }));
     };
 
-    const removeField = (entity, field) => {
-        const newSelected = selectedFields[entity].filter(f => f !== field);
-        const newAvailable = [...availableFields[entity], field];
-        
-        setAvailableFields({ ...availableFields, [entity]: newAvailable });
-        onFieldsChange({ ...selectedFields, [entity]: newSelected });
-    };
+    const handleGenerate = async () => {
+        if (!config.title.trim()) {
+            toast.error(lang === 'pt' ? 'Por favor, adicione um título' : 'Please add a title');
+            return;
+        }
 
-    const addField = (entity, field) => {
-        const newAvailable = availableFields[entity].filter(f => f !== field);
-        const newSelected = [...(selectedFields[entity] || []), field];
-        
-        setAvailableFields({ ...availableFields, [entity]: newAvailable });
-        onFieldsChange({ ...selectedFields, [entity]: newSelected });
+        setGenerating(true);
+        try {
+            const response = await base44.functions.invoke('generateAnalyticalReport', {
+                report_config: config,
+                format: exportFormat,
+                include_ai_summary: config.include_ai_summary
+            });
+
+            if (exportFormat === 'json') {
+                toast.success(t.success);
+                if (onReportGenerated) {
+                    onReportGenerated(response.data.report);
+                }
+            } else {
+                // For PDF/CSV, the download will start automatically
+                toast.success(t.success);
+            }
+        } catch (error) {
+            console.error('Error generating report:', error);
+            toast.error(error.message);
+        } finally {
+            setGenerating(false);
+        }
     };
 
     return (
-        <DragDropContext onDragEnd={handleDragEnd}>
-            <div className="space-y-4">
-                {selectedEntities.map(entity => (
-                    <Card key={entity}>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm text-[#002D62]">
-                                {entity === 'Forum' ? (lang === 'pt' ? 'Fóruns' : 'Forums') :
-                                 entity === 'Event' ? (lang === 'pt' ? 'Eventos' : 'Events') :
-                                 (lang === 'pt' ? 'Atores Chave' : 'Key Actors')}
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            {/* Selected Fields */}
-                            <div>
-                                <div className="text-xs font-semibold text-[#6B6B6B] mb-2">
-                                    {lang === 'pt' ? 'Campos Selecionados' : 'Selected Fields'}
-                                </div>
-                                <Droppable droppableId={`selected-${entity}`}>
-                                    {(provided, snapshot) => (
-                                        <div
-                                            ref={provided.innerRef}
-                                            {...provided.droppableProps}
-                                            className={`min-h-[60px] p-2 rounded-lg border-2 border-dashed transition-colors ${
-                                                snapshot.isDraggingOver 
-                                                    ? 'border-[#002D62] bg-blue-50' 
-                                                    : 'border-gray-200 bg-gray-50'
-                                            }`}
-                                        >
-                                            {selectedFields[entity]?.length === 0 ? (
-                                                <p className="text-xs text-[#6B6B6B] text-center py-4">
-                                                    {lang === 'pt' ? 'Arraste campos aqui' : 'Drag fields here'}
-                                                </p>
-                                            ) : (
-                                                selectedFields[entity]?.map((field, index) => (
-                                                    <Draggable key={field} draggableId={`${entity}-${field}`} index={index}>
-                                                        {(provided, snapshot) => (
-                                                            <div
-                                                                ref={provided.innerRef}
-                                                                {...provided.draggableProps}
-                                                                className={`flex items-center justify-between gap-2 p-2 mb-2 rounded bg-white border shadow-sm ${
-                                                                    snapshot.isDragging ? 'shadow-lg' : ''
-                                                                }`}
-                                                            >
-                                                                <div className="flex items-center gap-2">
-                                                                    <div {...provided.dragHandleProps}>
-                                                                        <GripVertical className="w-4 h-4 text-gray-400" />
-                                                                    </div>
-                                                                    <span className="text-xs font-medium">
-                                                                        {entityFields[entity][lang][field]}
-                                                                    </span>
-                                                                </div>
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="sm"
-                                                                    className="h-6 w-6 p-0"
-                                                                    onClick={() => removeField(entity, field)}
-                                                                >
-                                                                    <X className="w-3 h-3" />
-                                                                </Button>
-                                                            </div>
-                                                        )}
-                                                    </Draggable>
-                                                ))
-                                            )}
-                                            {provided.placeholder}
-                                        </div>
-                                    )}
-                                </Droppable>
-                            </div>
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <FileText className="w-5 h-5" />
+                    {t.title}
+                </CardTitle>
+                <CardDescription>{t.subtitle}</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Tabs defaultValue="config" className="space-y-4">
+                    <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="config">{t.dataSelection}</TabsTrigger>
+                        <TabsTrigger value="filters">{t.filters}</TabsTrigger>
+                        <TabsTrigger value="options">{t.options}</TabsTrigger>
+                    </TabsList>
 
-                            {/* Available Fields */}
-                            {availableFields[entity]?.length > 0 && (
-                                <div>
-                                    <div className="text-xs font-semibold text-[#6B6B6B] mb-2">
-                                        {lang === 'pt' ? 'Campos Disponíveis' : 'Available Fields'}
+                    <TabsContent value="config" className="space-y-4">
+                        <div>
+                            <Label>{t.reportTitle}</Label>
+                            <Input
+                                value={config.title}
+                                onChange={(e) => setConfig({ ...config, title: e.target.value })}
+                                placeholder={t.titlePlaceholder}
+                            />
+                        </div>
+
+                        <div className="space-y-3 border rounded-lg p-4">
+                            {[
+                                { key: 'include_facts', label: t.includeFacts, icon: FileText },
+                                { key: 'include_risks', label: t.includeRisks, icon: Settings },
+                                { key: 'include_articles', label: t.includeArticles, icon: FileText },
+                                { key: 'include_interactions', label: t.includeInteractions, icon: CheckCircle },
+                                { key: 'include_documents', label: t.includeDocuments, icon: FileText },
+                                { key: 'include_predictions', label: t.includePredictions, icon: Sparkles }
+                            ].map(({ key, label, icon: Icon }) => (
+                                <div key={key} className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <Icon className="w-4 h-4 text-gray-500" />
+                                        <Label className="text-sm">{label}</Label>
                                     </div>
-                                    <Droppable droppableId={`available-${entity}`} isDropDisabled>
-                                        {(provided) => (
-                                            <div
-                                                ref={provided.innerRef}
-                                                {...provided.droppableProps}
-                                                className="flex flex-wrap gap-2"
-                                            >
-                                                {availableFields[entity].map((field, index) => (
-                                                    <Badge
-                                                        key={field}
-                                                        variant="outline"
-                                                        className="cursor-pointer hover:bg-[#002D62] hover:text-white transition-colors"
-                                                        onClick={() => addField(entity, field)}
-                                                    >
-                                                        <Plus className="w-3 h-3 mr-1" />
-                                                        {entityFields[entity][lang][field]}
-                                                    </Badge>
-                                                ))}
-                                                {provided.placeholder}
-                                            </div>
-                                        )}
-                                    </Droppable>
+                                    <Switch
+                                        checked={config[key]}
+                                        onCheckedChange={(checked) => setConfig({ ...config, [key]: checked })}
+                                    />
                                 </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
-        </DragDropContext>
+                            ))}
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="filters" className="space-y-4">
+                        <div>
+                            <Label className="flex items-center gap-2 mb-2">
+                                <Calendar className="w-4 h-4" />
+                                {t.dateRange}
+                            </Label>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Input
+                                    type="date"
+                                    value={config.date_range.start_date}
+                                    onChange={(e) => setConfig({
+                                        ...config,
+                                        date_range: { ...config.date_range, start_date: e.target.value }
+                                    })}
+                                />
+                                <Input
+                                    type="date"
+                                    value={config.date_range.end_date}
+                                    onChange={(e) => setConfig({
+                                        ...config,
+                                        date_range: { ...config.date_range, end_date: e.target.value }
+                                    })}
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <Label className="flex items-center gap-2 mb-2">
+                                <Filter className="w-4 h-4" />
+                                {t.regions}
+                            </Label>
+                            <div className="flex flex-wrap gap-2">
+                                {REGIONS.map(region => (
+                                    <Badge
+                                        key={region}
+                                        variant={config.regions.includes(region) ? "default" : "outline"}
+                                        className="cursor-pointer"
+                                        onClick={() => toggleRegion(region)}
+                                    >
+                                        {region}
+                                    </Badge>
+                                ))}
+                            </div>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="options" className="space-y-4">
+                        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border">
+                            <div className="flex items-center gap-3">
+                                <Sparkles className="w-5 h-5 text-purple-600" />
+                                <div>
+                                    <Label className="text-sm font-semibold">{t.aiSummary}</Label>
+                                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                                        {lang === 'pt' 
+                                            ? 'Resumo executivo gerado por IA'
+                                            : 'AI-generated executive summary'}
+                                    </p>
+                                </div>
+                            </div>
+                            <Switch
+                                checked={config.include_ai_summary}
+                                onCheckedChange={(checked) => setConfig({ ...config, include_ai_summary: checked })}
+                            />
+                        </div>
+
+                        <div>
+                            <Label className="mb-2 block">{t.exportFormat}</Label>
+                            <div className="grid grid-cols-3 gap-2">
+                                {['json', 'pdf', 'csv'].map(format => (
+                                    <Button
+                                        key={format}
+                                        variant={exportFormat === format ? "default" : "outline"}
+                                        onClick={() => setExportFormat(format)}
+                                        className="uppercase"
+                                    >
+                                        {format}
+                                    </Button>
+                                ))}
+                            </div>
+                        </div>
+                    </TabsContent>
+                </Tabs>
+
+                <div className="mt-6 pt-6 border-t">
+                    <Button
+                        onClick={handleGenerate}
+                        disabled={generating}
+                        className="w-full"
+                        size="lg"
+                    >
+                        {generating ? (
+                            <>
+                                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                {t.generating}
+                            </>
+                        ) : (
+                            <>
+                                <Download className="w-5 h-5 mr-2" />
+                                {t.generate}
+                            </>
+                        )}
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
     );
 }

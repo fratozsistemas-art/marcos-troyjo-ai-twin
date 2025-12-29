@@ -46,6 +46,7 @@ import PersonaHistoryViewer from '@/components/persona/PersonaHistoryViewer';
 import GeopoliticalAlertPanel from '@/components/alerts/GeopoliticalAlertPanel';
 import AlertFeedManager from '@/components/alerts/AlertFeedManager';
 import PredictiveInsights from '@/components/ml/PredictiveInsights';
+import AdvancedMLDashboard from '@/components/ml/AdvancedMLDashboard';
 import PersonaSuggestionPanel from '@/components/persona/PersonaSuggestionPanel';
 import PersonaTraining from '@/components/persona/PersonaTraining';
 import InterviewSimulation from '@/components/persona/InterviewSimulation';
@@ -561,6 +562,11 @@ export default function Dashboard() {
                         {/* Row 1: Predictive Insights (Full Width) - PROMINENT */}
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                             <PredictiveInsights lang={lang} />
+                        </motion.div>
+
+                        {/* Row 1.5: Advanced ML Dashboard (Full Width) */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                            <AdvancedMLDashboard lang={lang} />
                         </motion.div>
 
                         {/* Row 2: Customizable Dashboard + Usage Meter */}

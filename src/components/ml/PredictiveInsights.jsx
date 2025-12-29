@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
+import XAIExplainer from './XAIExplainer';
 
 const CATEGORY_CONFIG = {
     market_trends: {
@@ -273,6 +274,17 @@ export default function PredictiveInsights({ lang = 'pt' }) {
                                                             exit={{ opacity: 0, height: 0 }}
                                                             className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3"
                                                         >
+                                                            {/* XAI Explainer */}
+                                                            <XAIExplainer 
+                                                                prediction={prediction}
+                                                                explanation={prediction.reasoning}
+                                                                featureImportance={prediction.relevance_factors?.map((f, i) => ({
+                                                                    name: f,
+                                                                    importance: 0.9 - (i * 0.1)
+                                                                })) || []}
+                                                                lang={lang}
+                                                            />
+
                                                             {prediction.relevance_factors?.length > 0 && (
                                                                 <div>
                                                                     <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">

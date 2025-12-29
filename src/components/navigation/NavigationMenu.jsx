@@ -4,7 +4,7 @@ import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { 
     LayoutDashboard, MessageSquare, BookOpen, FileText, 
-    BarChart3, Shield, Database, Globe, DollarSign, Lock, Home, Settings, FileSpreadsheet
+    BarChart3, Shield, Database, Globe, DollarSign, Lock, Home, Settings, FileSpreadsheet, Users
 } from 'lucide-react';
 
 export default function NavigationMenu({ lang = 'pt' }) {
@@ -51,7 +51,7 @@ export default function NavigationMenu({ lang = 'pt' }) {
         { path: 'StrategicIntelligenceBlog', icon: FileText, label: t.blog },
         { path: 'AnalyticsDashboard', icon: BarChart3, label: t.analytics },
         { path: 'ReportsHub', icon: FileSpreadsheet, label: t.reports },
-        { path: 'TeamDashboard', icon: Settings, label: t.team },
+        { path: 'TeamDashboard', icon: Users, label: t.team },
         { path: 'AdminEntities', icon: Database, label: t.entities },
         { path: 'Pricing', icon: DollarSign, label: t.pricing },
         { path: 'PublicHome', icon: Globe, label: t.public },

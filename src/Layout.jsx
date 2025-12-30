@@ -87,17 +87,17 @@ export default function Layout({ children, currentPageName }) {
                         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-[#06101F] to-[#06101F] dark:from-gray-800 dark:to-gray-900">
                             <div className="flex items-center gap-3">
                                 <a href={createPageUrl('PublicHome')} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                                    <motion.div 
-                                        className="w-10 h-10 rounded-xl overflow-hidden shadow-md"
-                                        whileHover={{ scale: 1.05 }}
-                                        transition={{ type: 'spring', stiffness: 400 }}
-                                    >
-                                        <img 
-                                            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/7b4794e58_CapturadeTela2025-12-23s93044PM.png"
-                                            alt="MT Logo"
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </motion.div>
+                                        <motion.div 
+                                            className="w-10 h-10 rounded-xl overflow-hidden shadow-md"
+                                            whileHover={{ scale: 1.05 }}
+                                            transition={{ type: 'spring', stiffness: 400 }}
+                                        >
+                                            <img 
+                                                src={`${import.meta.env.VITE_STORAGE_URL || 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public'}/base44-prod/public/69335f9184b5ddfb48500fe5/7b4794e58_CapturadeTela2025-12-23s93044PM.png`}
+                                                alt="MT Logo"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </motion.div>
                                     <span className="font-bold text-gray-900 dark:text-white text-lg">Troyjo Twin</span>
                                 </a>
                             </div>
@@ -120,23 +120,23 @@ export default function Layout({ children, currentPageName }) {
             <aside className="hidden lg:block w-70 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex-shrink-0 shadow-lg">
                 <div className="sticky top-0">
                     <a href={createPageUrl('PublicHome')} className="block">
-                        <motion.div 
-                            className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <motion.div 
-                                className="w-12 h-12 rounded-xl overflow-hidden shadow-md"
-                                whileHover={{ scale: 1.05 }}
-                                transition={{ type: 'spring', stiffness: 400 }}
-                            >
-                                <img 
-                                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/7b4794e58_CapturadeTela2025-12-23s93044PM.png"
-                                    alt="MT Logo"
-                                    className="w-full h-full object-cover"
-                                />
-                            </motion.div>
+                    <motion.div 
+                    className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    >
+                    <motion.div 
+                        className="w-12 h-12 rounded-xl overflow-hidden shadow-md"
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ type: 'spring', stiffness: 400 }}
+                    >
+                        <img 
+                            src={`${import.meta.env.VITE_STORAGE_URL || 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public'}/base44-prod/public/69335f9184b5ddfb48500fe5/7b4794e58_CapturadeTela2025-12-23s93044PM.png`}
+                            alt="MT Logo"
+                            className="w-full h-full object-cover"
+                        />
+                    </motion.div>
                             <div>
                                 <span className="font-bold text-gray-900 dark:text-white text-base block">Troyjo Twin</span>
                                 <span className="text-xs text-gray-500 dark:text-gray-400">Digital Intelligence</span>

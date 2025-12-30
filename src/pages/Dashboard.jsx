@@ -443,7 +443,7 @@ export default function Dashboard() {
                     <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl overflow-hidden shadow-sm">
                                 <img 
-                                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69335f9184b5ddfb48500fe5/7b4794e58_CapturadeTela2025-12-23s93044PM.png"
+                                    src={`${import.meta.env.VITE_STORAGE_URL || 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public'}/base44-prod/public/69335f9184b5ddfb48500fe5/7b4794e58_CapturadeTela2025-12-23s93044PM.png`}
                                     alt="MT Logo"
                                     className="w-full h-full object-cover"
                                 />

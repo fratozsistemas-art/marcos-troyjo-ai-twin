@@ -143,16 +143,48 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { conversation_id, user_message, agent_response, lang = 'pt' } = await req.json();
-
-        if (!conversation_id || !user_message || !agent_response) {
+        const body = await req.json();
+        
+        // Input validation with sanitization
+        if (!body || typeof body !== 'object') {
             return Response.json({ 
-                error: 'Missing required parameters' 
+                error: 'Invalid request body' 
             }, { status: 400 });
         }
 
+        const { conversation_id, user_message, agent_response, lang = 'pt' } = body;
+
+        // Strict type validation
+        if (!conversation_id || typeof conversation_id !== 'string' || conversation_id.length > 100) {
+            return Response.json({ 
+                error: 'Invalid conversation_id' 
+            }, { status: 400 });
+        }
+
+        if (!user_message || typeof user_message !== 'string' || user_message.length > 10000) {
+            return Response.json({ 
+                error: 'Invalid user_message (max 10000 chars)' 
+            }, { status: 400 });
+        }
+
+        if (!agent_response || typeof agent_response !== 'string' || agent_response.length > 50000) {
+            return Response.json({ 
+                error: 'Invalid agent_response (max 50000 chars)' 
+            }, { status: 400 });
+        }
+
+        if (!['pt', 'en'].includes(lang)) {
+            return Response.json({ 
+                error: 'Invalid language (must be pt or en)' 
+            }, { status: 400 });
+        }
+
+        // Sanitize inputs to prevent injection
+        const sanitizedMessage = user_message.trim();
+        const sanitizedResponse = agent_response.trim();
+
         // Check if user message contains forbidden patterns
-        const detectionResult = detectForbiddenContent(user_message, lang);
+        const detectionResult = detectForbiddenContent(sanitizedMessage, lang);
         
         if (!detectionResult.detected) {
             // No AEGIS violation, pass through original response
@@ -169,10 +201,10 @@ Deno.serve(async (req) => {
         const aegisAttempts = (conversation.metadata?.aegis_attempts || 0) + 1;
 
         // Classify attempt type
-        const attemptType = classifyAttemptType(user_message, lang);
+        const attemptType = classifyAttemptType(sanitizedMessage, lang);
         
         // Calculate threat score
-        const threatScore = calculateThreatScore(attemptType, aegisAttempts, user_message);
+        const threatScore = calculateThreatScore(attemptType, aegisAttempts, sanitizedMessage);
         
         // Determine severity
         let severity = 'low';
@@ -193,12 +225,12 @@ Deno.serve(async (req) => {
         // Get approved response
         const approvedResponse = getApprovedResponse(aegisAttempts, lang);
 
-        // Create audit log entry
+        // Create audit log entry (with sanitized data)
         const auditLog = {
             user_email: user.email,
             conversation_id: conversation_id,
             attempt_type: attemptType,
-            user_message: user_message,
+            user_message: sanitizedMessage.substring(0, 5000), // Limit stored message length
             blocked_response: approvedResponse,
             attempt_count: aegisAttempts,
             severity: severity,

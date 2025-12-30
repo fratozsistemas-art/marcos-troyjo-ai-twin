@@ -44,7 +44,6 @@ export default function NavigationMenu({ lang = 'pt' }) {
     const t = text[lang];
 
     const menuItems = [
-        { path: 'Home', icon: Home, label: t.home },
         { path: 'Dashboard', icon: LayoutDashboard, label: t.dashboard },
         { path: 'Consultation', icon: MessageSquare, label: t.consultation },
         { path: 'KnowledgeBase', icon: BookOpen, label: t.knowledge },

@@ -20,7 +20,6 @@ import DocumentAssessment from './pages/DocumentAssessment';
 import DocumentChatPage from './pages/DocumentChatPage';
 import History from './pages/History';
 import Home from './pages/Home';
-import Homepage from './pages/Homepage';
 import InterviewPrep from './pages/InterviewPrep';
 import KnowledgeAdmin from './pages/KnowledgeAdmin';
 import KnowledgeArticle from './pages/KnowledgeArticle';
@@ -71,7 +70,6 @@ export const PAGES = {
     "DocumentChatPage": DocumentChatPage,
     "History": History,
     "Home": Home,
-    "Homepage": Homepage,
     "InterviewPrep": InterviewPrep,
     "KnowledgeAdmin": KnowledgeAdmin,
     "KnowledgeArticle": KnowledgeArticle,

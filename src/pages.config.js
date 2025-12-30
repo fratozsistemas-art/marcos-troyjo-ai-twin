@@ -12,6 +12,7 @@ import Assets from './pages/Assets';
 import CAIODemo from './pages/CAIODemo';
 import Consultation from './pages/Consultation';
 import ContentManagement from './pages/ContentManagement';
+import ContentManagementHub from './pages/ContentManagementHub';
 import Dashboard from './pages/Dashboard';
 import DataVisualization from './pages/DataVisualization';
 import Discover from './pages/Discover';
@@ -44,7 +45,6 @@ import TeamDashboard from './pages/TeamDashboard';
 import TenantAdmin from './pages/TenantAdmin';
 import TermsOfService from './pages/TermsOfService';
 import Welcome from './pages/Welcome';
-import ContentManagementHub from './pages/ContentManagementHub';
 import __Layout from './Layout.jsx';
 
 
@@ -63,6 +63,7 @@ export const PAGES = {
     "CAIODemo": CAIODemo,
     "Consultation": Consultation,
     "ContentManagement": ContentManagement,
+    "ContentManagementHub": ContentManagementHub,
     "Dashboard": Dashboard,
     "DataVisualization": DataVisualization,
     "Discover": Discover,
@@ -95,7 +96,6 @@ export const PAGES = {
     "TenantAdmin": TenantAdmin,
     "TermsOfService": TermsOfService,
     "Welcome": Welcome,
-    "ContentManagementHub": ContentManagementHub,
 }
 
 export const pagesConfig = {

@@ -4,13 +4,16 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { 
     ArrowLeft, Database, FolderOpen, Search, 
-    BarChart3, Tag, Filter
+    BarChart3, Tag, Filter, Workflow, Activity, TrendingUp
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import UnifiedContentSearch from '@/components/content/UnifiedContentSearch';
 import CollectionManager from '@/components/content/CollectionManager';
+import WorkflowBuilder from '@/components/workflow/WorkflowBuilder';
+import WorkflowExecutionMonitor from '@/components/workflow/WorkflowExecutionMonitor';
+import TrendBasedSuggestions from '@/components/workflow/TrendBasedSuggestions';
 
 export default function ContentManagementHub() {
     const [lang, setLang] = useState(() => localStorage.getItem('troyjo_lang') || 'pt');
@@ -22,6 +25,9 @@ export default function ContentManagementHub() {
             back: 'Voltar',
             search: 'Busca Avançada',
             collections: 'Coleções',
+            workflows: 'Workflows de IA',
+            executions: 'Execuções',
+            trends: 'Tendências',
             analytics: 'Analytics',
             overview: 'Visão Geral',
             totalContent: 'Total de Conteúdo',
@@ -34,6 +40,9 @@ export default function ContentManagementHub() {
             back: 'Back',
             search: 'Advanced Search',
             collections: 'Collections',
+            workflows: 'AI Workflows',
+            executions: 'Executions',
+            trends: 'Trends',
             analytics: 'Analytics',
             overview: 'Overview',
             totalContent: 'Total Content',
@@ -124,7 +133,7 @@ export default function ContentManagementHub() {
                     <Card>
                         <CardContent className="p-6">
                             <Tabs defaultValue="search" className="space-y-4">
-                                <TabsList className="grid w-full grid-cols-3">
+                                <TabsList className="grid w-full grid-cols-6">
                                     <TabsTrigger value="search">
                                         <Search className="w-4 h-4 mr-2" />
                                         {t.search}
@@ -132,6 +141,18 @@ export default function ContentManagementHub() {
                                     <TabsTrigger value="collections">
                                         <FolderOpen className="w-4 h-4 mr-2" />
                                         {t.collections}
+                                    </TabsTrigger>
+                                    <TabsTrigger value="workflows">
+                                        <Workflow className="w-4 h-4 mr-2" />
+                                        {t.workflows}
+                                    </TabsTrigger>
+                                    <TabsTrigger value="executions">
+                                        <Activity className="w-4 h-4 mr-2" />
+                                        {t.executions}
+                                    </TabsTrigger>
+                                    <TabsTrigger value="trends">
+                                        <TrendingUp className="w-4 h-4 mr-2" />
+                                        {t.trends}
                                     </TabsTrigger>
                                     <TabsTrigger value="analytics">
                                         <BarChart3 className="w-4 h-4 mr-2" />
@@ -145,6 +166,18 @@ export default function ContentManagementHub() {
 
                                 <TabsContent value="collections">
                                     <CollectionManager lang={lang} />
+                                </TabsContent>
+
+                                <TabsContent value="workflows">
+                                    <WorkflowBuilder lang={lang} />
+                                </TabsContent>
+
+                                <TabsContent value="executions">
+                                    <WorkflowExecutionMonitor lang={lang} />
+                                </TabsContent>
+
+                                <TabsContent value="trends">
+                                    <TrendBasedSuggestions lang={lang} />
                                 </TabsContent>
 
                                 <TabsContent value="analytics">

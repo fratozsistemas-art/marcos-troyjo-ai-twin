@@ -1,96 +1,58 @@
-// Enhanced rate limiter for API protection with tiered limits
+/**
+ * Sprint 1: Security Core - Rate Limiting
+ * Protects critical endpoints from abuse
+ */
+
+const RATE_LIMITS = {
+    consultations: { window: 60000, max: 10 }, // 10 per minute
+    auth: { window: 300000, max: 5 }, // 5 per 5 minutes
+    exports: { window: 60000, max: 3 }, // 3 per minute
+    uploads: { window: 60000, max: 10 }, // 10 per minute
+    ai_operations: { window: 60000, max: 20 } // 20 per minute
+};
+
 const requestLog = new Map();
 
-// Tiered rate limits based on endpoint sensitivity
-const RATE_LIMITS = {
-    critical: { windowMs: 60000, maxRequests: 5 },    // Critical functions: 5/min
-    high: { windowMs: 60000, maxRequests: 10 },        // High sensitivity: 10/min
-    medium: { windowMs: 60000, maxRequests: 30 },      // Medium: 30/min
-    low: { windowMs: 60000, maxRequests: 100 }         // Low: 100/min
-};
-
-// Endpoint classification
-const ENDPOINT_TIERS = {
-    // Critical endpoints
-    'aegisProtocolValidator': 'critical',
-    'generatePredictiveInsights': 'critical',
-    'validateHUA': 'critical',
-    
-    // High sensitivity
-    'analyzeDocument': 'high',
-    'retrieveRAGContext': 'high',
-    'searchDocumentsRAG': 'high',
-    'intelligentLLMRouter': 'high',
-    
-    // Medium sensitivity
-    'generateArticle': 'medium',
-    'generateSSOTReport': 'medium',
-    'querySSOTChatbot': 'medium',
-    
-    // Default to high for unlisted
-    'default': 'high'
-};
-
-export function checkRateLimit(userEmail, endpoint) {
-    // Input validation
-    if (!userEmail || typeof userEmail !== 'string' || userEmail.length > 255) {
-        return { allowed: false, error: 'Invalid user identifier' };
-    }
-    
-    if (!endpoint || typeof endpoint !== 'string' || endpoint.length > 100) {
-        return { allowed: false, error: 'Invalid endpoint' };
-    }
-    
-    const tier = ENDPOINT_TIERS[endpoint] || ENDPOINT_TIERS['default'];
-    const limits = RATE_LIMITS[tier];
-    
-    const key = `${userEmail}:${endpoint}`;
+export const checkRateLimit = (identifier, operation = 'consultations') => {
+    const limit = RATE_LIMITS[operation] || RATE_LIMITS.consultations;
+    const key = `${identifier}:${operation}`;
     const now = Date.now();
     
     if (!requestLog.has(key)) {
         requestLog.set(key, []);
     }
     
-    const requests = requestLog.get(key);
+    const requests = requestLog.get(key).filter(timestamp => now - timestamp < limit.window);
     
-    // Clean old requests outside the window
-    const validRequests = requests.filter(timestamp => now - timestamp < limits.windowMs);
-    
-    // Check if limit exceeded
-    if (validRequests.length >= limits.maxRequests) {
-        const oldestRequest = validRequests[0];
-        const retryAfterMs = limits.windowMs - (now - oldestRequest);
-        
+    if (requests.length >= limit.max) {
         return {
             allowed: false,
-            retryAfter: retryAfterMs,
-            limit: limits.maxRequests,
-            remaining: 0,
-            resetTime: oldestRequest + limits.windowMs
+            retryAfter: Math.ceil((requests[0] + limit.window - now) / 1000)
         };
     }
     
-    // Add current request
-    validRequests.push(now);
-    requestLog.set(key, validRequests);
+    requests.push(now);
+    requestLog.set(key, requests);
     
-    return { 
-        allowed: true,
-        limit: limits.maxRequests,
-        remaining: limits.maxRequests - validRequests.length,
-        resetTime: now + limits.windowMs
-    };
-}
-
-// Cleanup old entries periodically
-setInterval(() => {
-    const now = Date.now();
-    for (const [key, requests] of requestLog.entries()) {
-        const valid = requests.filter(timestamp => now - timestamp < WINDOW_MS);
-        if (valid.length === 0) {
-            requestLog.delete(key);
-        } else {
-            requestLog.set(key, valid);
-        }
+    // Cleanup old entries
+    if (requestLog.size > 10000) {
+        const oldestKey = requestLog.keys().next().value;
+        requestLog.delete(oldestKey);
     }
-}, WINDOW_MS);
+    
+    return { allowed: true };
+};
+
+export const getRateLimitHeaders = (identifier, operation) => {
+    const limit = RATE_LIMITS[operation] || RATE_LIMITS.consultations;
+    const key = `${identifier}:${operation}`;
+    const requests = requestLog.get(key) || [];
+    const now = Date.now();
+    const validRequests = requests.filter(timestamp => now - timestamp < limit.window);
+    
+    return {
+        'X-RateLimit-Limit': limit.max,
+        'X-RateLimit-Remaining': Math.max(0, limit.max - validRequests.length),
+        'X-RateLimit-Reset': Math.ceil((now + limit.window) / 1000)
+    };
+};

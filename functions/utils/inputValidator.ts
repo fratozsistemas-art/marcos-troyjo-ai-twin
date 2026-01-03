@@ -1,192 +1,140 @@
-// Centralized input validation and sanitization utilities
-
 /**
- * Validates and sanitizes a string input
+ * Sprint 1: Security Core - Input Validation
+ * Validates and sanitizes user inputs
  */
-export function validateString(input, options = {}) {
-    const {
-        maxLength = 10000,
-        minLength = 0,
-        allowEmpty = false,
-        paramName = 'input'
-    } = options;
-    
-    if (input === null || input === undefined) {
-        if (allowEmpty) return '';
-        throw new Error(`${paramName} is required`);
-    }
-    
-    if (typeof input !== 'string') {
-        throw new Error(`${paramName} must be a string`);
-    }
-    
-    const trimmed = input.trim();
-    
-    if (trimmed.length < minLength) {
-        throw new Error(`${paramName} must be at least ${minLength} characters`);
-    }
-    
-    if (trimmed.length > maxLength) {
-        throw new Error(`${paramName} exceeds maximum length of ${maxLength} characters`);
-    }
-    
-    return trimmed;
-}
 
-/**
- * Validates an email address
- */
-export function validateEmail(email) {
-    const trimmed = validateString(email, { maxLength: 255, paramName: 'email' });
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(trimmed)) {
-        throw new Error('Invalid email format');
-    }
-    
-    return trimmed.toLowerCase();
-}
+const MAX_LENGTHS = {
+    message: 10000,
+    title: 200,
+    description: 2000,
+    email: 255,
+    name: 100,
+    url: 2000
+};
 
-/**
- * Validates a UUID
- */
-export function validateUUID(uuid, paramName = 'id') {
-    const trimmed = validateString(uuid, { maxLength: 100, paramName });
+export const validateInput = (input, rules = {}) => {
+    const errors = [];
     
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(trimmed)) {
-        throw new Error(`${paramName} must be a valid UUID`);
+    // Required check
+    if (rules.required && (!input || input.trim() === '')) {
+        errors.push('Field is required');
+        return { valid: false, errors };
     }
     
-    return trimmed;
-}
-
-/**
- * Validates a number input
- */
-export function validateNumber(input, options = {}) {
-    const {
-        min = -Infinity,
-        max = Infinity,
-        integer = false,
-        paramName = 'number'
-    } = options;
+    if (!input) return { valid: true, sanitized: '' };
     
-    if (input === null || input === undefined) {
-        throw new Error(`${paramName} is required`);
+    // Type validation
+    if (rules.type === 'email' && !isValidEmail(input)) {
+        errors.push('Invalid email format');
     }
     
-    const num = Number(input);
-    
-    if (isNaN(num) || !isFinite(num)) {
-        throw new Error(`${paramName} must be a valid number`);
+    if (rules.type === 'url' && !isValidURL(input)) {
+        errors.push('Invalid URL format');
     }
     
-    if (integer && !Number.isInteger(num)) {
-        throw new Error(`${paramName} must be an integer`);
-    }
-    
-    if (num < min || num > max) {
-        throw new Error(`${paramName} must be between ${min} and ${max}`);
-    }
-    
-    return num;
-}
-
-/**
- * Validates an enum value
- */
-export function validateEnum(input, allowedValues, paramName = 'value') {
-    const trimmed = validateString(input, { maxLength: 100, paramName });
-    
-    if (!allowedValues.includes(trimmed)) {
-        throw new Error(`${paramName} must be one of: ${allowedValues.join(', ')}`);
-    }
-    
-    return trimmed;
-}
-
-/**
- * Validates a boolean
- */
-export function validateBoolean(input, paramName = 'boolean') {
-    if (typeof input !== 'boolean') {
-        throw new Error(`${paramName} must be a boolean`);
-    }
-    return input;
-}
-
-/**
- * Validates an array
- */
-export function validateArray(input, options = {}) {
-    const {
-        maxLength = 1000,
-        minLength = 0,
-        paramName = 'array'
-    } = options;
-    
-    if (!Array.isArray(input)) {
-        throw new Error(`${paramName} must be an array`);
-    }
-    
-    if (input.length < minLength) {
-        throw new Error(`${paramName} must have at least ${minLength} items`);
-    }
-    
+    // Length validation
+    const maxLength = rules.maxLength || MAX_LENGTHS[rules.type] || 1000;
     if (input.length > maxLength) {
-        throw new Error(`${paramName} exceeds maximum length of ${maxLength} items`);
+        errors.push(`Maximum length is ${maxLength} characters`);
     }
     
-    return input;
-}
-
-/**
- * Validates a JSON object structure
- */
-export function validateObject(input, requiredKeys = [], paramName = 'object') {
-    if (!input || typeof input !== 'object' || Array.isArray(input)) {
-        throw new Error(`${paramName} must be an object`);
+    // SQL Injection patterns
+    if (containsSQLInjection(input)) {
+        errors.push('Invalid input detected');
     }
     
-    for (const key of requiredKeys) {
-        if (!(key in input)) {
-            throw new Error(`${paramName} missing required key: ${key}`);
-        }
+    // XSS patterns
+    if (rules.sanitizeHTML && containsXSS(input)) {
+        errors.push('Invalid HTML content detected');
     }
     
-    return input;
-}
+    return {
+        valid: errors.length === 0,
+        errors,
+        sanitized: sanitizeInput(input, rules)
+    };
+};
 
-/**
- * Sanitizes HTML to prevent XSS
- */
-export function sanitizeHTML(input) {
-    if (typeof input !== 'string') return '';
-    
-    return input
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#x27;')
-        .replace(/\//g, '&#x2F;');
-}
+const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
 
-/**
- * Validates URL
- */
-export function validateURL(input, paramName = 'url') {
-    const trimmed = validateString(input, { maxLength: 2048, paramName });
-    
+const isValidURL = (url) => {
     try {
-        const url = new URL(trimmed);
-        // Only allow http and https protocols
-        if (!['http:', 'https:'].includes(url.protocol)) {
-            throw new Error(`${paramName} must use http or https protocol`);
-        }
-        return trimmed;
+        new URL(url);
+        return true;
     } catch {
-        throw new Error(`${paramName} must be a valid URL`);
+        return false;
     }
-}
+};
+
+const containsSQLInjection = (input) => {
+    const sqlPatterns = [
+        /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE)\b)/i,
+        /(--|;|\/\*|\*\/)/,
+        /(\bOR\b|\bAND\b).*?=.*?/i
+    ];
+    return sqlPatterns.some(pattern => pattern.test(input));
+};
+
+const containsXSS = (input) => {
+    const xssPatterns = [
+        /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+        /javascript:/gi,
+        /on\w+\s*=/gi,
+        /<iframe/gi
+    ];
+    return xssPatterns.some(pattern => pattern.test(input));
+};
+
+const sanitizeInput = (input, rules) => {
+    let sanitized = input.trim();
+    
+    // Remove null bytes
+    sanitized = sanitized.replace(/\0/g, '');
+    
+    // Sanitize HTML if required
+    if (rules.sanitizeHTML) {
+        sanitized = sanitized
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;')
+            .replace(/\//g, '&#x2F;');
+    }
+    
+    return sanitized;
+};
+
+export const validateConversationInput = (data) => {
+    const validation = {
+        valid: true,
+        errors: {}
+    };
+    
+    if (data.content) {
+        const contentCheck = validateInput(data.content, {
+            required: true,
+            maxLength: MAX_LENGTHS.message,
+            type: 'message'
+        });
+        if (!contentCheck.valid) {
+            validation.valid = false;
+            validation.errors.content = contentCheck.errors;
+        }
+    }
+    
+    if (data.metadata?.name) {
+        const nameCheck = validateInput(data.metadata.name, {
+            maxLength: MAX_LENGTHS.title,
+            type: 'title'
+        });
+        if (!nameCheck.valid) {
+            validation.valid = false;
+            validation.errors.name = nameCheck.errors;
+        }
+    }
+    
+    return validation;
+};

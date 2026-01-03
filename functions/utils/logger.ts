@@ -1,194 +1,113 @@
 /**
- * Structured Logging Utility for Backend Functions
- * 
- * Provides consistent, structured logging across all backend functions
- * with support for different log levels, context, and metadata.
- * 
- * Features:
- * - Structured JSON logging
- * - Log levels (debug, info, warn, error)
- * - Automatic timestamp and request ID tracking
- * - Performance timing utilities
+ * Sprint 4: Audit & Monitoring - Structured Logging
+ * Production-ready logging with levels and metadata
  */
 
-export enum LogLevel {
-  DEBUG = 'debug',
-  INFO = 'info',
-  WARN = 'warn',
-  ERROR = 'error',
-}
+const LOG_LEVELS = {
+    DEBUG: 0,
+    INFO: 1,
+    WARN: 2,
+    ERROR: 3,
+    CRITICAL: 4
+};
 
-interface LogContext {
-  requestId?: string;
-  userId?: string;
-  functionName?: string;
-  [key: string]: any;
-}
+const CURRENT_LEVEL = Deno.env.get('LOG_LEVEL') 
+    ? LOG_LEVELS[Deno.env.get('LOG_LEVEL').toUpperCase()] 
+    : LOG_LEVELS.INFO;
 
-interface LogEntry {
-  timestamp: string;
-  level: LogLevel;
-  message: string;
-  context?: LogContext;
-  metadata?: Record<string, any>;
-  error?: {
-    message: string;
-    stack?: string;
-    name?: string;
-  };
-}
-
-/**
- * Logger class for structured logging
- */
-export class Logger {
-  private context: LogContext;
-  private timers: Map<string, number>;
-
-  constructor(functionName: string, initialContext?: LogContext) {
-    this.context = {
-      functionName,
-      ...initialContext,
-    };
-    this.timers = new Map();
-  }
-
-  /**
-   * Creates a log entry with standard structure
-   */
-  private createLogEntry(
-    level: LogLevel,
-    message: string,
-    metadata?: Record<string, any>,
-    error?: Error
-  ): LogEntry {
-    const entry: LogEntry = {
-      timestamp: new Date().toISOString(),
-      level,
-      message,
-      context: this.context,
-    };
-
-    if (metadata) {
-      entry.metadata = metadata;
-    }
-
-    if (error) {
-      entry.error = {
-        message: error.message,
-        stack: error.stack,
-        name: error.name,
-      };
-    }
-
-    return entry;
-  }
-
-  /**
-   * Writes log entry to console
-   */
-  private write(entry: LogEntry): void {
-    const logFn = entry.level === LogLevel.ERROR ? console.error :
-                  entry.level === LogLevel.WARN ? console.warn :
-                  console.log;
-    
-    logFn(JSON.stringify(entry));
-  }
-
-  /**
-   * Debug level logging
-   */
-  debug(message: string, metadata?: Record<string, any>): void {
-    this.write(this.createLogEntry(LogLevel.DEBUG, message, metadata));
-  }
-
-  /**
-   * Info level logging
-   */
-  info(message: string, metadata?: Record<string, any>): void {
-    this.write(this.createLogEntry(LogLevel.INFO, message, metadata));
-  }
-
-  /**
-   * Warning level logging
-   */
-  warn(message: string, metadata?: Record<string, any>): void {
-    this.write(this.createLogEntry(LogLevel.WARN, message, metadata));
-  }
-
-  /**
-   * Error level logging
-   */
-  error(message: string, error?: Error, metadata?: Record<string, any>): void {
-    this.write(this.createLogEntry(LogLevel.ERROR, message, metadata, error));
-  }
-
-  /**
-   * Starts a performance timer
-   */
-  startTimer(label: string): void {
-    this.timers.set(label, performance.now());
-  }
-
-  /**
-   * Ends a performance timer and logs the duration
-   */
-  endTimer(label: string, metadata?: Record<string, any>): void {
-    const start = this.timers.get(label);
-    if (start) {
-      const duration = performance.now() - start;
-      this.info(`Timer [${label}] completed`, {
+const formatLog = (level, message, metadata = {}) => {
+    return JSON.stringify({
+        timestamp: new Date().toISOString(),
+        level,
+        message,
         ...metadata,
-        duration_ms: Math.round(duration),
-      });
-      this.timers.delete(label);
-    } else {
-      this.warn(`Timer [${label}] was not started`);
+        environment: Deno.env.get('DENO_ENV') || 'production'
+    });
+};
+
+export const logger = {
+    debug: (message, metadata) => {
+        if (LOG_LEVELS.DEBUG >= CURRENT_LEVEL) {
+            console.log(formatLog('DEBUG', message, metadata));
+        }
+    },
+    
+    info: (message, metadata) => {
+        if (LOG_LEVELS.INFO >= CURRENT_LEVEL) {
+            console.log(formatLog('INFO', message, metadata));
+        }
+    },
+    
+    warn: (message, metadata) => {
+        if (LOG_LEVELS.WARN >= CURRENT_LEVEL) {
+            console.warn(formatLog('WARN', message, metadata));
+        }
+    },
+    
+    error: (message, error, metadata) => {
+        if (LOG_LEVELS.ERROR >= CURRENT_LEVEL) {
+            console.error(formatLog('ERROR', message, {
+                ...metadata,
+                error: error?.message,
+                stack: error?.stack
+            }));
+        }
+    },
+    
+    critical: (message, error, metadata) => {
+        console.error(formatLog('CRITICAL', message, {
+            ...metadata,
+            error: error?.message,
+            stack: error?.stack,
+            alert: true
+        }));
+    },
+    
+    // Performance logging
+    perf: (operation, duration, metadata) => {
+        logger.info(`Performance: ${operation}`, {
+            ...metadata,
+            duration_ms: duration,
+            performance: true
+        });
+    },
+    
+    // Security logging
+    security: (event, metadata) => {
+        console.warn(formatLog('SECURITY', event, {
+            ...metadata,
+            security_event: true
+        }));
+    },
+    
+    // Audit logging
+    audit: (action, user, metadata) => {
+        console.log(formatLog('AUDIT', action, {
+            ...metadata,
+            user_email: user?.email,
+            user_id: user?.id,
+            audit: true
+        }));
     }
-  }
+};
 
-  /**
-   * Updates the logger context
-   */
-  setContext(context: Partial<LogContext>): void {
-    this.context = { ...this.context, ...context };
-  }
-}
-
-/**
- * Creates a logger instance for a backend function
- */
-export function createLogger(functionName: string, request?: Request): Logger {
-  const context: LogContext = {
-    functionName,
-  };
-
-  // Extract request ID from headers if available
-  if (request) {
-    const requestId = request.headers.get('x-request-id') || 
-                      request.headers.get('cf-ray') ||
-                      crypto.randomUUID();
-    context.requestId = requestId;
-  }
-
-  return new Logger(functionName, context);
-}
-
-/**
- * Utility to log function execution with automatic timing
- */
-export async function logExecution<T>(
-  logger: Logger,
-  operationName: string,
-  fn: () => Promise<T>
-): Promise<T> {
-  logger.startTimer(operationName);
-  try {
-    const result = await fn();
-    logger.endTimer(operationName, { status: 'success' });
-    return result;
-  } catch (error) {
-    logger.endTimer(operationName, { status: 'error' });
-    throw error;
-  }
-}
+// Performance wrapper
+export const withPerformanceLog = (fn, operationName) => {
+    return async (...args) => {
+        const start = performance.now();
+        try {
+            const result = await fn(...args);
+            const duration = performance.now() - start;
+            
+            if (duration > 1000) { // Log slow operations
+                logger.perf(operationName, duration, { slow: true });
+            }
+            
+            return result;
+        } catch (error) {
+            const duration = performance.now() - start;
+            logger.error(`Failed: ${operationName}`, error, { duration_ms: duration });
+            throw error;
+        }
+    };
+};

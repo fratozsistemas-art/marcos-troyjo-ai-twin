@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import ReportBuilder from '@/components/reports/ReportBuilder';
 import ReportScheduler from '@/components/automation/ReportScheduler';
+import AIReportGenerator from '@/components/reports/AIReportGenerator';
 import { toast } from 'sonner';
 
 export default function ReportsHub() {
@@ -29,6 +30,7 @@ export default function ReportsHub() {
             back: 'Voltar',
             createNew: 'Criar Relatório',
             myReports: 'Meus Relatórios',
+            aiGenerator: 'Gerador IA',
             scheduled: 'Agendados',
             templates: 'Modelos',
             noReports: 'Nenhum relatório ainda',
@@ -45,6 +47,7 @@ export default function ReportsHub() {
             back: 'Back',
             createNew: 'Create Report',
             myReports: 'My Reports',
+            aiGenerator: 'AI Generator',
             scheduled: 'Scheduled',
             templates: 'Templates',
             noReports: 'No reports yet',
@@ -64,11 +67,12 @@ export default function ReportsHub() {
     const loadReports = async () => {
         setLoading(true);
         try {
-            // In a real scenario, you'd have a Reports entity
-            // For now, we'll use a placeholder
-            setReports([]);
+            const user = await base44.auth.me();
+            const fetchedReports = await base44.entities.Report.filter({ user_email: user.email }, '-created_date', 50);
+            setReports(fetchedReports || []);
         } catch (error) {
             console.error('Error loading reports:', error);
+            setReports([]);
         } finally {
             setLoading(false);
         }
@@ -84,6 +88,7 @@ export default function ReportsHub() {
         if (!confirm(t.deleteConfirm)) return;
         
         try {
+            await base44.entities.Report.delete(reportId);
             setReports(prev => prev.filter(r => r.id !== reportId));
             toast.success(lang === 'pt' ? 'Relatório excluído!' : 'Report deleted!');
         } catch (error) {
@@ -138,11 +143,16 @@ export default function ReportsHub() {
                 </motion.div>
 
                 {/* Tabs */}
-                <Tabs defaultValue="reports" className="space-y-6">
+                <Tabs defaultValue="ai" className="space-y-6">
                     <TabsList>
+                        <TabsTrigger value="ai">{t.aiGenerator}</TabsTrigger>
                         <TabsTrigger value="reports">{t.myReports}</TabsTrigger>
                         <TabsTrigger value="scheduled">{t.scheduled}</TabsTrigger>
                     </TabsList>
+
+                    <TabsContent value="ai">
+                        <AIReportGenerator lang={lang} />
+                    </TabsContent>
 
                     <TabsContent value="reports">
                         {reports.length === 0 ? (
@@ -181,12 +191,12 @@ export default function ReportsHub() {
                                                         </CardTitle>
                                                         <div className="flex items-center gap-2 text-xs text-gray-500">
                                                             <Calendar className="w-3 h-3" />
-                                                            {new Date(report.generated_at).toLocaleDateString(
+                                                            {new Date(report.created_date).toLocaleDateString(
                                                                 lang === 'pt' ? 'pt-BR' : 'en-US'
                                                             )}
                                                         </div>
                                                     </div>
-                                                    {report.ai_summary && (
+                                                    {report.type === 'ai_generated' && (
                                                         <Badge variant="secondary" className="gap-1">
                                                             <Sparkles className="w-3 h-3" />
                                                             AI
@@ -195,24 +205,9 @@ export default function ReportsHub() {
                                                 </div>
                                             </CardHeader>
                                             <CardContent>
-                                                <div className="space-y-2 mb-4">
-                                                    <div className="flex justify-between text-xs">
-                                                        <span className="text-gray-600">
-                                                            {lang === 'pt' ? 'Fatos' : 'Facts'}
-                                                        </span>
-                                                        <span className="font-medium">
-                                                            {report.statistics?.total_facts || 0}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex justify-between text-xs">
-                                                        <span className="text-gray-600">
-                                                            {lang === 'pt' ? 'Riscos' : 'Risks'}
-                                                        </span>
-                                                        <span className="font-medium">
-                                                            {report.statistics?.total_risks || 0}
-                                                        </span>
-                                                    </div>
-                                                </div>
+                                                <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                                                    {report.request || report.content?.summary}
+                                                </p>
 
                                                 <div className="flex gap-2">
                                                     <Button
@@ -221,7 +216,8 @@ export default function ReportsHub() {
                                                         className="flex-1"
                                                         onClick={() => setSelectedReport(report)}
                                                     >
-                                                        <Eye className="w-4 h-4" />
+                                                        <Eye className="w-4 h-4 mr-2" />
+                                                        {t.view}
                                                     </Button>
                                                     <Button
                                                         variant="outline"
@@ -245,19 +241,40 @@ export default function ReportsHub() {
                 </Tabs>
 
                 {/* Report Viewer Dialog */}
-                {selectedReport && (
+                {selectedReport && selectedReport.content && (
                     <Dialog open={!!selectedReport} onOpenChange={() => setSelectedReport(null)}>
-                        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
                             <div className="space-y-6">
-                                <div>
-                                    <h2 className="text-2xl font-bold mb-2">{selectedReport.title}</h2>
-                                    <p className="text-sm text-gray-500">
-                                        {t.generatedAt}: {new Date(selectedReport.generated_at).toLocaleString()}
-                                    </p>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h2 className="text-2xl font-bold mb-2">{selectedReport.content.title || selectedReport.title}</h2>
+                                        <p className="text-sm text-gray-500">
+                                            {t.generatedAt}: {new Date(selectedReport.created_date).toLocaleString()}
+                                        </p>
+                                    </div>
+                                    <Button onClick={async () => {
+                                        try {
+                                            const response = await base44.functions.invoke('exportReportPDF', { report_id: selectedReport.id });
+                                            const blob = new Blob([response.data], { type: 'application/pdf' });
+                                            const url = window.URL.createObjectURL(blob);
+                                            const a = document.createElement('a');
+                                            a.href = url;
+                                            a.download = `${selectedReport.title}.pdf`;
+                                            document.body.appendChild(a);
+                                            a.click();
+                                            window.URL.revokeObjectURL(url);
+                                            a.remove();
+                                        } catch (error) {
+                                            toast.error(lang === 'pt' ? 'Erro ao baixar' : 'Error downloading');
+                                        }
+                                    }} variant="outline">
+                                        <Download className="w-4 h-4 mr-2" />
+                                        {t.download}
+                                    </Button>
                                 </div>
 
-                                {selectedReport.ai_summary && (
-                                    <Card className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
+                                {selectedReport.content.summary && (
+                                    <Card className="bg-gradient-to-r from-purple-50 to-blue-50">
                                         <CardHeader>
                                             <CardTitle className="flex items-center gap-2 text-lg">
                                                 <Sparkles className="w-5 h-5 text-purple-600" />
@@ -265,43 +282,59 @@ export default function ReportsHub() {
                                             </CardTitle>
                                         </CardHeader>
                                         <CardContent>
-                                            {selectedReport.ai_summary.key_highlights && (
-                                                <div className="mb-4">
-                                                    <h4 className="font-semibold mb-2 text-sm">
-                                                        {lang === 'pt' ? 'Destaques' : 'Highlights'}
-                                                    </h4>
-                                                    <ul className="list-disc list-inside space-y-1 text-sm">
-                                                        {selectedReport.ai_summary.key_highlights.map((h, i) => (
-                                                            <li key={i}>{h}</li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            )}
+                                            <p className="text-sm leading-relaxed">{selectedReport.content.summary}</p>
                                         </CardContent>
                                     </Card>
                                 )}
 
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="text-lg">
-                                            {lang === 'pt' ? 'Estatísticas' : 'Statistics'}
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                            {Object.entries(selectedReport.statistics || {}).map(([key, value]) => (
-                                                <div key={key} className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                                    <p className="text-2xl font-bold text-indigo-600">
-                                                        {typeof value === 'number' ? value : '-'}
-                                                    </p>
-                                                    <p className="text-xs text-gray-600 dark:text-gray-400 capitalize">
-                                                        {key.replace(/_/g, ' ')}
-                                                    </p>
+                                {selectedReport.content.insights && selectedReport.content.insights.length > 0 && (
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle className="text-lg">
+                                                {lang === 'pt' ? 'Insights Automáticos' : 'Automatic Insights'}
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="space-y-3">
+                                            {selectedReport.content.insights.map((insight, idx) => (
+                                                <div key={idx} className="flex items-start gap-3 p-3 rounded-lg border bg-blue-50 border-blue-200">
+                                                    <Sparkles className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                                                    <p className="text-sm">{insight.message}</p>
                                                 </div>
                                             ))}
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                        </CardContent>
+                                    </Card>
+                                )}
+
+                                {selectedReport.content.sections && selectedReport.content.sections.map((section, idx) => (
+                                    <Card key={idx}>
+                                        <CardHeader>
+                                            <CardTitle className="text-lg">{section.title}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p className="text-sm text-gray-700 mb-4 whitespace-pre-line">{section.content}</p>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+
+                                {selectedReport.content.recommendations && (
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle className="text-lg">
+                                                {lang === 'pt' ? 'Recomendações' : 'Recommendations'}
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <ul className="space-y-2">
+                                                {selectedReport.content.recommendations.map((rec, idx) => (
+                                                    <li key={idx} className="flex gap-2">
+                                                        <span className="text-purple-600 font-semibold">{idx + 1}.</span>
+                                                        <span className="text-sm">{rec}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </CardContent>
+                                    </Card>
+                                )}
                             </div>
                         </DialogContent>
                     </Dialog>

@@ -9,8 +9,10 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
     BookOpen, Search, ArrowLeft, Clock, ThumbsUp, Eye, 
-    Star, Filter, TrendingUp, HelpCircle, FileText, Loader2
+    Star, Filter, TrendingUp, HelpCircle, FileText, Loader2, Upload
 } from 'lucide-react';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import PDFKnowledgeImporter from '@/components/knowledge/PDFKnowledgeImporter';
 import { toast } from 'sonner';
 
 const translations = {
@@ -38,7 +40,8 @@ const translations = {
         readTime: 'min de leitura',
         beginner: 'Iniciante',
         intermediate: 'Intermediário',
-        advanced: 'Avançado'
+        advanced: 'Avançado',
+        importPDF: 'Importar PDF'
     },
     en: {
         title: 'Knowledge Base',
@@ -64,7 +67,8 @@ const translations = {
         readTime: 'min read',
         beginner: 'Beginner',
         intermediate: 'Intermediate',
-        advanced: 'Advanced'
+        advanced: 'Advanced',
+        importPDF: 'Import PDF'
     }
 };
 
@@ -200,6 +204,20 @@ export default function KnowledgeBase() {
                                 <p className="text-sm text-gray-600">{t.subtitle}</p>
                             </div>
                         </div>
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button className="gap-2 bg-purple-600 hover:bg-purple-700">
+                                    <Upload className="w-4 h-4" />
+                                    {t.importPDF}
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl">
+                                <PDFKnowledgeImporter 
+                                    lang={lang} 
+                                    onImportComplete={() => loadEntries()}
+                                />
+                            </DialogContent>
+                        </Dialog>
                     </div>
                     
                     <div className="relative">

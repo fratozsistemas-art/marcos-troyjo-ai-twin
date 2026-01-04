@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
-import { checkRateLimit } from './utils/rateLimiter';
-import { logger } from './utils/logger';
+import { checkRateLimit } from './utils/rateLimiter.js';
+import { logger } from './utils/logger.js';
 
 Deno.serve(async (req) => {
     try {
@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
 - Title and description
 - Main topics covered
 - Key concepts and lessons
-- Estimated reading/study time
+- Estimated reading/study time in minutes
 - Difficulty level (beginner/intermediate/advanced)
 - Content organized into logical sections with titles and summaries
 
